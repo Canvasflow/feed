@@ -6,7 +6,16 @@ export default defineConfig({
   test: {
     setupFiles: ['src/setupTests.ts'],
     coverage: {
-      exclude: ['*.config.*', '*.d.ts'],
+      provider: 'v8',
+      exclude: [
+        '*.config.*',
+        '*.d.ts',
+        'dist/*',
+        'config/*',
+        'src/index.ts',
+        '.commitlintrc.js',
+      ],
+      reporter: ['text', 'json', 'html'],
     },
   },
   build: {
