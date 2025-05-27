@@ -1,7 +1,7 @@
 {
   "name": "@canvasflow/feed",
   "description": "This is canvasflow utility for processing feeds",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
@@ -28,7 +28,6 @@
     "url": "https://github.com/canvasflow/feed/issues"
   },
   "scripts": {
-    "preinstall": "npx husky-init",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "npm run build && npm run --dry-run",
