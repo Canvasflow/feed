@@ -39,8 +39,8 @@ jobs:
       contents: read
       packages: write
     steps:
-      - name: Checkout Github
-        uses: actions/checkout@v4
+      - name: 'Checkout Github v2'
+        uses: actions/setup-node@v2
 
       - name: Setup node env
         uses: actions/setup-node@v3
@@ -52,13 +52,17 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build
         run: npm run build
 
       - name: Pack
         run: npm pack --dry-run
+
+      - run: |
+          echo @lexacode:https://npm.pkg.github.com/ > .npmrc
+          echo '//npm.pkg.github.com/:_authToken=${{secrets.NODE_AUTH_TOKEN}}' >> .npmrc
 
       - name: publish
         run: npm publish --registry=${{ env.REGISTRY }}
