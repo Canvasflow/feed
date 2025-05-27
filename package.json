@@ -1,0 +1,27 @@
+{
+  "name": "canvasflow-feed",
+  "version": "0.0.0",
+  "main": "dist/main.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Canvasflow/canvasflow-feed.git"
+  },
+  "keywords": [
+    "rss",
+    "atom",
+    "feed"
+  ],
+  "author": "Jose J. Cruz Torres",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Canvasflow/canvasflow-feed/issues"
+  },
+  "homepage": "https://github.com/Canvasflow/canvasflow-feed#readme",
+  "description": "",
+  "volta": {
+    "node": "20.19.2"
+  }
+}
