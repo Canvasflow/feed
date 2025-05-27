@@ -25,11 +25,13 @@
     "url": "https://github.com/canvasflow/feed/issues"
   },
   "scripts": {
+    "preinstall": "npx husky-init",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "npm run build && npm run --dry-run",
     "test": "vitest",
-    "commit": "cz"
+    "commit": "cz",
+    "prepare": "husky install"
   },
   "config": {
     "commitizen": {
@@ -45,6 +47,7 @@
     "cz-git": "^1.11.1",
     "eslint": "^9.27.0",
     "globals": "^16.2.0",
+    "husky": "^8.0.3",
     "prettier": "^3.5.3",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.32.1",
