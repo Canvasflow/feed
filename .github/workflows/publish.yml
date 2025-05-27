@@ -60,10 +60,6 @@ jobs:
       - name: Pack
         run: npm pack --dry-run
 
-      - run: |
-          echo @lexacode:https://npm.pkg.github.com/ > .npmrc
-          echo '//npm.pkg.github.com/:_authToken=${{secrets.NODE_AUTH_TOKEN}}' >> .npmrc
-
       - name: publish
         run: npm publish --registry=${{ env.REGISTRY }}
 
