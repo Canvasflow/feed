@@ -28,11 +28,20 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "npm run build && npm run --dry-run",
-    "test": "vitest"
+    "test": "vitest",
+    "commit": "cz"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-git",
+      "useEmoji": true
+    }
   },
   "devDependencies": {
     "@eslint/js": "^9.27.0",
     "@types/node": "^22.15.21",
+    "commitizen": "^4.3.1",
+    "cz-git": "^1.11.1",
     "eslint": "^9.27.0",
     "globals": "^16.2.0",
     "prettier": "^3.5.3",
