@@ -76,7 +76,7 @@ export default defineConfig({
     useAI: false,
     aiNumber: 1,
     themeColorCode: '',
-    scopes: [],
+    scopes: ['rss', 'atom'],
     allowCustomScopes: true,
     allowEmptyScopes: true,
     customScopesAlign: 'bottom',
