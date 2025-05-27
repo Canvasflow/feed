@@ -1,27 +1,67 @@
 {
-  "name": "canvasflow-feed",
-  "version": "0.0.0",
-  "main": "dist/main.js",
-  "scripts": {
-    "test": "test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Canvasflow/canvasflow-feed.git"
+  "name": "@canvasflow/feed",
+  "description": "This is canvasflow utility for processing feeds",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.umd.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.cjs"
+    }
   },
   "keywords": [
     "rss",
     "atom",
     "feed"
   ],
-  "author": "Jose J. Cruz Torres",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Canvasflow/canvasflow-feed/issues"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/canvasflow/feed.git"
   },
-  "homepage": "https://github.com/Canvasflow/canvasflow-feed#readme",
-  "description": "",
+  "bugs": {
+    "url": "https://github.com/canvasflow/feed/issues"
+  },
+  "scripts": {
+    "preinstall": "npx husky-init",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "npm run build && npm run --dry-run",
+    "test": "vitest",
+    "commit": "cz",
+    "prepare": "husky install"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-git",
+      "czConfig": "./config/cz.config.js",
+      "useEmoji": true
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.27.0",
+    "@types/node": "^22.15.21",
+    "commitizen": "^4.3.1",
+    "cz-git": "^1.11.1",
+    "eslint": "^9.27.0",
+    "globals": "^16.2.0",
+    "husky": "^8.0.0",
+    "prettier": "^3.5.3",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.32.1",
+    "vite": "^6.3.5",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=18.16.1"
+  },
   "volta": {
-    "node": "20.19.2"
+    "node": "18.18.2"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   }
 }
