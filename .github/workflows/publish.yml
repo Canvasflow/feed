@@ -48,6 +48,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: ${{ env.REGISTRY }}
           scope: '@canvasflow'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
 
       - name: Install dependencies
         run: npm ci
