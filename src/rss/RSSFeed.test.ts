@@ -13,6 +13,7 @@ describe('Newsweek', () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     await feed.validate();
+    console.log(feed.errors);
 
     expect(feed.errors.length).toBe(0);
   });
