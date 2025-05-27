@@ -32,6 +32,7 @@
     "build": "tsc && vite build",
     "preview": "npm run build && npm run --dry-run",
     "test": "vitest",
+    "test:ui": "vitest --ui",
     "commit": "cz",
     "prepare": "husky install"
   },
@@ -45,6 +46,7 @@
   "devDependencies": {
     "@eslint/js": "^9.27.0",
     "@types/node": "^22.15.21",
+    "@vitest/ui": "^3.1.4",
     "commitizen": "^4.3.1",
     "cz-git": "^1.11.1",
     "eslint": "^9.27.0",
@@ -65,5 +67,9 @@
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.2.3",
+    "himalaya": "^1.1.1"
   }
 }
