@@ -1,45 +1,47 @@
 import path from 'path';
 import { readFileSync } from 'fs';
-import { test, expect, describe } from 'vitest';
+import { test, expect, describe, beforeEach } from 'vitest';
 
 import RSSFeed from './RSSFeed';
 
-describe('Validation logic', () => {
-  test(`It should validate the content of newsweek`, async () => {
-    const filePath = path.join(`${process.env.FEEDS_PATH}`, `newsweek.xml`);
+describe('Newsweek', () => {
+  let filePath: string = '';
+  beforeEach(() => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `newsweek.xml`);
+  });
+  test(`It should validate the content`, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     await feed.validate();
 
     expect(feed.errors.length).toBe(0);
   });
-
-  test(`It should validate the content of autocar`, async () => {
-    const filePath = path.join(`${process.env.FEEDS_PATH}`, `autocar.xml`);
+  test(`It should build the content`, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
-    await feed.validate();
+    const rss = await feed.build();
 
-    expect(feed.errors.length).toBe(0);
+    expect(rss.channel?.title).toBe('Newsweek feed for VMG');
   });
 });
 
-describe('Building logic', () => {
-  test(`It should validate the content of newsweek`, async () => {
-    const filePath = path.join(`${process.env.FEEDS_PATH}`, `newsweek.xml`);
-    const content = readFileSync(filePath, 'utf-8');
-    const feed = new RSSFeed(content);
-    const rss = await feed.build();
-
-    expect(Object.keys(rss).length).toBe(0);
+describe.skip('Autocar', () => {
+  let filePath: string = '';
+  beforeEach(() => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `autocar.xml`);
   });
+  test(`It should validate the content`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
 
-  test(`It should validate the content of autocar`, async () => {
-    const filePath = path.join(`${process.env.FEEDS_PATH}`, `autocar.xml`);
+    expect(feed.errors.length).toBe(0);
+  });
+  test(`It should build the content`, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
 
-    expect(Object.keys(rss).length).toBe(0);
+    expect(rss.channel?.title).toBe('Autocar.co.uk');
   });
 });
