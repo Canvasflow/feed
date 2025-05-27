@@ -34,6 +34,7 @@
   "config": {
     "commitizen": {
       "path": "node_modules/cz-git",
+      "czConfig": "./config/cz.config.js",
       "useEmoji": true
     }
   },
