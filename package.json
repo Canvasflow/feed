@@ -33,7 +33,8 @@
     "preview": "npm run build && npm run --dry-run",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage",
+    "coverage": "vitest --coverage",
+    "coverage:ui": "vitest --coverage --ui",
     "commit": "cz",
     "prepare": "husky install"
   },
