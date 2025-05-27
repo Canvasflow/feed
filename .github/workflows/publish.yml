@@ -39,8 +39,8 @@ jobs:
       contents: read
       packages: write
     steps:
-      - name: 'Checkout Github v2'
-        uses: actions/setup-node@v2
+      - name: 'Checkout Github v4'
+        uses: actions/checkout@v4
 
       - name: Setup node env
         uses: actions/setup-node@v3
