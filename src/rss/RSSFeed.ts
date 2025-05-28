@@ -185,7 +185,6 @@ export default class RSSFeed {
   // Aqui es donde usas himalaya para procesar el html
   private processContent(content: string): Component[] {
     const components: Component[] = [];
-    console.log(content);
     return components;
   }
 }
