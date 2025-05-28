@@ -1,8 +1,10 @@
+import type { Component } from "./component/Component";
+
 export interface RSS {
   modules?: string[];
-  channel?: Channel;
-  errors?: Error[];
-  warnings?: string[];
+  channel: Channel;
+  errors: Error[];
+  warnings: string[];
 }
 
 export interface Channel {
@@ -10,13 +12,19 @@ export interface Channel {
   link?: string;
   description?: string;
   language?: string;
-  items?: Item[];
-  errors?: Error[];
-  warnings?: string[];
+  items: Item[];
+  errors: Error[];
+  warnings: string[];
 }
 
 export interface Item {
   title?: string;
-  errors?: Error[];
-  warnings?: string[];
+  'content:encoded'?: string;
+  category?: string[];
+  guid?: string;
+  link?: string;
+  description?: string;
+  errors: Error[];
+  warnings: string[];
+  components: Component[];
 }
