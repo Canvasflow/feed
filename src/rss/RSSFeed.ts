@@ -20,8 +20,8 @@ export default class RSSFeed {
       channel: {
         items: [],
         errors: [],
-        warnings: []
-      }
+        warnings: [],
+      },
     };
   }
 
@@ -60,17 +60,17 @@ export default class RSSFeed {
 
     if (requiredTags.size) {
       for (const key of [...requiredTags]) {
-        const error = new Error(`Required property "${key}" is missing`)
+        const error = new Error(`Required property "${key}" is missing`);
         this.errors.push(error);
         this.rss.errors.push(error);
       }
-      return
+      return;
     }
 
     // Add warning for tags that are invalid at the rss level
     for (const key in rss) {
       if (!Tag.rss.validTags.has(key)) {
-        this.rss.warnings.push(`Invalid property '${key}'`)
+        this.rss.warnings.push(`Invalid property '${key}'`);
         delete rss[key];
       }
     }
@@ -88,20 +88,18 @@ export default class RSSFeed {
 
     if (requiredTags.size) {
       for (const key of [...requiredTags]) {
-        this.errors.push(
-          new Error(`Required property "${key}" is missing`)
-        );
+        this.errors.push(new Error(`Required property "${key}" is missing`));
         this.rss.channel.errors.push(
-          new Error(`Required property "${key}" is missing`)
+          new Error(`Required property "${key}" is missing`),
         );
       }
-      return
+      return;
     }
 
     // Add warning for tags that are invalid at the rss level
     for (const key in channel) {
       if (!Tag.rss.channel.validTags.has(key)) {
-        this.rss.channel.warnings.push(`Invalid property '${key}'`)
+        this.rss.channel.warnings.push(`Invalid property '${key}'`);
         delete channel[`${key}`];
       }
     }
@@ -135,7 +133,7 @@ export default class RSSFeed {
     const warnings: string[] = [];
     for (const key in item) {
       if (!Tag.rss.channel.item.validTags.has(key)) {
-        warnings.push(`Invalid property '${key}'`)
+        warnings.push(`Invalid property '${key}'`);
         delete item[`${key}`];
       }
     }
@@ -145,13 +143,12 @@ export default class RSSFeed {
   }
 
   async build(): Promise<RSS> {
-    // Validate and clean that all the data is correct
-    const { data } = this
+    const { data } = this;
     const { rss } = data;
     const { channel } = rss;
     this.rss.channel.title = channel.title;
     for (const item of channel.item) {
-      this.rss.channel.items.push(this.buildItem(item))
+      this.rss.channel.items.push(this.buildItem(item));
     }
     return this.rss;
   }
@@ -174,13 +171,13 @@ export default class RSSFeed {
       errors,
       warnings,
       components: [],
-    }
+    };
 
     if (item.errors) {
       return response;
     }
 
-    response.components = this.processContent(item['content:encoded'])
+    response.components = this.processContent(item['content:encoded']);
 
     return response;
   }
@@ -188,6 +185,7 @@ export default class RSSFeed {
   // Aqui es donde usas himalaya para procesar el html
   private processContent(content: string): Component[] {
     const components: Component[] = [];
+    console.log(content);
     return components;
   }
 }
