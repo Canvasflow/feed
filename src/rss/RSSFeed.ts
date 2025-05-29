@@ -5,7 +5,7 @@ import type { Component } from './component/Component';
 
 export default class RSSFeed {
   public content: string;
-
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   public data: any;
   public rss: RSS;
   public errors: Error[] = [];
@@ -106,13 +106,14 @@ export default class RSSFeed {
     }
   }
 
-  private validateItems(items: Array<any>) {
+
+  private validateItems(items: Array<Record<string, unknown>>) {
     for (const item of items) {
       this.validateItem(item);
     }
   }
 
-  private validateItem(item: any) {
+  private validateItem(item: Record<string, unknown>) {
     // Validate first required tags
     const requiredTags = new Set([...Tag.rss.channel.item.requiredTags]);
     for (const key in item) {
@@ -154,8 +155,13 @@ export default class RSSFeed {
     return this.rss;
   }
 
-  private buildItem(item: any): Item {
-    const { guid, title, description, link } = item;
+  private buildItem(item: Record<string, unknown>): Item {
+    const guid = typeof item.guid === 'string' ? item.guid : undefined;
+    const title = typeof item.title === 'string' ? item.title : undefined;
+    const description = typeof item.description === 'string' ? item.description : undefined;
+    const link = typeof item.link === 'string' ? item.link : undefined;
+    const contentEncoded = typeof item['content:encoded'] === 'string' ?
+      item['content:encoded'] : '';
     let errors: Error[] = [];
     let warnings: string[] = [];
     if (item.errors && Array.isArray(item.errors)) {
@@ -170,6 +176,7 @@ export default class RSSFeed {
       description,
       link,
       errors,
+      'content:encoded': contentEncoded,
       warnings,
       components: [],
     };
@@ -179,7 +186,7 @@ export default class RSSFeed {
     }
 
     // Aqui manejas los components
-    response.components = this.processContent(item['content:encoded']);
+    response.components = this.processContent(contentEncoded);
 
     return response;
   }
