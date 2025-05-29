@@ -39,7 +39,12 @@
     "coverage:ui": "vitest --coverage --ui",
     "commit": "cz",
     "prepare": "husky install",
-    "format": "prettier --write ./src"
+    "format": "prettier --write ."
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "prettier --write"
+    ]
   },
   "config": {
     "commitizen": {
@@ -59,6 +64,7 @@
     "eslint-config-prettier": "^10.1.5",
     "globals": "^16.2.0",
     "husky": "^8.0.0",
+    "lint-staged": "^16.1.0",
     "prettier": "3.5.3",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.32.1",

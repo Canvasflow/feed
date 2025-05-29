@@ -1,6 +1,6 @@
 export type Component = ImageComponent | TextComponent | VideoComponent;
 
-export interface ImageComponent                                 {
+export interface ImageComponent {
   imageurl: string;
 }
 
