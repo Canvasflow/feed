@@ -32,6 +32,8 @@
     "build": "tsc && vite build",
     "preview": "npm run build && npm run --dry-run",
     "test": "vitest",
+    "lint": "eslint . --ext .ts",
+    "lint:watch": "watch-eslint --wd 100",
     "test:ui": "vitest --ui",
     "coverage": "vitest --coverage",
     "coverage:ui": "vitest --coverage --ui",
