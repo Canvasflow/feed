@@ -91,7 +91,7 @@ export default class RSSFeed {
       for (const key of [...requiredTags]) {
         this.errors.push(new Error(`Required property "${key}" is missing`));
         this.rss.channel.errors.push(
-          new Error(`Required property "${key}" is missing`),
+          new Error(`Required property "${key}" is missing`)
         );
       }
       return;
@@ -105,7 +105,6 @@ export default class RSSFeed {
       }
     }
   }
-
 
   private validateItems(items: Array<Record<string, unknown>>) {
     for (const item of items) {
@@ -158,10 +157,13 @@ export default class RSSFeed {
   private buildItem(item: Record<string, unknown>): Item {
     const guid = typeof item.guid === 'string' ? item.guid : undefined;
     const title = typeof item.title === 'string' ? item.title : undefined;
-    const description = typeof item.description === 'string' ? item.description : undefined;
+    const description =
+      typeof item.description === 'string' ? item.description : undefined;
     const link = typeof item.link === 'string' ? item.link : undefined;
-    const contentEncoded = typeof item['content:encoded'] === 'string' ?
-      item['content:encoded'] : '';
+    const contentEncoded =
+      typeof item['content:encoded'] === 'string'
+        ? item['content:encoded']
+        : '';
     let errors: Error[] = [];
     let warnings: string[] = [];
     if (item.errors && Array.isArray(item.errors)) {

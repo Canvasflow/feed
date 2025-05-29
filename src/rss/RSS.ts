@@ -1,4 +1,4 @@
-import type { Component } from "./component/Component";
+import type { Component } from './component/Component';
 
 export interface RSS {
   modules?: string[];
