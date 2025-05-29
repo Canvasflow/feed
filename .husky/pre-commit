@@ -4,6 +4,5 @@
 exec >/dev/tty 2>&1
 
 npx lint-staged
-npm run format
 npm run lint
 npm test
