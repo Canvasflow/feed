@@ -48,19 +48,11 @@
   },
   "config": {
     "commitizen": {
-      "path": "cz-emoji"
-    },
-    "cz-emoji": {
-      "skipQuestions": [
-        "issues",
-        "breaking"
-      ],
-      "scopes": [
-        "atom",
-        "rss",
-        "ci",
-        "test"
-      ]
+      "path": "./node_modules/cz-conventional-changelog",
+      "disableScopeLowerCase": false,
+      "disableSubjectLowerCase": false,
+      "maxHeaderWidth": 100,
+      "maxLineWidth": 100
     }
   },
   "devDependencies": {
