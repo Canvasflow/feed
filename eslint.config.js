@@ -9,6 +9,7 @@ export default defineConfig([
     './coverage',
     './src/setupTests.ts',
     'vite.config.ts',
+    '.commitlintrc.js',
   ]),
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
