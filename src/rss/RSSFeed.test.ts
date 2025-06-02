@@ -1,13 +1,17 @@
 import path from 'path';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { test, expect, describe, beforeEach } from 'vitest';
 
 import RSSFeed from './RSSFeed';
 
 describe('Newsweek', () => {
   let filePath: string = '';
+  let outFilePath: string = '';
   beforeEach(() => {
     filePath = path.join(`${process.env.FEEDS_PATH}`, `newsweek.xml`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `newsweek.json`);
+    }
   });
   test(`It should validate the content`, async () => {
     const content = readFileSync(filePath, 'utf-8');
@@ -22,6 +26,9 @@ describe('Newsweek', () => {
     await feed.validate();
     expect(feed.errors.length).toBe(0);
     const rss = await feed.build();
+    if (outFilePath) {
+      writeFileSync(outFilePath, JSON.stringify(rss, null, 2), 'utf-8');
+    }
 
     expect(rss.channel?.title).toBe('Newsweek feed for VMG');
   });
@@ -29,8 +36,12 @@ describe('Newsweek', () => {
 
 describe('Autocar', () => {
   let filePath: string = '';
+  let outFilePath: string = '';
   beforeEach(() => {
     filePath = path.join(`${process.env.FEEDS_PATH}`, `autocar.xml`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `autocar.json`);
+    }
   });
   test(`It should validate the content`, async () => {
     const content = readFileSync(filePath, 'utf-8');
@@ -43,6 +54,9 @@ describe('Autocar', () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
+    if (outFilePath) {
+      writeFileSync(outFilePath, JSON.stringify(rss, null, 2), 'utf-8');
+    }
 
     expect(rss.channel?.title).toBe('Autocar.co.uk');
   });
@@ -50,18 +64,30 @@ describe('Autocar', () => {
 
 describe('Motorsport', () => {
   let filePath: string = '';
+  let outFilePath: string = '';
   beforeEach(() => {
     filePath = path.join(`${process.env.FEEDS_PATH}`, `motorsport.xml`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(
+        `${process.env.FEEDS_OUT_PATH}`,
+        `motorsport.json`
+      );
+    }
   });
-  test(`It should build the content`, async () => {
+  test.only(`It should build the content`, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
+
+    if (outFilePath) {
+      writeFileSync(outFilePath, JSON.stringify(rss, null, 2), 'utf-8');
+    }
 
     expect(rss.channel?.title).toBe('Motorsport.com - All - Stories');
     expect(rss.channel?.items.length).toBe(50);
     expect(rss.channel.items[0].title).toBe(
       'Aprilia stands firm over Jorge Martin contract saga'
     );
+    expect(rss.channel.items[0].components[0].component).toBe('subtitle');
   });
 });

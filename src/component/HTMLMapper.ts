@@ -11,6 +11,23 @@ import {
   type TextType,
 } from './Component';
 
+const textTags = [
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'p',
+  'footer',
+  'blockquote',
+];
+
+const textAllowedAttributes: Record<string, Array<string>> = {};
+for (const tag of textTags) {
+  textAllowedAttributes[tag] = ['role'];
+}
+
 const textAllowedTags = [
   ...new Set([
     'strong',
@@ -88,20 +105,30 @@ export class HTMLMapper {
 
   static toText(node: ElementNode, component: TextType): TextComponent {
     const html = stringify([node]);
+    const warnings: string[] = [];
     const attributes = mapAttributes(node.attributes);
+
     const text = sanitizeHtml(html, {
       allowedTags: textAllowedTags,
+      allowedAttributes: textAllowedAttributes,
     });
     const id = attributes.get('id');
     const role = attributes.get('role');
-    if (role && isValidTextRole(role)) {
-      component = role as TextType;
+    if (role) {
+      // If the role was set and is valid we apply it
+      if (isValidTextRole(role)) {
+        component = role as TextType;
+      } else {
+        // If the role was invalid we use body as fallback
+        warnings.push(`role '${role}' is invalid`);
+        component = 'body';
+      }
     }
     return {
       id,
       component,
       errors: [],
-      warnings: [],
+      warnings,
       text,
     };
   }
