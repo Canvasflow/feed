@@ -47,3 +47,21 @@ describe('Autocar', () => {
     expect(rss.channel?.title).toBe('Autocar.co.uk');
   });
 });
+
+describe('Motorsport', () => {
+  let filePath: string = '';
+  beforeEach(() => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `motorsport.xml`);
+  });
+  test(`It should build the content`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    const rss = await feed.build();
+
+    expect(rss.channel?.title).toBe('Motorsport.com - All - Stories');
+    expect(rss.channel?.items.length).toBe(50);
+    expect(rss.channel.items[0].title).toBe(
+      'Aprilia stands firm over Jorge Martin contract saga'
+    );
+  });
+});

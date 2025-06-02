@@ -1,4 +1,4 @@
-import type { Component } from './component/Component';
+import type { Component } from './Component';
 
 export interface RSS {
   modules?: string[];
@@ -24,6 +24,7 @@ export interface Item {
   guid?: string;
   link?: string;
   description?: string;
+  pubDate?: string;
   errors: Error[];
   warnings: string[];
   components: Component[];

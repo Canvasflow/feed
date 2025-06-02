@@ -1,7 +1,14 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+/* @ts-expect-error */
+import { parse } from 'himalaya';
+import { DateTime } from 'luxon';
 import { XMLParser } from 'fast-xml-parser';
+
 import type { RSS, Item } from './RSS';
 import { Tag } from './Tag';
-import type { Component } from './component/Component';
+import type { Component } from './Component';
+import type { Node } from './RSSMapper';
+import { RSSMapper } from './RSSMapper';
 
 export default class RSSFeed {
   public content: string;
@@ -47,6 +54,17 @@ export default class RSSFeed {
     }
 
     this.validateItems(data.rss.channel.item);
+  }
+
+  async build(): Promise<RSS> {
+    const { data } = this;
+    const { rss } = data;
+    const { channel } = rss;
+    this.rss.channel.title = channel.title;
+    for (const item of channel.item) {
+      this.rss.channel.items.push(this.buildItem(item));
+    }
+    return this.rss;
   }
 
   private validateRSS() {
@@ -143,26 +161,18 @@ export default class RSSFeed {
     item.warnings = warnings;
   }
 
-  async build(): Promise<RSS> {
-    const { data } = this;
-    const { rss } = data;
-    const { channel } = rss;
-    this.rss.channel.title = channel.title;
-    for (const item of channel.item) {
-      this.rss.channel.items.push(this.buildItem(item));
-    }
-    return this.rss;
-  }
-
   private buildItem(item: Record<string, unknown>): Item {
     const guid = typeof item.guid === 'string' ? item.guid : undefined;
-    const title = typeof item.title === 'string' ? item.title : undefined;
+    const title =
+      typeof item.title === 'string' ? item.title.trim() : undefined;
     const description =
-      typeof item.description === 'string' ? item.description : undefined;
-    const link = typeof item.link === 'string' ? item.link : undefined;
+      typeof item.description === 'string'
+        ? item.description.trim()
+        : undefined;
+    const link = typeof item.link === 'string' ? item.link.trim() : undefined;
     const contentEncoded =
       typeof item['content:encoded'] === 'string'
-        ? item['content:encoded']
+        ? item['content:encoded'].trim()
         : '';
     let errors: Error[] = [];
     let warnings: string[] = [];
@@ -172,18 +182,33 @@ export default class RSSFeed {
     if (item.warnings && Array.isArray(item.warnings)) {
       warnings = item.warnings;
     }
+    const category: Array<string> = item.category
+      ? Array.isArray(item.category)
+        ? item.category
+        : [item.category]
+      : [];
+
+    let pubDate: undefined | string;
+    if (item.pubDate) {
+      const pubDateTime = DateTime.fromJSDate(new Date(`${item.pubDate}`));
+      if (pubDateTime.isValid) {
+        pubDate = pubDateTime.toISO();
+      }
+    }
     const response: Item = {
       guid,
       title,
+      category,
       description,
       link,
+      pubDate,
       errors,
       'content:encoded': contentEncoded,
       warnings,
       components: [],
     };
 
-    if (item.errors) {
+    if (errors.length) {
       return response;
     }
 
@@ -195,12 +220,10 @@ export default class RSSFeed {
 
   // Aqui es donde usas himalaya para procesar el html
   private processContent(content: string): Component[] {
-    const components: Component[] = [];
-    // Agregue esto para evitar el error del linter (Esto es un ejemplo de un hack, no lo uses)
-    content = '';
-    if (content) {
-      console.log(content);
-    }
-    return components;
+    const nodes: Array<Node> = parse(content).filter(
+      RSSMapper.filterEmptyTextNode
+    );
+
+    return nodes.reduce(RSSMapper.reduceComponents, []);
   }
 }
