@@ -23,7 +23,9 @@ const textTags = [
   'blockquote',
 ];
 
-const textAllowedAttributes: Record<string, Array<string>> = {};
+const textAllowedAttributes: Record<string, Array<string>> = {
+  a: ['href', 'target', 'rel'],
+};
 for (const tag of textTags) {
   textAllowedAttributes[tag] = ['role'];
 }
