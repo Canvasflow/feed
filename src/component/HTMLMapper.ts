@@ -27,7 +27,7 @@ const textAllowedAttributes: Record<string, Array<string>> = {
   a: ['href', 'target', 'rel'],
 };
 for (const tag of textTags) {
-  textAllowedAttributes[tag] = ['role'];
+  textAllowedAttributes[tag] = ['role', 'style'];
 }
 
 const textAllowedTags = [
@@ -69,28 +69,27 @@ export class HTMLMapper {
     }
 
     const { tagName } = node;
+
+    const textTagMapping: Record<string, TextType> = {
+      h1: 'headline',
+      h2: 'title',
+      h3: 'subtitle',
+      h4: 'intro',
+      footer: 'footer',
+      blockquote: 'blockquote',
+      p: 'body',
+    };
+
+    // This section validates text tags
+    for (const tag in textTagMapping) {
+      if (tagName === tag) {
+        acc.push(HTMLMapper.toText(node, textTagMapping[tag]));
+        return acc;
+      }
+    }
+
+    // This section validates the rest of the tags components
     switch (tagName) {
-      case 'h1':
-        acc.push(HTMLMapper.toText(node, 'headline'));
-        return acc;
-      case 'h2':
-        acc.push(HTMLMapper.toText(node, 'title'));
-        return acc;
-      case 'h3':
-        acc.push(HTMLMapper.toText(node, 'subtitle'));
-        return acc;
-      case 'h4':
-        acc.push(HTMLMapper.toText(node, 'intro'));
-        return acc;
-      case 'footer':
-        acc.push(HTMLMapper.toText(node, 'footer'));
-        return acc;
-      case 'blockquote':
-        acc.push(HTMLMapper.toText(node, 'blockquote'));
-        return acc;
-      case 'p':
-        acc.push(HTMLMapper.toText(node, 'body'));
-        return acc;
       case 'figure':
       case 'img':
         acc.push(HTMLMapper.toImage(node));

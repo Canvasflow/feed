@@ -74,7 +74,7 @@ describe('Motorsport', () => {
       );
     }
   });
-  test.only(`It should build the content`, async () => {
+  test(`It should build the content`, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
