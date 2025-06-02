@@ -1,14 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-/* @ts-expect-error */
-import { parse } from 'himalaya';
 import { DateTime } from 'luxon';
 import { XMLParser } from 'fast-xml-parser';
 
 import type { RSS, Item } from './RSS';
 import { Tag } from './Tag';
-import type { Component } from './Component';
-import type { Node } from './RSSMapper';
-import { RSSMapper } from './RSSMapper';
+
+import { HTMLMapper } from '../component/HTMLMapper';
 
 export default class RSSFeed {
   public content: string;
@@ -208,22 +204,8 @@ export default class RSSFeed {
       components: [],
     };
 
-    if (errors.length) {
-      return response;
-    }
-
-    // Aqui manejas los components
-    response.components = this.processContent(contentEncoded);
+    response.components = HTMLMapper.toComponents(contentEncoded);
 
     return response;
-  }
-
-  // Aqui es donde usas himalaya para procesar el html
-  private processContent(content: string): Component[] {
-    const nodes: Array<Node> = parse(content).filter(
-      RSSMapper.filterEmptyTextNode
-    );
-
-    return nodes.reduce(RSSMapper.reduceComponents, []);
   }
 }

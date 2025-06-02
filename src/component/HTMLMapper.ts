@@ -1,13 +1,14 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 /* @ts-expect-error */
-import { stringify } from 'himalaya';
+import { parse, stringify } from 'himalaya';
 import sanitizeHtml from 'sanitize-html';
 
-import type {
-  Component,
-  ImageComponent,
-  TextComponent,
-  TextType,
+import {
+  isValidTextRole,
+  type Component,
+  type ImageComponent,
+  type TextComponent,
+  type TextType,
 } from './Component';
 
 const textAllowedTags = [
@@ -29,7 +30,14 @@ const textAllowedTags = [
   ]),
 ];
 
-export class RSSMapper {
+export class HTMLMapper {
+  static toComponents(content: string): Component[] {
+    const nodes: Array<Node> = parse(content).filter(
+      HTMLMapper.filterEmptyTextNode
+    );
+
+    return nodes.reduce(HTMLMapper.reduceComponents, []);
+  }
   static reduceComponents(acc: Array<Component>, node: Node): Array<Component> {
     if (node.type === 'text') {
       acc.push({
@@ -44,36 +52,36 @@ export class RSSMapper {
     const { tagName } = node;
     switch (tagName) {
       case 'h1':
-        acc.push(RSSMapper.toText(node, 'headline'));
+        acc.push(HTMLMapper.toText(node, 'headline'));
         return acc;
       case 'h2':
-        acc.push(RSSMapper.toText(node, 'title'));
+        acc.push(HTMLMapper.toText(node, 'title'));
         return acc;
       case 'h3':
-        acc.push(RSSMapper.toText(node, 'subtitle'));
+        acc.push(HTMLMapper.toText(node, 'subtitle'));
         return acc;
       case 'h4':
-        acc.push(RSSMapper.toText(node, 'intro'));
+        acc.push(HTMLMapper.toText(node, 'intro'));
         return acc;
       case 'footer':
-        acc.push(RSSMapper.toText(node, 'footer'));
+        acc.push(HTMLMapper.toText(node, 'footer'));
         return acc;
       case 'blockquote':
-        acc.push(RSSMapper.toText(node, 'blockquote'));
+        acc.push(HTMLMapper.toText(node, 'blockquote'));
         return acc;
       case 'p':
-        acc.push(RSSMapper.toText(node, 'body'));
+        acc.push(HTMLMapper.toText(node, 'body'));
         return acc;
       case 'figure':
       case 'img':
-        acc.push(RSSMapper.toImage(node));
+        acc.push(HTMLMapper.toImage(node));
         return acc;
       default:
         break;
     }
 
     if (node.children) {
-      return node.children.reduce(RSSMapper.reduceComponents, acc);
+      return node.children.reduce(HTMLMapper.reduceComponents, acc);
     }
     return acc;
   }
@@ -84,8 +92,13 @@ export class RSSMapper {
     const text = sanitizeHtml(html, {
       allowedTags: textAllowedTags,
     });
+    const id = attributes.get('id');
+    const role = attributes.get('role');
+    if (role && isValidTextRole(role)) {
+      component = role as TextType;
+    }
     return {
-      id: attributes.get('id'),
+      id,
       component,
       errors: [],
       warnings: [],
@@ -100,7 +113,7 @@ export class RSSMapper {
     const id = attributes.get('id');
 
     if (tagName === 'figure') {
-      const imageComponent: ImageComponent = RSSMapper.fromFigure(node);
+      const imageComponent: ImageComponent = HTMLMapper.fromFigure(node);
       imageComponent.id = id;
       return imageComponent;
     }

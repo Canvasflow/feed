@@ -76,7 +76,27 @@ export type TextType =
   | 'imagecaption'
   | `text${TextRange}`;
 
-export type TextRange = NumericRange<CreateArrayWithLengthX<1>, 60>;
+const validRoleType = new Set([
+  'headline',
+  'title',
+  'subtitle',
+  'intro',
+  'body',
+  'crosshead',
+  'byline',
+  'blockquote',
+  'footer',
+  'imagecaption',
+]);
+for (let i = 1; i <= 60; i++) {
+  validRoleType.add(`text${i}`);
+}
+
+export function isValidTextRole(role: string): boolean {
+  return validRoleType.has(role);
+}
+
+export type TextRange = NumericRange<CreateArrayWithLengthX<1>, 61>;
 
 type CreateArrayWithLengthX<
   LENGTH extends number,
