@@ -27,7 +27,7 @@ const textAllowedAttributes: Record<string, Array<string>> = {
   a: ['href', 'target', 'rel'],
 };
 for (const tag of textTags) {
-  textAllowedAttributes[tag] = ['role', 'style'];
+  textAllowedAttributes[tag] = ['role', 'style', 'class'];
 }
 
 const textAllowedTags = [
