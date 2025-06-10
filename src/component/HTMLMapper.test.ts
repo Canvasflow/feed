@@ -25,12 +25,29 @@ describe.only('HTMLMapper', () => {
   });
 
   test('It should process a simple image component', () => {
-    const content = `<img src="example.jpg"/>`;
+    const content = `<img src="example.jpg" alt="Hello world"/>`;
     const components = HTMLMapper.toComponents(content);
     expect(components.length).toBe(1);
     const component = components.pop() as ImageComponent;
     expect(component).toBeDefined();
     expect(component.component).toBe('image');
     expect(component?.imageurl).toBe('example.jpg');
+    expect(component?.caption).toBe('Hello world');
+  });
+
+  test.skip('It should process a simple picture element', () => {
+    const content = `<picture>
+      <source media="(min-width: 1024px)" srcset="full-size.jpg">
+      <source media="(min-width: 700px)" srcset="medium-size.jpg">
+      <img src="cover.jpg" alt="My image">
+      <ficaption></figcaption>
+    </picture>`;
+    const components = HTMLMapper.toComponents(content);
+    expect(components.length).toBe(1);
+    const component = components.pop() as ImageComponent;
+    expect(component).toBeDefined();
+    console.log(component);
+    expect(component.component).toBe('image');
+    expect(component?.imageurl).toBe('cover.jpg');
   });
 });
