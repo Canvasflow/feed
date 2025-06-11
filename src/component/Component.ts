@@ -8,10 +8,10 @@ export interface Component {
 export interface GalleryComponent extends Component {
   component: 'gallery';
   role?: 'default' | 'mosaic';
-  animation: 'fade' | 'slide' | 'cube' | 'coverflow' | 'flip';
+  animation?: 'fade' | 'slide' | 'cube' | 'coverflow' | 'flip';
   images: Array<GalleryImage>;
   caption?: { [key: string]: string } | string;
-  direction: 'horizontal' | 'vertical';
+  direction?: 'horizontal' | 'vertical';
 }
 
 export interface GalleryImage {

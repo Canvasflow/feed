@@ -1,28 +1,37 @@
 import { test, expect, describe } from 'vitest';
 
 import { HTMLMapper } from './HTMLMapper';
-import type { ImageComponent, TextComponent } from './Component';
+import type {
+  GalleryComponent,
+  ImageComponent,
+  TextComponent,
+} from './Component';
 
 describe.only('HTMLMapper', () => {
   describe('Text components', () => {
-    test('It should create a p component', () => {
-      const content = `<p>Hello world</p>`;
+    test('It should create a p component from plain text', () => {
+      const content = `Hello world`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
       const component = components.pop() as TextComponent;
       expect(component).toBeDefined();
       expect(component.component).toBe('body');
-      expect(component?.text).toBe(content);
+      expect(component?.text).toBe(`<p>${content}</p>`);
     });
 
     test('It should set a text45 component base on role', () => {
-      const content = `<p role="text45">Hello world</p>`;
+      const id = 'cf-123';
+      const content = `<p id="${id}" role="text45">Hello world</p>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
       const component = components.pop() as TextComponent;
       expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
       expect(component.component).toBe('text45');
-      expect(component?.text).toBe(content);
+      expect(component.id).toBe(id);
+      expect(component.text).toBe(content);
     });
 
     test('It should remove the image component', () => {
@@ -32,8 +41,11 @@ describe.only('HTMLMapper', () => {
       expect(components.length).toBe(1);
       const component = components.pop() as TextComponent;
       expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
       expect(component.component).toBe('text45');
-      expect(component?.text).toBe(`<p role="text45">Hello <b>world</b></p>`);
+      expect(component.text).toBe(`<p role="text45">Hello <b>world</b></p>`);
     });
   });
 
@@ -152,6 +164,36 @@ describe.only('HTMLMapper', () => {
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBe('This is a caption');
       expect(component?.credit).toBe('This is a credit');
+    });
+  });
+
+  describe.skip('Gallery components', () => {
+    test('It should create a simple gallery component', () => {
+      const components = HTMLMapper.toComponents(`
+        <div class="gallery">
+            <figure>
+              <img src="image1.jpg"/>
+              <figcaption>
+                Image 1 Caption
+                <small role="credit">Photographer 1</small>
+              </figcaption>
+            </figure>
+            <figure>
+              <img src="image2.jpg"/>
+              <figcaption>
+                Image 2 Caption
+                <small role="credit">Photographer 2</small>
+              </figcaption>
+            </figure>
+        </div>
+      `);
+      expect(components.length).toBe(1);
+      const component = components.pop() as GalleryComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.images).toBeGreaterThan(1);
     });
   });
 });
