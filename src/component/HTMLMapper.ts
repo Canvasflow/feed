@@ -353,7 +353,7 @@ export class HTMLMapper {
     const warnings: string[] = [];
     return {
       component: 'blockquote',
-      text: `<p>${stringify([...node.children])}</p>`, // TODO remove tags?
+      text: `<p>${stringify([...node.children])}</p>`, // TODO remove tags??
       errors,
       warnings,
     };
