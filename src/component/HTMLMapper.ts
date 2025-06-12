@@ -6,6 +6,8 @@ import sanitizeHtml from 'sanitize-html';
 import {
   isValidTextRole,
   type Component,
+  type GalleryComponent,
+  type GalleryImage,
   type ImageComponent,
   type TextComponent,
   type TextType,
@@ -34,7 +36,7 @@ const textAllowedAttributes: Record<string, Array<string>> = {
   a: ['href', 'target', 'rel'],
 };
 for (const tag of textTags) {
-  textAllowedAttributes[tag] = ['role', 'style', 'class'];
+  textAllowedAttributes[tag] = ['id', 'role', 'style', 'class'];
 }
 
 const textAllowedTags = [
@@ -64,24 +66,29 @@ export class HTMLMapper {
 
     return nodes.reduce(HTMLMapper.reduceComponents, []);
   }
+
   static reduceComponents(acc: Array<Component>, node: Node): Array<Component> {
     if (node.type === 'text') {
       acc.push({
         component: 'body',
         errors: [],
         warnings: [],
-        text: node.content,
+        text: `<p>${node.content}</p>`,
       } as TextComponent);
       return acc;
     }
 
     const { tagName } = node;
+    const attributes = mapAttributes(node.attributes);
+    const role = attributes.get('role');
 
     const textTagMapping: Record<string, TextType> = {
       h1: 'headline',
       h2: 'title',
       h3: 'subtitle',
       h4: 'intro',
+      h5: 'body',
+      h6: 'body',
       footer: 'footer',
       blockquote: 'blockquote',
       p: 'body',
@@ -95,6 +102,11 @@ export class HTMLMapper {
         acc.push(HTMLMapper.toText(node, textTagMapping[tag]));
         return acc;
       }
+    }
+
+    if (role === 'gallery' || role === 'mosaic') {
+      acc.push(HTMLMapper.toGallery(node));
+      return acc;
     }
 
     // This section validates the rest of the tags components
@@ -415,6 +427,27 @@ export class HTMLMapper {
         parentUrl: url.searchParams.get('parent_url') || '', // TODO validar si searchparams puede ser not null
         src: 'embed',
       },
+      errors,
+      warnings,
+    };
+  }
+
+  // TODO Implement gallery mapper
+  static toGallery(node: ElementNode): GalleryComponent {
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+    const attributes = mapAttributes(node.attributes);
+    const images: Array<GalleryImage> = [];
+    const role = attributes.get('role') === 'mosaic' ? 'mosaic' : 'default';
+    const direction =
+      attributes.get('data-direction') === 'vertical'
+        ? 'vertical'
+        : 'horizontal';
+    return {
+      component: 'gallery',
+      role,
+      images,
+      direction,
       errors,
       warnings,
     };
