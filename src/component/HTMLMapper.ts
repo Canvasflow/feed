@@ -376,12 +376,12 @@ export class HTMLMapper {
     const url = new URL(src);
     switch (url.origin) {
       case 'https://e.infogram.com':
-        builtComponent = HTMLMapper.processInfogram(node, url);
+        builtComponent = HTMLMapper.processInfogram(url);
         builtComponent.id = id;
         break;
 
       case 'https://www.youtube.com':
-        builtComponent = HTMLMapper.processYoutube(node, url);
+        builtComponent = HTMLMapper.processYoutube(url);
         builtComponent.id = id;
         break;
     }
@@ -389,7 +389,7 @@ export class HTMLMapper {
     return builtComponent;
   }
 
-  static processYoutube(node: ElementNode, url: URL): YoutubeComponent {
+  static processYoutube(url: URL): YoutubeComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
 
@@ -416,7 +416,7 @@ export class HTMLMapper {
     };
   }
 
-  static processInfogram(node: ElementNode, url: URL): InfogramComponent {
+  static processInfogram(url: URL): InfogramComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
 
