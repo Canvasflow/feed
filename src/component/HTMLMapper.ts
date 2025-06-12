@@ -9,6 +9,13 @@ import {
   type ImageComponent,
   type TextComponent,
   type TextType,
+  type VideoComponent,
+  type BlockquoteComponent,
+  type TwitterComponent,
+  type InstagramComponent,
+  type TableComponent,
+  type YoutubeComponent,
+  type InfogramComponent,
 } from './Component';
 
 const textTags = [
@@ -78,6 +85,8 @@ export class HTMLMapper {
       footer: 'footer',
       blockquote: 'blockquote',
       p: 'body',
+      ol: 'body',
+      ul: 'body',
     };
 
     // This section validates text tags
@@ -94,6 +103,19 @@ export class HTMLMapper {
       case 'img':
         acc.push(HTMLMapper.toImage(node));
         return acc;
+
+      case 'video':
+        acc.push(HTMLMapper.processHostedVideo(node));
+        return acc;
+
+      case 'blockquote':
+        acc.push(HTMLMapper.processBlockquote(node));
+        return acc;
+
+      case 'iframe':
+        acc.push(HTMLMapper.processIframe(node));
+        return acc;
+
       default:
         break;
     }
@@ -131,6 +153,270 @@ export class HTMLMapper {
       errors: [],
       warnings,
       text,
+    };
+  }
+
+  static processHostedVideo(node: ElementNode): VideoComponent {
+    const attributes = mapAttributes(node.attributes);
+
+    const errors: Error[] = [];
+
+    if (!attributes) {
+      errors.push(new Error('Attribute in node not found'));
+    }
+
+    return {
+      component: 'video',
+      controlsenabled: 'on',
+      autoplay: 'off',
+      posterenabled: 'off',
+      movietype: 'hosted',
+      videourl: '',
+      caption: '',
+      credit: '',
+      aspectRatio: 'auto',
+      errors,
+      warnings: [],
+    };
+  }
+
+  static processTable(node: ElementNode): TableComponent {
+    const errors: Error[] = [];
+
+    if (!node.children || node.children.length === 0) {
+      errors.push(new Error('No children found for table component'));
+    }
+
+    const thead: any = node.children[0];
+    const tbody = node.children;
+    let headings = [];
+    const rows: Array<any> = [];
+
+    if (thead.children) {
+      headings = thead.children.map((value: any) => {
+        return stringify([...value.children]);
+      });
+    }
+
+    for (const line of tbody) {
+      if (line) {
+        const rowsAcc = {};
+        // TODO pendiente este reduce
+        // line.reduce((acc, value) => {
+        //   if (value.children) {
+        //     acc.push(this.getRowContent(value));
+        //   }
+        //   return acc;
+        // }, []);
+
+        rows.push(rowsAcc);
+      }
+    }
+
+    return {
+      component: 'table',
+      headings,
+      rows,
+      errors,
+      warnings: [],
+    };
+  }
+
+  protected getRowContent(element: any) {
+    const rows: Array<any> = [];
+    let index = 0;
+    for (const row of element.children) {
+      const rowValue = this.getRowChild(row);
+      if (rowValue !== '') {
+        rows[index] = rowValue;
+        index++;
+      }
+    }
+    return rows;
+  }
+
+  protected getRowChild(row: any) {
+    if (row.children) {
+      const value = stringify([...row.children]);
+      return value;
+    } else {
+      const value = row.content;
+      return value.trim();
+    }
+  }
+
+  static processBlockquote(
+    node: ElementNode
+  ): BlockquoteComponent | TwitterComponent | InstagramComponent {
+    const errors: Error[] = [];
+    const attributes = mapAttributes(node.attributes);
+    let builtComponent: any;
+
+    if (!attributes) {
+      errors.push(new Error('No Attributes found in node'));
+    }
+
+    if (attributes.get('data-instgrm-permalink')) {
+      builtComponent = HTMLMapper.processInstagram(node);
+    } else if (attributes.get('class') === 'twitter-tweet') {
+      builtComponent = HTMLMapper.processTwitter(node);
+    } else {
+      builtComponent = HTMLMapper.processBlockquoteElement(node);
+    }
+    return builtComponent;
+  }
+
+  static processInstagram(node: ElementNode): InstagramComponent {
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+
+    const attributes = mapAttributes(node.attributes);
+    const IG = attributes.get('data-instgrm-permalink') || '';
+    const urlInfo = new URL(IG);
+    const splitUrl = urlInfo.pathname.split('/');
+    const type = splitUrl[1] ? splitUrl[1].toLowerCase() : 'post';
+
+    if (!splitUrl[1]) {
+      errors.push(new Error('Url do not contain Type '));
+    }
+
+    if (!splitUrl[2]) {
+      errors.push(new Error('Url do not contain ID '));
+    }
+
+    const component: InstagramComponent = {
+      id: splitUrl[2],
+      component: 'instagram',
+      type: 'post',
+      errors,
+      warnings,
+    };
+
+    switch (type) {
+      case 'p':
+        component.type = 'post';
+        break;
+      case 'reel':
+      case 'tv':
+        component.type = type;
+        break;
+    }
+    return component;
+  }
+
+  static processTwitter(node: ElementNode): TwitterComponent {
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+    let builtComponent: any; // TODO valid?
+    for (let index = 0; index < node.children.length; index++) {
+      const tweet: any = node.children[index];
+      if (tweet.tagName === 'a') {
+        const tweetAttrs = mapAttributes(tweet.attributes);
+        const tweetUrl = tweetAttrs.get('href') || '';
+
+        const twitterRegex =
+          /^https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
+        const twitterValues: Array<any> = twitterRegex.exec(tweetUrl) || [];
+
+        //validamos si tiene los valores 1 y 3 para errors
+
+        builtComponent = {
+          height: '350',
+          fixedheight: 'on',
+          bleed: 'on',
+          tweetid: twitterValues[3],
+          accountid: twitterValues[1],
+          component: 'twitter',
+          errors,
+          warnings,
+        };
+      }
+    }
+
+    return builtComponent;
+  }
+
+  static processBlockquoteElement(node: ElementNode): BlockquoteComponent {
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+    return {
+      component: 'blockquote',
+      text: `<p>${stringify([...node.children])}</p>`, // TODO remove tags?
+      errors,
+      warnings,
+    };
+  }
+
+  static processIframe(
+    node: ElementNode
+  ): YoutubeComponent | InfogramComponent {
+    const errors: Error[] = [];
+    const attributes = mapAttributes(node.attributes);
+    const id = attributes.get('id');
+
+    const src = attributes.get('src') || '';
+    if (!src || src.length === 0) {
+      errors.push(new Error('Iframe URL not found.'));
+    }
+
+    let builtComponent: any; // TODO preguntar a chuck si esto puede quedar asi o hay que ponerle el type, cae en error
+
+    const url = new URL(src);
+    switch (url.origin) {
+      case 'https://e.infogram.com':
+        builtComponent = HTMLMapper.processInfogram(node, url);
+        builtComponent.id = id;
+        break;
+
+      case 'https://www.youtube.com':
+        builtComponent = HTMLMapper.processYoutube(node, url);
+        builtComponent.id = id;
+        break;
+    }
+
+    return builtComponent;
+  }
+
+  static processYoutube(node: ElementNode, url: URL): YoutubeComponent {
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+
+    const regExp =
+      /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+
+    if (!regExp.test(url.href)) {
+      errors.push(new Error('Youtube video URL not properly formatted.'));
+    }
+
+    const id = url.pathname.split('/').pop() as string;
+
+    if (id.length !== 11) {
+      errors.push(new Error('Youtube video ID length should be 11'));
+    }
+    return {
+      component: 'video',
+      vidtype: 'youtube',
+      params: {
+        id,
+      },
+      errors,
+      warnings,
+    };
+  }
+
+  static processInfogram(node: ElementNode, url: URL): InfogramComponent {
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+
+    return {
+      component: 'infogram',
+      params: {
+        id: url.pathname.replace('/', ''),
+        parentUrl: url.searchParams.get('parent_url') || '', // TODO validar si searchparams puede ser not null
+        src: 'embed',
+      },
+      errors,
+      warnings,
     };
   }
 

@@ -15,7 +15,7 @@
  <pubDate>Thu, 22 May 2025 09:50:26 +0100</pubDate>
  <dc:creator>Nick Gibbs</dc:creator>
  <media:thumbnail url="https://images.cdn.autocar.co.uk/sites/autocar.co.uk/files/images/car-reviews/first-drives/legacy/lotus-emira-4cyl-front-quarter-powersliding.jpg" />
- <content:encoded><![CDATA[<figure><img src="https://images.cdn.autocar.co.uk/sites/autocar.co.uk/files/images/car-reviews/first-drives/legacy/lotus-emira-4cyl-front-quarter-powersliding.jpg" width="1600" height="1067" alt="Lotus Emira 4cyl front quarter powersliding" title="Lotus Emira 4cyl front quarter powersliding" /><figcaption>Lotus Emira 4cyl front quarter powersliding</figcaption></figure><div>
+ <content:encoded><![CDATA[<figure id="test-img"><img  width="1600" height="1067" alt="Lotus Emira 4cyl front quarter powersliding" title="Lotus Emira 4cyl front quarter powersliding" /><figcaption>Lotus Emira 4cyl front quarter powersliding</figcaption></figure><div>
 <p>Lotus is poised to offer a V8 option for its <a href="/car-review/lotus/emira">Emira sports car</a> as the company looks to expand the appeal of its sole combustion-engined model.</p>
 <p>The Geely-owned company is committed to offering a higher-powered version of the Emira, CEO Feng Qingfeng told investors on the company’s recent earnings call. “We are currently investigating the feasibility of the V8,” he said.</p>
 <p>Currently, <a href="/car-review/lotus">Lotus</a> offers V6 and four-cylinder turbo options for the Emira.</p>
@@ -38,7 +38,7 @@
 ]]></content:encoded>
  <dc:created>Thu, 22 May 2025 09:50:26 +0100</dc:created>
  <dc:modified>Thu, 22 May 2025 09:50:26 +0100</dc:modified>
- <dc:abstract>V8 power is being considered as its supercharged V6 won&#039;t pass Euro 7 emissions tests</dc:abstract>
+ <dc:abstract>V8 power is being considered as its supercharged V6 won&#039;t pass Euro 7 emissions tests test</dc:abstract>
 </item>
  <item> <title>BYD&#039;s latest EV is a mature city car with a 200-mile range for just £18k</title>
  <link>https://www.autocar.co.uk/car-review/byd/dolphin-surf</link>

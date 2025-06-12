@@ -33,8 +33,60 @@ export interface TextComponent extends Component {
   text: string;
 }
 
+// export interface ListsComponent extends Component {
+//   component: 'body';
+//   text: string;
+// }
+
+export interface TableComponent extends Component {
+  component: 'table';
+  headings: Array<any>;
+  rows: Array<any>;
+}
+
 export interface VideoComponent extends Component {
-  url: string;
+  component: 'video';
+  videourl: string;
+  controlsenabled: 'on' | 'off';
+  autoplay: 'on' | 'off';
+  posterenabled: 'on' | 'off';
+  movietype: 'hosted';
+  aspectRatio: 'auto';
+  imageurl?: string;
+  cacheparam?: string;
+  caption?: string;
+  credit?: string;
+}
+
+export interface BlockquoteComponent extends Component {
+  component: 'blockquote';
+  text: string;
+}
+
+export interface TwitterComponent extends Component {
+  component: 'twitter';
+  height: string;
+  fixedheight: 'on' | 'off';
+  bleed: 'on' | 'off';
+  tweetid: string;
+  accountid: string;
+}
+
+export interface InstagramComponent extends Component {
+  component: 'instagram';
+  id: string;
+  type: string;
+}
+
+export interface YoutubeComponent extends Component {
+  component: 'video';
+  vidtype: 'youtube';
+  params: { id: string };
+}
+
+export interface InfogramComponent extends Component {
+  component: 'infogram';
+  params: { id: string; parentUrl: string; src: 'embed' };
 }
 
 export interface SpacerComponent extends Component {
