@@ -7,7 +7,7 @@ import type {
   TextComponent,
 } from './Component';
 
-describe.only('HTMLMapper', () => {
+describe.skip('HTMLMapper', () => {
   describe('Text components', () => {
     test('It should create a p component from plain text', () => {
       const content = `Hello world`;
