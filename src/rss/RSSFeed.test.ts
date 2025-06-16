@@ -91,3 +91,28 @@ describe('Motorsport', () => {
     expect(rss.channel.items[0].components[0].component).toBe('subtitle');
   });
 });
+
+describe('Codrops', () => {
+  let filePath: string = '';
+  let outFilePath: string = '';
+  beforeEach(() => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `codrops.rss`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `codrops.json`);
+    }
+  });
+  test(`It should build the content`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    const rss = await feed.build();
+
+    if (outFilePath) {
+      writeFileSync(outFilePath, JSON.stringify(rss, null, 2), 'utf-8');
+    }
+
+    expect(rss.channel?.title).toBe('Codrops');
+    expect(rss.channel?.items[0].enclosure.length).toBe(12);
+    expect(rss.channel?.items[1].enclosure.length).toBe(4);
+    expect(rss.channel?.items[2].enclosure.length).toBe(1);
+  });
+});

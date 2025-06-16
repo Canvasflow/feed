@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { XMLParser } from 'fast-xml-parser';
 
-import type { RSS, Item } from './RSS';
+import type { RSS, Item, Enclosure } from './RSS';
 import { Tag } from './Tag';
 
 import { HTMLMapper } from '../component/HTMLMapper';
@@ -15,7 +15,9 @@ export default class RSSFeed {
 
   constructor(content: string) {
     this.content = content;
-    const parser = new XMLParser();
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+    });
     this.data = parser.parse(content);
 
     this.rss = {
@@ -56,7 +58,24 @@ export default class RSSFeed {
     const { data } = this;
     const { rss } = data;
     const { channel } = rss;
-    this.rss.channel.title = channel.title;
+    const { title, link, description, language } = channel;
+
+    this.rss.channel.title = title;
+    this.rss.channel.link = link;
+    this.rss.channel.description = description;
+    this.rss.channel.language = language;
+    this.rss.channel['atom:link'] = channel['atom:link']
+      ? {
+          href: channel['atom:link']['@_href'],
+          rel: channel['atom:link']['@_rel'],
+          type: channel['atom:link']['@_type'],
+        }
+      : undefined;
+    this.rss.channel['sy:updateFrequency'] = channel['sy:updateFrequency']
+      ? parseInt(`${channel['sy:updateFrequency']}`)
+      : channel['sy:updateFrequency'];
+    this.rss.channel['sy:updatePeriod'] = channel['sy:updatePeriod'];
+
     for (const item of channel.item) {
       this.rss.channel.items.push(this.buildItem(item));
     }
@@ -172,6 +191,7 @@ export default class RSSFeed {
         : '';
     let errors: Error[] = [];
     let warnings: string[] = [];
+    let enclosure: Enclosure[] = [];
     if (item.errors && Array.isArray(item.errors)) {
       errors = item.errors;
     }
@@ -191,6 +211,21 @@ export default class RSSFeed {
         pubDate = pubDateTime.toISO();
       }
     }
+    // Handle enclosure
+    if (item.enclosure) {
+      if (!Array.isArray(item.enclosure)) {
+        item.enclosure = [item.enclosure];
+      }
+
+      enclosure = (item.enclosure as Array<EnclosureAttributes>).map((e) => {
+        return {
+          length: parseInt(e['@_length'], 10),
+          type: e['@_type'],
+          url: e['@_url'],
+        };
+      });
+    }
+
     const response: Item = {
       guid,
       title,
@@ -201,6 +236,7 @@ export default class RSSFeed {
       errors,
       'content:encoded': contentEncoded,
       warnings,
+      enclosure,
       components: [],
     };
 
@@ -208,4 +244,10 @@ export default class RSSFeed {
 
     return response;
   }
+}
+
+interface EnclosureAttributes {
+  '@_length': string;
+  '@_type': string;
+  '@_url': string;
 }

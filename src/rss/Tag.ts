@@ -16,6 +16,7 @@ export const Tag = {
           'description',
           'link',
           'author',
+          'enclosure',
         ]),
       },
     },

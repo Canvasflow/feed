@@ -15,6 +15,13 @@ export interface Channel {
   items: Item[];
   errors: Error[];
   warnings: string[];
+  'atom:link'?: {
+    href?: string;
+    rel?: string;
+    type?: string;
+  };
+  'sy:updateFrequency'?: string;
+  'sy:updatePeriod'?: string;
 }
 
 export interface Item {
@@ -24,8 +31,15 @@ export interface Item {
   guid?: string;
   link?: string;
   description?: string;
+  enclosure: Enclosure[];
   pubDate?: string;
   errors: Error[];
   warnings: string[];
   components: Component[];
+}
+
+export interface Enclosure {
+  length: number;
+  type: string;
+  url: string;
 }
