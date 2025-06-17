@@ -13,7 +13,7 @@ describe('Newsweek', () => {
       outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `newsweek.json`);
     }
   });
-  test(`It should validate the content`, async () => {
+  test(`It should validate the item`, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     await feed.validate();

@@ -58,6 +58,7 @@ export interface VideoComponent extends Component {
   credit?: string;
 }
 
+// TODO Remove this component
 export interface BlockquoteComponent extends Component {
   component: 'blockquote';
   text: string;

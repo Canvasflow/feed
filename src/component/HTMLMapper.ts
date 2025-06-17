@@ -81,6 +81,7 @@ export class HTMLMapper {
     const { tagName } = node;
     const attributes = mapAttributes(node.attributes);
     const role = attributes.get('role');
+    const classNames = attributes.get('class');
 
     const textTagMapping: Record<string, TextType> = {
       h1: 'headline',
@@ -95,6 +96,22 @@ export class HTMLMapper {
       ol: 'body',
       ul: 'body',
     };
+
+    // This process instagram
+    if (tagName === 'blockquote' && attributes.get('data-instgrm-permalink')) {
+      acc.push(HTMLMapper.processInstagram(node));
+      return acc;
+    }
+
+    // This process twitter
+    if (
+      (tagName === 'blockquote' || tagName === 'a') &&
+      classNames &&
+      new Set(['twitter-tweet', 'twitter-timeline']).has(classNames)
+    ) {
+      acc.push(HTMLMapper.processTwitter(node));
+      return acc;
+    }
 
     // This section validates text tags
     for (const tag in textTagMapping) {
@@ -120,9 +137,9 @@ export class HTMLMapper {
         acc.push(HTMLMapper.processHostedVideo(node));
         return acc;
 
-      case 'blockquote':
+      /*case 'blockquote':
         acc.push(HTMLMapper.processBlockquote(node));
-        return acc;
+        return acc;*/
 
       case 'iframe':
         acc.push(HTMLMapper.processIframe(node));
@@ -257,7 +274,7 @@ export class HTMLMapper {
     }
   }
 
-  static processBlockquote(
+  /*static processBlockquote(
     node: ElementNode
   ): BlockquoteComponent | TwitterComponent | InstagramComponent {
     const errors: Error[] = [];
@@ -276,7 +293,7 @@ export class HTMLMapper {
       builtComponent = HTMLMapper.processBlockquoteElement(node);
     }
     return builtComponent;
-  }
+  }*/
 
   static processInstagram(node: ElementNode): InstagramComponent {
     const errors: Error[] = [];
