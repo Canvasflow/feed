@@ -8,7 +8,7 @@ describe('Newsweek', () => {
   let filePath: string = '';
   let outFilePath: string = '';
   beforeEach(() => {
-    filePath = path.join(`${process.env.FEEDS_PATH}`, `newsweek.xml`);
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `newsweek.rss`);
     if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
       outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `newsweek.json`);
     }
@@ -38,7 +38,7 @@ describe('Autocar', () => {
   let filePath: string = '';
   let outFilePath: string = '';
   beforeEach(() => {
-    filePath = path.join(`${process.env.FEEDS_PATH}`, `autocar.xml`);
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `autocar.rss`);
     if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
       outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `autocar.json`);
     }
@@ -66,7 +66,7 @@ describe('Motorsport', () => {
   let filePath: string = '';
   let outFilePath: string = '';
   beforeEach(() => {
-    filePath = path.join(`${process.env.FEEDS_PATH}`, `motorsport.xml`);
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `motorsport.rss`);
     if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
       outFilePath = path.join(
         `${process.env.FEEDS_OUT_PATH}`,
