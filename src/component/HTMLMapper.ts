@@ -336,7 +336,7 @@ export class HTMLMapper {
   static processTwitter(node: ElementNode): TwitterComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
-    let builtComponent: any; // TODO valid?
+    let builtComponent: any;
     for (let index = 0; index < node.children.length; index++) {
       const tweet: any = node.children[index];
       if (tweet.tagName === 'a') {

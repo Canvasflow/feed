@@ -5,6 +5,9 @@ import type {
   GalleryComponent,
   ImageComponent,
   TextComponent,
+  TwitterComponent,
+  InstagramComponent,
+  YoutubeComponent,
 } from './Component';
 
 describe.skip('HTMLMapper', () => {
@@ -47,6 +50,90 @@ describe.skip('HTMLMapper', () => {
       expect(component.component).toBe('text45');
       expect(component.text).toBe(`<p role="text45">Hello <b>world</b></p>`);
     });
+  });
+
+  describe('Blockquote Instagram component', () => {
+    test('It should create an Instagram post component', () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"> <a href="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">  View this post on Instagram</a><p><a href="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">A post shared by Max Verstappen (@maxverstappen1)</a></p></blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as InstagramComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('instagram');
+      expect(component.type).toBe(`post`);
+    });
+
+    test('It should create an Instagram reel component', () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/reel/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"> <a href="https://www.instagram.com/reel/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">  View this post on Instagram</a><p><a href="https://www.instagram.com/reel/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">A post shared by Jake Mourkas (@jakes__junk)</a></p></blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as InstagramComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('instagram');
+      expect(component.type).toBe(`reel`);
+      expect(component.id).toBe(`DLA3R_4SSKy`);
+    });
+
+    test('It should create an Instagram tv component', () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"> <a href="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">  View this post on Instagram</a><p><a href="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">A post shared by Jake Mourkas (@jakes__junk)</a></p></blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as InstagramComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('instagram');
+      expect(component.type).toBe(`reel`);
+    });
+  });
+
+  describe('Blockquote Twitter component', () => {
+    test('It should create an Instagram tv component', () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="twitter-tweet"><p lang="en" dir="ltr">"He did it!" Jimmie Johnson and Bobby Labonte put on a show in the 2005 Coca-Cola 600 at Charlotte Motor Speedway. <a href="https://t.co/t2j2mXmL3L">pic.twitter.com/t2j2mXmL3L</a></p>&mdash; FOX: NASCAR (@NASCARONFOX) <a href="https://twitter.com/NASCARONFOX/status/1397629106427101185?ref_src=twsrc%5Etfw">May 26, 2021</a></blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TwitterComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('twitter');
+      expect(component.height).toBe(`350`);
+      expect(component.accountid).toBe(`NASCARONFOX`);
+      expect(component.tweetid).toBe(`1397629106427101185`);
+    });
+  });
+
+  describe('Youtube Component', () => {
+    test('It should create an Instagram tv component', () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" frameborder="0" height="315" src="https://www.youtube.com/embed/ZrCs3HYxflk?si=8USctaxbSBPyMsBE" title="YouTube video player" width="560"></iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('youtube');
+      expect(component.params).toBe({ id: 'ZrCs3HYxflk' });
+    });
+  });
+
+  describe('Infogram Component', () => {
+    //TO BE IMPLEMENTED
   });
 
   describe('Image components', () => {

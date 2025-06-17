@@ -76,7 +76,7 @@ export interface TwitterComponent extends Component {
 export interface InstagramComponent extends Component {
   component: 'instagram';
   id: string;
-  type: string;
+  type: 'post' | 'reel' | 'tv';
 }
 
 export interface YoutubeComponent extends Component {
