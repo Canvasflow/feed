@@ -4,6 +4,7 @@ import { XMLParser } from 'fast-xml-parser';
 import type { RSS, Item, Enclosure } from './RSS';
 import { Tag } from './Tag';
 
+import * as Attributes from './Attributes';
 import { HTMLMapper } from '../component/HTMLMapper';
 
 export default class RSSFeed {
@@ -64,13 +65,15 @@ export default class RSSFeed {
     this.rss.channel.link = link;
     this.rss.channel.description = description;
     this.rss.channel.language = language;
-    this.rss.channel['atom:link'] = channel['atom:link']
-      ? {
-          href: channel['atom:link']['@_href'],
-          rel: channel['atom:link']['@_rel'],
-          type: channel['atom:link']['@_type'],
-        }
-      : undefined;
+    const atomLink: undefined | Attributes.AtomLink = channel['atom:link'];
+    if (atomLink) {
+      this.rss.channel['atom:link'] = {
+        href: atomLink['@_href'],
+        rel: atomLink['@_rel'],
+        type: atomLink['@_type'],
+      };
+    }
+
     this.rss.channel['sy:updateFrequency'] = channel['sy:updateFrequency']
       ? parseInt(`${channel['sy:updateFrequency']}`)
       : channel['sy:updateFrequency'];
@@ -217,7 +220,7 @@ export default class RSSFeed {
         item.enclosure = [item.enclosure];
       }
 
-      enclosure = (item.enclosure as Array<EnclosureAttributes>).map((e) => {
+      enclosure = (item.enclosure as Array<Attributes.Enclosure>).map((e) => {
         return {
           length: parseInt(e['@_length'], 10),
           type: e['@_type'],
@@ -244,10 +247,4 @@ export default class RSSFeed {
 
     return response;
   }
-}
-
-interface EnclosureAttributes {
-  '@_length': string;
-  '@_type': string;
-  '@_url': string;
 }
