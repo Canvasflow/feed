@@ -392,6 +392,7 @@ export function replaceErrors(_: string, value: unknown) {
     const error: Record<string, unknown> = {};
 
     Object.getOwnPropertyNames(value).forEach(function (propName) {
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
       error[propName] = (value as any)[propName];
     });
 
