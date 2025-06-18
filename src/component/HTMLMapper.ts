@@ -64,7 +64,7 @@ export class HTMLMapper {
       HTMLMapper.filterEmptyTextNode
     );
 
-    return nodes.reduce(HTMLMapper.reduceComponents, []);
+    return nodes.reduce(HTMLMapper.reduceComponents, []).filter((i) => !!i);
   }
 
   static reduceComponents(acc: Array<Component>, node: Node): Array<Component> {
@@ -498,6 +498,7 @@ export class HTMLMapper {
     const errors: Error[] = [];
     const warnings: string[] = [];
     let caption: string | undefined;
+    let credit: string | undefined;
 
     // Handle image
     const imageNodes = node.children.filter(
@@ -519,18 +520,15 @@ export class HTMLMapper {
     }
 
     // Handle caption
-    const figcaptionNodes = node.children.filter(
-      (n) => n.type === 'element' && n.tagName === 'figcaption'
-    );
-    if (figcaptionNodes.length > 1) {
-      warnings.push('Only one figcaption per figure tag is valid');
-    }
-    for (const n of figcaptionNodes) {
-      const html = stringify([n]);
-      caption = sanitizeHtml(html, {
-        allowedTags: ['span', 'b', 'strong', 'em', 'i'],
-      });
-      break;
+    if (node.type === 'element') {
+      const r = HTMLMapper.fromFigcaption(node);
+      if (r.credit) {
+        credit = r.credit;
+      }
+
+      if (r.caption) {
+        caption = r.caption;
+      }
     }
 
     if (!imageurl) {
@@ -543,6 +541,7 @@ export class HTMLMapper {
       errors,
       warnings,
       caption,
+      credit,
     };
   }
 
@@ -552,7 +551,64 @@ export class HTMLMapper {
     const { content } = node;
     if (!content) return false;
 
-    return content.trim().length > 0;
+    return content.replace(/[\r\n\t]/g, '').trim().length > 0;
+  }
+
+  static fromFigcaption(node: ElementNode): FigcaptionResponse {
+    let caption: string | undefined;
+    let credit: string | undefined;
+    const figcaptionNodes = node.children.filter(
+      (n) => n.type === 'element' && n.tagName === 'figcaption'
+    );
+    for (const n of figcaptionNodes) {
+      credit = HTMLMapper.getCredit(n as ElementNode);
+      const html = stringify([n]);
+      caption = sanitizeHtml(html, {
+        allowedTags: ['span', 'b', 'strong', 'em', 'i'],
+      });
+      break;
+    }
+
+    return {
+      caption,
+      credit,
+    };
+  }
+
+  static getCredit(node: ElementNode): string | undefined {
+    let credit: string | undefined;
+
+    node.children = node.children.reduce((acc: Array<Node>, n: Node) => {
+      if (n.type === 'element') {
+        const attributes = mapAttributes(n.attributes);
+        const role = attributes.get('role');
+        if (n.tagName === 'small' || role === 'credit') {
+          if (credit) {
+            return acc;
+          }
+          credit = sanitizeHtml(stringify([n]), {
+            allowedTags: ['span', 'b', 'strong', 'em', 'i'],
+          });
+          return acc;
+        }
+
+        acc.push(n);
+        return acc;
+      }
+
+      const content = n.content
+        .replace(/[\r\n\t]/g, '')
+        .replace(/\s\s+/g, ' ')
+        .trim();
+
+      if (content.length) {
+        n.content = content;
+        acc.push(n);
+      }
+
+      return acc;
+    }, []);
+    return credit;
   }
 }
 
@@ -573,6 +629,11 @@ export interface ElementNode {
 interface Attribute {
   key: string;
   value: string;
+}
+
+interface FigcaptionResponse {
+  caption?: string;
+  credit?: string;
 }
 
 function mapAttributes(attributes?: Array<Attribute>): Map<string, string> {
