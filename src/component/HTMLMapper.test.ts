@@ -253,11 +253,10 @@ describe('HTMLMapper', () => {
     });
   });
 
-  // TODO Support for gallery
-  describe.skip('Gallery components', () => {
+  describe('Gallery components', () => {
     test('It should create a simple gallery component', () => {
       const components = HTMLMapper.toComponents(`
-        <div class="gallery">
+        <figure role="gallery">
             <figure>
               <img src="image1.jpg"/>
               <figcaption>
@@ -272,7 +271,9 @@ describe('HTMLMapper', () => {
                 <small role="credit">Photographer 2</small>
               </figcaption>
             </figure>
-        </div>
+            <img src="image3.jpg"/>
+            <figcaption>Gallery Caption</figcaption>
+        </figure>
       `);
       expect(components.length).toBe(1);
       const component = components.pop() as GalleryComponent;
@@ -280,7 +281,19 @@ describe('HTMLMapper', () => {
       if (!component) {
         return;
       }
-      expect(component.images).toBeGreaterThan(1);
+      expect(component.caption).toBe('Gallery Caption');
+      expect(component.images.length).toBe(3);
+      expect(component.images[0]).toEqual({
+        caption: 'Image 1 Caption',
+        imageurl: 'image1.jpg',
+      });
+      expect(component.images[1]).toEqual({
+        caption: 'Image 2 Caption',
+        imageurl: 'image2.jpg',
+      });
+      expect(component.images[2]).toEqual({
+        imageurl: 'image3.jpg',
+      });
     });
   });
 });

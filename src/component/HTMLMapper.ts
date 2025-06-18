@@ -20,6 +20,8 @@ import {
   type InfogramComponent,
 } from './Component';
 
+const imageTags = new Set(['img', 'picture', 'figure']);
+
 const textTags = [
   'h1',
   'h2',
@@ -130,14 +132,14 @@ export class HTMLMapper {
       return acc;
     }
 
+    // Check if the tag belongs to an image tag
+    if (imageTags.has(tagName)) {
+      acc.push(HTMLMapper.toImage(node));
+      return acc;
+    }
+
     // This section validates the rest of the tags components
     switch (tagName) {
-      case 'figure':
-      case 'picture':
-      case 'img':
-        acc.push(HTMLMapper.toImage(node));
-        return acc;
-
       case 'video':
         acc.push(HTMLMapper.processHostedVideo(node));
         return acc;
@@ -454,17 +456,35 @@ export class HTMLMapper {
     };
   }
 
-  // TODO Implement gallery mapper
   static toGallery(node: ElementNode): GalleryComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
     const attributes = mapAttributes(node.attributes);
-    const images: Array<GalleryImage> = [];
     const role = attributes.get('role') === 'mosaic' ? 'mosaic' : 'default';
     const direction =
       attributes.get('data-direction') === 'vertical'
         ? 'vertical'
         : 'horizontal';
+
+    const images: Array<GalleryImage> = node.children
+      // Validate the only image tag are supported
+      .filter((n) => n.type === 'element' && imageTags.has(n.tagName))
+      // Map the node to an image component
+      .map((n: Node): ImageComponent => {
+        return HTMLMapper.toImage(n as ElementNode);
+      })
+      // If some is invalid and return undefined we remove them
+      .filter((i) => !!i)
+      // Map Valid image components to gallery items
+      .map((imageComponent: ImageComponent): GalleryImage => {
+        return {
+          imageurl: imageComponent.imageurl,
+          caption: imageComponent.caption,
+        };
+      });
+
+    const { caption } = HTMLMapper.fromFigcaption(node);
+
     return {
       component: 'gallery',
       role,
@@ -472,6 +492,7 @@ export class HTMLMapper {
       direction,
       errors,
       warnings,
+      caption,
     };
   }
 
