@@ -64,11 +64,15 @@ export class HTMLMapper {
       HTMLMapper.filterEmptyTextNode
     );
 
-    return nodes.reduce(HTMLMapper.reduceComponents, []);
+    return nodes.reduce(HTMLMapper.reduceComponents, []).filter((i) => !!i);
   }
 
   static reduceComponents(acc: Array<Component>, node: Node): Array<Component> {
     if (node.type === 'text') {
+      if (isEmpty(node.content)) {
+        return acc;
+      }
+
       acc.push({
         component: 'body',
         errors: [],
@@ -112,6 +116,7 @@ export class HTMLMapper {
     // This section validates the rest of the tags components
     switch (tagName) {
       case 'figure':
+      case 'picture':
       case 'img':
         acc.push(HTMLMapper.toImage(node));
         return acc;
@@ -465,6 +470,12 @@ export class HTMLMapper {
       return imageComponent;
     }
 
+    if (tagName === 'picture') {
+      const imageComponent: ImageComponent = HTMLMapper.fromPicture(node);
+      imageComponent.id = id;
+      return imageComponent;
+    }
+
     const errors: Error[] = [];
     const warnings: string[] = [];
     let imageurl = '';
@@ -498,6 +509,7 @@ export class HTMLMapper {
     const errors: Error[] = [];
     const warnings: string[] = [];
     let caption: string | undefined;
+    let credit: string | undefined;
 
     // Handle image
     const imageNodes = node.children.filter(
@@ -518,19 +530,33 @@ export class HTMLMapper {
       break;
     }
 
-    // Handle caption
-    const figcaptionNodes = node.children.filter(
-      (n) => n.type === 'element' && n.tagName === 'figcaption'
-    );
-    if (figcaptionNodes.length > 1) {
-      warnings.push('Only one figcaption per figure tag is valid');
+    if (!imageurl) {
+      const pictureNodes = node.children.filter(
+        (n) => n.type === 'element' && n.tagName === 'picture'
+      );
+
+      if (pictureNodes.length > 1) {
+        warnings.push('Only one picture tag per figure tag is valid');
+      }
+
+      for (const n of pictureNodes) {
+        if (n.type !== 'element') continue;
+        const picture: ImageComponent = HTMLMapper.fromPicture(n);
+        imageurl = picture.imageurl;
+        break;
+      }
     }
-    for (const n of figcaptionNodes) {
-      const html = stringify([n]);
-      caption = sanitizeHtml(html, {
-        allowedTags: ['span', 'b', 'strong', 'em', 'i'],
-      });
-      break;
+
+    // Handle caption
+    if (node.type === 'element') {
+      const r = HTMLMapper.fromFigcaption(node);
+      if (r.credit) {
+        credit = r.credit;
+      }
+
+      if (r.caption) {
+        caption = r.caption;
+      }
     }
 
     if (!imageurl) {
@@ -543,6 +569,44 @@ export class HTMLMapper {
       errors,
       warnings,
       caption,
+      credit,
+    };
+  }
+
+  static fromPicture(node: ElementNode): ImageComponent {
+    let imageurl = '';
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+
+    // Handle image
+    const imageNodes = node.children.filter(
+      (n) => n.type === 'element' && n.tagName === 'img'
+    );
+    if (imageNodes.length > 1) {
+      warnings.push('Only one img tag per picture tag is valid');
+    }
+
+    for (const n of imageNodes) {
+      if (n.type !== 'element') continue;
+      const attributes = mapAttributes(n.attributes);
+      const src = attributes.get('src');
+      if (!src) {
+        errors.push(new Error('src attribute is missing'));
+      }
+
+      imageurl = src || '';
+      break;
+    }
+
+    if (!imageurl) {
+      errors.push(new Error('imageurl is empty'));
+    }
+
+    return {
+      component: 'image',
+      imageurl,
+      errors,
+      warnings,
     };
   }
 
@@ -552,7 +616,64 @@ export class HTMLMapper {
     const { content } = node;
     if (!content) return false;
 
-    return content.trim().length > 0;
+    return !isEmpty(content);
+  }
+
+  static fromFigcaption(node: ElementNode): FigcaptionResponse {
+    let caption: string | undefined;
+    let credit: string | undefined;
+    const figcaptionNodes = node.children.filter(
+      (n) => n.type === 'element' && n.tagName === 'figcaption'
+    );
+    for (const n of figcaptionNodes) {
+      credit = HTMLMapper.getCredit(n as ElementNode);
+      const html = stringify([n]);
+      caption = sanitizeHtml(html, {
+        allowedTags: ['span', 'b', 'strong', 'em', 'i'],
+      });
+      break;
+    }
+
+    return {
+      caption,
+      credit,
+    };
+  }
+
+  static getCredit(node: ElementNode): string | undefined {
+    let credit: string | undefined;
+
+    node.children = node.children.reduce((acc: Array<Node>, n: Node) => {
+      if (n.type === 'element') {
+        const attributes = mapAttributes(n.attributes);
+        const role = attributes.get('role');
+        if (n.tagName === 'small' || role === 'credit') {
+          if (credit) {
+            return acc;
+          }
+          credit = sanitizeHtml(stringify([n]), {
+            allowedTags: ['span', 'b', 'strong', 'em', 'i'],
+          });
+          return acc;
+        }
+
+        acc.push(n);
+        return acc;
+      }
+
+      const content = n.content
+        .replace(/[\r\n\t]/g, '')
+        .replace(/\s\s+/g, ' ')
+        .trim();
+
+      if (content.length) {
+        n.content = content;
+        acc.push(n);
+      }
+
+      return acc;
+    }, []);
+    return credit;
   }
 }
 
@@ -575,6 +696,11 @@ interface Attribute {
   value: string;
 }
 
+interface FigcaptionResponse {
+  caption?: string;
+  credit?: string;
+}
+
 function mapAttributes(attributes?: Array<Attribute>): Map<string, string> {
   const response: Map<string, string> = new Map();
   if (!attributes) {
@@ -584,4 +710,8 @@ function mapAttributes(attributes?: Array<Attribute>): Map<string, string> {
     response.set(key, value);
   }
   return response;
+}
+
+function isEmpty(content: string) {
+  return content.replace(/[\r\n\t]/g, '').trim().length === 0;
 }

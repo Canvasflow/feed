@@ -17,6 +17,8 @@ export const Tag = {
           'link',
           'author',
           'enclosure',
+          'media:content',
+          'media:group',
         ]),
       },
     },

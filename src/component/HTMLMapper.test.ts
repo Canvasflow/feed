@@ -7,7 +7,7 @@ import type {
   TextComponent,
 } from './Component';
 
-describe.skip('HTMLMapper', () => {
+describe('HTMLMapper', () => {
   describe('Text components', () => {
     test('It should create a p component from plain text', () => {
       const content = `Hello world`;
@@ -61,24 +61,23 @@ describe.skip('HTMLMapper', () => {
       expect(component?.caption).toBe('Hello world');
     });
 
-    test.skip('It should process a simple picture element with invalid caption', () => {
+    test('It should process a simple picture element with invalid caption', () => {
       const content = `<picture>
-        <source media="(min-width: 1024px)" srcset="full-size.jpg">
-        <source media="(min-width: 700px)" srcset="medium-size.jpg">
-        <img src="cover.jpg" alt="My image">
+        <source media="(min-width: 1024px)" srcset="full-size.jpg"/>
+        <source media="(min-width: 700px)" srcset="medium-size.jpg"/>
+        <img src="cover.jpg" alt="My image"/>
         <ficaption>This caption should be ignored</figcaption>
       </picture>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
       const component = components.pop() as ImageComponent;
       expect(component).toBeDefined();
-      console.log(component);
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBeUndefined();
     });
 
-    test.skip('It should process a simple picture element with valid caption', () => {
+    test('It should process a simple picture element with valid caption', () => {
       const content = `
         <figure>
           <picture>
@@ -86,18 +85,17 @@ describe.skip('HTMLMapper', () => {
             <source media="(min-width: 700px)" srcset="medium-size.jpg">
             <img src="cover.jpg" alt="My image">
           </picture>
-          <ficaption>This is a valid caption</figcaption>
+          <figcaption>This is a valid caption</figcaption>
         </figure>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
       const component = components.pop() as ImageComponent;
       expect(component).toBeDefined();
-      console.log(component);
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBe('This is a valid caption');
     });
-    test.skip('It should process a figure component without caption', () => {
+    test('It should process a figure component without caption', () => {
       const content = `
         <figure>
           <img src="cover.jpg" alt="My image">
@@ -106,12 +104,11 @@ describe.skip('HTMLMapper', () => {
       expect(components.length).toBe(1);
       const component = components.pop() as ImageComponent;
       expect(component).toBeDefined();
-      console.log(component);
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBeUndefined();
     });
-    test.skip('It should process a figure component with caption', () => {
+    test('It should process a figure component with caption', () => {
       const content = `
         <figure>
           <img src="cover.jpg" alt="My image">
@@ -121,52 +118,53 @@ describe.skip('HTMLMapper', () => {
       expect(components.length).toBe(1);
       const component = components.pop() as ImageComponent;
       expect(component).toBeDefined();
-      console.log(component);
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBe('This is a caption');
     });
-    test.skip('It should process a figure component with caption and credit', () => {
+    test('It should process a figure component with caption and credit', () => {
+      const content = `
+        <figure>
+          <img src="cover.jpg"
+            alt="Memphis-xAI" />
+            <figcaption>
+              <p>FILE = The xAI data center is seen</p>
+              <small>Copyright 2025 The Associated Press. All rights reserved</small>
+            </figcaption>
+        </figure>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component.imageurl).toBe('cover.jpg');
+      expect(component?.caption).toBe('FILE = The xAI data center is seen');
+      expect(component?.credit).toBe(
+        'Copyright 2025 The Associated Press. All rights reserved'
+      );
+    });
+    test('It should process a figure component with caption and role credit', () => {
       const content = `
         <figure>
           <img src="cover.jpg" alt="My image">
           <figcaption>
-            This is a caption
-            <small>This is a credit</small>
+            This is 
+            a caption
+            <span role="credit">This is a credit</span>
           </figcaption>
         </figure>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
       const component = components.pop() as ImageComponent;
       expect(component).toBeDefined();
-      console.log(component);
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBe('This is a caption');
-      expect(component?.credit).toBe('This is a credit');
-    });
-    test.skip('It should process a figure component with caption and role credit', () => {
-      const content = `
-        <figure>
-          <img src="cover.jpg" alt="My image">
-          <figcaption>
-            This is a caption
-            <span role="credit">This is a credit</small>
-            <p>This shouldn't show up</p>
-          </figcaption>
-        </figure>`;
-      const components = HTMLMapper.toComponents(content);
-      expect(components.length).toBe(1);
-      const component = components.pop() as ImageComponent;
-      expect(component).toBeDefined();
-      console.log(component);
-      expect(component.component).toBe('image');
-      expect(component?.imageurl).toBe('cover.jpg');
-      expect(component?.caption).toBe('This is a caption');
-      expect(component?.credit).toBe('This is a credit');
+      expect(component?.credit).toBe('<span>This is a credit</span>');
     });
   });
 
+  // TODO Support for gallery
   describe.skip('Gallery components', () => {
     test('It should create a simple gallery component', () => {
       const components = HTMLMapper.toComponents(`
