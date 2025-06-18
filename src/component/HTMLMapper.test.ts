@@ -50,7 +50,7 @@ describe('HTMLMapper', () => {
   });
 
   describe('Image components', () => {
-    test.skip('It should process a simple image component', () => {
+    test('It should process a simple image component', () => {
       const content = `<img src="example.jpg" alt="Hello world"/>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
@@ -61,24 +61,23 @@ describe('HTMLMapper', () => {
       expect(component?.caption).toBe('Hello world');
     });
 
-    test.skip('It should process a simple picture element with invalid caption', () => {
+    test('It should process a simple picture element with invalid caption', () => {
       const content = `<picture>
-        <source media="(min-width: 1024px)" srcset="full-size.jpg">
-        <source media="(min-width: 700px)" srcset="medium-size.jpg">
-        <img src="cover.jpg" alt="My image">
+        <source media="(min-width: 1024px)" srcset="full-size.jpg"/>
+        <source media="(min-width: 700px)" srcset="medium-size.jpg"/>
+        <img src="cover.jpg" alt="My image"/>
         <ficaption>This caption should be ignored</figcaption>
       </picture>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
       const component = components.pop() as ImageComponent;
       expect(component).toBeDefined();
-      console.log(component);
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBeUndefined();
     });
 
-    test.skip('It should process a simple picture element with valid caption', () => {
+    test('It should process a simple picture element with valid caption', () => {
       const content = `
         <figure>
           <picture>
@@ -86,18 +85,17 @@ describe('HTMLMapper', () => {
             <source media="(min-width: 700px)" srcset="medium-size.jpg">
             <img src="cover.jpg" alt="My image">
           </picture>
-          <ficaption>This is a valid caption</figcaption>
+          <figcaption>This is a valid caption</figcaption>
         </figure>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
       const component = components.pop() as ImageComponent;
       expect(component).toBeDefined();
-      console.log(component);
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBe('This is a valid caption');
     });
-    test.skip('It should process a figure component without caption', () => {
+    test('It should process a figure component without caption', () => {
       const content = `
         <figure>
           <img src="cover.jpg" alt="My image">
@@ -106,12 +104,11 @@ describe('HTMLMapper', () => {
       expect(components.length).toBe(1);
       const component = components.pop() as ImageComponent;
       expect(component).toBeDefined();
-      console.log(component);
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBeUndefined();
     });
-    test.skip('It should process a figure component with caption', () => {
+    test('It should process a figure component with caption', () => {
       const content = `
         <figure>
           <img src="cover.jpg" alt="My image">
@@ -121,7 +118,6 @@ describe('HTMLMapper', () => {
       expect(components.length).toBe(1);
       const component = components.pop() as ImageComponent;
       expect(component).toBeDefined();
-      console.log(component);
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBe('This is a caption');
@@ -168,6 +164,7 @@ describe('HTMLMapper', () => {
     });
   });
 
+  // TODO Support for gallery
   describe.skip('Gallery components', () => {
     test('It should create a simple gallery component', () => {
       const components = HTMLMapper.toComponents(`
