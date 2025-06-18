@@ -12,6 +12,7 @@ export interface Channel {
   link?: string;
   description?: string;
   language?: string;
+  image?: ChannelImage,
   items: Item[];
   errors: Error[];
   warnings: string[];
@@ -22,6 +23,14 @@ export interface Channel {
   };
   'sy:updateFrequency'?: string;
   'sy:updatePeriod'?: string;
+}
+
+interface ChannelImage {
+  height?: number;
+  width?: number;
+  link?: string;
+  title?: string;
+  url?: string;
 }
 
 export interface Item {

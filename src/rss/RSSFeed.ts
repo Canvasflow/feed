@@ -59,12 +59,13 @@ export default class RSSFeed {
     const { data } = this;
     const { rss } = data;
     const { channel } = rss;
-    const { title, link, description, language } = channel;
+    const { title, link, description, language, image } = channel;
 
     this.rss.channel.title = title;
     this.rss.channel.link = link;
     this.rss.channel.description = description;
     this.rss.channel.language = language;
+    this.rss.channel.image = image;
     const atomLink: undefined | Attributes.AtomLink = channel['atom:link'];
     if (atomLink) {
       this.rss.channel['atom:link'] = {

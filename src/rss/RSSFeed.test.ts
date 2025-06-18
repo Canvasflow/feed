@@ -241,5 +241,12 @@ describe('Vegan Food and Living', () => {
     }
 
     expect(rss.channel?.title).toBe('Vegan Food & Living');
+    expect(rss.channel?.image).toEqual({
+      url: 'https://www.veganfoodandliving.com/wp-content/uploads/2019/11/cropped-favicon-1-32x32.png',
+      title: 'Vegan Food & Living',
+      link: 'https://www.veganfoodandliving.com/',
+      width: 32,
+      height: 32,
+    })
   });
 });
