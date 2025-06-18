@@ -272,6 +272,11 @@ describe('HTMLMapper', () => {
               </figcaption>
             </figure>
             <img src="image3.jpg"/>
+             <picture>
+            <source media="(min-width: 1024px)" srcset="full-size.jpg">
+            <source media="(min-width: 700px)" srcset="medium-size.jpg">
+            <img src="image4.jpg" alt="My image">
+          </picture>
             <figcaption>Gallery Caption</figcaption>
         </figure>
       `);
@@ -282,7 +287,7 @@ describe('HTMLMapper', () => {
         return;
       }
       expect(component.caption).toBe('Gallery Caption');
-      expect(component.images.length).toBe(3);
+      expect(component.images.length).toBe(4);
       expect(component.images[0]).toEqual({
         caption: 'Image 1 Caption',
         imageurl: 'image1.jpg',
@@ -293,6 +298,9 @@ describe('HTMLMapper', () => {
       });
       expect(component.images[2]).toEqual({
         imageurl: 'image3.jpg',
+      });
+      expect(component.images[3]).toEqual({
+        imageurl: 'image4.jpg',
       });
     });
   });
