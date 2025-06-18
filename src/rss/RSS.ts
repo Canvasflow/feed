@@ -32,6 +32,8 @@ export interface Item {
   link?: string;
   description?: string;
   enclosure: Enclosure[];
+  mediaGroup: MediaGroup[];
+  mediaContent: MediaContent[];
   pubDate?: string;
   errors: Error[];
   warnings: string[];
@@ -42,4 +44,65 @@ export interface Enclosure {
   length: number;
   type: string;
   url: string;
+  errors: Error[];
+  warnings: string[];
+}
+
+export interface MediaGroup {
+  title?: string;
+  mediaContent?: MediaContent[];
+  /**
+   * Array of errors from the media content
+   */
+  errors: Error[];
+  /**
+   * Array of warnings from the media content
+   */
+  warnings: string[];
+}
+
+export interface MediaContent {
+  /**
+   * Direct URL to the media object. (Required)
+   */
+  url: string;
+  /**
+   * Number of bytes of the media object. (Optional)
+   */
+  fileSize?: number;
+  /**
+   * Is the standard MIME type of the object. (Optional)
+   */
+  type?: string;
+  /**
+   * Is the type of object. (Optional)
+   */
+  medium?: 'image' | 'audio' | 'video' | 'document' | 'executable';
+  /**
+   * Determines if this is the default object that should be
+   * used for the <media:group>. (Optional)
+   */
+  isDefault?: boolean;
+  /**
+   * The title of the particular media object. (Optional)
+   */
+  title?: string;
+  /**
+   * Allows particular images to be used as representative images
+   * for the media object. (Optional)
+   */
+  thumbnail?: string;
+  /**
+   * Notable entity and the contribution to the creation of the
+   * media object. (Optional)
+   */
+  credit?: string;
+  /**
+   * Array of errors from the media content
+   */
+  errors: Error[];
+  /**
+   * Array of warnings from the media content
+   */
+  warnings: string[];
 }

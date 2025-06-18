@@ -4,7 +4,9 @@
     <channel xmlns:dcterms="dcterms" xmlns:dc="dc" xmlns:media="media" xmlns:mi="mi">
         <title>Autosport.com - All - Stories</title>
         <link>
-            https://www.autosport.com/all/news/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-ALL&utm_term=News&utm_content=uk</link>
+            <![CDATA[
+            https://www.autosport.com/all/news/?utm_source=RSS&utm_medium=referral&utm_campaign=RSS-ALL&utm_term=News&utm_content=uk
+            ]]></link>
         <language>en_gb</language>
         <item xmlns:dcterms="dcterms" xmlns:dc="dc" xmlns:media="media" xmlns:mi="mi">
             <link>
