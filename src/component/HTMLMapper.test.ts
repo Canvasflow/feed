@@ -52,7 +52,7 @@ describe('HTMLMapper', () => {
     });
   });
 
-  describe.skip('Blockquote Instagram component', () => {
+  describe('Instagram component', () => {
     test('It should create an Instagram post component', () => {
       const components = HTMLMapper.toComponents(
         `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"> <a href="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">  View this post on Instagram</a><p><a href="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">A post shared by Max Verstappen (@maxverstappen1)</a></p></blockquote>`
@@ -65,6 +65,7 @@ describe('HTMLMapper', () => {
       }
       expect(component.component).toBe('instagram');
       expect(component.type).toBe(`post`);
+      expect(component.id).toBe(`DKZFL6pIVwo`);
     });
 
     test('It should create an Instagram reel component', () => {
@@ -82,7 +83,7 @@ describe('HTMLMapper', () => {
       expect(component.id).toBe(`DLA3R_4SSKy`);
     });
 
-    test.skip('It should create an Instagram tv component', () => {
+    test('It should create an Instagram tv component', () => {
       const components = HTMLMapper.toComponents(
         `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"> <a href="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">  View this post on Instagram</a><p><a href="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">A post shared by Jake Mourkas (@jakes__junk)</a></p></blockquote>`
       );
@@ -93,12 +94,13 @@ describe('HTMLMapper', () => {
         return;
       }
       expect(component.component).toBe('instagram');
-      expect(component.type).toBe(`reel`);
+      expect(component.type).toBe(`tv`);
+      expect(component.id).toBe(`DLA3R_4SSKy`);
     });
   });
 
-  describe('Blockquote Twitter component', () => {
-    test('It should create an Instagram tv component', () => {
+  describe('Twitter Component', () => {
+    test('It should create a twitter tweet component', () => {
       const components = HTMLMapper.toComponents(
         `<blockquote class="twitter-tweet"><p lang="en" dir="ltr">"He did it!" Jimmie Johnson and Bobby Labonte put on a show in the 2005 Coca-Cola 600 at Charlotte Motor Speedway. <a href="https://t.co/t2j2mXmL3L">pic.twitter.com/t2j2mXmL3L</a></p>&mdash; FOX: NASCAR (@NASCARONFOX) <a href="https://twitter.com/NASCARONFOX/status/1397629106427101185?ref_src=twsrc%5Etfw">May 26, 2021</a></blockquote>`
       );
@@ -115,8 +117,8 @@ describe('HTMLMapper', () => {
     });
   });
 
-  describe.skip('Youtube Component', () => {
-    test('It should create an Instagram tv component', () => {
+  describe('Youtube Component', () => {
+    test('It should create an Youtube embed component', () => {
       const components = HTMLMapper.toComponents(
         `<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" frameborder="0" height="315" src="https://www.youtube.com/embed/ZrCs3HYxflk?si=8USctaxbSBPyMsBE" title="YouTube video player" width="560"></iframe>`
       );
@@ -128,7 +130,7 @@ describe('HTMLMapper', () => {
       }
       expect(component.component).toBe('video');
       expect(component.vidtype).toBe('youtube');
-      expect(component.params).toBe({ id: 'ZrCs3HYxflk' });
+      expect(component.params).toEqual({ id: 'ZrCs3HYxflk' });
     });
   });
 
@@ -136,7 +138,7 @@ describe('HTMLMapper', () => {
     //TO BE IMPLEMENTED
   });*/
 
-  describe('Image components', () => {
+  describe('Image component', () => {
     test('It should process a simple image component', () => {
       const content = `<img src="example.jpg" alt="Hello world"/>`;
       const components = HTMLMapper.toComponents(content);
