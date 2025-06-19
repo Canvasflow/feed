@@ -19,6 +19,7 @@ export interface Channel {
   pubDate?: string;
   category?: string[];
   items: Item[];
+  ttl?: number;
   errors: Error[];
   warnings: string[];
   'atom:link'?: {

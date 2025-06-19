@@ -69,6 +69,7 @@ export default class RSSFeed {
       generator,
       docs,
       category,
+      ttl,
     } = channel;
 
     let lastBuildDate: undefined | string;
@@ -97,6 +98,7 @@ export default class RSSFeed {
     this.rss.channel.docs = docs;
     this.rss.channel.category = category;
     this.rss.channel.image = image;
+    this.rss.channel.ttl = ttl;
     this.rss.channel.pubDate = pubDate;
     this.rss.channel.generator = generator;
     const atomLink: undefined | Attributes.AtomLink = channel['atom:link'];

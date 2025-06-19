@@ -19,6 +19,7 @@
         <language>en-US</language>
         <category><![CDATA[CSS]]></category>
         <category><![CDATA[HTML]]></category>
+        <ttl>60</ttl>
         <sy:updatePeriod>
             hourly </sy:updatePeriod>
         <sy:updateFrequency>

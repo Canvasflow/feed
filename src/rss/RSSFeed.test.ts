@@ -134,6 +134,7 @@ describe('Codrops', () => {
     expect(channel.link).toBe('https://tympanus.net/codrops');
     expect(channel.description).toBe('Fueling web creativity since 2009');
     expect(channel.language).toBe('en-US');
+    expect(channel.ttl).toBe(60);
     expect(channel.generator).toBe('https://wordpress.org/?v=6.7.2');
     expect(channel.lastBuildDate).toBe('2025-06-20T08:21:04.000-05:00');
     expect(channel.pubDate).toBe('2025-06-20T08:21:04.000-05:00');
@@ -182,7 +183,7 @@ describe('Motor1', () => {
   });
 });
 
-describe.skip('Forbes', () => {
+describe('Forbes', () => {
   let filePath: string = '';
   let outFilePath: string = '';
   beforeEach(() => {
