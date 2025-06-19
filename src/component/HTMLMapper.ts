@@ -18,6 +18,7 @@ import {
   type TableComponent,
   type YoutubeComponent,
   type InfogramComponent,
+  type AudioComponent,
 } from './Component';
 
 const imageTags = new Set(['img', 'picture', 'figure']);
@@ -143,15 +144,12 @@ export class HTMLMapper {
       case 'video':
         acc.push(HTMLMapper.toVideo(node));
         return acc;
-
-      /*case 'blockquote':
-        acc.push(HTMLMapper.processBlockquote(node));
-        return acc;*/
-
+      case 'audio':
+        acc.push(HTMLMapper.toAudio(node));
+        return acc;
       case 'iframe':
         acc.push(HTMLMapper.processIframe(node));
         return acc;
-
       default:
         break;
     }
@@ -233,6 +231,49 @@ export class HTMLMapper {
       loop,
       poster,
       movietype: 'hosted',
+      errors,
+      warnings,
+    };
+  }
+
+  static toAudio(node: ElementNode): AudioComponent {
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+    const attributes = mapAttributes(node.attributes);
+    let url = '';
+    const controls = attributes.has('controls');
+    const autoplay = attributes.has('autoplay');
+    const muted = attributes.has('muted');
+    const loop = attributes.has('loop');
+    const src = attributes.get('src');
+    if (src) {
+      url = src;
+    }
+
+    const sources = node.children
+      .filter((n) => n.type === 'element' && n.tagName === 'source')
+      .map((n: Node) => {
+        if (n.type !== 'element') return '';
+        const attr = mapAttributes(n.attributes);
+        return attr.get('src') || '';
+      })
+      .filter((i) => !!i);
+
+    if (sources.length) {
+      url = sources.shift() as string;
+    }
+
+    if (!url) {
+      errors.push(new Error('audio source is required'));
+    }
+
+    return {
+      component: 'audio',
+      url,
+      controls,
+      autoplay,
+      muted,
+      loop,
       errors,
       warnings,
     };

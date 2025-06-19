@@ -55,10 +55,13 @@ export interface VideoComponent extends Component {
   poster?: string;
 }
 
-// TODO Remove this component
-export interface BlockquoteComponent extends Component {
-  component: 'blockquote';
-  text: string;
+export interface AudioComponent extends Component {
+  component: 'audio';
+  url: string;
+  controls: boolean;
+  autoplay: boolean;
+  loop: boolean;
+  muted: boolean;
 }
 
 export interface TwitterComponent extends Component {

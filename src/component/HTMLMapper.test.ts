@@ -185,6 +185,7 @@ describe('HTMLMapper', () => {
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBe('This is a valid caption');
     });
+
     test('It should process a figure component without caption', () => {
       const content = `
         <figure>
@@ -198,6 +199,7 @@ describe('HTMLMapper', () => {
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBeUndefined();
     });
+
     test('It should process a figure component with caption', () => {
       const content = `
         <figure>
@@ -212,6 +214,7 @@ describe('HTMLMapper', () => {
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBe('This is a caption');
     });
+
     test('It should process a figure component with caption and credit', () => {
       const content = `
         <figure>
@@ -233,6 +236,7 @@ describe('HTMLMapper', () => {
         'Copyright 2025 The Associated Press. All rights reserved'
       );
     });
+
     test('It should process a figure component with caption and role credit', () => {
       const content = `
         <figure>
@@ -307,7 +311,7 @@ describe('HTMLMapper', () => {
   });
 
   describe('Video component', () => {
-    test('It should process a simple video component', () => {
+    test('It should process a simple video element', () => {
       const src = 'movie.mp4';
       const poster = 'poster.jpg';
       const content = `
@@ -329,7 +333,7 @@ describe('HTMLMapper', () => {
       expect(component.controls).toBe(true);
       expect(component.muted).toBe(true);
     });
-    test('It should process a video with multiple sources', () => {
+    test('It should process a video element with multiple sources', () => {
       const src = 'movie.mp4';
       const poster = 'poster.jpg';
       const content = `
@@ -375,6 +379,70 @@ describe('HTMLMapper', () => {
       expect(component.component).toBe('video');
       expect(component.url).toBe(src);
       expect(component.poster).toBe(poster);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+    });
+  });
+
+  describe('Audio component', () => {
+    test('It should process a simple audio element', () => {
+      const src = 'audio.mp3';
+      const content = `
+        <audio
+          src="${src}"
+          controls
+          loop
+          muted/>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as VideoComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+    });
+    test('It should process a audio element with multiple sources', () => {
+      const src = 'audio.ogg';
+      const content = `
+        <audio
+          loop
+          muted>
+          <source src="${src}" type="audio/ogg">
+          <source src="audio.mp3" type="audio/mpeg">
+        </audio>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as VideoComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(true);
+      expect(component.muted).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(false);
+    });
+    test('It should use source instead of src attribute', () => {
+      const src = 'audio.mp3';
+      const content = `
+        <audio
+          controls
+          loop
+          src="audio-1.mp3"
+          muted>
+          <source src="${src}" type="audio/mpeg">
+          <source src="audio.mp3" type="audio/ogg">
+        </audio>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as VideoComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
       expect(component.loop).toBe(true);
       expect(component.autoplay).toBe(false);
       expect(component.controls).toBe(true);
