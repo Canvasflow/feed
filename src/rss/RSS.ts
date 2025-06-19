@@ -13,6 +13,8 @@ export interface Channel {
   description?: string;
   language?: string;
   generator?: string;
+  lastBuildDate?: string;
+  docs?: string;
   image?: ChannelImage;
   items: Item[];
   errors: Error[];
