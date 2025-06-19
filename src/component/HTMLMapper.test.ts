@@ -9,6 +9,7 @@ import type {
   InstagramComponent,
   YoutubeComponent,
   VideoComponent,
+  AudioComponent,
 } from './Component';
 
 describe('HTMLMapper', () => {
@@ -397,7 +398,7 @@ describe('HTMLMapper', () => {
           muted/>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
-      const component = components.pop() as VideoComponent;
+      const component = components.pop() as AudioComponent;
       expect(component).toBeDefined();
       expect(component.component).toBe('audio');
       expect(component.url).toBe(src);
@@ -417,7 +418,7 @@ describe('HTMLMapper', () => {
         </audio>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
-      const component = components.pop() as VideoComponent;
+      const component = components.pop() as AudioComponent;
       expect(component).toBeDefined();
       expect(component.component).toBe('audio');
       expect(component.url).toBe(src);
@@ -439,7 +440,7 @@ describe('HTMLMapper', () => {
         </audio>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
-      const component = components.pop() as VideoComponent;
+      const component = components.pop() as AudioComponent;
       expect(component).toBeDefined();
       expect(component.component).toBe('audio');
       expect(component.url).toBe(src);
