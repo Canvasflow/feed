@@ -138,6 +138,10 @@ describe('Codrops', () => {
     expect(channel.lastBuildDate).toBe('2025-06-20T08:21:04.000-05:00');
     expect(channel.pubDate).toBe('2025-06-20T08:21:04.000-05:00');
     expect(channel.docs).toBe('https://tympanus.net/codrops/docs');
+    if (channel.category) {
+      expect(new Set([...channel.category])).toEqual(new Set(['CSS', 'HTML']));
+    }
+
     expect(channel['atom:link']).toEqual({
       href: 'https://tympanus.net/codrops/feed/',
       rel: 'self',

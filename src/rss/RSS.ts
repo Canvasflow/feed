@@ -17,6 +17,7 @@ export interface Channel {
   docs?: string;
   image?: ChannelImage;
   pubDate?: string;
+  category?: string[];
   items: Item[];
   errors: Error[];
   warnings: string[];

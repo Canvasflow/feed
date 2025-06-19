@@ -60,8 +60,16 @@ export default class RSSFeed {
     const { rss } = data;
     const { channel } = rss;
 
-    const { title, link, description, language, image, generator, docs } =
-      channel;
+    const {
+      title,
+      link,
+      description,
+      language,
+      image,
+      generator,
+      docs,
+      category,
+    } = channel;
 
     let lastBuildDate: undefined | string;
     if (channel.lastBuildDate) {
@@ -87,6 +95,7 @@ export default class RSSFeed {
     this.rss.channel.language = language;
     this.rss.channel.lastBuildDate = lastBuildDate;
     this.rss.channel.docs = docs;
+    this.rss.channel.category = category;
     this.rss.channel.image = image;
     this.rss.channel.pubDate = pubDate;
     this.rss.channel.generator = generator;
