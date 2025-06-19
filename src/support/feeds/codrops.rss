@@ -20,10 +20,9 @@
         <category><![CDATA[CSS]]></category>
         <category><![CDATA[HTML]]></category>
         <ttl>60</ttl>
-        <sy:updatePeriod>
-            hourly </sy:updatePeriod>
-        <sy:updateFrequency>
-            1 </sy:updateFrequency>
+        <sy:updateBase>2025-06-19T18:51:09÷00:00</sy:updateBase>
+        <sy:updatePeriod>hourly</sy:updatePeriod>
+        <sy:updateFrequency>1</sy:updateFrequency>
         <generator>https://wordpress.org/?v=6.7.2</generator>
         <item>
             <title>Inside the Frontier of AI, WebXR &#038; Real-Time 3D: Crafting KODE Immersive</title>

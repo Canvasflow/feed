@@ -114,6 +114,7 @@ export default class RSSFeed {
       ? parseInt(`${channel['sy:updateFrequency']}`)
       : channel['sy:updateFrequency'];
     this.rss.channel['sy:updatePeriod'] = channel['sy:updatePeriod'];
+    this.rss.channel['sy:updateBase'] = channel['sy:updateBase'];
 
     for (const item of channel.item) {
       this.rss.channel.items.push(this.buildItem(item));

@@ -27,8 +27,9 @@ export interface Channel {
     rel?: string;
     type?: string;
   };
-  'sy:updateFrequency'?: string;
   'sy:updatePeriod'?: string;
+  'sy:updateFrequency'?: string;
+  'sy:updateBase'?: string;
 }
 
 interface ChannelImage {

@@ -149,6 +149,7 @@ describe('Codrops', () => {
       type: 'application/rss+xml',
     });
     expect(channel['sy:updatePeriod']).toBe('hourly');
+    expect(channel['sy:updateBase']).toBe('2025-06-19T18:51:09÷00:00');
     expect(channel['sy:updateFrequency']).toBe(1);
 
     const { items } = channel;
