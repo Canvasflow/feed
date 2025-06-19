@@ -42,6 +42,9 @@ interface ChannelImage {
 export interface Item {
   title?: string;
   'content:encoded'?: string;
+  'dc:creator'?: string;
+  'dc:date'?: string;
+  'dc:language'?: string;
   category?: string[];
   guid?: string;
   link?: string;

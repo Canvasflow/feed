@@ -268,13 +268,16 @@ export default class RSSFeed {
       description,
       link,
       pubDate,
-      errors,
+      'dc:creator': item['dc:creator'] ? `${item['dc:creator']}` : undefined,
+      'dc:language': item['dc:language'] ? `${item['dc:language']}` : undefined,
+      'dc:date': item['dc:date'] ? `${item['dc:date']}` : undefined,
       'content:encoded': contentEncoded,
-      warnings,
       enclosure: this.getEnclosure(item),
       mediaGroup: this.getMediaGroup(item),
       mediaContent: this.getMediaContent(item),
       components: [],
+      warnings,
+      errors,
     };
 
     response.components = HTMLMapper.toComponents(contentEncoded);

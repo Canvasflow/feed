@@ -151,9 +151,15 @@ describe('Codrops', () => {
     expect(channel['sy:updatePeriod']).toBe('hourly');
     expect(channel['sy:updateFrequency']).toBe(1);
 
-    expect(channel.items[0].enclosure.length).toBe(12);
-    expect(channel.items[1].enclosure.length).toBe(4);
-    expect(channel.items[2].enclosure.length).toBe(1);
+    const { items } = channel;
+    expect(items.length).toBe(10);
+
+    expect(items[0].enclosure.length).toBe(12);
+    expect(items[0]['dc:creator']).toBe('Malvah Studio');
+    expect(items[0]['dc:language']).toBe('en');
+    expect(items[0]['dc:date']).toBe('2025-06-19T18:51:09÷00:00');
+    expect(items[1].enclosure.length).toBe(4);
+    expect(items[2].enclosure.length).toBe(1);
   });
 });
 
