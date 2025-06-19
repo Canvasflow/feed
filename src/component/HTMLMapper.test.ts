@@ -8,6 +8,7 @@ import type {
   TwitterComponent,
   InstagramComponent,
   YoutubeComponent,
+  VideoComponent,
 } from './Component';
 
 describe('HTMLMapper', () => {
@@ -237,7 +238,7 @@ describe('HTMLMapper', () => {
         <figure>
           <img src="cover.jpg" alt="My image">
           <figcaption>
-            This is 
+            This is
             a caption
             <span role="credit">This is a credit</span>
           </figcaption>
@@ -302,6 +303,82 @@ describe('HTMLMapper', () => {
       expect(component.images[3]).toEqual({
         imageurl: 'image4.jpg',
       });
+    });
+  });
+
+  describe('Video component', () => {
+    test('It should process a simple video component', () => {
+      const src = 'movie.mp4';
+      const poster = 'poster.jpg';
+      const content = `
+        <video
+          src="${src}"
+          poster="${poster}"
+          controls
+          loop
+          muted/>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as VideoComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('video');
+      expect(component.url).toBe(src);
+      expect(component.poster).toBe(poster);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+    });
+    test('It should process a video with multiple sources', () => {
+      const src = 'movie.mp4';
+      const poster = 'poster.jpg';
+      const content = `
+        <video
+          poster="${poster}"
+          controls
+          loop
+          muted>
+          <source src="${src}" type="video/mp4">
+          <source src="movie.ogv" type="video/ogg">
+          <source src="movie.webm" type="video/webm">
+        </video>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as VideoComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('video');
+      expect(component.url).toBe(src);
+      expect(component.poster).toBe(poster);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+    });
+    test('It should use source instead of src attribute', () => {
+      const src = 'movie.mp4';
+      const poster = 'poster.jpg';
+      const content = `
+        <video
+          poster="${poster}"
+          controls
+          loop
+          src="movie-1.mp4"
+          muted>
+          <source src="${src}" type="video/mp4">
+          <source src="movie.ogv" type="video/ogg">
+          <source src="movie.webm" type="video/webm">
+        </video>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as VideoComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('video');
+      expect(component.url).toBe(src);
+      expect(component.poster).toBe(poster);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
     });
   });
 });

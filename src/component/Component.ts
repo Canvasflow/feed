@@ -46,16 +46,13 @@ export interface TableComponent extends Component {
 
 export interface VideoComponent extends Component {
   component: 'video';
-  videourl: string;
-  controlsenabled: 'on' | 'off';
-  autoplay: 'on' | 'off';
-  posterenabled: 'on' | 'off';
+  url: string;
+  controls: boolean;
+  autoplay: boolean;
+  loop: boolean;
+  muted: boolean;
   movietype: 'hosted';
-  aspectRatio: 'auto';
-  imageurl?: string;
-  cacheparam?: string;
-  caption?: string;
-  credit?: string;
+  poster?: string;
 }
 
 // TODO Remove this component

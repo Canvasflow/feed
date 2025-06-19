@@ -141,7 +141,7 @@ export class HTMLMapper {
     // This section validates the rest of the tags components
     switch (tagName) {
       case 'video':
-        acc.push(HTMLMapper.processHostedVideo(node));
+        acc.push(HTMLMapper.toVideo(node));
         return acc;
 
       /*case 'blockquote':
@@ -192,27 +192,49 @@ export class HTMLMapper {
     };
   }
 
-  static processHostedVideo(node: ElementNode): VideoComponent {
-    const attributes = mapAttributes(node.attributes);
-
+  static toVideo(node: ElementNode): VideoComponent {
     const errors: Error[] = [];
+    const warnings: string[] = [];
+    const attributes = mapAttributes(node.attributes);
+    let url = '';
+    const controls = attributes.has('controls');
+    const autoplay = attributes.has('autoplay');
+    const poster = attributes.get('poster');
+    const muted = attributes.has('muted');
+    const loop = attributes.has('loop');
+    const src = attributes.get('src');
+    if (src) {
+      url = src;
+    }
 
-    if (!attributes) {
-      errors.push(new Error('Attribute in node not found'));
+    const sources = node.children
+      .filter((n) => n.type === 'element' && n.tagName === 'source')
+      .map((n: Node) => {
+        if (n.type !== 'element') return '';
+        const attr = mapAttributes(n.attributes);
+        return attr.get('src') || '';
+      })
+      .filter((i) => !!i);
+
+    if (sources.length) {
+      url = sources.shift() as string;
+    }
+
+    if (!url) {
+      errors.push(new Error('video source is required'));
     }
 
     return {
       component: 'video',
-      controlsenabled: 'on',
-      autoplay: 'off',
-      posterenabled: 'off',
+      url,
+      controls,
+      autoplay,
+      muted,
+      loop,
+      poster,
       movietype: 'hosted',
-      videourl: '',
-      caption: '',
-      credit: '',
-      aspectRatio: 'auto',
       errors,
-      warnings: [],
+      warnings,
     };
   }
 
