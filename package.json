@@ -32,6 +32,7 @@
     "build": "tsc && vite build",
     "preview": "npm run build && npm run --dry-run",
     "test": "vitest",
+    "test:debug": "vitest --test-timeout=0 --no-file-parallelism",
     "test:run": "vitest run",
     "test:watch": "vitest watch",
     "test:ui": "vitest --ui",
