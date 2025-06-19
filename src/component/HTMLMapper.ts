@@ -105,7 +105,7 @@ export class HTMLMapper {
 
     // This process instagram
     if (tagName === 'blockquote' && attributes.get('data-instgrm-permalink')) {
-      acc.push(HTMLMapper.processInstagram(node));
+      acc.push(HTMLMapper.toInstagram(node));
       return acc;
     }
 
@@ -115,7 +115,7 @@ export class HTMLMapper {
       classNames &&
       new Set(['twitter-tweet', 'twitter-timeline']).has(classNames)
     ) {
-      acc.push(HTMLMapper.processTwitter(node));
+      acc.push(HTMLMapper.toTwitter(node));
       return acc;
     }
 
@@ -324,7 +324,7 @@ export class HTMLMapper {
     return builtComponent;
   }*/
 
-  static processInstagram(node: ElementNode): InstagramComponent {
+  static toInstagram(node: ElementNode): InstagramComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
 
@@ -362,7 +362,7 @@ export class HTMLMapper {
     return component;
   }
 
-  static processTwitter(node: ElementNode): TwitterComponent {
+  static toTwitter(node: ElementNode): TwitterComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
     let builtComponent: any;
