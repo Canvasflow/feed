@@ -1,9 +1,10 @@
 import { DateTime } from 'luxon';
 import { XMLParser } from 'fast-xml-parser';
 
-import type { RSS, Item } from './RSS';
+import type { RSS, Item, Enclosure, MediaContent, MediaGroup } from './RSS';
 import { Tag } from './Tag';
 
+import * as Attributes from './Attributes';
 import { HTMLMapper } from '../component/HTMLMapper';
 
 export default class RSSFeed {
@@ -15,7 +16,9 @@ export default class RSSFeed {
 
   constructor(content: string) {
     this.content = content;
-    const parser = new XMLParser();
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+    });
     this.data = parser.parse(content);
 
     this.rss = {
@@ -56,11 +59,39 @@ export default class RSSFeed {
     const { data } = this;
     const { rss } = data;
     const { channel } = rss;
-    this.rss.channel.title = channel.title;
+    const { title, link, description, language, image } = channel;
+
+    this.rss.channel.title = title;
+    this.rss.channel.link = link;
+    this.rss.channel.description = description;
+    this.rss.channel.language = language;
+    this.rss.channel.image = image;
+    const atomLink: undefined | Attributes.AtomLink = channel['atom:link'];
+    if (atomLink) {
+      this.rss.channel['atom:link'] = {
+        href: atomLink['@_href'],
+        rel: atomLink['@_rel'],
+        type: atomLink['@_type'],
+      };
+    }
+
+    this.rss.channel['sy:updateFrequency'] = channel['sy:updateFrequency']
+      ? parseInt(`${channel['sy:updateFrequency']}`)
+      : channel['sy:updateFrequency'];
+    this.rss.channel['sy:updatePeriod'] = channel['sy:updatePeriod'];
+
     for (const item of channel.item) {
       this.rss.channel.items.push(this.buildItem(item));
     }
     return this.rss;
+  }
+
+  static toJSON(rss: RSS): unknown {
+    return JSON.parse(this.toString(rss));
+  }
+
+  static toString(rss: RSS): string {
+    return JSON.stringify(rss, replaceErrors, 2);
   }
 
   private validateRSS() {
@@ -178,7 +209,7 @@ export default class RSSFeed {
     if (item.warnings && Array.isArray(item.warnings)) {
       warnings = item.warnings;
     }
-    const category: Array<string> = item.category
+    const category: Array<string | { '#text': string }> = item.category
       ? Array.isArray(item.category)
         ? item.category
         : [item.category]
@@ -191,16 +222,23 @@ export default class RSSFeed {
         pubDate = pubDateTime.toISO();
       }
     }
+
     const response: Item = {
       guid,
       title,
-      category,
+      category: category.map((c) => {
+        if (typeof c === 'string') return c;
+        return c['#text'];
+      }),
       description,
       link,
       pubDate,
       errors,
       'content:encoded': contentEncoded,
       warnings,
+      enclosure: this.getEnclosure(item),
+      mediaGroup: this.getMediaGroup(item),
+      mediaContent: this.getMediaContent(item),
       components: [],
     };
 
@@ -208,4 +246,159 @@ export default class RSSFeed {
 
     return response;
   }
+
+  private getEnclosure(item: Record<string, unknown>): Array<Enclosure> {
+    if (!item.enclosure) {
+      return [];
+    }
+
+    if (!Array.isArray(item.enclosure)) {
+      item.enclosure = [item.enclosure];
+    }
+
+    return (item.enclosure as Array<Attributes.Enclosure>).map(mapEnclosure);
+  }
+
+  private getMediaGroup(item: Record<string, unknown>): Array<MediaGroup> {
+    if (!item['media:group']) {
+      return [];
+    }
+
+    if (!Array.isArray(item['media:group'])) {
+      item['media:group'] = [item['media:group']];
+    }
+    return (item['media:group'] as Array<Attributes.MediaGroup>).map(
+      mapMediaGroup
+    );
+  }
+
+  private getMediaContent(item: Record<string, unknown>): Array<MediaContent> {
+    if (!item['media:content']) {
+      return [];
+    }
+
+    if (!Array.isArray(item['media:content'])) {
+      item['media:content'] = [item['media:content']];
+    }
+
+    return (item['media:content'] as Array<Attributes.MediaContent>).map(
+      mapMediaContent
+    );
+  }
+}
+
+function mapEnclosure(e: Attributes.Enclosure): Enclosure {
+  const errors: Error[] = [];
+  const warnings: string[] = [];
+  if (!e['@_url']) {
+    errors.push(new Error(`property 'url' is required`));
+  }
+  if (!e['@_type']) {
+    warnings.push(`property 'type' is suggested`);
+  }
+  if (!e['@_length']) {
+    warnings.push(`property 'length' is suggested`);
+  }
+  return {
+    length: e['@_length'] ? parseInt(`${e['@_length']}`, 10) : 0,
+    type: e['@_type'] || '',
+    url: e['@_url'] || '',
+    errors,
+    warnings,
+  };
+}
+
+function mapMediaGroup(mediaGroup: Attributes.MediaGroup): MediaGroup {
+  const errors: Error[] = [];
+  const warnings: string[] = [];
+  const mediaContent = mediaGroup['media:content'];
+  if (!mediaContent) {
+    errors.push(new Error('at least one media:content is required'));
+  }
+  return {
+    title: mediaGroup['media:title'],
+    mediaContent: mediaContent ? mediaContent.map(mapMediaContent) : [],
+    errors,
+    warnings,
+  };
+}
+
+function mapMediaContent(mediaContent: Attributes.MediaContent): MediaContent {
+  const errors: Error[] = [];
+  const warnings: string[] = [];
+  const url = mediaContent['@_url'] || '';
+  const type = mediaContent['@_type'];
+  const medium = mediaContent['@_medium'];
+  let credit: string | undefined;
+  let thumbnail: string | undefined;
+  let title: string | undefined;
+  const isDefault: undefined | boolean = mediaContent['@_isDefault']
+    ? mediaContent['@_isDefault'] === 'true'
+    : undefined;
+
+  if (!url) {
+    errors.push(new Error(`property 'url' is required`));
+  }
+  if (!type) {
+    warnings.push(`property 'type' is suggested`);
+  }
+  if (!medium && !type) {
+    warnings.push(`property 'medium' is suggested`);
+  }
+
+  let tmpCredit = mediaContent['media:credit'];
+  if (tmpCredit) {
+    if (Array.isArray(tmpCredit)) {
+      warnings.push('can only exist one "media:credit"');
+      tmpCredit = tmpCredit[0];
+    }
+
+    credit = tmpCredit['#text'];
+  }
+
+  let tmpThumbnail = mediaContent['media:thumbnail'];
+  if (tmpThumbnail) {
+    if (Array.isArray(tmpThumbnail)) {
+      warnings.push('can only exist one "media:thumbnail"');
+      tmpThumbnail = tmpThumbnail[0];
+    }
+
+    thumbnail = tmpThumbnail['@_url'];
+  }
+
+  const tmpTitle = mediaContent['media:title'];
+  if (tmpTitle) {
+    if (typeof tmpTitle === 'string') {
+      title = tmpTitle;
+    } else {
+      title = tmpTitle['#text'];
+    }
+  }
+
+  return {
+    url,
+    type,
+    medium,
+    isDefault,
+    errors,
+    warnings,
+    credit,
+    thumbnail,
+    title,
+  };
+}
+
+export function replaceErrors(_: string, value: unknown) {
+  if (value instanceof Error) {
+    const error: Record<string, unknown> = {};
+
+    Object.getOwnPropertyNames(value).forEach(function (propName) {
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+      error[propName] = (value as any)[propName];
+    });
+
+    return error.message;
+  }
+
+  return value;
 }

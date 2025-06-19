@@ -1,49 +1,54 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
 	xmlns:content="http://purl.org/rss/1.0/modules/content/"
 	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
 	xmlns:dc="http://purl.org/dc/elements/1.1/"
 	xmlns:atom="http://www.w3.org/2005/Atom"
 	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
 	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
-	>
+>
 
-<channel>
-	<title></title>
-	<atom:link href="https://www.artistsandillustrators.co.uk/feed/" rel="self" type="application/rss+xml" />
-	<link>https://www.artistsandillustrators.co.uk/</link>
-	<description></description>
-	<lastBuildDate>Thu, 22 May 2025 10:53:31 +0000</lastBuildDate>
-	<language>en-US</language>
-	<sy:updatePeriod>
-	hourly	</sy:updatePeriod>
-	<sy:updateFrequency>
-	1	</sy:updateFrequency>
-	<generator>https://wordpress.org/?v=6.5.2</generator>
+	<channel>
+		<title></title>
+		<atom:link href="https://www.artistsandillustrators.co.uk/feed/" rel="self"
+			type="application/rss+xml" />
+		<link>https://www.artistsandillustrators.co.uk/</link>
+		<description></description>
+		<lastBuildDate>Thu, 22 May 2025 10:53:31 +0000</lastBuildDate>
+		<language>en-US</language>
+		<sy:updatePeriod>
+			hourly </sy:updatePeriod>
+		<sy:updateFrequency>
+			1 </sy:updateFrequency>
+		<generator>https://wordpress.org/?v=6.5.2</generator>
 
-<image>
-	<url>https://www.artistsandillustrators.co.uk/wp-content/uploads/2022/09/cropped-favicon-32x32.png</url>
-	<title>Artists &amp; Illustrators</title>
-	<link>https://www.artistsandillustrators.co.uk/</link>
-	<width>32</width>
-	<height>32</height>
-</image> 
-	<item>
-		<title>Prize Draw: Win! £1,000 towards art courses</title>
-		<link>https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-1000-towards-art-holidays/</link>
-					<comments>https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-1000-towards-art-holidays/#respond</comments>
-		
-		<dc:creator><![CDATA[Artists &#38; Illustrators]]></dc:creator>
-		<pubDate>Fri, 09 May 2025 10:25:46 +0000</pubDate>
-				<category><![CDATA[Competitions]]></category>
-		<category><![CDATA[Art]]></category>
-		<category><![CDATA[Drawing]]></category>
-		<category><![CDATA[Painting]]></category>
-		<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=34256</guid>
+		<image>
+			<url>
+				https://www.artistsandillustrators.co.uk/wp-content/uploads/2022/09/cropped-favicon-32x32.png</url>
+			<title>Artists &amp; Illustrators</title>
+			<link>https://www.artistsandillustrators.co.uk/</link>
+			<width>32</width>
+			<height>32</height>
+		</image>
+		<item>
+			<title>Prize Draw: Win! £1,000 towards art courses</title>
+			<link>
+				https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-1000-towards-art-holidays/</link>
+			<comments>
+				https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-1000-towards-art-holidays/#respond</comments>
 
-					<description><![CDATA[<p>Enjoy fabulous art classes courtesy of the St Ives School of Painting&#160; St Ives School of Painting, established in 1938, provides quality, contemporary art tuition from their unique location above Porthmeor beach in St Ives, Cornwall.&#160;They are offering an exclusive competition prize, giving you the chance to join contemporary artist, John Dyer, on his upcoming [&#8230;]</p>
+			<dc:creator><![CDATA[Artists &#38; Illustrators]]></dc:creator>
+			<pubDate>Fri, 09 May 2025 10:25:46 +0000</pubDate>
+			<category><![CDATA[Competitions]]></category>
+			<category><![CDATA[Art]]></category>
+			<category><![CDATA[Drawing]]></category>
+			<category><![CDATA[Painting]]></category>
+			<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=34256</guid>
+
+			<description><![CDATA[<p>Enjoy fabulous art classes courtesy of the St Ives School of Painting&#160; St Ives School of Painting, established in 1938, provides quality, contemporary art tuition from their unique location above Porthmeor beach in St Ives, Cornwall.&#160;They are offering an exclusive competition prize, giving you the chance to join contemporary artist, John Dyer, on his upcoming [&#8230;]</p>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-1000-towards-art-holidays/">Prize Draw: Win! £1,000 towards art courses</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></description>
-										<content:encoded><![CDATA[
+			<content:encoded><![CDATA[
 <h2 class="wp-block-heading" id="h-enjoy-fabulous-art-classes-courtesy-of-the-st-ives-school-of-painting"><strong>Enjoy fabulous art classes courtesy of the St Ives School of Painting&nbsp;</strong></h2>
 
 
@@ -121,29 +126,32 @@
 </ul>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-1000-towards-art-holidays/">Prize Draw: Win! £1,000 towards art courses</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></content:encoded>
-					
-					<wfw:commentRss>https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-1000-towards-art-holidays/feed/</wfw:commentRss>
-			<slash:comments>0</slash:comments>
-		
-		
-			</item>
-		<item>
-		<title>Artists &#038; Illustrators magazine latest issue: July 2025</title>
-		<link>https://www.artistsandillustrators.co.uk/latest-issue/artists-illustrators-magazine-latest-issue/</link>
-					<comments>https://www.artistsandillustrators.co.uk/latest-issue/artists-illustrators-magazine-latest-issue/#comments</comments>
-		
-		<dc:creator><![CDATA[Artists &#38; Illustrators]]></dc:creator>
-		<pubDate>Thu, 08 May 2025 08:54:33 +0000</pubDate>
-				<category><![CDATA[Latest Issue]]></category>
-		<category><![CDATA[Art]]></category>
-		<category><![CDATA[new issue]]></category>
-		<category><![CDATA[Painting]]></category>
-		<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=25008</guid>
 
-					<description><![CDATA[<p>The latest issue of Artists &#038; Illustrators has landed, bringing you an array of expert advice and artistic guides</p>
+			<wfw:commentRss>
+				https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-1000-towards-art-holidays/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+
+
+		</item>
+		<item>
+			<title>Artists &#038; Illustrators magazine latest issue: July 2025</title>
+			<link>
+				https://www.artistsandillustrators.co.uk/latest-issue/artists-illustrators-magazine-latest-issue/</link>
+			<comments>
+				https://www.artistsandillustrators.co.uk/latest-issue/artists-illustrators-magazine-latest-issue/#comments</comments>
+
+			<dc:creator><![CDATA[Artists &#38; Illustrators]]></dc:creator>
+			<pubDate>Thu, 08 May 2025 08:54:33 +0000</pubDate>
+			<category><![CDATA[Latest Issue]]></category>
+			<category><![CDATA[Art]]></category>
+			<category><![CDATA[new issue]]></category>
+			<category><![CDATA[Painting]]></category>
+			<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=25008</guid>
+
+			<description><![CDATA[<p>The latest issue of Artists &#038; Illustrators has landed, bringing you an array of expert advice and artistic guides</p>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/latest-issue/artists-illustrators-magazine-latest-issue/">Artists &amp; Illustrators magazine latest issue: July 2025</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></description>
-										<content:encoded><![CDATA[
+			<content:encoded><![CDATA[
 <h2 class="wp-block-heading" id="h-the-new-issue-of-artists-illustrators-magazine-is-out-now-here-s-everything-you-can-expect-to-see"><strong>The new issue of <em>Artists &amp; Illustrators</em> magazine is out now.</strong> <strong>Here’s everything you can expect to see</strong></h2>
 
 
@@ -219,34 +227,38 @@
 </ul>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/latest-issue/artists-illustrators-magazine-latest-issue/">Artists &amp; Illustrators magazine latest issue: July 2025</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></content:encoded>
-					
-					<wfw:commentRss>https://www.artistsandillustrators.co.uk/latest-issue/artists-illustrators-magazine-latest-issue/feed/</wfw:commentRss>
-			<slash:comments>2</slash:comments>
-		
-		
-			</item>
-		<item>
-		<title>How to glaze a painting</title>
-		<link>https://www.artistsandillustrators.co.uk/how-to/oil-painting/how-to-glaze-a-painting/</link>
-					<comments>https://www.artistsandillustrators.co.uk/how-to/oil-painting/how-to-glaze-a-painting/#respond</comments>
-		
-		<dc:creator><![CDATA[Artists &#38; Illustrators]]></dc:creator>
-		<pubDate>Wed, 30 Apr 2025 09:07:00 +0000</pubDate>
-				<category><![CDATA[Framing & Varnish]]></category>
-		<category><![CDATA[How To Guides]]></category>
-		<category><![CDATA[Oil Painting]]></category>
-		<category><![CDATA[Art]]></category>
-		<category><![CDATA[glaze]]></category>
-		<category><![CDATA[glazing]]></category>
-		<category><![CDATA[oil]]></category>
-		<category><![CDATA[oil painting]]></category>
-		<category><![CDATA[Painting]]></category>
-		<guid isPermaLink="false">https://newai96.isitemedia-staging.co.uk/how-to-glaze-a-painting/</guid>
 
-					<description><![CDATA[<p>New English Art Club’s Sarah Spencer shows you how to glaze a painting and the effects it creates</p>
+			<wfw:commentRss>
+				https://www.artistsandillustrators.co.uk/latest-issue/artists-illustrators-magazine-latest-issue/feed/</wfw:commentRss>
+			<slash:comments>2</slash:comments>
+
+
+		</item>
+		<item>
+			<title>How to glaze a painting</title>
+			<link>
+				https://www.artistsandillustrators.co.uk/how-to/oil-painting/how-to-glaze-a-painting/</link>
+			<comments>
+				https://www.artistsandillustrators.co.uk/how-to/oil-painting/how-to-glaze-a-painting/#respond</comments>
+
+			<dc:creator><![CDATA[Artists &#38; Illustrators]]></dc:creator>
+			<pubDate>Wed, 30 Apr 2025 09:07:00 +0000</pubDate>
+			<category><![CDATA[Framing & Varnish]]></category>
+			<category><![CDATA[How To Guides]]></category>
+			<category><![CDATA[Oil Painting]]></category>
+			<category><![CDATA[Art]]></category>
+			<category><![CDATA[glaze]]></category>
+			<category><![CDATA[glazing]]></category>
+			<category><![CDATA[oil]]></category>
+			<category><![CDATA[oil painting]]></category>
+			<category><![CDATA[Painting]]></category>
+			<guid isPermaLink="false">
+				https://newai96.isitemedia-staging.co.uk/how-to-glaze-a-painting/</guid>
+
+			<description><![CDATA[<p>New English Art Club’s Sarah Spencer shows you how to glaze a painting and the effects it creates</p>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/how-to/oil-painting/how-to-glaze-a-painting/">How to glaze a painting</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></description>
-										<content:encoded><![CDATA[
+			<content:encoded><![CDATA[
 <h2 class="wp-block-heading" id="h-artist-sarah-spencer-shows-you-how-to-glaze-a-painting-and-the-effects-it-creates">Artist Sarah Spencer shows you how to glaze a painting and the effects it creates</h2>
 
 
@@ -316,32 +328,36 @@
 <p></p>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/how-to/oil-painting/how-to-glaze-a-painting/">How to glaze a painting</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></content:encoded>
-					
-					<wfw:commentRss>https://www.artistsandillustrators.co.uk/how-to/oil-painting/how-to-glaze-a-painting/feed/</wfw:commentRss>
-			<slash:comments>0</slash:comments>
-		
-		
-			</item>
-		<item>
-		<title>How to juggle commercial and personal projects</title>
-		<link>https://www.artistsandillustrators.co.uk/how-to/marketing-your-art/how-to-juggle-commercial-and-personal-projects/</link>
-					<comments>https://www.artistsandillustrators.co.uk/how-to/marketing-your-art/how-to-juggle-commercial-and-personal-projects/#respond</comments>
-		
-		<dc:creator><![CDATA[Artists &#38; Illustrators]]></dc:creator>
-		<pubDate>Fri, 25 Apr 2025 09:55:00 +0000</pubDate>
-				<category><![CDATA[Marketing your art]]></category>
-		<category><![CDATA[Printmaking]]></category>
-		<category><![CDATA[Art]]></category>
-		<category><![CDATA[artist interview]]></category>
-		<category><![CDATA[commercial art]]></category>
-		<category><![CDATA[illustration]]></category>
-		<category><![CDATA[screenprinting]]></category>
-		<guid isPermaLink="false">https://newai96.isitemedia-staging.co.uk/how-to-juggle-commercial-and-personal-projects/</guid>
 
-					<description><![CDATA[<p>Screenprinter and illustrator Alice Pattullo answers your questions on how to succeed at juggling commercial and personal projects</p>
+			<wfw:commentRss>
+				https://www.artistsandillustrators.co.uk/how-to/oil-painting/how-to-glaze-a-painting/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+
+
+		</item>
+		<item>
+			<title>How to juggle commercial and personal projects</title>
+			<link>
+				https://www.artistsandillustrators.co.uk/how-to/marketing-your-art/how-to-juggle-commercial-and-personal-projects/</link>
+			<comments>
+				https://www.artistsandillustrators.co.uk/how-to/marketing-your-art/how-to-juggle-commercial-and-personal-projects/#respond</comments>
+
+			<dc:creator><![CDATA[Artists &#38; Illustrators]]></dc:creator>
+			<pubDate>Fri, 25 Apr 2025 09:55:00 +0000</pubDate>
+			<category><![CDATA[Marketing your art]]></category>
+			<category><![CDATA[Printmaking]]></category>
+			<category><![CDATA[Art]]></category>
+			<category><![CDATA[artist interview]]></category>
+			<category><![CDATA[commercial art]]></category>
+			<category><![CDATA[illustration]]></category>
+			<category><![CDATA[screenprinting]]></category>
+			<guid isPermaLink="false">
+				https://newai96.isitemedia-staging.co.uk/how-to-juggle-commercial-and-personal-projects/</guid>
+
+			<description><![CDATA[<p>Screenprinter and illustrator Alice Pattullo answers your questions on how to succeed at juggling commercial and personal projects</p>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/how-to/marketing-your-art/how-to-juggle-commercial-and-personal-projects/">How to juggle commercial and personal projects</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></description>
-										<content:encoded><![CDATA[
+			<content:encoded><![CDATA[
 <h2 class="wp-block-heading" id="h-screen-printer-and-illustrator-alice-pattullo-spills-her-secrets-on-how-to-succeed-at-juggling-commercial-and-personal-projects">Screen printer and illustrator Alice Pattullo spills her secrets on how to succeed at juggling commercial and personal projects</h2>
 
 
@@ -467,28 +483,31 @@
 </ul>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/how-to/marketing-your-art/how-to-juggle-commercial-and-personal-projects/">How to juggle commercial and personal projects</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></content:encoded>
-					
-					<wfw:commentRss>https://www.artistsandillustrators.co.uk/how-to/marketing-your-art/how-to-juggle-commercial-and-personal-projects/feed/</wfw:commentRss>
-			<slash:comments>0</slash:comments>
-		
-		
-			</item>
-		<item>
-		<title>How I Make it Work with Josh Hernandez</title>
-		<link>https://www.artistsandillustrators.co.uk/featured-artist/how-i-make-it-work-with-josh-hernandez/</link>
-					<comments>https://www.artistsandillustrators.co.uk/featured-artist/how-i-make-it-work-with-josh-hernandez/#respond</comments>
-		
-		<dc:creator><![CDATA[Ramsha Vistro]]></dc:creator>
-		<pubDate>Tue, 22 Apr 2025 09:14:00 +0000</pubDate>
-				<category><![CDATA[Featured Artists]]></category>
-		<category><![CDATA[Drawing]]></category>
-		<category><![CDATA[life drawing]]></category>
-		<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=34262</guid>
 
-					<description><![CDATA[<p>This charcoal artist shares how he went from being a graphic designer to creating an art career with millions of social followers Growing up, I developed a fascination with human facial structure early on, sketching portraits and people from a young age. My parents were very encouraging in my desire to draw and create; always [&#8230;]</p>
+			<wfw:commentRss>
+				https://www.artistsandillustrators.co.uk/how-to/marketing-your-art/how-to-juggle-commercial-and-personal-projects/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+
+
+		</item>
+		<item>
+			<title>How I Make it Work with Josh Hernandez</title>
+			<link>
+				https://www.artistsandillustrators.co.uk/featured-artist/how-i-make-it-work-with-josh-hernandez/</link>
+			<comments>
+				https://www.artistsandillustrators.co.uk/featured-artist/how-i-make-it-work-with-josh-hernandez/#respond</comments>
+
+			<dc:creator><![CDATA[Ramsha Vistro]]></dc:creator>
+			<pubDate>Tue, 22 Apr 2025 09:14:00 +0000</pubDate>
+			<category><![CDATA[Featured Artists]]></category>
+			<category><![CDATA[Drawing]]></category>
+			<category><![CDATA[life drawing]]></category>
+			<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=34262</guid>
+
+			<description><![CDATA[<p>This charcoal artist shares how he went from being a graphic designer to creating an art career with millions of social followers Growing up, I developed a fascination with human facial structure early on, sketching portraits and people from a young age. My parents were very encouraging in my desire to draw and create; always [&#8230;]</p>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/featured-artist/how-i-make-it-work-with-josh-hernandez/">How I Make it Work with Josh Hernandez</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></description>
-										<content:encoded><![CDATA[
+			<content:encoded><![CDATA[
 <h2 class="wp-block-heading" id="h-this-charcoal-artist-shares-how-he-went-from-being-a-graphic-designer-to-creating-an-art-career-with-millions-of-social-followers">This charcoal artist shares how he went from being a graphic designer to creating an art career with millions of social followers</h2>
 
 
@@ -546,28 +565,31 @@
 </ul>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/featured-artist/how-i-make-it-work-with-josh-hernandez/">How I Make it Work with Josh Hernandez</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></content:encoded>
-					
-					<wfw:commentRss>https://www.artistsandillustrators.co.uk/featured-artist/how-i-make-it-work-with-josh-hernandez/feed/</wfw:commentRss>
-			<slash:comments>0</slash:comments>
-		
-		
-			</item>
-		<item>
-		<title>Picture This with Hazel Johnson</title>
-		<link>https://www.artistsandillustrators.co.uk/featured-artist/picture-this-with-hazel-johnson/</link>
-					<comments>https://www.artistsandillustrators.co.uk/featured-artist/picture-this-with-hazel-johnson/#respond</comments>
-		
-		<dc:creator><![CDATA[Ramsha Vistro]]></dc:creator>
-		<pubDate>Fri, 18 Apr 2025 09:54:00 +0000</pubDate>
-				<category><![CDATA[Featured Artists]]></category>
-		<category><![CDATA[life drawing]]></category>
-		<category><![CDATA[Painting]]></category>
-		<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=34259</guid>
 
-					<description><![CDATA[<p>This self-taught pet and wildlife artist tells us what this pastel painting means to her Before Holly, we always had Labradors. But on this occasion, we decided to put our ‘do-gooders’ hats on and rehome a rescue dog. After much discussion, we thought the gentle nature of the greyhound would probably suit our family.&#160; Holly [&#8230;]</p>
+			<wfw:commentRss>
+				https://www.artistsandillustrators.co.uk/featured-artist/how-i-make-it-work-with-josh-hernandez/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+
+
+		</item>
+		<item>
+			<title>Picture This with Hazel Johnson</title>
+			<link>
+				https://www.artistsandillustrators.co.uk/featured-artist/picture-this-with-hazel-johnson/</link>
+			<comments>
+				https://www.artistsandillustrators.co.uk/featured-artist/picture-this-with-hazel-johnson/#respond</comments>
+
+			<dc:creator><![CDATA[Ramsha Vistro]]></dc:creator>
+			<pubDate>Fri, 18 Apr 2025 09:54:00 +0000</pubDate>
+			<category><![CDATA[Featured Artists]]></category>
+			<category><![CDATA[life drawing]]></category>
+			<category><![CDATA[Painting]]></category>
+			<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=34259</guid>
+
+			<description><![CDATA[<p>This self-taught pet and wildlife artist tells us what this pastel painting means to her Before Holly, we always had Labradors. But on this occasion, we decided to put our ‘do-gooders’ hats on and rehome a rescue dog. After much discussion, we thought the gentle nature of the greyhound would probably suit our family.&#160; Holly [&#8230;]</p>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/featured-artist/picture-this-with-hazel-johnson/">Picture This with Hazel Johnson</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></description>
-										<content:encoded><![CDATA[
+			<content:encoded><![CDATA[
 <h2 class="wp-block-heading" id="h-this-self-taught-pet-and-wildlife-artist-tells-us-what-this-pastel-painting-means-to-her">This self-taught pet and wildlife artist tells us what this pastel painting means to her</h2>
 
 
@@ -591,28 +613,31 @@
 <p>I hope that anyone who looks at this piece gets that feeling of her looking right at them, 100% focused. I hope it speaks to people of the stunning supermodel-esque looks of my sugar-coated, kind soul, Holly.<br><em><a href="http://hazeljohnsonartist.com" target="_blank" rel="noreferrer noopener">hazeljohnsonartist.com</a></em></p>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/featured-artist/picture-this-with-hazel-johnson/">Picture This with Hazel Johnson</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></content:encoded>
-					
-					<wfw:commentRss>https://www.artistsandillustrators.co.uk/featured-artist/picture-this-with-hazel-johnson/feed/</wfw:commentRss>
-			<slash:comments>0</slash:comments>
-		
-		
-			</item>
-		<item>
-		<title>How to draw a bird in coloured pencils</title>
-		<link>https://www.artistsandillustrators.co.uk/how-to/drawing/how-to-draw-a-bird-in-coloured-pencils/</link>
-					<comments>https://www.artistsandillustrators.co.uk/how-to/drawing/how-to-draw-a-bird-in-coloured-pencils/#respond</comments>
-		
-		<dc:creator><![CDATA[Artists &#38; Illustrators]]></dc:creator>
-		<pubDate>Tue, 15 Apr 2025 11:29:45 +0000</pubDate>
-				<category><![CDATA[Drawing]]></category>
-		<category><![CDATA[Art]]></category>
-		<category><![CDATA[Painting]]></category>
-		<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=34222</guid>
 
-					<description><![CDATA[<p>Illustrator Mike Roberts specialises in natural history subjects. Here, he shows us how he painted this delightful Stonechat Whenever my son, Meilir, comes home from university, we often head across the border to Burton on The Wirral, where the salt marsh along the River Dee offers a peaceful escape. Flocks of wading birds fly overhead, [&#8230;]</p>
+			<wfw:commentRss>
+				https://www.artistsandillustrators.co.uk/featured-artist/picture-this-with-hazel-johnson/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+
+
+		</item>
+		<item>
+			<title>How to draw a bird in coloured pencils</title>
+			<link>
+				https://www.artistsandillustrators.co.uk/how-to/drawing/how-to-draw-a-bird-in-coloured-pencils/</link>
+			<comments>
+				https://www.artistsandillustrators.co.uk/how-to/drawing/how-to-draw-a-bird-in-coloured-pencils/#respond</comments>
+
+			<dc:creator><![CDATA[Artists &#38; Illustrators]]></dc:creator>
+			<pubDate>Tue, 15 Apr 2025 11:29:45 +0000</pubDate>
+			<category><![CDATA[Drawing]]></category>
+			<category><![CDATA[Art]]></category>
+			<category><![CDATA[Painting]]></category>
+			<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=34222</guid>
+
+			<description><![CDATA[<p>Illustrator Mike Roberts specialises in natural history subjects. Here, he shows us how he painted this delightful Stonechat Whenever my son, Meilir, comes home from university, we often head across the border to Burton on The Wirral, where the salt marsh along the River Dee offers a peaceful escape. Flocks of wading birds fly overhead, [&#8230;]</p>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/how-to/drawing/how-to-draw-a-bird-in-coloured-pencils/">How to draw a bird in coloured pencils</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></description>
-										<content:encoded><![CDATA[
+			<content:encoded><![CDATA[
 <h2 class="wp-block-heading" id="h-illustrator-mike-roberts-specialises-in-natural-history-subjects-here-he-shows-us-how-he-painted-this-delightful-stonechat">Illustrator Mike Roberts specialises in natural history subjects. Here, he shows us how he painted this delightful Stonechat</h2>
 
 
@@ -798,29 +823,32 @@
 </ul>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/how-to/drawing/how-to-draw-a-bird-in-coloured-pencils/">How to draw a bird in coloured pencils</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></content:encoded>
-					
-					<wfw:commentRss>https://www.artistsandillustrators.co.uk/how-to/drawing/how-to-draw-a-bird-in-coloured-pencils/feed/</wfw:commentRss>
-			<slash:comments>0</slash:comments>
-		
-		
-			</item>
-		<item>
-		<title>Prize Draw: Win! Over £1,000 worth of art subscriptions</title>
-		<link>https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-over-1000-worth-of-art-subscriptions/</link>
-					<comments>https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-over-1000-worth-of-art-subscriptions/#respond</comments>
-		
-		<dc:creator><![CDATA[Artists &#38; Illustrators]]></dc:creator>
-		<pubDate>Fri, 11 Apr 2025 09:30:20 +0000</pubDate>
-				<category><![CDATA[Competitions]]></category>
-		<category><![CDATA[Art]]></category>
-		<category><![CDATA[Drawing]]></category>
-		<category><![CDATA[Painting]]></category>
-		<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=34245</guid>
 
-					<description><![CDATA[<p>This is your chance to join&#160;the Bonny Snowdon Academy&#160; Coloured pencil expert Bonny Snowdon’s Academy is giving away Ignite Memberships. The ultimate programme for coloured pencil artists, it offers expert guidance, structured learning and a vibrant creative community. Designed for all skill levels, it provides in-depth tutorials, step-by-step lessons and professional insights to help refine [&#8230;]</p>
+			<wfw:commentRss>
+				https://www.artistsandillustrators.co.uk/how-to/drawing/how-to-draw-a-bird-in-coloured-pencils/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+
+
+		</item>
+		<item>
+			<title>Prize Draw: Win! Over £1,000 worth of art subscriptions</title>
+			<link>
+				https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-over-1000-worth-of-art-subscriptions/</link>
+			<comments>
+				https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-over-1000-worth-of-art-subscriptions/#respond</comments>
+
+			<dc:creator><![CDATA[Artists &#38; Illustrators]]></dc:creator>
+			<pubDate>Fri, 11 Apr 2025 09:30:20 +0000</pubDate>
+			<category><![CDATA[Competitions]]></category>
+			<category><![CDATA[Art]]></category>
+			<category><![CDATA[Drawing]]></category>
+			<category><![CDATA[Painting]]></category>
+			<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=34245</guid>
+
+			<description><![CDATA[<p>This is your chance to join&#160;the Bonny Snowdon Academy&#160; Coloured pencil expert Bonny Snowdon’s Academy is giving away Ignite Memberships. The ultimate programme for coloured pencil artists, it offers expert guidance, structured learning and a vibrant creative community. Designed for all skill levels, it provides in-depth tutorials, step-by-step lessons and professional insights to help refine [&#8230;]</p>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-over-1000-worth-of-art-subscriptions/">Prize Draw: Win! Over £1,000 worth of art subscriptions</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></description>
-										<content:encoded><![CDATA[
+			<content:encoded><![CDATA[
 <h2 class="wp-block-heading" id="h-this-is-your-chance-to-join-the-bonny-snowdon-academy">This is your chance to join&nbsp;the Bonny Snowdon Academy&nbsp;</h2>
 
 
@@ -865,31 +893,34 @@
 <p><em><strong><a href="http://bonnysnowdonacademy.com">bonnysnowdonacademy.com</a></strong></em></p>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-over-1000-worth-of-art-subscriptions/">Prize Draw: Win! Over £1,000 worth of art subscriptions</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></content:encoded>
-					
-					<wfw:commentRss>https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-over-1000-worth-of-art-subscriptions/feed/</wfw:commentRss>
-			<slash:comments>0</slash:comments>
-		
-		
-			</item>
-		<item>
-		<title>How to create a street scene in mixed media</title>
-		<link>https://www.artistsandillustrators.co.uk/how-to/ink/how-to-create-a-street-scene-in-mixed-media/</link>
-					<comments>https://www.artistsandillustrators.co.uk/how-to/ink/how-to-create-a-street-scene-in-mixed-media/#respond</comments>
-		
-		<dc:creator><![CDATA[Artists &#38; Illustrators]]></dc:creator>
-		<pubDate>Fri, 04 Apr 2025 11:29:23 +0000</pubDate>
-				<category><![CDATA[Ink]]></category>
-		<category><![CDATA[Watercolour]]></category>
-		<category><![CDATA[Art]]></category>
-		<category><![CDATA[Drawing]]></category>
-		<category><![CDATA[Painting]]></category>
-		<category><![CDATA[watercolour]]></category>
-		<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=34201</guid>
 
-					<description><![CDATA[<p>Artist and illustrator Matt Gibbons demonstrates how to create&#160;a mixed media street scene in ink and watercolour When I sketch and paint, it is less about capturing the precision and exactness of the scene than it is trying to convey the feeling of a place. With my loose, illustrative drawings, I try to show the [&#8230;]</p>
+			<wfw:commentRss>
+				https://www.artistsandillustrators.co.uk/competitions/prize-draw-win-over-1000-worth-of-art-subscriptions/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+
+
+		</item>
+		<item>
+			<title>How to create a street scene in mixed media</title>
+			<link>
+				https://www.artistsandillustrators.co.uk/how-to/ink/how-to-create-a-street-scene-in-mixed-media/</link>
+			<comments>
+				https://www.artistsandillustrators.co.uk/how-to/ink/how-to-create-a-street-scene-in-mixed-media/#respond</comments>
+
+			<dc:creator><![CDATA[Artists &#38; Illustrators]]></dc:creator>
+			<pubDate>Fri, 04 Apr 2025 11:29:23 +0000</pubDate>
+			<category><![CDATA[Ink]]></category>
+			<category><![CDATA[Watercolour]]></category>
+			<category><![CDATA[Art]]></category>
+			<category><![CDATA[Drawing]]></category>
+			<category><![CDATA[Painting]]></category>
+			<category><![CDATA[watercolour]]></category>
+			<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=34201</guid>
+
+			<description><![CDATA[<p>Artist and illustrator Matt Gibbons demonstrates how to create&#160;a mixed media street scene in ink and watercolour When I sketch and paint, it is less about capturing the precision and exactness of the scene than it is trying to convey the feeling of a place. With my loose, illustrative drawings, I try to show the [&#8230;]</p>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/how-to/ink/how-to-create-a-street-scene-in-mixed-media/">How to create a street scene in mixed media</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></description>
-										<content:encoded><![CDATA[
+			<content:encoded><![CDATA[
 <h2 class="wp-block-heading" id="h-artist-and-illustrator-matt-gibbons-demonstrates-how-to-create-a-mixed-media-street-scene-in-ink-and-watercolour">Artist and illustrator <strong>Matt Gibbons</strong> demonstrates how to create&nbsp;a mixed media street scene in ink and watercolour</h2>
 
 
@@ -1037,29 +1068,31 @@
 </ul>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/how-to/ink/how-to-create-a-street-scene-in-mixed-media/">How to create a street scene in mixed media</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></content:encoded>
-					
-					<wfw:commentRss>https://www.artistsandillustrators.co.uk/how-to/ink/how-to-create-a-street-scene-in-mixed-media/feed/</wfw:commentRss>
-			<slash:comments>0</slash:comments>
-		
-		
-			</item>
-		<item>
-		<title>We Present Ewa Schreiber</title>
-		<link>https://www.artistsandillustrators.co.uk/featured-artist/we-present-ewa-schreiber/</link>
-					<comments>https://www.artistsandillustrators.co.uk/featured-artist/we-present-ewa-schreiber/#respond</comments>
-		
-		<dc:creator><![CDATA[Ramsha Vistro]]></dc:creator>
-		<pubDate>Tue, 01 Apr 2025 10:45:58 +0000</pubDate>
-				<category><![CDATA[Featured Artists]]></category>
-		<category><![CDATA[Art]]></category>
-		<category><![CDATA[oil painting]]></category>
-		<category><![CDATA[Painting]]></category>
-		<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=34190</guid>
 
-					<description><![CDATA[<p>This Parisian artist hopes to recreate the magic of the Scottish landscapes&#160; Growing up, art wasn’t just a decorative element for Ewa Schreiber; it was a way of life. “I grew up in a family where art was very much part of everyday life, and I’ve painted for as long as I can remember.” Yet, [&#8230;]</p>
+			<wfw:commentRss>
+				https://www.artistsandillustrators.co.uk/how-to/ink/how-to-create-a-street-scene-in-mixed-media/feed/</wfw:commentRss>
+			<slash:comments>0</slash:comments>
+
+
+		</item>
+		<item>
+			<title>We Present Ewa Schreiber</title>
+			<link>https://www.artistsandillustrators.co.uk/featured-artist/we-present-ewa-schreiber/</link>
+			<comments>
+				https://www.artistsandillustrators.co.uk/featured-artist/we-present-ewa-schreiber/#respond</comments>
+
+			<dc:creator><![CDATA[Ramsha Vistro]]></dc:creator>
+			<pubDate>Tue, 01 Apr 2025 10:45:58 +0000</pubDate>
+			<category><![CDATA[Featured Artists]]></category>
+			<category><![CDATA[Art]]></category>
+			<category><![CDATA[oil painting]]></category>
+			<category><![CDATA[Painting]]></category>
+			<guid isPermaLink="false">https://www.artistsandillustrators.co.uk/?p=34190</guid>
+
+			<description><![CDATA[<p>This Parisian artist hopes to recreate the magic of the Scottish landscapes&#160; Growing up, art wasn’t just a decorative element for Ewa Schreiber; it was a way of life. “I grew up in a family where art was very much part of everyday life, and I’ve painted for as long as I can remember.” Yet, [&#8230;]</p>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/featured-artist/we-present-ewa-schreiber/">We Present Ewa Schreiber</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></description>
-										<content:encoded><![CDATA[
+			<content:encoded><![CDATA[
 <h2 class="wp-block-heading" id="h-this-parisian-artist-hopes-to-recreate-the-magic-of-the-scottish-landscapes">This Parisian artist hopes to recreate the magic of the Scottish landscapes&nbsp;</h2>
 
 
@@ -1117,11 +1150,12 @@
 </ul>
 <p>The post <a rel="nofollow" href="https://www.artistsandillustrators.co.uk/featured-artist/we-present-ewa-schreiber/">We Present Ewa Schreiber</a> appeared first on <a rel="nofollow" href="https://www.artistsandillustrators.co.uk">Artists &amp; Illustrators</a>.</p>
 ]]></content:encoded>
-					
-					<wfw:commentRss>https://www.artistsandillustrators.co.uk/featured-artist/we-present-ewa-schreiber/feed/</wfw:commentRss>
+
+			<wfw:commentRss>
+				https://www.artistsandillustrators.co.uk/featured-artist/we-present-ewa-schreiber/feed/</wfw:commentRss>
 			<slash:comments>0</slash:comments>
-		
-		
-			</item>
+
+
+		</item>
 	</channel>
 </rss>

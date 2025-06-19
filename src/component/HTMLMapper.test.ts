@@ -5,9 +5,12 @@ import type {
   GalleryComponent,
   ImageComponent,
   TextComponent,
+  TwitterComponent,
+  InstagramComponent,
+  YoutubeComponent,
 } from './Component';
 
-describe.skip('HTMLMapper', () => {
+describe('HTMLMapper', () => {
   describe('Text components', () => {
     test('It should create a p component from plain text', () => {
       const content = `Hello world`;
@@ -49,7 +52,93 @@ describe.skip('HTMLMapper', () => {
     });
   });
 
-  describe('Image components', () => {
+  describe('Instagram component', () => {
+    test('It should create an Instagram post component', () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"> <a href="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">  View this post on Instagram</a><p><a href="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">A post shared by Max Verstappen (@maxverstappen1)</a></p></blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as InstagramComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('instagram');
+      expect(component.type).toBe(`post`);
+      expect(component.id).toBe(`DKZFL6pIVwo`);
+    });
+
+    test('It should create an Instagram reel component', () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/reel/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"> <a href="https://www.instagram.com/reel/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">  View this post on Instagram</a><p><a href="https://www.instagram.com/reel/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">A post shared by Jake Mourkas (@jakes__junk)</a></p></blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as InstagramComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('instagram');
+      expect(component.type).toBe(`reel`);
+      expect(component.id).toBe(`DLA3R_4SSKy`);
+    });
+
+    test('It should create an Instagram tv component', () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"> <a href="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">  View this post on Instagram</a><p><a href="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">A post shared by Jake Mourkas (@jakes__junk)</a></p></blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as InstagramComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('instagram');
+      expect(component.type).toBe(`tv`);
+      expect(component.id).toBe(`DLA3R_4SSKy`);
+    });
+  });
+
+  describe('Twitter Component', () => {
+    test('It should create a twitter tweet component', () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="twitter-tweet"><p lang="en" dir="ltr">"He did it!" Jimmie Johnson and Bobby Labonte put on a show in the 2005 Coca-Cola 600 at Charlotte Motor Speedway. <a href="https://t.co/t2j2mXmL3L">pic.twitter.com/t2j2mXmL3L</a></p>&mdash; FOX: NASCAR (@NASCARONFOX) <a href="https://twitter.com/NASCARONFOX/status/1397629106427101185?ref_src=twsrc%5Etfw">May 26, 2021</a></blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TwitterComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('twitter');
+      expect(component.height).toBe(`350`);
+      expect(component.accountid).toBe(`NASCARONFOX`);
+      expect(component.tweetid).toBe(`1397629106427101185`);
+    });
+  });
+
+  describe('Youtube Component', () => {
+    test('It should create an Youtube embed component', () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" frameborder="0" height="315" src="https://www.youtube.com/embed/ZrCs3HYxflk?si=8USctaxbSBPyMsBE" title="YouTube video player" width="560"></iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('youtube');
+      expect(component.params).toEqual({ id: 'ZrCs3HYxflk' });
+    });
+  });
+
+  /*describe('Infogram Component', () => {
+    //TO BE IMPLEMENTED
+  });*/
+
+  describe('Image component', () => {
     test('It should process a simple image component', () => {
       const content = `<img src="example.jpg" alt="Hello world"/>`;
       const components = HTMLMapper.toComponents(content);
@@ -61,24 +150,23 @@ describe.skip('HTMLMapper', () => {
       expect(component?.caption).toBe('Hello world');
     });
 
-    test.skip('It should process a simple picture element with invalid caption', () => {
+    test('It should process a simple picture element with invalid caption', () => {
       const content = `<picture>
-        <source media="(min-width: 1024px)" srcset="full-size.jpg">
-        <source media="(min-width: 700px)" srcset="medium-size.jpg">
-        <img src="cover.jpg" alt="My image">
+        <source media="(min-width: 1024px)" srcset="full-size.jpg"/>
+        <source media="(min-width: 700px)" srcset="medium-size.jpg"/>
+        <img src="cover.jpg" alt="My image"/>
         <ficaption>This caption should be ignored</figcaption>
       </picture>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
       const component = components.pop() as ImageComponent;
       expect(component).toBeDefined();
-      console.log(component);
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBeUndefined();
     });
 
-    test.skip('It should process a simple picture element with valid caption', () => {
+    test('It should process a simple picture element with valid caption', () => {
       const content = `
         <figure>
           <picture>
@@ -86,18 +174,17 @@ describe.skip('HTMLMapper', () => {
             <source media="(min-width: 700px)" srcset="medium-size.jpg">
             <img src="cover.jpg" alt="My image">
           </picture>
-          <ficaption>This is a valid caption</figcaption>
+          <figcaption>This is a valid caption</figcaption>
         </figure>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
       const component = components.pop() as ImageComponent;
       expect(component).toBeDefined();
-      console.log(component);
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBe('This is a valid caption');
     });
-    test.skip('It should process a figure component without caption', () => {
+    test('It should process a figure component without caption', () => {
       const content = `
         <figure>
           <img src="cover.jpg" alt="My image">
@@ -106,12 +193,11 @@ describe.skip('HTMLMapper', () => {
       expect(components.length).toBe(1);
       const component = components.pop() as ImageComponent;
       expect(component).toBeDefined();
-      console.log(component);
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBeUndefined();
     });
-    test.skip('It should process a figure component with caption', () => {
+    test('It should process a figure component with caption', () => {
       const content = `
         <figure>
           <img src="cover.jpg" alt="My image">
@@ -121,56 +207,56 @@ describe.skip('HTMLMapper', () => {
       expect(components.length).toBe(1);
       const component = components.pop() as ImageComponent;
       expect(component).toBeDefined();
-      console.log(component);
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBe('This is a caption');
     });
-    test.skip('It should process a figure component with caption and credit', () => {
+    test('It should process a figure component with caption and credit', () => {
+      const content = `
+        <figure>
+          <img src="cover.jpg"
+            alt="Memphis-xAI" />
+            <figcaption>
+              <p>FILE = The xAI data center is seen</p>
+              <small>Copyright 2025 The Associated Press. All rights reserved</small>
+            </figcaption>
+        </figure>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component.imageurl).toBe('cover.jpg');
+      expect(component?.caption).toBe('FILE = The xAI data center is seen');
+      expect(component?.credit).toBe(
+        'Copyright 2025 The Associated Press. All rights reserved'
+      );
+    });
+    test('It should process a figure component with caption and role credit', () => {
       const content = `
         <figure>
           <img src="cover.jpg" alt="My image">
           <figcaption>
-            This is a caption
-            <small>This is a credit</small>
+            This is 
+            a caption
+            <span role="credit">This is a credit</span>
           </figcaption>
         </figure>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
       const component = components.pop() as ImageComponent;
       expect(component).toBeDefined();
-      console.log(component);
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBe('This is a caption');
-      expect(component?.credit).toBe('This is a credit');
-    });
-    test.skip('It should process a figure component with caption and role credit', () => {
-      const content = `
-        <figure>
-          <img src="cover.jpg" alt="My image">
-          <figcaption>
-            This is a caption
-            <span role="credit">This is a credit</small>
-            <p>This shouldn't show up</p>
-          </figcaption>
-        </figure>`;
-      const components = HTMLMapper.toComponents(content);
-      expect(components.length).toBe(1);
-      const component = components.pop() as ImageComponent;
-      expect(component).toBeDefined();
-      console.log(component);
-      expect(component.component).toBe('image');
-      expect(component?.imageurl).toBe('cover.jpg');
-      expect(component?.caption).toBe('This is a caption');
-      expect(component?.credit).toBe('This is a credit');
+      expect(component?.credit).toBe('<span>This is a credit</span>');
     });
   });
 
-  describe.skip('Gallery components', () => {
+  describe('Gallery components', () => {
     test('It should create a simple gallery component', () => {
       const components = HTMLMapper.toComponents(`
-        <div class="gallery">
+        <figure role="gallery">
             <figure>
               <img src="image1.jpg"/>
               <figcaption>
@@ -185,7 +271,14 @@ describe.skip('HTMLMapper', () => {
                 <small role="credit">Photographer 2</small>
               </figcaption>
             </figure>
-        </div>
+            <img src="image3.jpg"/>
+             <picture>
+            <source media="(min-width: 1024px)" srcset="full-size.jpg">
+            <source media="(min-width: 700px)" srcset="medium-size.jpg">
+            <img src="image4.jpg" alt="My image">
+          </picture>
+            <figcaption>Gallery Caption</figcaption>
+        </figure>
       `);
       expect(components.length).toBe(1);
       const component = components.pop() as GalleryComponent;
@@ -193,7 +286,22 @@ describe.skip('HTMLMapper', () => {
       if (!component) {
         return;
       }
-      expect(component.images).toBeGreaterThan(1);
+      expect(component.caption).toBe('Gallery Caption');
+      expect(component.images.length).toBe(4);
+      expect(component.images[0]).toEqual({
+        caption: 'Image 1 Caption',
+        imageurl: 'image1.jpg',
+      });
+      expect(component.images[1]).toEqual({
+        caption: 'Image 2 Caption',
+        imageurl: 'image2.jpg',
+      });
+      expect(component.images[2]).toEqual({
+        imageurl: 'image3.jpg',
+      });
+      expect(component.images[3]).toEqual({
+        imageurl: 'image4.jpg',
+      });
     });
   });
 });

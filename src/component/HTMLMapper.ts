@@ -20,6 +20,8 @@ import {
   type InfogramComponent,
 } from './Component';
 
+const imageTags = new Set(['img', 'picture', 'figure']);
+
 const textTags = [
   'h1',
   'h2',
@@ -64,11 +66,15 @@ export class HTMLMapper {
       HTMLMapper.filterEmptyTextNode
     );
 
-    return nodes.reduce(HTMLMapper.reduceComponents, []);
+    return nodes.reduce(HTMLMapper.reduceComponents, []).filter((i) => !!i);
   }
 
   static reduceComponents(acc: Array<Component>, node: Node): Array<Component> {
     if (node.type === 'text') {
+      if (isEmpty(node.content)) {
+        return acc;
+      }
+
       acc.push({
         component: 'body',
         errors: [],
@@ -81,6 +87,7 @@ export class HTMLMapper {
     const { tagName } = node;
     const attributes = mapAttributes(node.attributes);
     const role = attributes.get('role');
+    const classNames = attributes.get('class');
 
     const textTagMapping: Record<string, TextType> = {
       h1: 'headline',
@@ -96,6 +103,22 @@ export class HTMLMapper {
       ul: 'body',
     };
 
+    // This process instagram
+    if (tagName === 'blockquote' && attributes.get('data-instgrm-permalink')) {
+      acc.push(HTMLMapper.processInstagram(node));
+      return acc;
+    }
+
+    // This process twitter
+    if (
+      (tagName === 'blockquote' || tagName === 'a') &&
+      classNames &&
+      new Set(['twitter-tweet', 'twitter-timeline']).has(classNames)
+    ) {
+      acc.push(HTMLMapper.processTwitter(node));
+      return acc;
+    }
+
     // This section validates text tags
     for (const tag in textTagMapping) {
       if (tagName === tag) {
@@ -109,20 +132,21 @@ export class HTMLMapper {
       return acc;
     }
 
+    // Check if the tag belongs to an image tag
+    if (imageTags.has(tagName)) {
+      acc.push(HTMLMapper.toImage(node));
+      return acc;
+    }
+
     // This section validates the rest of the tags components
     switch (tagName) {
-      case 'figure':
-      case 'img':
-        acc.push(HTMLMapper.toImage(node));
-        return acc;
-
       case 'video':
         acc.push(HTMLMapper.processHostedVideo(node));
         return acc;
 
-      case 'blockquote':
+      /*case 'blockquote':
         acc.push(HTMLMapper.processBlockquote(node));
-        return acc;
+        return acc;*/
 
       case 'iframe':
         acc.push(HTMLMapper.processIframe(node));
@@ -257,7 +281,7 @@ export class HTMLMapper {
     }
   }
 
-  static processBlockquote(
+  /*static processBlockquote(
     node: ElementNode
   ): BlockquoteComponent | TwitterComponent | InstagramComponent {
     const errors: Error[] = [];
@@ -276,7 +300,7 @@ export class HTMLMapper {
       builtComponent = HTMLMapper.processBlockquoteElement(node);
     }
     return builtComponent;
-  }
+  }*/
 
   static processInstagram(node: ElementNode): InstagramComponent {
     const errors: Error[] = [];
@@ -319,7 +343,7 @@ export class HTMLMapper {
   static processTwitter(node: ElementNode): TwitterComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
-    let builtComponent: any; // TODO valid?
+    let builtComponent: any;
     for (let index = 0; index < node.children.length; index++) {
       const tweet: any = node.children[index];
       if (tweet.tagName === 'a') {
@@ -432,17 +456,35 @@ export class HTMLMapper {
     };
   }
 
-  // TODO Implement gallery mapper
   static toGallery(node: ElementNode): GalleryComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
     const attributes = mapAttributes(node.attributes);
-    const images: Array<GalleryImage> = [];
     const role = attributes.get('role') === 'mosaic' ? 'mosaic' : 'default';
     const direction =
       attributes.get('data-direction') === 'vertical'
         ? 'vertical'
         : 'horizontal';
+
+    const images: Array<GalleryImage> = node.children
+      // Validate the only image tag are supported
+      .filter((n) => n.type === 'element' && imageTags.has(n.tagName))
+      // Map the node to an image component
+      .map((n: Node): ImageComponent => {
+        return HTMLMapper.toImage(n as ElementNode);
+      })
+      // If some is invalid and return undefined we remove them
+      .filter((i) => !!i)
+      // Map Valid image components to gallery items
+      .map((imageComponent: ImageComponent): GalleryImage => {
+        return {
+          imageurl: imageComponent.imageurl,
+          caption: imageComponent.caption,
+        };
+      });
+
+    const { caption } = HTMLMapper.fromFigcaption(node);
+
     return {
       component: 'gallery',
       role,
@@ -450,6 +492,7 @@ export class HTMLMapper {
       direction,
       errors,
       warnings,
+      caption,
     };
   }
 
@@ -461,6 +504,12 @@ export class HTMLMapper {
 
     if (tagName === 'figure') {
       const imageComponent: ImageComponent = HTMLMapper.fromFigure(node);
+      imageComponent.id = id;
+      return imageComponent;
+    }
+
+    if (tagName === 'picture') {
+      const imageComponent: ImageComponent = HTMLMapper.fromPicture(node);
       imageComponent.id = id;
       return imageComponent;
     }
@@ -498,6 +547,7 @@ export class HTMLMapper {
     const errors: Error[] = [];
     const warnings: string[] = [];
     let caption: string | undefined;
+    let credit: string | undefined;
 
     // Handle image
     const imageNodes = node.children.filter(
@@ -518,19 +568,33 @@ export class HTMLMapper {
       break;
     }
 
-    // Handle caption
-    const figcaptionNodes = node.children.filter(
-      (n) => n.type === 'element' && n.tagName === 'figcaption'
-    );
-    if (figcaptionNodes.length > 1) {
-      warnings.push('Only one figcaption per figure tag is valid');
+    if (!imageurl) {
+      const pictureNodes = node.children.filter(
+        (n) => n.type === 'element' && n.tagName === 'picture'
+      );
+
+      if (pictureNodes.length > 1) {
+        warnings.push('Only one picture tag per figure tag is valid');
+      }
+
+      for (const n of pictureNodes) {
+        if (n.type !== 'element') continue;
+        const picture: ImageComponent = HTMLMapper.fromPicture(n);
+        imageurl = picture.imageurl;
+        break;
+      }
     }
-    for (const n of figcaptionNodes) {
-      const html = stringify([n]);
-      caption = sanitizeHtml(html, {
-        allowedTags: ['span', 'b', 'strong', 'em', 'i'],
-      });
-      break;
+
+    // Handle caption
+    if (node.type === 'element') {
+      const r = HTMLMapper.fromFigcaption(node);
+      if (r.credit) {
+        credit = r.credit;
+      }
+
+      if (r.caption) {
+        caption = r.caption;
+      }
     }
 
     if (!imageurl) {
@@ -543,6 +607,44 @@ export class HTMLMapper {
       errors,
       warnings,
       caption,
+      credit,
+    };
+  }
+
+  static fromPicture(node: ElementNode): ImageComponent {
+    let imageurl = '';
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+
+    // Handle image
+    const imageNodes = node.children.filter(
+      (n) => n.type === 'element' && n.tagName === 'img'
+    );
+    if (imageNodes.length > 1) {
+      warnings.push('Only one img tag per picture tag is valid');
+    }
+
+    for (const n of imageNodes) {
+      if (n.type !== 'element') continue;
+      const attributes = mapAttributes(n.attributes);
+      const src = attributes.get('src');
+      if (!src) {
+        errors.push(new Error('src attribute is missing'));
+      }
+
+      imageurl = src || '';
+      break;
+    }
+
+    if (!imageurl) {
+      errors.push(new Error('imageurl is empty'));
+    }
+
+    return {
+      component: 'image',
+      imageurl,
+      errors,
+      warnings,
     };
   }
 
@@ -552,7 +654,64 @@ export class HTMLMapper {
     const { content } = node;
     if (!content) return false;
 
-    return content.trim().length > 0;
+    return !isEmpty(content);
+  }
+
+  static fromFigcaption(node: ElementNode): FigcaptionResponse {
+    let caption: string | undefined;
+    let credit: string | undefined;
+    const figcaptionNodes = node.children.filter(
+      (n) => n.type === 'element' && n.tagName === 'figcaption'
+    );
+    for (const n of figcaptionNodes) {
+      credit = HTMLMapper.getCredit(n as ElementNode);
+      const html = stringify([n]);
+      caption = sanitizeHtml(html, {
+        allowedTags: ['span', 'b', 'strong', 'em', 'i'],
+      });
+      break;
+    }
+
+    return {
+      caption,
+      credit,
+    };
+  }
+
+  static getCredit(node: ElementNode): string | undefined {
+    let credit: string | undefined;
+
+    node.children = node.children.reduce((acc: Array<Node>, n: Node) => {
+      if (n.type === 'element') {
+        const attributes = mapAttributes(n.attributes);
+        const role = attributes.get('role');
+        if (n.tagName === 'small' || role === 'credit') {
+          if (credit) {
+            return acc;
+          }
+          credit = sanitizeHtml(stringify([n]), {
+            allowedTags: ['span', 'b', 'strong', 'em', 'i'],
+          });
+          return acc;
+        }
+
+        acc.push(n);
+        return acc;
+      }
+
+      const content = n.content
+        .replace(/[\r\n\t]/g, '')
+        .replace(/\s\s+/g, ' ')
+        .trim();
+
+      if (content.length) {
+        n.content = content;
+        acc.push(n);
+      }
+
+      return acc;
+    }, []);
+    return credit;
   }
 }
 
@@ -575,6 +734,11 @@ interface Attribute {
   value: string;
 }
 
+interface FigcaptionResponse {
+  caption?: string;
+  credit?: string;
+}
+
 function mapAttributes(attributes?: Array<Attribute>): Map<string, string> {
   const response: Map<string, string> = new Map();
   if (!attributes) {
@@ -584,4 +748,8 @@ function mapAttributes(attributes?: Array<Attribute>): Map<string, string> {
     response.set(key, value);
   }
   return response;
+}
+
+function isEmpty(content: string) {
+  return content.replace(/[\r\n\t]/g, '').trim().length === 0;
 }

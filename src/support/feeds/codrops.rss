@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+    xmlns:content="http://purl.org/rss/1.0/modules/content/"
+    xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+    xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+>
+
+    <channel>
+        <title>Codrops</title>
+        <atom:link href="https://tympanus.net/codrops/feed/" rel="self" type="application/rss+xml" />
+        <link>https://tympanus.net/codrops</link>
+        <description>Fueling web creativity since 2009</description>
+        <lastBuildDate>Mon, 16 Jun 2025 13:21:04 +0000</lastBuildDate>
+        <language>en-US</language>
+        <sy:updatePeriod>
+            hourly </sy:updatePeriod>
+        <sy:updateFrequency>
+            1 </sy:updateFrequency>
+        <generator>https://wordpress.org/?v=6.7.2</generator>
+        <item>
+            <title>Inside the Frontier of AI, WebXR &#038; Real-Time 3D: Crafting KODE Immersive</title>
+            <link>
+                https://tympanus.net/codrops/2025/06/16/inside-the-frontier-of-ai-webxr-real-time-3d-crafting-kode-immersive/</link>
+
+            <dc:creator><![CDATA[Malvah Studio]]></dc:creator>
+            <pubDate>Mon, 16 Jun 2025 12:47:10 +0000</pubDate>
+            <category><![CDATA[Articles]]></category>
+            <category><![CDATA[Case Studies]]></category>
+            <guid isPermaLink="false">https://tympanus.net/codrops/?p=95906</guid>
+
+            <description><![CDATA[A behind-the-scenes look at how bold vision and emerging tech shaped a boundary-pushing digital experience.]]></description>
+
+
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/KODE_01.mp4.mp4?x87880"
+                length="18210137" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/KODE_PR-Launch-Video_01.mp4.mp4?x87880"
+                length="13892728" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/KODE_02.mp4.mp4?x87880"
+                length="3086981" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/KodeImmersive-_-RD.mp4.mp4?x87880"
+                length="1544914" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/Dev_attractors.mp4.mp4?x87880"
+                length="14196494" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/Dev_Chevron.mp4.mp4?x87880"
+                length="3671646" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/Dev_Balloon.mp4.mp4?x87880"
+                length="2761006" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/KODE_03.mp4.mp4?x87880"
+                length="7833034" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/KODE_04-1.mp4-1.mp4?x87880"
+                length="2349149" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/KODE_05.mp4.mp4?x87880"
+                length="9703534" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/KODE_06.mp4.mp4?x87880"
+                length="10557605" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/KODE_07.mp4.mp4?x87880"
+                length="2031811" type="video/mp4" />
+
+        </item>
+        <item>
+            <title>Developer Spotlight: Robin Payot</title>
+            <link>https://tympanus.net/codrops/2025/06/12/developer-spotlight-robin-payot/</link>
+
+            <dc:creator><![CDATA[Robin Payot]]></dc:creator>
+            <pubDate>Thu, 12 Jun 2025 13:42:54 +0000</pubDate>
+            <category><![CDATA[Articles]]></category>
+            <category><![CDATA[Developer Spotlight]]></category>
+            <guid isPermaLink="false">https://tympanus.net/codrops/?p=96001</guid>
+
+            <description><![CDATA[Creative Developer Robin Payot shares his journey, standout projects, and insights into WebGL, animation, and building award-winning interactive web experiences.]]></description>
+
+
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/1_wind-waker-js.mp4?x87880"
+                length="15993260" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/2_golden-slide.mp4?x87880"
+                length="12264500" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/3_issey-miyake.mp4?x87880"
+                length="3233110" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/4_portfolio.mp4?x87880"
+                length="19882836" type="video/mp4" />
+
+        </item>
+        <item>
+            <title>Building an Infinite Parallax Grid with GSAP and Seamless Tiling</title>
+            <link>
+                https://tympanus.net/codrops/2025/06/11/building-an-infinite-parallax-grid-with-gsap-and-seamless-tiling/</link>
+
+            <dc:creator><![CDATA[Jorge Toloza]]></dc:creator>
+            <pubDate>Wed, 11 Jun 2025 11:07:00 +0000</pubDate>
+            <category><![CDATA[Tutorials]]></category>
+            <category><![CDATA[grid]]></category>
+            <category><![CDATA[GSAP]]></category>
+            <category><![CDATA[infinite]]></category>
+            <category><![CDATA[parallax]]></category>
+            <guid isPermaLink="false">https://tympanus.net/codrops/?p=94738</guid>
+
+            <description><![CDATA[Learn how to create a responsive, infinitely scrolling image grid with parallax motion and staggered text animations using GSAP.]]></description>
+
+
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/Infinite-Layers-Grid_smaller.mp4?x87880"
+                length="19970293" type="video/mp4" />
+
+        </item>
+        <item>
+            <title>How to Create Interactive, Droplet-like Metaballs with Three.js and GLSL</title>
+            <link>
+                https://tympanus.net/codrops/2025/06/09/how-to-create-interactive-droplet-like-metaballs-with-three-js-and-glsl/</link>
+
+            <dc:creator><![CDATA[Yuki Kojima]]></dc:creator>
+            <pubDate>Mon, 09 Jun 2025 09:56:51 +0000</pubDate>
+            <category><![CDATA[Tutorials]]></category>
+            <category><![CDATA[glsl]]></category>
+            <category><![CDATA[metaballs]]></category>
+            <category><![CDATA[Three.js]]></category>
+            <category><![CDATA[WebGL]]></category>
+            <guid isPermaLink="false">https://tympanus.net/codrops/?p=94983</guid>
+
+            <description><![CDATA[In this tutorial, we'll walk you through how to create bubble-like spheres using Three.js and GLSL—an effect that responds interactively to your mouse movements.]]></description>
+
+
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/droplet_demo.mp4?x87880"
+                length="1253768" type="video/mp4" />
+
+        </item>
+        <item>
+            <title>Motion Highlights #9</title>
+            <link>https://tympanus.net/codrops/2025/06/08/motion-highlights-9/</link>
+
+            <dc:creator><![CDATA[Manoela Ilic]]></dc:creator>
+            <pubDate>Sun, 08 Jun 2025 14:46:34 +0000</pubDate>
+            <category><![CDATA[UI Interactions and Animations Roundups]]></category>
+            <category><![CDATA[inspiration]]></category>
+            <category><![CDATA[Motion Design]]></category>
+            <category><![CDATA[roundup]]></category>
+            <guid isPermaLink="false">https://tympanus.net/codrops/?p=95925</guid>
+
+            <description><![CDATA[Get the latest dose of motion and animation inspiration in this roundup.]]></description>
+
+
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/919.mp4?x87880"
+                length="1177832" type="video/mp4" />
+            <enclosure
+                url="https://cdn.dribbble.com/userupload/43551436/file/original-b6de6af6ad6bb8e222685ea5c8845194.mp4"
+                length="2033002" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/918.mp4?x87880"
+                length="2345383" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/917.mp4?x87880"
+                length="742883" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/916.mp4?x87880"
+                length="4510056" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/915.mp4?x87880"
+                length="209841" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/914.mp4?x87880"
+                length="2736312" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/912.mp4?x87880"
+                length="600971" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/911.mp4?x87880"
+                length="1480890" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/910.mp4?x87880"
+                length="3076042" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/99.mp4?x87880"
+                length="886164" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/98.mp4?x87880"
+                length="6513127" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/97.mp4?x87880"
+                length="2460567" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/96.mp4?x87880"
+                length="2621048" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/95.mp4?x87880"
+                length="1353934" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/94.mp4?x87880"
+                length="421996" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/93.mp4?x87880"
+                length="855522" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/92.mp4?x87880"
+                length="522166" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/91.mp4?x87880"
+                length="155119" type="video/mp4" />
+
+        </item>
+        <item>
+            <title>Try It On: A Playful Drag-and-Drop Styling UI</title>
+            <link>
+                https://tympanus.net/codrops/2025/06/06/try-it-on-a-playful-drag-and-drop-styling-ui/</link>
+
+            <dc:creator><![CDATA[Ikram Hakim]]></dc:creator>
+            <pubDate>Fri, 06 Jun 2025 12:30:23 +0000</pubDate>
+            <category><![CDATA[Articles]]></category>
+            <category><![CDATA[3D]]></category>
+            <category><![CDATA[draggable]]></category>
+            <guid isPermaLink="false">https://tympanus.net/codrops/?p=94987</guid>
+
+            <description><![CDATA[A playful experience where you drag and drop virtual T-shirts onto a model to instantly change their look.]]></description>
+
+
+        </item>
+        <item>
+            <title>How to Create Responsive and SEO-friendly WebGL Text</title>
+            <link>
+                https://tympanus.net/codrops/2025/06/05/how-to-create-responsive-and-seo-friendly-webgl-text/</link>
+
+            <dc:creator><![CDATA[Eemeli Haakana]]></dc:creator>
+            <pubDate>Thu, 05 Jun 2025 13:03:03 +0000</pubDate>
+            <category><![CDATA[Tutorials]]></category>
+            <category><![CDATA[accessibility]]></category>
+            <category><![CDATA[scroll]]></category>
+            <category><![CDATA[Three.js]]></category>
+            <category><![CDATA[typography]]></category>
+            <category><![CDATA[WebGL]]></category>
+            <guid isPermaLink="false">https://tympanus.net/codrops/?p=92085</guid>
+
+            <description><![CDATA[Learn how to combine responsive HTML text with WebGL rendering, enabling scroll-driven animations and custom shader effects.]]></description>
+
+
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/codrops-demo.mp4?x87880"
+                length="11419402" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/04/Codrops-animation-illustration.mp4?x87880"
+                length="380569" type="video/mp4" />
+
+        </item>
+        <item>
+            <title>Motion Highlights: Rive Special</title>
+            <link>https://tympanus.net/codrops/2025/06/05/motion-highlights-rive-special/</link>
+
+            <dc:creator><![CDATA[Manoela Ilic]]></dc:creator>
+            <pubDate>Thu, 05 Jun 2025 09:52:38 +0000</pubDate>
+            <category><![CDATA[UI Interactions and Animations Roundups]]></category>
+            <category><![CDATA[inspiration]]></category>
+            <category><![CDATA[Motion Design]]></category>
+            <category><![CDATA[rive]]></category>
+            <category><![CDATA[roundup]]></category>
+            <guid isPermaLink="false">https://tympanus.net/codrops/?p=95567</guid>
+
+            <description><![CDATA[A collection of standout interactive animations made with Rive.]]></description>
+
+
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r20.mp4?x87880"
+                length="3746757" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r19.mp4?x87880"
+                length="467878" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r18.mp4?x87880"
+                length="549158" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r17.mp4?x87880"
+                length="1178554" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r16.mp4?x87880"
+                length="2137712" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r15.mp4?x87880"
+                length="649564" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r14.mp4?x87880"
+                length="895954" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r13.mp4?x87880"
+                length="1243042" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r12.mp4?x87880"
+                length="1089246" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r11.mp4?x87880"
+                length="5093790" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/ssstwitter.com_1748749510092.mp4?x87880"
+                length="751662" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r9.mp4?x87880"
+                length="903789" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r8.mp4?x87880"
+                length="2202283" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r7.mp4?x87880"
+                length="1432438" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r6.mp4?x87880"
+                length="255648" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r5.mp4?x87880"
+                length="3303042" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r4.mp4?x87880"
+                length="614561" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r3.mp4?x87880"
+                length="670214" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r2.mp4?x87880"
+                length="1072691" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/r1.mp4?x87880"
+                length="1266868" type="video/mp4" />
+            <enclosure
+                url="https://cdn.dribbble.com/userupload/17783141/file/original-f752558b25b94000751354951dee997d.mp4"
+                length="8956602" type="video/mp4" />
+
+        </item>
+        <item>
+            <title>Building a Real-Time Dithering Shader</title>
+            <link>https://tympanus.net/codrops/2025/06/04/building-a-real-time-dithering-shader/</link>
+
+            <dc:creator><![CDATA[Niccolò Fanton]]></dc:creator>
+            <pubDate>Wed, 04 Jun 2025 07:45:16 +0000</pubDate>
+            <category><![CDATA[Articles]]></category>
+            <category><![CDATA[glsl]]></category>
+            <category><![CDATA[postprocessing]]></category>
+            <category><![CDATA[Three.js]]></category>
+            <category><![CDATA[WebGL]]></category>
+            <guid isPermaLink="false">https://tympanus.net/codrops/?p=95318</guid>
+
+            <description><![CDATA[A minimal, real-time WebGL shader that applies ordered dithering and optional pixelation as a composable postprocessing effect.]]></description>
+
+
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/05/Screen-Recording-2025-05-25-at-11.17.29.mp4?x87880"
+                length="6137678" type="video/mp4" />
+
+        </item>
+        <item>
+            <title>Elastic Grid Scroll: Creating Lag-Based Layout Animations with GSAP
+                ScrollSmoother</title>
+            <link>
+                https://tympanus.net/codrops/2025/06/03/elastic-grid-scroll-creating-lag-based-layout-animations-with-gsap-scrollsmoother/</link>
+
+            <dc:creator><![CDATA[Manoela Ilic]]></dc:creator>
+            <pubDate>Tue, 03 Jun 2025 09:45:34 +0000</pubDate>
+            <category><![CDATA[Tutorials]]></category>
+            <category><![CDATA[elastic]]></category>
+            <category><![CDATA[grid]]></category>
+            <category><![CDATA[GSAP]]></category>
+            <category><![CDATA[scroll]]></category>
+            <guid isPermaLink="false">https://tympanus.net/codrops/?p=94826</guid>
+
+            <description><![CDATA[A scroll effect where each column of a grid moves at a slightly different speed, creating a soft, elastic feel as you scroll.]]></description>
+
+
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/eastic-grid-scroll.mp4?x87880"
+                length="2233720" type="video/mp4" />
+            <enclosure
+                url="https://codrops-1f606.kxcdn.com/codrops/wp-content/uploads/2025/06/elasticscroll.mp4?x87880"
+                length="2611558" type="video/mp4" />
+
+        </item>
+    </channel>
+</rss>
