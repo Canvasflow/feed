@@ -136,6 +136,7 @@ describe('Codrops', () => {
     expect(channel.language).toBe('en-US');
     expect(channel.generator).toBe('https://wordpress.org/?v=6.7.2');
     expect(channel.lastBuildDate).toBe('2025-06-20T08:21:04.000-05:00');
+    expect(channel.pubDate).toBe('2025-06-20T08:21:04.000-05:00');
     expect(channel.docs).toBe('https://tympanus.net/codrops/docs');
     expect(channel['atom:link']).toEqual({
       href: 'https://tympanus.net/codrops/feed/',

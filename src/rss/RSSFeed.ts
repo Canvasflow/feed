@@ -73,6 +73,14 @@ export default class RSSFeed {
       }
     }
 
+    let pubDate: undefined | string;
+    if (channel.pubDate) {
+      const pubDateTime = DateTime.fromJSDate(new Date(`${channel.pubDate}`));
+      if (pubDateTime.isValid) {
+        pubDate = pubDateTime.toISO();
+      }
+    }
+
     this.rss.channel.title = title;
     this.rss.channel.link = link;
     this.rss.channel.description = description;
@@ -80,6 +88,7 @@ export default class RSSFeed {
     this.rss.channel.lastBuildDate = lastBuildDate;
     this.rss.channel.docs = docs;
     this.rss.channel.image = image;
+    this.rss.channel.pubDate = pubDate;
     this.rss.channel.generator = generator;
     const atomLink: undefined | Attributes.AtomLink = channel['atom:link'];
     if (atomLink) {
