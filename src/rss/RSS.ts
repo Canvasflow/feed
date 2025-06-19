@@ -12,7 +12,8 @@ export interface Channel {
   link?: string;
   description?: string;
   language?: string;
-  image?: ChannelImage,
+  generator?: string;
+  image?: ChannelImage;
   items: Item[];
   errors: Error[];
   warnings: string[];

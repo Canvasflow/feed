@@ -59,13 +59,26 @@ export default class RSSFeed {
     const { data } = this;
     const { rss } = data;
     const { channel } = rss;
-    const { title, link, description, language, image } = channel;
+
+    const { title, link, description, language, image, generator } = channel;
+
+    let lastBuildDate: undefined | string;
+    if (channel.lastBuildDate) {
+      const lastBuildDateTime = DateTime.fromJSDate(
+        new Date(`${channel.lastBuildDate}`)
+      );
+      if (lastBuildDateTime.isValid) {
+        lastBuildDate = lastBuildDateTime.toISO();
+      }
+    }
 
     this.rss.channel.title = title;
     this.rss.channel.link = link;
     this.rss.channel.description = description;
     this.rss.channel.language = language;
+    this.rss.channel.lastBuildDate = lastBuildDate;
     this.rss.channel.image = image;
+    this.rss.channel.generator = generator;
     const atomLink: undefined | Attributes.AtomLink = channel['atom:link'];
     if (atomLink) {
       this.rss.channel['atom:link'] = {

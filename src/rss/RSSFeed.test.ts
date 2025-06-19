@@ -126,11 +126,26 @@ describe('Codrops', () => {
       );
     }
 
-    expect(rss.channel?.title).toBe('Codrops');
+    const { channel } = rss;
+    expect(channel).toBeDefined();
+    if (!channel) return;
 
-    expect(rss.channel?.items[0].enclosure.length).toBe(12);
-    expect(rss.channel?.items[1].enclosure.length).toBe(4);
-    expect(rss.channel?.items[2].enclosure.length).toBe(1);
+    expect(channel.title).toBe('Codrops');
+    expect(channel.link).toBe('https://tympanus.net/codrops');
+    expect(channel.description).toBe('Fueling web creativity since 2009');
+    expect(channel.generator).toBe('https://wordpress.org/?v=6.7.2');
+    expect(channel.lastBuildDate).toBe('2025-06-20T08:21:04.000-05:00');
+    expect(channel['atom:link']).toEqual({
+      href: 'https://tympanus.net/codrops/feed/',
+      rel: 'self',
+      type: 'application/rss+xml',
+    });
+    expect(channel['sy:updatePeriod']).toBe('hourly');
+    expect(channel['sy:updateFrequency']).toBe(1);
+    expect(channel['language']).toBe('en-US');
+    expect(channel.items[0].enclosure.length).toBe(12);
+    expect(channel.items[1].enclosure.length).toBe(4);
+    expect(channel.items[2].enclosure.length).toBe(1);
   });
 });
 
@@ -247,6 +262,6 @@ describe('Vegan Food and Living', () => {
       link: 'https://www.veganfoodandliving.com/',
       width: 32,
       height: 32,
-    })
+    });
   });
 });
