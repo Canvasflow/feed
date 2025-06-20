@@ -84,7 +84,7 @@ export class HTMLMapper {
     }
 
     const { tagName } = node;
-    const attributes = mapAttributes(node.attributes);
+    const attributes = getAttributes(node.attributes);
     const role = attributes.get('role');
     const classNames = attributes.get('class');
 
@@ -148,7 +148,7 @@ export class HTMLMapper {
         return acc;
 
       case 'iframe':
-        component = HTMLMapper.processIframe(node);
+        component = HTMLMapper.fromIframe(node);
         if (component) {
           acc.push(component);
         }
@@ -167,7 +167,7 @@ export class HTMLMapper {
   static toText(node: ElementNode, component: TextType): TextComponent {
     const html = stringify([node]);
     const warnings: string[] = [];
-    const attributes = mapAttributes(node.attributes);
+    const attributes = getAttributes(node.attributes);
 
     const text = sanitizeHtml(html, {
       allowedTags: textAllowedTags,
@@ -197,7 +197,7 @@ export class HTMLMapper {
   static toVideo(node: ElementNode): VideoComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
-    const attributes = mapAttributes(node.attributes);
+    const attributes = getAttributes(node.attributes);
     let url = '';
     const controls = attributes.has('controls');
     const autoplay = attributes.has('autoplay');
@@ -213,7 +213,7 @@ export class HTMLMapper {
       .filter((n) => n.type === 'element' && n.tagName === 'source')
       .map((n: Node) => {
         if (n.type !== 'element') return '';
-        const attr = mapAttributes(n.attributes);
+        const attr = getAttributes(n.attributes);
         return attr.get('src') || '';
       })
       .filter((i) => !!i);
@@ -243,7 +243,7 @@ export class HTMLMapper {
   static toAudio(node: ElementNode): AudioComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
-    const attributes = mapAttributes(node.attributes);
+    const attributes = getAttributes(node.attributes);
     let url = '';
     const controls = attributes.has('controls');
     const autoplay = attributes.has('autoplay');
@@ -258,7 +258,7 @@ export class HTMLMapper {
       .filter((n) => n.type === 'element' && n.tagName === 'source')
       .map((n: Node) => {
         if (n.type !== 'element') return '';
-        const attr = mapAttributes(n.attributes);
+        const attr = getAttributes(n.attributes);
         return attr.get('src') || '';
       })
       .filter((i) => !!i);
@@ -287,7 +287,7 @@ export class HTMLMapper {
     const errors: Error[] = [];
     const warnings: string[] = [];
 
-    const attributes = mapAttributes(node.attributes);
+    const attributes = getAttributes(node.attributes);
     const IG = attributes.get('data-instgrm-permalink') || '';
     const urlInfo = new URL(IG);
     const splitUrl = urlInfo.pathname.split('/');
@@ -335,14 +335,14 @@ export class HTMLMapper {
       }
     }
     if (tweetNode) {
-      const tweetAttrs = mapAttributes(tweetNode.attributes);
-      const tweetUrl = tweetAttrs.get('href') || '';
+      const attributes = getAttributes(tweetNode.attributes);
+      const tweetUrl = attributes.get('href') || '';
 
       const twitterRegex =
         /^https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
-      const twitterValues: Array<string> = twitterRegex.exec(tweetUrl) || [];
-      params.id = twitterValues[3];
-      params.account = twitterValues[1];
+      const values: Array<string> = twitterRegex.exec(tweetUrl) || [];
+      params.id = values[3];
+      params.account = values[1];
     }
 
     //validamos si tiene los valores 1 y 3 para errors
@@ -358,16 +358,17 @@ export class HTMLMapper {
     };
   }
 
-  static processIframe(
+  static fromIframe(
     node: ElementNode
   ): YoutubeComponent | InfogramComponent | undefined {
-    const errors: Error[] = [];
-    const attributes = mapAttributes(node.attributes);
+    const attributes = getAttributes(node.attributes);
     const id = attributes.get('id');
 
     const src = attributes.get('src') || '';
+
+    // If the iframe do not have a src we just ignore it
     if (!src || src.length === 0) {
-      errors.push(new Error('Iframe URL not found.'));
+      return;
     }
 
     let builtComponent;
@@ -375,12 +376,12 @@ export class HTMLMapper {
     const url = new URL(src);
     switch (url.origin) {
       case 'https://e.infogram.com':
-        builtComponent = HTMLMapper.processInfogram(url);
+        builtComponent = HTMLMapper.toInfogram(url);
         builtComponent.id = id;
         break;
 
       case 'https://www.youtube.com':
-        builtComponent = HTMLMapper.processYoutube(url);
+        builtComponent = HTMLMapper.toYoutube(url);
         builtComponent.id = id;
         break;
     }
@@ -388,7 +389,7 @@ export class HTMLMapper {
     return builtComponent;
   }
 
-  static processYoutube(url: URL): YoutubeComponent {
+  static toYoutube(url: URL): YoutubeComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
 
@@ -415,7 +416,7 @@ export class HTMLMapper {
     };
   }
 
-  static processInfogram(url: URL): InfogramComponent {
+  static toInfogram(url: URL): InfogramComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
 
@@ -434,7 +435,7 @@ export class HTMLMapper {
   static toGallery(node: ElementNode): GalleryComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
-    const attributes = mapAttributes(node.attributes);
+    const attributes = getAttributes(node.attributes);
     const role = attributes.get('role') === 'mosaic' ? 'mosaic' : 'default';
     const direction =
       attributes.get('data-direction') === 'vertical'
@@ -474,7 +475,7 @@ export class HTMLMapper {
   // Aqui hay que procesar dos posibles casos, utilizando figure o img directo
   static toImage(node: ElementNode): ImageComponent {
     const { tagName } = node;
-    const attributes = mapAttributes(node.attributes);
+    const attributes = getAttributes(node.attributes);
     const id = attributes.get('id');
 
     if (tagName === 'figure') {
@@ -533,7 +534,7 @@ export class HTMLMapper {
     }
     for (const n of imageNodes) {
       if (n.type !== 'element') continue;
-      const attributes = mapAttributes(n.attributes);
+      const attributes = getAttributes(n.attributes);
       const src = attributes.get('src');
       if (!src) {
         errors.push(new Error('src attribute is missing'));
@@ -601,7 +602,7 @@ export class HTMLMapper {
 
     for (const n of imageNodes) {
       if (n.type !== 'element') continue;
-      const attributes = mapAttributes(n.attributes);
+      const attributes = getAttributes(n.attributes);
       const src = attributes.get('src');
       if (!src) {
         errors.push(new Error('src attribute is missing'));
@@ -658,7 +659,7 @@ export class HTMLMapper {
 
     node.children = node.children.reduce((acc: Array<Node>, n: Node) => {
       if (n.type === 'element') {
-        const attributes = mapAttributes(n.attributes);
+        const attributes = getAttributes(n.attributes);
         const role = attributes.get('role');
         if (n.tagName === 'small' || role === 'credit') {
           if (credit) {
@@ -714,7 +715,7 @@ interface FigcaptionResponse {
   credit?: string;
 }
 
-function mapAttributes(attributes?: Array<Attribute>): Map<string, string> {
+function getAttributes(attributes?: Array<Attribute>): Map<string, string> {
   const response: Map<string, string> = new Map();
   if (!attributes) {
     return response;
