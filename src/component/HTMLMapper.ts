@@ -14,7 +14,6 @@ import {
   type VideoComponent,
   type TwitterComponent,
   type InstagramComponent,
-  type TableComponent,
   type YoutubeComponent,
   type InfogramComponent,
   type AudioComponent,
@@ -139,6 +138,7 @@ export class HTMLMapper {
     }
 
     // This section validates the rest of the tags components
+    let component: Component | undefined;
     switch (tagName) {
       case 'video':
         acc.push(HTMLMapper.toVideo(node));
@@ -146,9 +146,14 @@ export class HTMLMapper {
       case 'audio':
         acc.push(HTMLMapper.toAudio(node));
         return acc;
+
       case 'iframe':
-        acc.push(HTMLMapper.processIframe(node));
+        component = HTMLMapper.processIframe(node);
+        if (component) {
+          acc.push(component);
+        }
         return acc;
+
       default:
         break;
     }
@@ -278,92 +283,6 @@ export class HTMLMapper {
     };
   }
 
-  static processTable(node: ElementNode): TableComponent {
-    const errors: Error[] = [];
-
-    if (!node.children || node.children.length === 0) {
-      errors.push(new Error('No children found for table component'));
-    }
-
-    const thead: any = node.children[0];
-    const tbody = node.children;
-    let headings = [];
-    const rows: Array<any> = [];
-
-    if (thead.children) {
-      headings = thead.children.map((value: any) => {
-        return stringify([...value.children]);
-      });
-    }
-
-    for (const line of tbody) {
-      if (line) {
-        const rowsAcc = {};
-        // TODO pendiente este reduce
-        // line.reduce((acc, value) => {
-        //   if (value.children) {
-        //     acc.push(this.getRowContent(value));
-        //   }
-        //   return acc;
-        // }, []);
-
-        rows.push(rowsAcc);
-      }
-    }
-
-    return {
-      component: 'table',
-      headings,
-      rows,
-      errors,
-      warnings: [],
-    };
-  }
-
-  protected getRowContent(element: any) {
-    const rows: Array<any> = [];
-    let index = 0;
-    for (const row of element.children) {
-      const rowValue = this.getRowChild(row);
-      if (rowValue !== '') {
-        rows[index] = rowValue;
-        index++;
-      }
-    }
-    return rows;
-  }
-
-  protected getRowChild(row: any) {
-    if (row.children) {
-      const value = stringify([...row.children]);
-      return value;
-    } else {
-      const value = row.content;
-      return value.trim();
-    }
-  }
-
-  /*static processBlockquote(
-    node: ElementNode
-  ): BlockquoteComponent | TwitterComponent | InstagramComponent {
-    const errors: Error[] = [];
-    const attributes = mapAttributes(node.attributes);
-    let builtComponent: any;
-
-    if (!attributes) {
-      errors.push(new Error('No Attributes found in node'));
-    }
-
-    if (attributes.get('data-instgrm-permalink')) {
-      builtComponent = HTMLMapper.processInstagram(node);
-    } else if (attributes.get('class') === 'twitter-tweet') {
-      builtComponent = HTMLMapper.processTwitter(node);
-    } else {
-      builtComponent = HTMLMapper.processBlockquoteElement(node);
-    }
-    return builtComponent;
-  }*/
-
   static toInstagram(node: ElementNode): InstagramComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
@@ -405,38 +324,43 @@ export class HTMLMapper {
   static toTwitter(node: ElementNode): TwitterComponent {
     const errors: Error[] = [];
     const warnings: string[] = [];
-    let builtComponent: any;
-    for (let index = 0; index < node.children.length; index++) {
-      const tweet: any = node.children[index];
-      if (tweet.tagName === 'a') {
-        const tweetAttrs = mapAttributes(tweet.attributes);
-        const tweetUrl = tweetAttrs.get('href') || '';
+    let tweetNode: ElementNode | undefined;
+    const params: { id?: string; account?: string } = {};
 
-        const twitterRegex =
-          /^https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
-        const twitterValues: Array<any> = twitterRegex.exec(tweetUrl) || [];
-
-        //validamos si tiene los valores 1 y 3 para errors
-
-        builtComponent = {
-          height: '350',
-          fixedheight: 'on',
-          bleed: 'on',
-          tweetid: twitterValues[3],
-          accountid: twitterValues[1],
-          component: 'twitter',
-          errors,
-          warnings,
-        };
+    for (const child of node.children) {
+      if (child.type === 'text') continue;
+      if (child.tagName === 'a') {
+        tweetNode = child;
+        break;
       }
     }
+    if (tweetNode) {
+      const tweetAttrs = mapAttributes(tweetNode.attributes);
+      const tweetUrl = tweetAttrs.get('href') || '';
 
-    return builtComponent;
+      const twitterRegex =
+        /^https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
+      const twitterValues: Array<string> = twitterRegex.exec(tweetUrl) || [];
+      params.id = twitterValues[3];
+      params.account = twitterValues[1];
+    }
+
+    //validamos si tiene los valores 1 y 3 para errors
+
+    return {
+      height: '350',
+      fixedheight: 'on',
+      bleed: 'on',
+      params,
+      component: 'twitter',
+      errors,
+      warnings,
+    };
   }
 
   static processIframe(
     node: ElementNode
-  ): YoutubeComponent | InfogramComponent {
+  ): YoutubeComponent | InfogramComponent | undefined {
     const errors: Error[] = [];
     const attributes = mapAttributes(node.attributes);
     const id = attributes.get('id');
@@ -446,7 +370,7 @@ export class HTMLMapper {
       errors.push(new Error('Iframe URL not found.'));
     }
 
-    let builtComponent: any; // TODO preguntar a chuck si esto puede quedar asi o hay que ponerle el type, cae en error
+    let builtComponent;
 
     const url = new URL(src);
     switch (url.origin) {

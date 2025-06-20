@@ -33,17 +33,6 @@ export interface TextComponent extends Component {
   text: string;
 }
 
-// export interface ListsComponent extends Component {
-//   component: 'body';
-//   text: string;
-// }
-
-export interface TableComponent extends Component {
-  component: 'table';
-  headings: Array<any>;
-  rows: Array<any>;
-}
-
 export interface VideoComponent extends Component {
   component: 'video';
   url: string;
@@ -69,8 +58,10 @@ export interface TwitterComponent extends Component {
   height: string;
   fixedheight: 'on' | 'off';
   bleed: 'on' | 'off';
-  tweetid: string;
-  accountid: string;
+  params: {
+    id?: string;
+    account?: string;
+  };
 }
 
 export interface InstagramComponent extends Component {

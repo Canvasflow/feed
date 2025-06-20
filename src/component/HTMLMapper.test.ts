@@ -114,8 +114,8 @@ describe('HTMLMapper', () => {
       }
       expect(component.component).toBe('twitter');
       expect(component.height).toBe(`350`);
-      expect(component.accountid).toBe(`NASCARONFOX`);
-      expect(component.tweetid).toBe(`1397629106427101185`);
+      expect(component.params.account).toBe(`NASCARONFOX`);
+      expect(component.params.id).toBe(`1397629106427101185`);
     });
   });
 
