@@ -4,6 +4,29 @@ import { test, expect, describe, beforeEach } from 'vitest';
 
 import RSSFeed, { replaceErrors } from './RSSFeed';
 
+describe('Invalid RSS', () => {
+  test(`It should throw error because the rss is invalid`, async () => {
+    const filePath = path.join(`${process.env.FEEDS_PATH}`, `invalid.rss`);
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
+
+    expect(feed.errors.length).toBeGreaterThan(0);
+  });
+
+  test(`It should throw error because channel is missing in rss`, async () => {
+    const filePath = path.join(
+      `${process.env.FEEDS_PATH}`,
+      `invalid-channel.rss`
+    );
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
+
+    expect(feed.errors.length).toBeGreaterThan(0);
+  });
+});
+
 describe('Newsweek', () => {
   let filePath: string = '';
   let outFilePath: string = '';

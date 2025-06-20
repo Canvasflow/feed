@@ -12,7 +12,6 @@ import {
   type TextComponent,
   type TextType,
   type VideoComponent,
-  type BlockquoteComponent,
   type TwitterComponent,
   type InstagramComponent,
   type TableComponent,
@@ -433,17 +432,6 @@ export class HTMLMapper {
     }
 
     return builtComponent;
-  }
-
-  static processBlockquoteElement(node: ElementNode): BlockquoteComponent {
-    const errors: Error[] = [];
-    const warnings: string[] = [];
-    return {
-      component: 'blockquote',
-      text: `<p>${stringify([...node.children])}</p>`, // TODO remove tags??
-      errors,
-      warnings,
-    };
   }
 
   static processIframe(

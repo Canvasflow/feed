@@ -43,9 +43,6 @@ export default class RSSFeed {
     }
 
     this.validateRSS();
-    if (this.rss.errors.length) {
-      return;
-    }
 
     this.validateChannel();
     if (this.rss.channel.errors.length) {
