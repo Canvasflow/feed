@@ -1,12 +1,19 @@
 export { default as RSSFeed } from './rss/RSSFeed';
-export type { RSS, Channel, Item } from './rss/RSS';
+export type {
+  RSS,
+  Channel,
+  Item,
+  ChannelImage,
+  Enclosure,
+  MediaGroup,
+  MediaContent,
+} from './rss/RSS';
 export type {
   Component,
   GalleryComponent,
   GalleryImage,
   ImageComponent,
   VideoComponent,
-  TableComponent,
   TwitterComponent,
   InstagramComponent,
   InfogramComponent,

@@ -32,7 +32,7 @@ export interface Channel {
   'sy:updateBase'?: string;
 }
 
-interface ChannelImage {
+export interface ChannelImage {
   height?: number;
   width?: number;
   link?: string;
