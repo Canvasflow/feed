@@ -780,8 +780,10 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
       // It doesn't have a class in the element so is going to ignore it
       if (!classNames) continue;
       const itemsSet = new Set([...filter.items]);
-      const classesSet: Set<string> = new Set([...classNames.split(' ')]);
-      return intersect(itemsSet, classesSet).size > 0;
+      const classesNamesSet: Set<string> = new Set([...classNames.split(' ')]);
+      return filter.match === 'any'
+        ? SetUtils.intersect(classesNamesSet, itemsSet).size > 0
+        : SetUtils.subset(classesNamesSet, itemsSet);
     }
   }
   return false;
@@ -813,6 +815,23 @@ interface ClassFilter {
   items: string[];
 }
 
-function intersect(a: Set<string>, b: Set<string>): Set<string> {
-  return new Set([...a].filter((x) => b.has(x)));
+export class SetUtils {
+  static intersect<T>(a: Set<T>, b: Set<T>): Set<T> {
+    return new Set([...a].filter((x) => b.has(x)));
+  }
+
+  static subset<T>(a: Set<T>, b: Set<T>): boolean {
+    for (const i of [...b]) {
+      if (!a.has(i)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  static equal<T>(a: Set<T>, b: Set<T>): boolean {
+    if (a.size !== b.size) return false;
+    return [...a].every((x) => b.has(x));
+  }
 }
