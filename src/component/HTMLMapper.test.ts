@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vitest';
 
-import { HTMLMapper } from './HTMLMapper';
+import { HTMLMapper, type Mapping } from './HTMLMapper';
 import type {
   GalleryComponent,
   ImageComponent,
@@ -135,10 +135,6 @@ describe('HTMLMapper', () => {
       expect(component.params).toEqual({ id: 'ZrCs3HYxflk' });
     });
   });
-
-  /*describe('Infogram Component', () => {
-    //TO BE IMPLEMENTED
-  });*/
 
   describe('Image component', () => {
     test('It should process a simple image component', () => {
@@ -448,6 +444,57 @@ describe('HTMLMapper', () => {
       expect(component.autoplay).toBe(false);
       expect(component.controls).toBe(true);
       expect(component.muted).toBe(true);
+    });
+  });
+
+  describe('Mapping', () => {
+    const mappings: Array<Mapping> = [
+      {
+        component: 'headline',
+        match: 'any',
+        filters: [
+          {
+            type: 'tag',
+            items: ['h2'],
+          },
+        ],
+      },
+      {
+        component: 'text48',
+        match: 'any',
+        filters: [
+          {
+            type: 'class',
+            match: 'any',
+            items: ['text-lg'],
+          },
+        ],
+      },
+      {
+        component: 'subtitle',
+        match: 'any',
+        filters: [
+          {
+            type: 'class',
+            match: 'any',
+            items: ['sub-sm'],
+          },
+        ],
+      },
+    ];
+    test('It should map components using match any with filters any', () => {
+      const content = `
+        <h2>This is a headline</h2>
+        <h4 class="text-lg hidden-xs">
+          This is a large text
+        </h4>
+        <p class="sub-sm">Subtitle</p>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(3);
+      expect(components[0].component).toBe('headline');
+      expect(components[1].component).toBe('text48');
+      expect(components[2].component).toBe('subtitle');
     });
   });
 });
