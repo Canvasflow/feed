@@ -503,6 +503,17 @@ describe('HTMLMapper', () => {
           },
         ],
       },
+      {
+        component: 'text36',
+        match: 'any',
+        filters: [
+          {
+            type: 'class',
+            match: 'equal',
+            items: ['head', 'story'],
+          },
+        ],
+      },
     ];
     test('It should map components using match any with filters any', () => {
       const content = `
@@ -526,6 +537,16 @@ describe('HTMLMapper', () => {
       const components = HTMLMapper.toComponents(content, { mappings });
       expect(components.length).toBe(2);
       expect(components[0].component).toBe('text33');
+      expect(components[1].component).toBe('body');
+    });
+    test('It should map components using match any with filters equal', () => {
+      const content = `
+        <p class="head story">Text example</p>
+        <p class="head story headline">Text example</p>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(2);
+      expect(components[0].component).toBe('text36');
       expect(components[1].component).toBe('body');
     });
   });

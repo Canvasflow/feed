@@ -781,9 +781,13 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
       if (!classNames) continue;
       const itemsSet = new Set([...filter.items]);
       const classesNamesSet: Set<string> = new Set([...classNames.split(' ')]);
-      return filter.match === 'any'
-        ? SetUtils.intersect(classesNamesSet, itemsSet).size > 0
-        : SetUtils.subset(classesNamesSet, itemsSet);
+      switch (filter.match) {
+        case 'equal':
+          return SetUtils.equal(classesNamesSet, itemsSet);
+        case 'all':
+          return SetUtils.subset(classesNamesSet, itemsSet);
+      }
+      return SetUtils.intersect(classesNamesSet, itemsSet).size > 0;
     }
   }
   return false;
@@ -811,7 +815,7 @@ interface TagFilter {
 
 interface ClassFilter {
   type: 'class';
-  match: MatchType;
+  match: MatchType | 'equal';
   items: string[];
 }
 
