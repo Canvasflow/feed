@@ -31,7 +31,11 @@ const textTags = [
   'p',
   'footer',
   'blockquote',
+  'ol',
+  'ul',
 ];
+
+const textTagsSet = new Set([...textTags]);
 
 const textAllowedAttributes: Record<string, Array<string>> = {
   a: ['href', 'target', 'rel'],
@@ -60,108 +64,124 @@ const textAllowedTags = [
 ];
 
 export class HTMLMapper {
-  static toComponents(content: string): Component[] {
+  static toComponents(content: string, params?: Params): Component[] {
     const nodes: Array<Node> = parse(content).filter(
       HTMLMapper.filterEmptyTextNode
     );
 
-    return nodes.reduce(HTMLMapper.reduceComponents, []).filter((i) => !!i);
+    return nodes
+      .reduce(HTMLMapper.reduceComponents(params), [])
+      .filter((i) => !!i);
   }
 
-  static reduceComponents(acc: Array<Component>, node: Node): Array<Component> {
-    if (node.type === 'text') {
-      if (isEmpty(node.content)) {
-        return acc;
-      }
-
-      acc.push({
-        component: 'body',
-        errors: [],
-        warnings: [],
-        text: `<p>${node.content}</p>`,
-      } as TextComponent);
-      return acc;
-    }
-
-    const { tagName } = node;
-    const attributes = getAttributes(node.attributes);
-    const role = attributes.get('role');
-    const classNames = attributes.get('class');
-
-    const textTagMapping: Record<string, TextType> = {
-      h1: 'headline',
-      h2: 'title',
-      h3: 'subtitle',
-      h4: 'intro',
-      h5: 'body',
-      h6: 'body',
-      footer: 'footer',
-      blockquote: 'blockquote',
-      p: 'body',
-      ol: 'body',
-      ul: 'body',
-    };
-
-    // This process instagram
-    if (tagName === 'blockquote' && attributes.get('data-instgrm-permalink')) {
-      acc.push(HTMLMapper.toInstagram(node));
-      return acc;
-    }
-
-    // This process twitter
-    if (
-      (tagName === 'blockquote' || tagName === 'a') &&
-      classNames &&
-      new Set(['twitter-tweet', 'twitter-timeline']).has(classNames)
-    ) {
-      acc.push(HTMLMapper.toTwitter(node));
-      return acc;
-    }
-
-    // This section validates text tags
-    for (const tag in textTagMapping) {
-      if (tagName === tag) {
-        acc.push(HTMLMapper.toText(node, textTagMapping[tag]));
-        return acc;
-      }
-    }
-
-    if (role === 'gallery' || role === 'mosaic') {
-      acc.push(HTMLMapper.toGallery(node));
-      return acc;
-    }
-
-    // Check if the tag belongs to an image tag
-    if (imageTags.has(tagName)) {
-      acc.push(HTMLMapper.toImage(node));
-      return acc;
-    }
-
-    // This section validates the rest of the tags components
-    let component: Component | undefined;
-    switch (tagName) {
-      case 'video':
-        acc.push(HTMLMapper.toVideo(node));
-        return acc;
-      case 'audio':
-        acc.push(HTMLMapper.toAudio(node));
-        return acc;
-
-      case 'iframe':
-        component = HTMLMapper.fromIframe(node);
-        if (component) {
-          acc.push(component);
+  static reduceComponents(
+    params?: Params
+  ): (acc: Array<Component>, node: Node) => Array<Component> {
+    return (acc: Array<Component>, node: Node): Array<Component> => {
+      if (node.type === 'text') {
+        if (isEmpty(node.content)) {
+          return acc;
         }
+
+        acc.push({
+          component: 'body',
+          errors: [],
+          warnings: [],
+          text: `<p>${node.content}</p>`,
+        } as TextComponent);
         return acc;
+      }
 
-      default:
-        break;
-    }
+      const { tagName } = node;
+      const attributes = getAttributes(node.attributes);
+      const role = attributes.get('role');
+      const classNames = attributes.get('class');
 
-    if (node.children) {
-      return node.children.reduce(HTMLMapper.reduceComponents, acc);
-    }
-    return acc;
+      const textTagMapping: Record<string, TextType> = {
+        h1: 'headline',
+        h2: 'title',
+        h3: 'subtitle',
+        h4: 'intro',
+        h5: 'body',
+        h6: 'body',
+        footer: 'footer',
+        blockquote: 'blockquote',
+        p: 'body',
+        ol: 'body',
+        ul: 'body',
+      };
+
+      // This process instagram
+      if (
+        tagName === 'blockquote' &&
+        attributes.get('data-instgrm-permalink')
+      ) {
+        acc.push(HTMLMapper.toInstagram(node));
+        return acc;
+      }
+
+      // This process twitter
+      if (
+        (tagName === 'blockquote' || tagName === 'a') &&
+        classNames &&
+        new Set(['twitter-tweet', 'twitter-timeline']).has(classNames)
+      ) {
+        acc.push(HTMLMapper.toTwitter(node));
+        return acc;
+      }
+
+      // Handle mapping send by the user
+      const textType = getMappingComponent(node, params?.mappings);
+      if (textType) {
+        acc.push(HTMLMapper.toText(node, textType));
+        return acc;
+      }
+
+      // This section validates text tags
+      for (const tag in textTagMapping) {
+        if (tagName === tag) {
+          acc.push(HTMLMapper.toText(node, textTagMapping[tag]));
+          return acc;
+        }
+      }
+
+      if (role === 'gallery' || role === 'mosaic') {
+        acc.push(HTMLMapper.toGallery(node));
+        return acc;
+      }
+
+      // Check if the tag belongs to an image tag
+      if (imageTags.has(tagName)) {
+        acc.push(HTMLMapper.toImage(node));
+        return acc;
+      }
+
+      // This section validates the rest of the tags components
+      let component: Component | undefined;
+      switch (tagName) {
+        case 'video':
+          acc.push(HTMLMapper.toVideo(node));
+          return acc;
+        case 'audio':
+          acc.push(HTMLMapper.toAudio(node));
+          return acc;
+
+        case 'iframe':
+          component = HTMLMapper.fromIframe(node);
+          if (component) {
+            acc.push(component);
+          }
+          return acc;
+
+        default:
+          break;
+      }
+
+      if (node.children) {
+        return node.children.reduce(HTMLMapper.reduceComponents(params), acc);
+      }
+      return acc;
+    };
   }
 
   static toText(node: ElementNode, component: TextType): TextComponent {
@@ -728,4 +748,143 @@ function getAttributes(attributes?: Array<Attribute>): Map<string, string> {
 
 function isEmpty(content: string) {
   return content.replace(/[\r\n\t]/g, '').trim().length === 0;
+}
+
+function getMappingComponent(
+  node: ElementNode,
+  mappings?: Array<Mapping>
+): TextType | undefined {
+  const { tagName } = node;
+  if (!mappings || !mappings.length) return;
+  if (!textTagsSet.has(tagName)) return;
+
+  for (const mapping of mappings) {
+    const { component, match, filters } = mapping;
+    if (match === 'all') {
+      if (filterAllMapping(node, filters)) {
+        return component;
+      }
+    }
+    if (match === 'any') {
+      if (filterAnyMapping(node, filters)) {
+        return component;
+      }
+    }
+  }
+}
+
+// If at least one filter matches then is valid
+function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
+  const { tagName } = node;
+  const attributes = getAttributes(node.attributes);
+  for (const filter of filters) {
+    if (filter.type === 'tag') {
+      if (new Set([...filter.items]).has(tagName)) return true;
+    }
+    if (filter.type === 'class') {
+      const classNames = attributes.get('class');
+
+      // It doesn't have a class in the element so is going to ignore it
+      if (!classNames) continue;
+      const itemsSet = new Set([...filter.items]);
+      const classesNamesSet: Set<string> = new Set([...classNames.split(' ')]);
+      switch (filter.match) {
+        case 'equal':
+          return SetUtils.equal(classesNamesSet, itemsSet);
+        case 'all':
+          return SetUtils.subset(classesNamesSet, itemsSet);
+      }
+      // Use match any as the default case
+      return SetUtils.intersect(classesNamesSet, itemsSet).size > 0;
+    }
+  }
+  return false;
+}
+
+// All the filters need to match to be considered valid
+function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
+  const { tagName } = node;
+  const attributes = getAttributes(node.attributes);
+  // If there aren't any filter, this is invalid
+  if (!filters.length) return false;
+
+  for (const filter of filters) {
+    if (filter.type === 'tag') {
+      if (!new Set([...filter.items]).has(tagName)) return false;
+    }
+    if (filter.type === 'class') {
+      const classNames = attributes.get('class');
+
+      // It doesn't have a class in the element and has a filter of type class
+      // is invalid
+      if (!classNames) return false;
+
+      const itemsSet = new Set([...filter.items]);
+      const classesNamesSet: Set<string> = new Set([...classNames.split(' ')]);
+      switch (filter.match) {
+        case 'equal':
+          if (!SetUtils.equal(classesNamesSet, itemsSet)) {
+            return false;
+          }
+          continue;
+        case 'all':
+          if (!SetUtils.subset(classesNamesSet, itemsSet)) {
+            return false;
+          }
+          continue;
+      }
+      // Use match any as the default case
+      if (SetUtils.intersect(classesNamesSet, itemsSet).size === 0) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+export type MatchType = 'any' | 'all';
+
+export interface Params {
+  mappings: Mapping[];
+}
+
+export interface Mapping {
+  name?: string;
+  component: TextType;
+  match: MatchType;
+  filters: Filter[];
+}
+
+export type Filter = TagFilter | ClassFilter;
+
+interface TagFilter {
+  type: 'tag';
+  items: string[];
+}
+
+interface ClassFilter {
+  type: 'class';
+  match: MatchType | 'equal';
+  items: string[];
+}
+
+export class SetUtils {
+  static intersect<T>(a: Set<T>, b: Set<T>): Set<T> {
+    return new Set([...a].filter((x) => b.has(x)));
+  }
+
+  static subset<T>(a: Set<T>, b: Set<T>): boolean {
+    for (const i of [...b]) {
+      if (!a.has(i)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  static equal<T>(a: Set<T>, b: Set<T>): boolean {
+    if (a.size !== b.size) return false;
+    return [...a].every((x) => b.has(x));
+  }
 }
