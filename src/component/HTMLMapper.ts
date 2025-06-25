@@ -31,6 +31,8 @@ const textTags = [
   'p',
   'footer',
   'blockquote',
+  'ol',
+  'ul',
 ];
 
 const textTagsSet = new Set([...textTags]);
@@ -758,6 +760,11 @@ function getMappingComponent(
 
   for (const mapping of mappings) {
     const { component, match, filters } = mapping;
+    if (match === 'all') {
+      if (filterAllMapping(node, filters)) {
+        return component;
+      }
+    }
     if (match === 'any') {
       if (filterAnyMapping(node, filters)) {
         return component;
@@ -787,10 +794,52 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
         case 'all':
           return SetUtils.subset(classesNamesSet, itemsSet);
       }
+      // Use match any as the default case
       return SetUtils.intersect(classesNamesSet, itemsSet).size > 0;
     }
   }
   return false;
+}
+
+// All the filters need to match to be considered valid
+function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
+  const { tagName } = node;
+  const attributes = getAttributes(node.attributes);
+  // If there aren't any filter, this is invalid
+  if (!filters.length) return false;
+
+  for (const filter of filters) {
+    if (filter.type === 'tag') {
+      if (!new Set([...filter.items]).has(tagName)) return false;
+    }
+    if (filter.type === 'class') {
+      const classNames = attributes.get('class');
+
+      // It doesn't have a class in the element and has a filter of type class
+      // is invalid
+      if (!classNames) return false;
+
+      const itemsSet = new Set([...filter.items]);
+      const classesNamesSet: Set<string> = new Set([...classNames.split(' ')]);
+      switch (filter.match) {
+        case 'equal':
+          if (!SetUtils.equal(classesNamesSet, itemsSet)) {
+            return false;
+          }
+          continue;
+        case 'all':
+          if (!SetUtils.subset(classesNamesSet, itemsSet)) {
+            return false;
+          }
+          continue;
+      }
+      // Use match any as the default case
+      if (SetUtils.intersect(classesNamesSet, itemsSet).size === 0) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 export type MatchType = 'any' | 'all';

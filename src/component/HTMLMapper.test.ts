@@ -448,74 +448,41 @@ describe('HTMLMapper', () => {
   });
 
   describe('Mapping', () => {
-    const mappings: Array<Mapping> = [
-      {
-        component: 'headline',
-        match: 'any',
-        filters: [
-          {
-            type: 'tag',
-            items: ['h2'],
-          },
-        ],
-      },
-      {
-        component: 'text48',
-        match: 'any',
-        filters: [
-          {
-            type: 'class',
-            match: 'any',
-            items: ['text-lg'],
-          },
-        ],
-      },
-      {
-        component: 'subtitle',
-        match: 'any',
-        filters: [
-          {
-            type: 'class',
-            match: 'any',
-            items: ['sub-sm'],
-          },
-        ],
-      },
-      {
-        component: 'text33',
-        match: 'any',
-        filters: [
-          {
-            type: 'class',
-            match: 'all',
-            items: ['top', 'head'],
-          },
-        ],
-      },
-      {
-        component: 'text35',
-        match: 'any',
-        filters: [
-          {
-            type: 'class',
-            match: 'all',
-            items: ['heading', 'story'],
-          },
-        ],
-      },
-      {
-        component: 'text36',
-        match: 'any',
-        filters: [
-          {
-            type: 'class',
-            match: 'equal',
-            items: ['head', 'story'],
-          },
-        ],
-      },
-    ];
     test('It should map components using match any with filters any', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'headline',
+          match: 'any',
+          filters: [
+            {
+              type: 'tag',
+              items: ['h2'],
+            },
+          ],
+        },
+        {
+          component: 'text48',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['text-lg'],
+            },
+          ],
+        },
+        {
+          component: 'subtitle',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['sub-sm'],
+            },
+          ],
+        },
+      ];
       const content = `
         <h2>This is a headline</h2>
         <h4 class="text-lg hidden-xs">
@@ -530,6 +497,30 @@ describe('HTMLMapper', () => {
       expect(components[2].component).toBe('subtitle');
     });
     test('It should map components using match any with filters all', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'text33',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'all',
+              items: ['top', 'head'],
+            },
+          ],
+        },
+        {
+          component: 'text35',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'all',
+              items: ['heading', 'story'],
+            },
+          ],
+        },
+      ];
       const content = `
         <p class="head top primary">Text example</p>
         <p class="heading primary">Text example</p>
@@ -540,6 +531,19 @@ describe('HTMLMapper', () => {
       expect(components[1].component).toBe('body');
     });
     test('It should map components using match any with filters equal', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'text36',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'equal',
+              items: ['head', 'story'],
+            },
+          ],
+        },
+      ];
       const content = `
         <p class="head story">Text example</p>
         <p class="head story headline">Text example</p>
@@ -548,6 +552,131 @@ describe('HTMLMapper', () => {
       expect(components.length).toBe(2);
       expect(components[0].component).toBe('text36');
       expect(components[1].component).toBe('body');
+    });
+    test('It should map components using match all with filters any', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'text48',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['h2'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['text-lg'],
+            },
+          ],
+        },
+        {
+          component: 'subtitle',
+          match: 'all',
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['sub-sm'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <h2 class="text-lg hidden-xs">
+          This is a large text
+        </h2>
+        <h2>
+          This is a large text
+        </h2>
+        <p class="sub-sm">Subtitle</p>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(3);
+      expect(components[0].component).toBe('text48');
+      expect(components[1].component).toBe('title');
+      expect(components[2].component).toBe('subtitle');
+    });
+    test('It should map components using match all with filters all', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'text33',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['h3', 'h2'],
+            },
+            {
+              type: 'class',
+              match: 'all',
+              items: ['top', 'head'],
+            },
+          ],
+        },
+        {
+          component: 'text35',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['p', 'ol'],
+            },
+            {
+              type: 'class',
+              match: 'all',
+              items: ['heading', 'story'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <h3 class="head top primary">Text example</h3>
+        <h2 class="head top primary">Text example</h2>
+        <h2>Text example</h2>
+        <p class="heading story">Text example</p>
+        <p class="heading top">Text example</p>
+        <ol class="heading story">
+          <li>Item 1</li>
+        </ol>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(6);
+      expect(components[0].component).toBe('text33');
+      expect(components[1].component).toBe('text33');
+      expect(components[2].component).toBe('title');
+      expect(components[3].component).toBe('text35');
+      expect(components[4].component).toBe('body');
+      expect(components[5].component).toBe('text35');
+    });
+    test('It should map components using match all with filters equal', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'text36',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['p'],
+            },
+            {
+              type: 'class',
+              match: 'equal',
+              items: ['head', 'story'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <p class="head story">Text example</p>
+        <h1 class="head story headline">Text example</h1>
+        <h3 class="head story">Text example</h3>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(3);
+      expect(components[0].component).toBe('text36');
+      expect(components[1].component).toBe('headline');
+      expect(components[2].component).toBe('subtitle');
     });
   });
 });
