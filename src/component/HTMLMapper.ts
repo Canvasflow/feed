@@ -422,9 +422,10 @@ export class HTMLMapper {
 
     const id = url.pathname.split('/').pop() as string;
 
-    if (id.length !== 11) {
-      errors.push(new Error('Youtube video ID length should be 11'));
+    if (!/^[a-zA-Z0-9_-]{11}$/.test(id)) {
+      errors.push(new Error('Invalid Youtube video id'));
     }
+
     return {
       component: 'video',
       vidtype: 'youtube',
