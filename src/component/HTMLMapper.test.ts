@@ -458,6 +458,11 @@ describe('HTMLMapper', () => {
               type: 'tag',
               items: ['h2'],
             },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['text-md'],
+            },
           ],
         },
         {
@@ -489,12 +494,14 @@ describe('HTMLMapper', () => {
           This is a large text
         </h4>
         <p class="sub-sm">Subtitle</p>
+        <p class="text-md">Headline</p>
       `;
       const components = HTMLMapper.toComponents(content, { mappings });
-      expect(components.length).toBe(3);
+      expect(components.length).toBe(4);
       expect(components[0].component).toBe('headline');
       expect(components[1].component).toBe('text48');
       expect(components[2].component).toBe('subtitle');
+      expect(components[3].component).toBe('headline');
     });
     test('It should map components using match any with filters all', () => {
       const mappings: Array<Mapping> = [
@@ -545,7 +552,7 @@ describe('HTMLMapper', () => {
         },
       ];
       const content = `
-        <p class="head story">Text example</p>
+        <p class="story head">Text example</p>
         <p class="head story headline">Text example</p>
       `;
       const components = HTMLMapper.toComponents(content, { mappings });
@@ -565,7 +572,7 @@ describe('HTMLMapper', () => {
             },
             {
               type: 'class',
-              match: 'any',
+              match: 'all',
               items: ['text-lg'],
             },
           ],
@@ -669,7 +676,7 @@ describe('HTMLMapper', () => {
       ];
       const content = `
         <p class="head story">Text example</p>
-        <h1 class="head story headline">Text example</h1>
+        <h1 class="head story headline">Text <span class="teasdsaasdasd">example</span></h1>
         <h3 class="head story">Text example</h3>
       `;
       const components = HTMLMapper.toComponents(content, { mappings });

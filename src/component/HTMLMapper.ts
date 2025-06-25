@@ -165,7 +165,6 @@ export class HTMLMapper {
         case 'audio':
           acc.push(HTMLMapper.toAudio(node));
           return acc;
-
         case 'iframe':
           component = HTMLMapper.fromIframe(node);
           if (component) {
