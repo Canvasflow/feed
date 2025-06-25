@@ -43,9 +43,6 @@ export default class RSSFeed {
     }
 
     this.validateRSS();
-    if (this.rss.errors.length) {
-      return;
-    }
 
     this.validateChannel();
     if (this.rss.channel.errors.length) {
@@ -59,13 +56,48 @@ export default class RSSFeed {
     const { data } = this;
     const { rss } = data;
     const { channel } = rss;
-    const { title, link, description, language, image } = channel;
+
+    const {
+      title,
+      link,
+      description,
+      language,
+      image,
+      generator,
+      docs,
+      category,
+      ttl,
+    } = channel;
+
+    let lastBuildDate: undefined | string;
+    if (channel.lastBuildDate) {
+      const lastBuildDateTime = DateTime.fromJSDate(
+        new Date(`${channel.lastBuildDate}`)
+      );
+      if (lastBuildDateTime.isValid) {
+        lastBuildDate = lastBuildDateTime.toISO();
+      }
+    }
+
+    let pubDate: undefined | string;
+    if (channel.pubDate) {
+      const pubDateTime = DateTime.fromJSDate(new Date(`${channel.pubDate}`));
+      if (pubDateTime.isValid) {
+        pubDate = pubDateTime.toISO();
+      }
+    }
 
     this.rss.channel.title = title;
     this.rss.channel.link = link;
     this.rss.channel.description = description;
     this.rss.channel.language = language;
+    this.rss.channel.lastBuildDate = lastBuildDate;
+    this.rss.channel.docs = docs;
+    this.rss.channel.category = category;
     this.rss.channel.image = image;
+    this.rss.channel.ttl = ttl;
+    this.rss.channel.pubDate = pubDate;
+    this.rss.channel.generator = generator;
     const atomLink: undefined | Attributes.AtomLink = channel['atom:link'];
     if (atomLink) {
       this.rss.channel['atom:link'] = {
@@ -79,6 +111,7 @@ export default class RSSFeed {
       ? parseInt(`${channel['sy:updateFrequency']}`)
       : channel['sy:updateFrequency'];
     this.rss.channel['sy:updatePeriod'] = channel['sy:updatePeriod'];
+    this.rss.channel['sy:updateBase'] = channel['sy:updateBase'];
 
     for (const item of channel.item) {
       this.rss.channel.items.push(this.buildItem(item));
@@ -233,13 +266,16 @@ export default class RSSFeed {
       description,
       link,
       pubDate,
-      errors,
+      'dc:creator': item['dc:creator'] ? `${item['dc:creator']}` : undefined,
+      'dc:language': item['dc:language'] ? `${item['dc:language']}` : undefined,
+      'dc:date': item['dc:date'] ? `${item['dc:date']}` : undefined,
       'content:encoded': contentEncoded,
-      warnings,
       enclosure: this.getEnclosure(item),
       mediaGroup: this.getMediaGroup(item),
       mediaContent: this.getMediaContent(item),
       components: [],
+      warnings,
+      errors,
     };
 
     response.components = HTMLMapper.toComponents(contentEncoded);

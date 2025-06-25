@@ -13,12 +13,16 @@
         <atom:link href="https://tympanus.net/codrops/feed/" rel="self" type="application/rss+xml" />
         <link>https://tympanus.net/codrops</link>
         <description>Fueling web creativity since 2009</description>
-        <lastBuildDate>Mon, 16 Jun 2025 13:21:04 +0000</lastBuildDate>
+        <lastBuildDate>Mon, 20 Jun 2025 13:21:04 +0000</lastBuildDate>
+        <pubDate>Mon, 20 Jun 2025 13:21:04 +0000</pubDate>
+        <docs>https://tympanus.net/codrops/docs</docs>
         <language>en-US</language>
-        <sy:updatePeriod>
-            hourly </sy:updatePeriod>
-        <sy:updateFrequency>
-            1 </sy:updateFrequency>
+        <category><![CDATA[CSS]]></category>
+        <category><![CDATA[HTML]]></category>
+        <ttl>60</ttl>
+        <sy:updateBase>2025-06-19T18:51:09÷00:00</sy:updateBase>
+        <sy:updatePeriod>hourly</sy:updatePeriod>
+        <sy:updateFrequency>1</sy:updateFrequency>
         <generator>https://wordpress.org/?v=6.7.2</generator>
         <item>
             <title>Inside the Frontier of AI, WebXR &#038; Real-Time 3D: Crafting KODE Immersive</title>
@@ -26,6 +30,8 @@
                 https://tympanus.net/codrops/2025/06/16/inside-the-frontier-of-ai-webxr-real-time-3d-crafting-kode-immersive/</link>
 
             <dc:creator><![CDATA[Malvah Studio]]></dc:creator>
+            <dc:date>2025-06-19T18:51:09÷00:00</dc:date>
+            <dc:language>en</dc:language>
             <pubDate>Mon, 16 Jun 2025 12:47:10 +0000</pubDate>
             <category><![CDATA[Articles]]></category>
             <category><![CDATA[Case Studies]]></category>

@@ -12,8 +12,14 @@ export interface Channel {
   link?: string;
   description?: string;
   language?: string;
-  image?: ChannelImage,
+  generator?: string;
+  lastBuildDate?: string;
+  docs?: string;
+  image?: ChannelImage;
+  pubDate?: string;
+  category?: string[];
   items: Item[];
+  ttl?: number;
   errors: Error[];
   warnings: string[];
   'atom:link'?: {
@@ -21,11 +27,12 @@ export interface Channel {
     rel?: string;
     type?: string;
   };
-  'sy:updateFrequency'?: string;
   'sy:updatePeriod'?: string;
+  'sy:updateFrequency'?: string;
+  'sy:updateBase'?: string;
 }
 
-interface ChannelImage {
+export interface ChannelImage {
   height?: number;
   width?: number;
   link?: string;
@@ -36,6 +43,9 @@ interface ChannelImage {
 export interface Item {
   title?: string;
   'content:encoded'?: string;
+  'dc:creator'?: string;
+  'dc:date'?: string;
+  'dc:language'?: string;
   category?: string[];
   guid?: string;
   link?: string;

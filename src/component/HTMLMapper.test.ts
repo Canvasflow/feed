@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vitest';
 
-import { HTMLMapper } from './HTMLMapper';
+import { HTMLMapper, type Mapping } from './HTMLMapper';
 import type {
   GalleryComponent,
   ImageComponent,
@@ -8,6 +8,8 @@ import type {
   TwitterComponent,
   InstagramComponent,
   YoutubeComponent,
+  VideoComponent,
+  AudioComponent,
 } from './Component';
 
 describe('HTMLMapper', () => {
@@ -112,8 +114,8 @@ describe('HTMLMapper', () => {
       }
       expect(component.component).toBe('twitter');
       expect(component.height).toBe(`350`);
-      expect(component.accountid).toBe(`NASCARONFOX`);
-      expect(component.tweetid).toBe(`1397629106427101185`);
+      expect(component.params.account).toBe(`NASCARONFOX`);
+      expect(component.params.id).toBe(`1397629106427101185`);
     });
   });
 
@@ -133,10 +135,6 @@ describe('HTMLMapper', () => {
       expect(component.params).toEqual({ id: 'ZrCs3HYxflk' });
     });
   });
-
-  /*describe('Infogram Component', () => {
-    //TO BE IMPLEMENTED
-  });*/
 
   describe('Image component', () => {
     test('It should process a simple image component', () => {
@@ -184,6 +182,7 @@ describe('HTMLMapper', () => {
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBe('This is a valid caption');
     });
+
     test('It should process a figure component without caption', () => {
       const content = `
         <figure>
@@ -197,6 +196,7 @@ describe('HTMLMapper', () => {
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBeUndefined();
     });
+
     test('It should process a figure component with caption', () => {
       const content = `
         <figure>
@@ -211,6 +211,7 @@ describe('HTMLMapper', () => {
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBe('This is a caption');
     });
+
     test('It should process a figure component with caption and credit', () => {
       const content = `
         <figure>
@@ -232,12 +233,13 @@ describe('HTMLMapper', () => {
         'Copyright 2025 The Associated Press. All rights reserved'
       );
     });
+
     test('It should process a figure component with caption and role credit', () => {
       const content = `
         <figure>
           <img src="cover.jpg" alt="My image">
           <figcaption>
-            This is 
+            This is
             a caption
             <span role="credit">This is a credit</span>
           </figcaption>
@@ -302,6 +304,386 @@ describe('HTMLMapper', () => {
       expect(component.images[3]).toEqual({
         imageurl: 'image4.jpg',
       });
+    });
+  });
+
+  describe('Video component', () => {
+    test('It should process a simple video element', () => {
+      const src = 'movie.mp4';
+      const poster = 'poster.jpg';
+      const content = `
+        <video
+          src="${src}"
+          poster="${poster}"
+          controls
+          loop
+          muted/>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as VideoComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('video');
+      expect(component.url).toBe(src);
+      expect(component.poster).toBe(poster);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+    });
+    test('It should process a video element with multiple sources', () => {
+      const src = 'movie.mp4';
+      const poster = 'poster.jpg';
+      const content = `
+        <video
+          poster="${poster}"
+          controls
+          loop
+          muted>
+          <source src="${src}" type="video/mp4">
+          <source src="movie.ogv" type="video/ogg">
+          <source src="movie.webm" type="video/webm">
+        </video>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as VideoComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('video');
+      expect(component.url).toBe(src);
+      expect(component.poster).toBe(poster);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+    });
+    test('It should use source instead of src attribute', () => {
+      const src = 'movie.mp4';
+      const poster = 'poster.jpg';
+      const content = `
+        <video
+          poster="${poster}"
+          controls
+          loop
+          src="movie-1.mp4"
+          muted>
+          <source src="${src}" type="video/mp4">
+          <source src="movie.ogv" type="video/ogg">
+          <source src="movie.webm" type="video/webm">
+        </video>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as VideoComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('video');
+      expect(component.url).toBe(src);
+      expect(component.poster).toBe(poster);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+    });
+  });
+
+  describe('Audio component', () => {
+    test('It should process a simple audio element', () => {
+      const src = 'audio.mp3';
+      const content = `
+        <audio
+          src="${src}"
+          controls
+          loop
+          muted/>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as AudioComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+    });
+    test('It should process a audio element with multiple sources', () => {
+      const src = 'audio.ogg';
+      const content = `
+        <audio
+          loop
+          muted>
+          <source src="${src}" type="audio/ogg">
+          <source src="audio.mp3" type="audio/mpeg">
+        </audio>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as AudioComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(true);
+      expect(component.muted).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(false);
+    });
+    test('It should use source instead of src attribute', () => {
+      const src = 'audio.mp3';
+      const content = `
+        <audio
+          controls
+          loop
+          src="audio-1.mp3"
+          muted>
+          <source src="${src}" type="audio/mpeg">
+          <source src="audio.mp3" type="audio/ogg">
+        </audio>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as AudioComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+    });
+  });
+
+  describe('Mapping', () => {
+    test('It should map components using match any with filters any', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'headline',
+          match: 'any',
+          filters: [
+            {
+              type: 'tag',
+              items: ['h2'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['text-md'],
+            },
+          ],
+        },
+        {
+          component: 'text48',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['text-lg'],
+            },
+          ],
+        },
+        {
+          component: 'subtitle',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['sub-sm'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <h2>This is a headline</h2>
+        <h4 class="text-lg hidden-xs">
+          This is a large text
+        </h4>
+        <p class="sub-sm">Subtitle</p>
+        <p class="text-md">Headline</p>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(4);
+      expect(components[0].component).toBe('headline');
+      expect(components[1].component).toBe('text48');
+      expect(components[2].component).toBe('subtitle');
+      expect(components[3].component).toBe('headline');
+    });
+    test('It should map components using match any with filters all', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'text33',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'all',
+              items: ['top', 'head'],
+            },
+          ],
+        },
+        {
+          component: 'text35',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'all',
+              items: ['heading', 'story'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <p class="head top primary">Text example</p>
+        <p class="heading primary">Text example</p>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(2);
+      expect(components[0].component).toBe('text33');
+      expect(components[1].component).toBe('body');
+    });
+    test('It should map components using match any with filters equal', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'text36',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'equal',
+              items: ['head', 'story'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <p class="story head">Text example</p>
+        <p class="head story headline">Text example</p>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(2);
+      expect(components[0].component).toBe('text36');
+      expect(components[1].component).toBe('body');
+    });
+    test('It should map components using match all with filters any', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'text48',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['h2'],
+            },
+            {
+              type: 'class',
+              match: 'all',
+              items: ['text-lg'],
+            },
+          ],
+        },
+        {
+          component: 'subtitle',
+          match: 'all',
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['sub-sm'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <h2 class="text-lg hidden-xs">
+          This is a large text
+        </h2>
+        <h2>
+          This is a large text
+        </h2>
+        <p class="sub-sm">Subtitle</p>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(3);
+      expect(components[0].component).toBe('text48');
+      expect(components[1].component).toBe('title');
+      expect(components[2].component).toBe('subtitle');
+    });
+    test('It should map components using match all with filters all', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'text33',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['h3', 'h2'],
+            },
+            {
+              type: 'class',
+              match: 'all',
+              items: ['top', 'head'],
+            },
+          ],
+        },
+        {
+          component: 'text35',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['p', 'ol'],
+            },
+            {
+              type: 'class',
+              match: 'all',
+              items: ['heading', 'story'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <h3 class="head top primary">Text example</h3>
+        <h2 class="head top primary">Text example</h2>
+        <h2>Text example</h2>
+        <p class="heading story">Text example</p>
+        <p class="heading top">Text example</p>
+        <ol class="heading story">
+          <li>Item 1</li>
+        </ol>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(6);
+      expect(components[0].component).toBe('text33');
+      expect(components[1].component).toBe('text33');
+      expect(components[2].component).toBe('title');
+      expect(components[3].component).toBe('text35');
+      expect(components[4].component).toBe('body');
+      expect(components[5].component).toBe('text35');
+    });
+    test('It should map components using match all with filters equal', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'text36',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['p'],
+            },
+            {
+              type: 'class',
+              match: 'equal',
+              items: ['head', 'story'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <p class="head story">Text example</p>
+        <h1 class="head story headline">Text <span class="teasdsaasdasd">example</span></h1>
+        <h3 class="head story">Text example</h3>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(3);
+      expect(components[0].component).toBe('text36');
+      expect(components[1].component).toBe('headline');
+      expect(components[2].component).toBe('subtitle');
     });
   });
 });
