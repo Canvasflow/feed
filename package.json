@@ -1,7 +1,7 @@
 {
   "name": "@canvasflow/feed",
   "description": "This is canvasflow utility for processing feeds",
-  "version": "0.0.12",
+  "version": "0.0.15",
   "type": "module",
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
@@ -96,6 +96,7 @@
     "fast-xml-parser": "^5.2.3",
     "himalaya": "^1.1.1",
     "luxon": "^3.6.1",
-    "sanitize-html": "^2.17.0"
+    "sanitize-html": "^2.17.0",
+    "zod": "^3.25.67"
   }
 }

@@ -33,35 +33,24 @@ export interface TextComponent extends Component {
   text: string;
 }
 
-// export interface ListsComponent extends Component {
-//   component: 'body';
-//   text: string;
-// }
-
-export interface TableComponent extends Component {
-  component: 'table';
-  headings: Array<any>;
-  rows: Array<any>;
-}
-
 export interface VideoComponent extends Component {
   component: 'video';
-  videourl: string;
-  controlsenabled: 'on' | 'off';
-  autoplay: 'on' | 'off';
-  posterenabled: 'on' | 'off';
+  url: string;
+  controls: boolean;
+  autoplay: boolean;
+  loop: boolean;
+  muted: boolean;
   movietype: 'hosted';
-  aspectRatio: 'auto';
-  imageurl?: string;
-  cacheparam?: string;
-  caption?: string;
-  credit?: string;
+  poster?: string;
 }
 
-// TODO Remove this component
-export interface BlockquoteComponent extends Component {
-  component: 'blockquote';
-  text: string;
+export interface AudioComponent extends Component {
+  component: 'audio';
+  url: string;
+  controls: boolean;
+  autoplay: boolean;
+  loop: boolean;
+  muted: boolean;
 }
 
 export interface TwitterComponent extends Component {
@@ -69,8 +58,10 @@ export interface TwitterComponent extends Component {
   height: string;
   fixedheight: 'on' | 'off';
   bleed: 'on' | 'off';
-  tweetid: string;
-  accountid: string;
+  params: {
+    id?: string;
+    account?: string;
+  };
 }
 
 export interface InstagramComponent extends Component {
