@@ -5,7 +5,7 @@ import type { RSS, Item, Enclosure, MediaContent, MediaGroup } from './RSS';
 import { Tag } from './Tag';
 
 import * as Attributes from './Attributes';
-import { HTMLMapper } from '../component/HTMLMapper';
+import { HTMLMapper, type Params } from '../component/HTMLMapper';
 
 export default class RSSFeed {
   public content: string;
@@ -52,7 +52,7 @@ export default class RSSFeed {
     this.validateItems(data.rss.channel.item);
   }
 
-  async build(): Promise<RSS> {
+  async build(params?: Params): Promise<RSS> {
     const { data } = this;
     const { rss } = data;
     const { channel } = rss;
@@ -114,7 +114,7 @@ export default class RSSFeed {
     this.rss.channel['sy:updateBase'] = channel['sy:updateBase'];
 
     for (const item of channel.item) {
-      this.rss.channel.items.push(this.buildItem(item));
+      this.rss.channel.items.push(this.buildItem(item, params));
     }
     return this.rss;
   }
@@ -221,7 +221,10 @@ export default class RSSFeed {
     item.warnings = warnings;
   }
 
-  private buildItem(item: Record<string, unknown>): Item {
+  private buildItem(
+    item: Record<string, unknown>,
+    params: Params | undefined
+  ): Item {
     const guid = typeof item.guid === 'string' ? item.guid : undefined;
     const title =
       typeof item.title === 'string' ? item.title.trim() : undefined;
@@ -278,8 +281,7 @@ export default class RSSFeed {
       errors,
     };
 
-    response.components = HTMLMapper.toComponents(contentEncoded);
-
+    response.components = HTMLMapper.toComponents(contentEncoded, params);
     return response;
   }
 
