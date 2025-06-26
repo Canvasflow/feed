@@ -5,7 +5,7 @@ import type { RSS, Item, Enclosure, MediaContent, MediaGroup } from './RSS';
 import { Tag } from './Tag';
 
 import * as Attributes from './Attributes';
-import { HTMLMapper } from '../component/HTMLMapper';
+import { HTMLMapper, type Params } from '../component/HTMLMapper';
 
 export default class RSSFeed {
   public content: string;
@@ -13,14 +13,15 @@ export default class RSSFeed {
   public data: any;
   public rss: RSS;
   public errors: Error[] = [];
+  private params: Params | undefined;
 
-  constructor(content: string) {
+  constructor(content: string, params?: Params) {
     this.content = content;
     const parser = new XMLParser({
       ignoreAttributes: false,
     });
     this.data = parser.parse(content);
-
+    this.params = params;
     this.rss = {
       errors: [],
       warnings: [],
@@ -278,8 +279,7 @@ export default class RSSFeed {
       errors,
     };
 
-    response.components = HTMLMapper.toComponents(contentEncoded);
-
+    response.components = HTMLMapper.toComponents(contentEncoded, this.params);
     return response;
   }
 
