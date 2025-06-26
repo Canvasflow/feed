@@ -2,6 +2,7 @@
 /* @ts-expect-error */
 import { parse, stringify } from 'himalaya';
 import sanitizeHtml from 'sanitize-html';
+import { z } from 'zod';
 
 import {
   isValidTextRole,
@@ -21,7 +22,7 @@ import {
 
 const imageTags = new Set(['img', 'picture', 'figure']);
 
-const textTags = [
+export const textTags = [
   'h1',
   'h2',
   'h3',
@@ -35,7 +36,7 @@ const textTags = [
   'ul',
 ];
 
-const textTagsSet = new Set([...textTags]);
+export const textTagsSet = new Set([...textTags]);
 
 const textAllowedAttributes: Record<string, Array<string>> = {
   a: ['href', 'target', 'rel'],
@@ -842,10 +843,35 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
   return true;
 }
 
+// eslint-disable-next-line
+export function isValidParams(params: any): boolean {
+  if (!params) return false;
+  // Zod Schema validation
+  const ParamsSchema = z.object({
+    mappings: z
+      .object({
+        name: z.string().optional(),
+        match: z.custom<MatchType>(),
+        component: z.custom<TextType>(),
+        filters: z.custom<Filter>().array(),
+      })
+      .array(),
+  });
+  try {
+    ParamsSchema.parse(params);
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      console.error(e.issues);
+    }
+    return false;
+  }
+  return true;
+}
+
 export type MatchType = 'any' | 'all';
 
 export interface Params {
-  mappings: Mapping[];
+  mappings?: Mapping[];
 }
 
 export interface Mapping {

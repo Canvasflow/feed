@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vitest';
 
-import { HTMLMapper, type Mapping } from './HTMLMapper';
+import { HTMLMapper, type Mapping, isValidParams } from './HTMLMapper';
 import type {
   GalleryComponent,
   ImageComponent,
@@ -684,6 +684,39 @@ describe('HTMLMapper', () => {
       expect(components[0].component).toBe('text36');
       expect(components[1].component).toBe('headline');
       expect(components[2].component).toBe('subtitle');
+    });
+
+    describe('Validation', () => {
+      test('It should return a valid mapping', () => {
+        const mappings = [
+          {
+            component: 'text36',
+            match: 'all',
+            filters: [
+              {
+                type: 'tag',
+                items: ['p'],
+              },
+              {
+                type: 'class',
+                match: 'equal',
+                items: ['head', 'story'],
+              },
+            ],
+          },
+        ];
+        const isValid = isValidParams({
+          mappings,
+        });
+        expect(isValid).toBe(true);
+      });
+      test('It should throw an invalid null mapping', () => {
+        const mappings = [null];
+        const isValid = isValidParams({
+          mappings,
+        });
+        expect(isValid).toBe(false);
+      });
     });
   });
 });
