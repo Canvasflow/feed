@@ -13,14 +13,15 @@ export default class RSSFeed {
   public data: any;
   public rss: RSS;
   public errors: Error[] = [];
+  private params: Params | undefined;
 
-  constructor(content: string) {
+  constructor(content: string, params?: Params) {
     this.content = content;
     const parser = new XMLParser({
       ignoreAttributes: false,
     });
     this.data = parser.parse(content);
-
+    this.params = params;
     this.rss = {
       errors: [],
       warnings: [],
@@ -52,7 +53,7 @@ export default class RSSFeed {
     this.validateItems(data.rss.channel.item);
   }
 
-  async build(params?: Params): Promise<RSS> {
+  async build(): Promise<RSS> {
     const { data } = this;
     const { rss } = data;
     const { channel } = rss;
@@ -114,7 +115,7 @@ export default class RSSFeed {
     this.rss.channel['sy:updateBase'] = channel['sy:updateBase'];
 
     for (const item of channel.item) {
-      this.rss.channel.items.push(this.buildItem(item, params));
+      this.rss.channel.items.push(this.buildItem(item));
     }
     return this.rss;
   }
@@ -221,10 +222,7 @@ export default class RSSFeed {
     item.warnings = warnings;
   }
 
-  private buildItem(
-    item: Record<string, unknown>,
-    params: Params | undefined
-  ): Item {
+  private buildItem(item: Record<string, unknown>): Item {
     const guid = typeof item.guid === 'string' ? item.guid : undefined;
     const title =
       typeof item.title === 'string' ? item.title.trim() : undefined;
@@ -281,7 +279,7 @@ export default class RSSFeed {
       errors,
     };
 
-    response.components = HTMLMapper.toComponents(contentEncoded, params);
+    response.components = HTMLMapper.toComponents(contentEncoded, this.params);
     return response;
   }
 
