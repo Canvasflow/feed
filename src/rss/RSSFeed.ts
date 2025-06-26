@@ -5,7 +5,11 @@ import type { RSS, Item, Enclosure, MediaContent, MediaGroup } from './RSS';
 import { Tag } from './Tag';
 
 import * as Attributes from './Attributes';
-import { HTMLMapper, type Params } from '../component/HTMLMapper';
+import {
+  HTMLMapper,
+  type Params,
+  isValidParams,
+} from '../component/HTMLMapper';
 
 export default class RSSFeed {
   public content: string;
@@ -21,7 +25,10 @@ export default class RSSFeed {
       ignoreAttributes: false,
     });
     this.data = parser.parse(content);
-    this.params = params;
+    if (params && isValidParams(params)) {
+      this.params = params;
+    }
+
     this.rss = {
       errors: [],
       warnings: [],

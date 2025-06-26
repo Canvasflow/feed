@@ -23,4 +23,4 @@ export type {
   TextType,
 } from './component/Component';
 export { isValidTextRole } from './component/Component';
-export { isValidMappings } from './component/HTMLMapper';
+export { isValidParams } from './component/HTMLMapper';

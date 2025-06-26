@@ -861,7 +861,7 @@ export function isValidParams(params: any): boolean {
     ParamsSchema.parse(params);
   } catch (e) {
     if (e instanceof z.ZodError) {
-      console.error(e.issues);
+      return false;
     }
     return false;
   }
