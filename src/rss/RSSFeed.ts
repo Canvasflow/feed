@@ -230,7 +230,14 @@ export default class RSSFeed {
   }
 
   private buildItem(item: Record<string, unknown>): Item {
-    const guid = typeof item.guid === 'string' ? item.guid : undefined;
+    let guid: string | undefined = undefined;
+    if (typeof item.guid === 'string') {
+      guid = item.guid;
+    } else if (typeof item.guid === 'object' && item?.guid) {
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+      const g = item?.guid as any;
+      guid = `${g['#text']}`;
+    }
     const title =
       typeof item.title === 'string' ? item.title.trim() : undefined;
     const description =
