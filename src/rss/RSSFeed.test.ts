@@ -316,7 +316,7 @@ describe('VMG', () => {
       );
     }
   });
-  test(`It should build the content`, async () => {
+  test(`It should throw error when item is missing`, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
@@ -329,7 +329,7 @@ describe('VMG', () => {
       );
     }
 
-    expect(rss.channel?.title).toBe('Star Magazine | Celebrity News, Exclusives, Photos and Videos');
+    expect(rss.channel?.title).toBe('VMG');
     expect(rss.channel?.errors.length).toBeGreaterThan(0);
   });
 });
