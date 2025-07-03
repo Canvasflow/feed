@@ -120,10 +120,15 @@ export default class RSSFeed {
       : channel['sy:updateFrequency'];
     this.rss.channel['sy:updatePeriod'] = channel['sy:updatePeriod'];
     this.rss.channel['sy:updateBase'] = channel['sy:updateBase'];
-
-    for (const item of channel.item) {
-      this.rss.channel.items.push(this.buildItem(item));
+    if (channel.item) {
+      for (const item of channel.item) {
+        this.rss.channel.items.push(this.buildItem(item));
+      }
+    } else {
+      this.rss.channel.errors.push(new Error('channel do not have item elements'))
     }
+
+
     return this.rss;
   }
 

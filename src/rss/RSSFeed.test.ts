@@ -303,3 +303,33 @@ describe('Vegan Food and Living', () => {
     });
   });
 });
+
+describe('VMG', () => {
+  let filePath: string = '';
+  let outFilePath: string = '';
+  beforeEach(() => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `vmg.rss`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(
+        `${process.env.FEEDS_OUT_PATH}`,
+        `vmg.json`
+      );
+    }
+  });
+  test(`It should throw error when item is missing`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    const rss = await feed.build();
+
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(RSSFeed.toJSON(rss), replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    expect(rss.channel?.title).toBe('VMG');
+    expect(rss.channel?.errors.length).toBeGreaterThan(0);
+  });
+});

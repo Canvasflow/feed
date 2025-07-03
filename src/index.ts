@@ -10,6 +10,8 @@ export type {
 } from './rss/RSS';
 export type {
   Component,
+  AudioComponent,
+  TextComponent,
   GalleryComponent,
   GalleryImage,
   ImageComponent,
