@@ -251,7 +251,7 @@ describe('HTMLMapper', () => {
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.caption).toBe('This is a caption');
-      expect(component?.credit).toBe('<span>This is a credit</span>');
+      expect(component?.credit).toBe('This is a credit');
     });
   });
 

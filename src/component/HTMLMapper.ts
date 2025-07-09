@@ -516,7 +516,7 @@ export class HTMLMapper {
     let imageurl = '';
 
     if (!attributes) {
-      errors.push(new Error('attribute in node not found'));
+      errors.push(new Error('Attribute in node not found'));
     }
 
     const src = attributes.get('src');
@@ -526,10 +526,6 @@ export class HTMLMapper {
     const width: string | undefined = attributes.get('width');
     const height: string | undefined = attributes.get('height');
     const caption: string | undefined = attributes.get('alt');
-
-    if (!imageurl) {
-      errors.push(new Error('image source is required'))
-    }
 
     return {
       id,
@@ -575,7 +571,7 @@ export class HTMLMapper {
       );
 
       if (pictureNodes.length > 1) {
-        warnings.push('only one picture tag per figure tag is valid');
+        warnings.push('Only one picture tag per figure tag is valid');
       }
 
       for (const n of pictureNodes) {
@@ -607,8 +603,16 @@ export class HTMLMapper {
       imageurl,
       errors,
       warnings,
-      caption,
-      credit,
+      caption: caption
+        ? sanitizeHtml(caption, {
+            allowedTags: [],
+          })
+        : undefined,
+      credit: credit
+        ? sanitizeHtml(credit, {
+            allowedTags: [],
+          })
+        : undefined,
     };
   }
 
