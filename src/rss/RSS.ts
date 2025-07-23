@@ -41,24 +41,25 @@ export interface ChannelImage {
 }
 
 export interface Item {
-  title?: string;
-  'content:encoded'?: string;
-  'dc:creator'?: string;
-  'dc:date'?: string;
-  'dc:language'?: string;
-  category?: string[];
   guid?: string;
+  title?: string;
+  category?: string[];
   link?: string;
   description?: string;
   enclosure: Enclosure[];
   mediaGroup: MediaGroup[];
   mediaContent: MediaContent[];
   pubDate?: string;
-  hasAffiliateLinks?: boolean;
-  isSponsored?: boolean;
   errors: Error[];
   warnings: string[];
   components: Component[];
+  'content:encoded'?: string;
+  'cf:hasAffiliateLinks'?: boolean;
+  'cf:isSponsored'?: boolean;
+  'dc:creator'?: string;
+  'dc:date'?: string;
+  'dc:language'?: string;
+  'dcterms:modified'?: string;
 }
 
 export interface Enclosure {
