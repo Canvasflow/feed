@@ -59,6 +59,62 @@ describe('Newsweek', () => {
 
     expect(rss.channel?.title).toBe('Newsweek feed for VMG');
   });
+  test(`It should test affiliate links`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
+    expect(feed.errors.length).toBe(0);
+    const rss = await feed.build();
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(rss, replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    expect(rss.channel?.title).toBe('Newsweek feed for VMG');
+    const item = rss.channel.items[0];
+    expect(item).toBeDefined();
+    expect(item.hasAffiliateLinks).toBe(true);
+  });
+  test(`It should test dc:language in item`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
+    expect(feed.errors.length).toBe(0);
+    const rss = await feed.build();
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(rss, replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    const item = rss.channel.items[0];
+    expect(item).toBeDefined();
+    expect(item['dc:language']).toBe('en-GB');
+  });
+  test(`It should test isSponsored item`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
+    expect(feed.errors.length).toBe(0);
+    const rss = await feed.build();
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(rss, replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    expect(rss.channel?.title).toBe('Newsweek feed for VMG');
+    const item = rss.channel.items[0];
+    expect(item).toBeDefined();
+    expect(item.isSponsored).toBe(true);
+  });
 });
 
 describe('Autocar', () => {
@@ -310,10 +366,7 @@ describe('VMG', () => {
   beforeEach(() => {
     filePath = path.join(`${process.env.FEEDS_PATH}`, `vmg.rss`);
     if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
-      outFilePath = path.join(
-        `${process.env.FEEDS_OUT_PATH}`,
-        `vmg.json`
-      );
+      outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `vmg.json`);
     }
   });
   test(`It should throw error when item is missing`, async () => {
