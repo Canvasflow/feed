@@ -281,6 +281,12 @@ export default class RSSFeed {
       }
     }
 
+    if (item['dc:creator'] && Array.isArray(item['dc:creator'])) {
+      item['dc:creator'] = item['dc:creator']
+        .map((c: string) => c.trim())
+        .join(', ');
+    }
+
     const response: Item = {
       guid,
       title: title ? title.trim() : '',
@@ -291,25 +297,30 @@ export default class RSSFeed {
       description,
       link,
       pubDate,
-      'dc:creator': item['dc:creator']
-        ? `${item['dc:creator']}`.trim()
-        : undefined,
-      'dc:language': item['dc:language']
-        ? `${item['dc:language']}`.trim()
-        : undefined,
-      'dc:date': item['dc:date'] ? `${item['dc:date']}` : undefined,
-      'content:encoded': contentEncoded,
       enclosure: this.getEnclosure(item),
       mediaGroup: this.getMediaGroup(item),
       mediaContent: this.getMediaContent(item),
       components: [],
       warnings,
       errors,
+      'content:encoded': contentEncoded,
+      'cf:hasAffiliateLinks': false,
+      'cf:isSponsored': false,
+      'dc:creator': item['dc:creator']
+        ? `${item['dc:creator']}`.trim()
+        : undefined,
+      'dc:date': item['dc:date'] ? `${item['dc:date']}` : undefined,
+      'dc:language': item['dc:language']
+        ? `${item['dc:language']}`.trim()
+        : undefined,
+      'dcterms:modified': item['dcterms:modified']
+        ? `${item['dcterms:modified']}`
+        : undefined,
     };
 
     if (item['cf:hasAffiliateLinks']) {
       if (typeof item['cf:hasAffiliateLinks'] === 'boolean') {
-        response.hasAffiliateLinks = item['cf:hasAffiliateLinks'];
+        response['cf:hasAffiliateLinks'] = item['cf:hasAffiliateLinks'];
       } else {
         warnings.push(
           `the value for 'cf:hasAffiliateLinks' is invalid: "${item['cf:hasAffiliateLinks']}"`
@@ -319,7 +330,7 @@ export default class RSSFeed {
 
     if (item['cf:isSponsored']) {
       if (typeof item['cf:isSponsored'] === 'boolean') {
-        response.isSponsored = item['cf:isSponsored'];
+        response['cf:isSponsored'] = item['cf:isSponsored'];
       } else {
         warnings.push(
           `the value for 'cf:isSponsored' is invalid: "${item['cf:isSponsored']}"`

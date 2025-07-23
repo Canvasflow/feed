@@ -76,7 +76,7 @@ describe('Newsweek', () => {
     expect(rss.channel?.title).toBe('Newsweek feed for VMG');
     const item = rss.channel.items[0];
     expect(item).toBeDefined();
-    expect(item.hasAffiliateLinks).toBe(true);
+    expect(item['cf:hasAffiliateLinks']).toBe(true);
   });
   test(`It should test dc:language in item`, async () => {
     const content = readFileSync(filePath, 'utf-8');
@@ -113,7 +113,32 @@ describe('Newsweek', () => {
     expect(rss.channel?.title).toBe('Newsweek feed for VMG');
     const item = rss.channel.items[0];
     expect(item).toBeDefined();
-    expect(item.isSponsored).toBe(true);
+    expect(item['cf:isSponsored']).toBe(true);
+  });
+
+  test(`It should validate multiple dc:creator`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
+    expect(feed.errors.length).toBe(0);
+    const rss = await feed.build();
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(rss, replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    expect(rss.channel?.title).toBe('Newsweek feed for VMG');
+    let item = rss.channel.items[0];
+    expect(item).toBeDefined();
+    if (!item) return;
+    expect(item['dc:creator']).toBe('Drew VonScio');
+    item = rss.channel.items[1];
+    expect(item).toBeDefined();
+    if (!item) return;
+    expect(item['dc:creator']).toBe('Sonam Sheth, John Doe');
   });
 });
 
