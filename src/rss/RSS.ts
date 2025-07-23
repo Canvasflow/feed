@@ -54,6 +54,8 @@ export interface Item {
   mediaGroup: MediaGroup[];
   mediaContent: MediaContent[];
   pubDate?: string;
+  hasAffiliateLinks?: boolean;
+  isSponsored?: boolean;
   errors: Error[];
   warnings: string[];
   components: Component[];
