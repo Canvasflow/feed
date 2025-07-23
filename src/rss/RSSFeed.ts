@@ -316,6 +316,9 @@ export default class RSSFeed {
       'dcterms:modified': item['dcterms:modified']
         ? `${item['dcterms:modified']}`
         : undefined,
+      'atom:updated': item['atom:updated']
+        ? `${item['atom:updated']}`
+        : undefined,
     };
 
     if (item['cf:hasAffiliateLinks']) {
