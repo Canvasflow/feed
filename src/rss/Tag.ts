@@ -26,6 +26,7 @@ export const Tag = {
           'dc:language',
           'dc:date',
           'dcterms:modified',
+          'atom:updated',
         ]),
       },
     },
