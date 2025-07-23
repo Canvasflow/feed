@@ -125,9 +125,10 @@ export default class RSSFeed {
         this.rss.channel.items.push(this.buildItem(item));
       }
     } else {
-      this.rss.channel.errors.push(new Error('channel do not have item elements'))
+      this.rss.channel.errors.push(
+        new Error('channel do not have item elements')
+      );
     }
-
 
     return this.rss;
   }
@@ -264,8 +265,12 @@ export default class RSSFeed {
     }
     const category: Array<string | { '#text': string }> = item.category
       ? Array.isArray(item.category)
-        ? item.category
-        : [item.category]
+        ? item.category.map((c) => (typeof c === 'string' ? c.trim() : c))
+        : [
+            typeof item.category === 'string'
+              ? item.category.trim()
+              : item.category,
+          ]
       : [];
 
     let pubDate: undefined | string;
@@ -278,7 +283,7 @@ export default class RSSFeed {
 
     const response: Item = {
       guid,
-      title,
+      title: title ? title.trim() : '',
       category: category.map((c) => {
         if (typeof c === 'string') return c;
         return c['#text'];
@@ -286,8 +291,12 @@ export default class RSSFeed {
       description,
       link,
       pubDate,
-      'dc:creator': item['dc:creator'] ? `${item['dc:creator']}` : undefined,
-      'dc:language': item['dc:language'] ? `${item['dc:language']}` : undefined,
+      'dc:creator': item['dc:creator']
+        ? `${item['dc:creator']}`.trim()
+        : undefined,
+      'dc:language': item['dc:language']
+        ? `${item['dc:language']}`.trim()
+        : undefined,
       'dc:date': item['dc:date'] ? `${item['dc:date']}` : undefined,
       'content:encoded': contentEncoded,
       enclosure: this.getEnclosure(item),
@@ -297,6 +306,26 @@ export default class RSSFeed {
       warnings,
       errors,
     };
+
+    if (item['cf:hasAffiliateLinks']) {
+      if (typeof item['cf:hasAffiliateLinks'] === 'boolean') {
+        response.hasAffiliateLinks = item['cf:hasAffiliateLinks'];
+      } else {
+        warnings.push(
+          `the value for 'cf:hasAffiliateLinks' is invalid: "${item['cf:hasAffiliateLinks']}"`
+        );
+      }
+    }
+
+    if (item['cf:isSponsored']) {
+      if (typeof item['cf:isSponsored'] === 'boolean') {
+        response.isSponsored = item['cf:isSponsored'];
+      } else {
+        warnings.push(
+          `the value for 'cf:isSponsored' is invalid: "${item['cf:isSponsored']}"`
+        );
+      }
+    }
 
     response.components = HTMLMapper.toComponents(contentEncoded, this.params);
     return response;
