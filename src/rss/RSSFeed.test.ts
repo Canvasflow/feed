@@ -316,7 +316,14 @@ describe('Forbes', () => {
       );
     }
 
+    const { items } = rss.channel;
+    expect(items.length).toBeGreaterThan(0);
+    if (!items.length) return;
+    const item = items.shift();
+    expect(item).toBeDefined();
+    if (!item) return;
     expect(rss.channel?.title).toBe('BREAKING NEWS');
+    expect(item['atom:updated']).toBe('2025-06-17T13:27:53-04:00');
   });
 });
 

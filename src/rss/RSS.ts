@@ -60,6 +60,7 @@ export interface Item {
   'dc:date'?: string;
   'dc:language'?: string;
   'dcterms:modified'?: string;
+  'atom:updated'?: string;
 }
 
 export interface Enclosure {
