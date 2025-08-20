@@ -306,6 +306,7 @@ export default class RSSFeed {
       'content:encoded': contentEncoded,
       'cf:hasAffiliateLinks': false,
       'cf:isSponsored': false,
+      'cf:isPaid': false,
       'dc:creator': item['dc:creator']
         ? `${item['dc:creator']}`.trim()
         : undefined,
