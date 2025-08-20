@@ -306,6 +306,7 @@ export default class RSSFeed {
       'content:encoded': contentEncoded,
       'cf:hasAffiliateLinks': false,
       'cf:isSponsored': false,
+      'cf:isPaid': false,
       'dc:creator': item['dc:creator']
         ? `${item['dc:creator']}`.trim()
         : undefined,
@@ -337,6 +338,16 @@ export default class RSSFeed {
       } else {
         warnings.push(
           `the value for 'cf:isSponsored' is invalid: "${item['cf:isSponsored']}"`
+        );
+      }
+    }
+
+    if (item['cf:isPaid']) {
+      if (typeof item['cf:isPaid'] === 'boolean') {
+        response['cf:isPaid'] = item['cf:isPaid'];
+      } else {
+        warnings.push(
+          `the value for 'cf:isPaid' is invalid: "${item['cf:isPaid']}"`
         );
       }
     }

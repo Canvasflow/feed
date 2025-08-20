@@ -114,6 +114,7 @@ describe('Newsweek', () => {
     const item = rss.channel.items[0];
     expect(item).toBeDefined();
     expect(item['cf:isSponsored']).toBe(true);
+    expect(item['cf:isPaid']).toBe(true);
   });
 
   test(`It should validate multiple dc:creator`, async () => {
