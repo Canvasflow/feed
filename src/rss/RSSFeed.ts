@@ -341,6 +341,16 @@ export default class RSSFeed {
       }
     }
 
+    if (item['cf:isPaid']) {
+      if (typeof item['cf:isPaid'] === 'boolean') {
+        response['cf:isPaid'] = item['cf:isPaid'];
+      } else {
+        warnings.push(
+          `the value for 'cf:isPaid' is invalid: "${item['cf:isPaid']}"`
+        );
+      }
+    }
+
     response.components = HTMLMapper.toComponents(contentEncoded, this.params);
     return response;
   }

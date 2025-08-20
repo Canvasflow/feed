@@ -56,6 +56,7 @@ export interface Item {
   'content:encoded'?: string;
   'cf:hasAffiliateLinks'?: boolean;
   'cf:isSponsored'?: boolean;
+  'cf:isPaid'?: boolean;
   'dc:creator'?: string;
   'dc:date'?: string;
   'dc:language'?: string;
