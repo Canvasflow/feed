@@ -22,6 +22,7 @@ export const Tag = {
           'atom:updated',
           'cf:hasAffiliateLinks',
           'cf:isSponsored',
+          'cf:isPaid',
           'dc:creator',
           'dc:language',
           'dc:date',
