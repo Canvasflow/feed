@@ -65,6 +65,7 @@ export interface Item {
   'atom:author'?: {
     'atom:name'?: string;
     'atom:uri'?: string;
+    'atom:email'?: string;
   };
 }
 
