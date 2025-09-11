@@ -525,13 +525,13 @@ export class HTMLMapper {
     }
     const width: string | undefined = attributes.get('width');
     const height: string | undefined = attributes.get('height');
-    const caption: string | undefined = attributes.get('alt');
+    const alt: string | undefined = attributes.get('alt');
 
     return {
       id,
       component: 'image',
       imageurl,
-      caption,
+      alt,
       width: width ? parseInt(`${width}`, 10) : undefined,
       height: height ? parseInt(`${height}`, 10) : undefined,
       errors,
@@ -546,6 +546,7 @@ export class HTMLMapper {
     let caption: string | undefined;
     let credit: string | undefined;
     let link: string | undefined;
+    let alt: string | undefined;
 
     const linkNodes = node.children.filter(
       (n) => n.type === 'element' && n.tagName === 'a'
@@ -560,6 +561,9 @@ export class HTMLMapper {
       }
       imageurl = imageLink.imageurl;
       link = imageLink.link;
+      if (imageLink.alt) {
+        alt = imageLink.alt;
+      }
     } else {
       // Handle image
       const imageNodes = node.children.filter(
@@ -572,6 +576,7 @@ export class HTMLMapper {
         if (n.type !== 'element') continue;
         const attributes = getAttributes(n.attributes);
         const src = attributes.get('src');
+        alt = attributes.get('alt');
         if (!src) {
           errors.push(new Error('src attribute is missing'));
         }
@@ -594,6 +599,8 @@ export class HTMLMapper {
         if (n.type !== 'element') continue;
         const picture: ImageComponent = HTMLMapper.fromPicture(n);
         imageurl = picture.imageurl;
+        alt = picture.alt;
+        link = picture.link;
         break;
       }
     }
@@ -617,6 +624,7 @@ export class HTMLMapper {
     return {
       component: 'image',
       imageurl,
+      alt,
       link,
       errors,
       warnings,
@@ -635,6 +643,7 @@ export class HTMLMapper {
 
   static fromPicture(node: ElementNode): ImageComponent {
     let imageurl = '';
+    let alt: string | undefined;
     const errors: Error[] = [];
     const warnings: string[] = [];
 
@@ -654,6 +663,8 @@ export class HTMLMapper {
         errors.push(new Error('src attribute is missing'));
       }
 
+      alt = attributes.get('alt');
+
       imageurl = src || '';
       break;
     }
@@ -665,6 +676,7 @@ export class HTMLMapper {
     return {
       component: 'image',
       imageurl,
+      alt,
       errors,
       warnings,
     };
@@ -676,6 +688,7 @@ export class HTMLMapper {
     const errors: Error[] = [];
     const warnings: string[] = [];
     let imageurl = '';
+    let alt: string = '';
     if (node.children) {
       // Handle image
       const imageNodes = node.children.filter(
@@ -689,6 +702,7 @@ export class HTMLMapper {
         if (n.type !== 'element') continue;
         const attributes = getAttributes(n.attributes);
         const src = attributes.get('src');
+        alt = attributes.get('alt') || '';
         if (!src) {
           errors.push(new Error('src attribute is missing'));
         }
@@ -704,6 +718,7 @@ export class HTMLMapper {
 
     return {
       link,
+      alt,
       imageurl,
       warnings,
       errors,
@@ -962,6 +977,7 @@ interface ClassFilter {
 interface LinkResponse {
   link: string;
   imageurl: string;
+  alt: string;
   warnings: string[];
   errors: Error[];
 }
