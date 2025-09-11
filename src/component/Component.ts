@@ -23,6 +23,7 @@ export interface ImageComponent extends Component {
   component: 'image';
   imageurl: string;
   link?: string;
+  alt?: string;
   caption?: string;
   credit?: string;
   width?: number;
