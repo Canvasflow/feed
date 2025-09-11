@@ -325,6 +325,13 @@ describe('Forbes', () => {
     if (!item) return;
     expect(rss.channel?.title).toBe('BREAKING NEWS');
     expect(item['atom:updated']).toBe('2025-06-17T13:27:53-04:00');
+    expect(item?.['atom:author']?.['atom:name']).toBe(
+      'Yezen Saadah, Contributor'
+    );
+    expect(item?.['atom:author']?.['atom:uri']).toBe(
+      'https://www.forbes.com/sites/yezensaadah/'
+    );
+    expect(item?.['atom:author']?.['atom:email']).toBe('yezen@forbes.com');
   });
 });
 
