@@ -62,6 +62,10 @@ export interface Item {
   'dc:language'?: string;
   'dcterms:modified'?: string;
   'atom:updated'?: string;
+  'atom:author'?: {
+    'atom:name'?: string;
+    'atom:uri'?: string;
+  };
 }
 
 export interface Enclosure {
