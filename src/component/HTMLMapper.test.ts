@@ -145,7 +145,8 @@ describe('HTMLMapper', () => {
       expect(component).toBeDefined();
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('example.jpg');
-      expect(component?.caption).toBe('Hello world');
+      expect(component?.alt).toBe('Hello world');
+      expect(component.caption).toBeUndefined();
     });
 
     test('It should process a simple picture element with invalid caption', () => {
@@ -161,7 +162,7 @@ describe('HTMLMapper', () => {
       expect(component).toBeDefined();
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
-      expect(component?.caption).toBeUndefined();
+      expect(component?.alt).toBe('My image');
     });
 
     test('It should process a simple picture element with valid caption', () => {
@@ -180,6 +181,7 @@ describe('HTMLMapper', () => {
       expect(component).toBeDefined();
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
+      expect(component?.alt).toBe('My image');
       expect(component?.caption).toBe('This is a valid caption');
     });
 
@@ -194,6 +196,7 @@ describe('HTMLMapper', () => {
       expect(component).toBeDefined();
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
+      expect(component?.alt).toBe('My image');
       expect(component?.caption).toBeUndefined();
     });
 
@@ -209,6 +212,7 @@ describe('HTMLMapper', () => {
       expect(component).toBeDefined();
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
+      expect(component?.alt).toBe('My image');
       expect(component?.caption).toBe('This is a caption');
     });
 
@@ -228,6 +232,7 @@ describe('HTMLMapper', () => {
       expect(component).toBeDefined();
       expect(component.component).toBe('image');
       expect(component.imageurl).toBe('cover.jpg');
+      expect(component?.alt).toBe('Memphis-xAI');
       expect(component?.caption).toBe('FILE = The xAI data center is seen');
       expect(component?.credit).toBe(
         'Copyright 2025 The Associated Press. All rights reserved'
@@ -250,6 +255,7 @@ describe('HTMLMapper', () => {
       expect(component).toBeDefined();
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
+      expect(component?.alt).toBe('My image');
       expect(component?.caption).toBe('This is a caption');
       expect(component?.credit).toBe('This is a credit');
     });
