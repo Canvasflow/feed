@@ -317,6 +317,7 @@ export default class RSSFeed {
       'dcterms:modified': item['dcterms:modified']
         ? `${item['dcterms:modified']}`
         : undefined,
+      'atom:author': item['atom:author'] ?? undefined,
       'atom:updated': item['atom:updated']
         ? `${item['atom:updated']}`
         : undefined,

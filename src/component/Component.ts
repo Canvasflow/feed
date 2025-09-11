@@ -22,6 +22,7 @@ export interface GalleryImage {
 export interface ImageComponent extends Component {
   component: 'image';
   imageurl: string;
+  link?: string;
   caption?: string;
   credit?: string;
   width?: number;

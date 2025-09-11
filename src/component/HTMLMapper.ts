@@ -545,24 +545,40 @@ export class HTMLMapper {
     const warnings: string[] = [];
     let caption: string | undefined;
     let credit: string | undefined;
+    let link: string | undefined;
 
-    // Handle image
-    const imageNodes = node.children.filter(
-      (n) => n.type === 'element' && n.tagName === 'img'
+    const linkNodes = node.children.filter(
+      (n) => n.type === 'element' && n.tagName === 'a'
     );
-    if (imageNodes.length > 1) {
-      warnings.push('Only one img tag per figure tag is valid');
-    }
-    for (const n of imageNodes) {
-      if (n.type !== 'element') continue;
-      const attributes = getAttributes(n.attributes);
-      const src = attributes.get('src');
-      if (!src) {
-        errors.push(new Error('src attribute is missing'));
+    if (linkNodes.length > 0) {
+      const imageLink = HTMLMapper.getImageLink(linkNodes[0] as ElementNode);
+      if (imageLink.errors.length > 0) {
+        errors.push(...imageLink.errors);
       }
+      if (imageLink.warnings.length > 0) {
+        warnings.push(...imageLink.warnings);
+      }
+      imageurl = imageLink.imageurl;
+      link = imageLink.link;
+    } else {
+      // Handle image
+      const imageNodes = node.children.filter(
+        (n) => n.type === 'element' && n.tagName === 'img'
+      );
+      if (imageNodes.length > 1) {
+        warnings.push('Only one img tag per figure tag is valid');
+      }
+      for (const n of imageNodes) {
+        if (n.type !== 'element') continue;
+        const attributes = getAttributes(n.attributes);
+        const src = attributes.get('src');
+        if (!src) {
+          errors.push(new Error('src attribute is missing'));
+        }
 
-      imageurl = src || '';
-      break;
+        imageurl = src || '';
+        break;
+      }
     }
 
     if (!imageurl) {
@@ -601,6 +617,7 @@ export class HTMLMapper {
     return {
       component: 'image',
       imageurl,
+      link,
       errors,
       warnings,
       caption: caption
@@ -650,6 +667,46 @@ export class HTMLMapper {
       imageurl,
       errors,
       warnings,
+    };
+  }
+
+  static getImageLink(node: ElementNode): LinkResponse {
+    const attributes = getAttributes(node.attributes);
+    const link = attributes.get('href') || '';
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+    let imageurl = '';
+    if (node.children) {
+      // Handle image
+      const imageNodes = node.children.filter(
+        (n) => n.type === 'element' && n.tagName === 'img'
+      );
+      if (imageNodes.length > 1) {
+        warnings.push('Only one img tag per a tag is valid');
+      }
+
+      for (const n of imageNodes) {
+        if (n.type !== 'element') continue;
+        const attributes = getAttributes(n.attributes);
+        const src = attributes.get('src');
+        if (!src) {
+          errors.push(new Error('src attribute is missing'));
+        }
+
+        imageurl = src || '';
+        break;
+      }
+    }
+
+    if (!link) {
+      warnings.push('Image link is empty');
+    }
+
+    return {
+      link,
+      imageurl,
+      warnings,
+      errors,
     };
   }
 
@@ -900,6 +957,13 @@ interface ClassFilter {
   type: 'class';
   match: MatchType | 'equal';
   items: string[];
+}
+
+interface LinkResponse {
+  link: string;
+  imageurl: string;
+  warnings: string[];
+  errors: Error[];
 }
 
 export class SetUtils {

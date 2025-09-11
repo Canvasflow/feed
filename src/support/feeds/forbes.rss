@@ -26,7 +26,8 @@
             <pubDate>Tue, 17 Jun 2025 13:00:26 -0400</pubDate>
             <atom:updated>2025-06-17T13:27:53-04:00</atom:updated>
             <content:encoded>
-                <![CDATA[<h2 class="topline-heading">Topline</h2>
+                <![CDATA[<figure id="test"><a href="https://google.com"><img src="https://specials-images.forbesimg.com/imageserve/68c2041ab3bc0b754df1a51e/960x0.jpg?fit=scale" alt="President Trump Makes Announcement On The Economy"></a><figcaption><p>U.S. President Donald Trump speaks in front of posters depicting household income data in the Oval Office on August 07, 2025. (Photo by Win McNamee/Getty Images)</p><small>Getty Images</small></figcaption></figure>
+                <h2 class="topline-heading">Topline</h2>
                 <p>The NAACP on Tuesday filed an intent to sue Elon Musk’s artificial intelligence
                     company xAI, over concerns the company generates air pollution near
                     predominantly Black communities from a supercomputer in Memphis, <a
