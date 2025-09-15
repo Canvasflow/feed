@@ -573,6 +573,8 @@ export class HTMLMapper {
     let credit: string | undefined;
     let link: string | undefined;
     let alt: string | undefined;
+    let width: number | undefined;
+    let height: number | undefined;
 
     // Handle caption
     if (node.type === 'element') {
@@ -632,6 +634,20 @@ export class HTMLMapper {
         if (n.type !== 'element') continue;
         const attributes = getAttributes(n.attributes);
         const src = attributes.get('src');
+        const widthAttr = attributes.get('width');
+        const heightAttr = attributes.get('height');
+        if (widthAttr) {
+          const w = parseInt(widthAttr, 10);
+          if (!Number.isNaN(w)) {
+            width = w;
+          }
+        }
+        if (heightAttr) {
+          const h = parseInt(heightAttr, 10);
+          if (!Number.isNaN(h)) {
+            height = h;
+          }
+        }
         alt = attributes.get('alt');
         if (!src) {
           errors.push(new Error('src attribute is missing'));
@@ -670,6 +686,8 @@ export class HTMLMapper {
       imageurl,
       alt,
       link,
+      width,
+      height,
       errors,
       warnings,
       caption: caption
