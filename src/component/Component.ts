@@ -44,6 +44,8 @@ export interface VideoComponent extends Component {
   muted: boolean;
   movietype: 'hosted';
   poster?: string;
+  caption?: string;
+  credit?: string;
 }
 
 export interface AudioComponent extends Component {
@@ -53,6 +55,8 @@ export interface AudioComponent extends Component {
   autoplay: boolean;
   loop: boolean;
   muted: boolean;
+  caption?: string;
+  credit?: string;
 }
 
 export interface TwitterComponent extends Component {

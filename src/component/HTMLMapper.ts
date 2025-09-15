@@ -151,6 +151,14 @@ export class HTMLMapper {
         return acc;
       }
 
+      if (tagName === 'figure') {
+        const figure = HTMLMapper.fromFigure(node);
+        if (figure) {
+          acc.push(figure);
+        }
+        return acc;
+      }
+
       // Check if the tag belongs to an image tag
       if (imageTags.has(tagName)) {
         acc.push(HTMLMapper.toImage(node));
@@ -500,7 +508,9 @@ export class HTMLMapper {
     const id = attributes.get('id');
 
     if (tagName === 'figure') {
-      const imageComponent: ImageComponent = HTMLMapper.fromFigure(node);
+      const imageComponent: ImageComponent = HTMLMapper.fromFigure(
+        node
+      ) as ImageComponent;
       imageComponent.id = id;
       return imageComponent;
     }
@@ -539,7 +549,9 @@ export class HTMLMapper {
     };
   }
 
-  static fromFigure(node: ElementNode): ImageComponent {
+  static fromFigure(
+    node: ElementNode
+  ): ImageComponent | VideoComponent | AudioComponent | null {
     let imageurl = '';
     const errors: Error[] = [];
     const warnings: string[] = [];
@@ -547,6 +559,42 @@ export class HTMLMapper {
     let credit: string | undefined;
     let link: string | undefined;
     let alt: string | undefined;
+
+    // Handle caption
+    if (node.type === 'element') {
+      const r = HTMLMapper.fromFigcaption(node);
+      if (r.credit) {
+        credit = r.credit;
+      }
+
+      if (r.caption) {
+        caption = r.caption;
+      }
+    }
+
+    // Check if the figure is video
+    const videoNodes = node.children.filter(
+      (n) => n.type === 'element' && n.tagName === 'video'
+    );
+    const isVideo = videoNodes.length > 0;
+    if (isVideo) {
+      const videoComponent = HTMLMapper.toVideo(videoNodes[0] as ElementNode);
+      videoComponent.caption = caption;
+      videoComponent.credit = credit;
+      return videoComponent;
+    }
+
+    // Check if the figure is audio
+    const audioNodes = node.children.filter(
+      (n) => n.type === 'element' && n.tagName === 'audio'
+    );
+    const isAudio = audioNodes.length > 0;
+    if (isAudio) {
+      const audioComponent = HTMLMapper.toAudio(audioNodes[0] as ElementNode);
+      audioComponent.caption = caption;
+      audioComponent.credit = credit;
+      return audioComponent;
+    }
 
     const linkNodes = node.children.filter(
       (n) => n.type === 'element' && n.tagName === 'a'
@@ -602,18 +650,6 @@ export class HTMLMapper {
         alt = picture.alt;
         link = picture.link;
         break;
-      }
-    }
-
-    // Handle caption
-    if (node.type === 'element') {
-      const r = HTMLMapper.fromFigcaption(node);
-      if (r.credit) {
-        credit = r.credit;
-      }
-
-      if (r.caption) {
-        caption = r.caption;
       }
     }
 
