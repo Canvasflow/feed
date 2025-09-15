@@ -79,109 +79,127 @@ export class HTMLMapper {
     params?: Params
   ): (acc: Array<Component>, node: Node) => Array<Component> {
     return (acc: Array<Component>, node: Node): Array<Component> => {
-      if (node.type === 'text') {
-        if (isEmpty(node.content)) {
-          return acc;
-        }
+      const component = HTMLMapper.fromNode(node, params);
 
-        acc.push({
-          component: 'body',
-          errors: [],
-          warnings: [],
-          text: `<p>${node.content}</p>`,
-        } as TextComponent);
-        return acc;
-      }
-
-      const { tagName } = node;
-      const attributes = getAttributes(node.attributes);
-      const role = attributes.get('role');
-      const classNames = attributes.get('class');
-
-      const textTagMapping: Record<string, TextType> = {
-        h1: 'headline',
-        h2: 'title',
-        h3: 'subtitle',
-        h4: 'intro',
-        h5: 'body',
-        h6: 'body',
-        footer: 'footer',
-        blockquote: 'blockquote',
-        p: 'body',
-        ol: 'body',
-        ul: 'body',
-      };
-
-      // This process instagram
-      if (
-        tagName === 'blockquote' &&
-        attributes.get('data-instgrm-permalink')
-      ) {
-        acc.push(HTMLMapper.toInstagram(node));
-        return acc;
-      }
-
-      // This process twitter
-      if (
-        (tagName === 'blockquote' || tagName === 'a') &&
-        classNames &&
-        new Set(['twitter-tweet', 'twitter-timeline']).has(classNames)
-      ) {
-        acc.push(HTMLMapper.toTwitter(node));
-        return acc;
-      }
-
-      // Handle mapping send by the user
-      const textType = getMappingComponent(node, params?.mappings);
-      if (textType) {
-        acc.push(HTMLMapper.toText(node, textType));
-        return acc;
-      }
-
-      // This section validates text tags
-      for (const tag in textTagMapping) {
-        if (tagName === tag) {
-          acc.push(HTMLMapper.toText(node, textTagMapping[tag]));
-          return acc;
-        }
-      }
-
-      if (role === 'gallery' || role === 'mosaic') {
-        acc.push(HTMLMapper.toGallery(node));
-        return acc;
-      }
-
-      // Check if the tag belongs to an image tag
-      if (imageTags.has(tagName)) {
-        acc.push(HTMLMapper.toImage(node));
-        return acc;
-      }
-
-      // This section validates the rest of the tags components
-      let component: Component | undefined;
-      switch (tagName) {
-        case 'video':
-          acc.push(HTMLMapper.toVideo(node));
-          return acc;
-        case 'audio':
-          acc.push(HTMLMapper.toAudio(node));
-          return acc;
-        case 'iframe':
-          component = HTMLMapper.fromIframe(node);
-          if (component) {
-            acc.push(component);
+      if (component) {
+        if (Array.isArray(component)) {
+          for (const c of component) {
+            if (c) {
+              acc.push(c);
+            }
           }
-          return acc;
-
-        default:
-          break;
-      }
-
-      if (node.children) {
-        return node.children.reduce(HTMLMapper.reduceComponents(params), acc);
+        } else {
+          acc.push(component);
+        }
       }
       return acc;
     };
+  }
+
+  static fromNode(
+    node: Node,
+    params?: Params
+  ): Component | Array<Component> | null {
+    if (node.type === 'text') {
+      if (isEmpty(node.content)) {
+        return null;
+      }
+
+      return {
+        component: 'body',
+        errors: [],
+        warnings: [],
+        text: `<p>${node.content}</p>`,
+      } as TextComponent;
+    }
+
+    const { tagName } = node;
+    const attributes = getAttributes(node.attributes);
+    const role = attributes.get('role');
+    const classNames = attributes.get('class');
+
+    const textTagMapping: Record<string, TextType> = {
+      h1: 'headline',
+      h2: 'title',
+      h3: 'subtitle',
+      h4: 'intro',
+      h5: 'body',
+      h6: 'body',
+      footer: 'footer',
+      blockquote: 'blockquote',
+      p: 'body',
+      ol: 'body',
+      ul: 'body',
+    };
+
+    // This process instagram
+    if (tagName === 'blockquote' && attributes.get('data-instgrm-permalink')) {
+      return HTMLMapper.toInstagram(node);
+    }
+
+    // This process twitter
+    if (
+      (tagName === 'blockquote' || tagName === 'a') &&
+      classNames &&
+      new Set(['twitter-tweet', 'twitter-timeline']).has(classNames)
+    ) {
+      return HTMLMapper.toTwitter(node);
+    }
+
+    // Handle mapping send by the user
+    const textType = getMappingComponent(node, params?.mappings);
+    if (textType) {
+      return HTMLMapper.toText(node, textType);
+    }
+
+    // This section validates text tags
+    for (const tag in textTagMapping) {
+      if (tagName === tag) {
+        return HTMLMapper.toText(node, textTagMapping[tag]);
+      }
+    }
+
+    if (role === 'gallery' || role === 'mosaic') {
+      return HTMLMapper.toGallery(node);
+    }
+
+    if (tagName === 'figure') {
+      return HTMLMapper.fromFigure(node);
+    }
+
+    // Check if the tag belongs to an image tag
+    if (imageTags.has(tagName)) {
+      return HTMLMapper.toImage(node);
+    }
+
+    // This section validates the rest of the tags components
+    switch (tagName) {
+      case 'video':
+        return HTMLMapper.toVideo(node);
+      case 'audio':
+        return HTMLMapper.toAudio(node);
+      case 'iframe':
+        return HTMLMapper.fromIframe(node);
+      default:
+        break;
+    }
+
+    if (node.children) {
+      const components: Array<Component> = [];
+      for (const n of node.children) {
+        const c = HTMLMapper.fromNode(n, params);
+        if (!c) continue;
+        if (Array.isArray(c)) {
+          components.push(...c);
+        } else {
+          components.push(c);
+        }
+      }
+
+      return components;
+    }
+
+    return null;
   }
 
   static toText(node: ElementNode, component: TextType): TextComponent {
@@ -380,7 +398,7 @@ export class HTMLMapper {
 
   static fromIframe(
     node: ElementNode
-  ): YoutubeComponent | InfogramComponent | undefined {
+  ): YoutubeComponent | InfogramComponent | null {
     const attributes = getAttributes(node.attributes);
     const id = attributes.get('id');
 
@@ -388,7 +406,7 @@ export class HTMLMapper {
 
     // If the iframe do not have a src we just ignore it
     if (!src || src.length === 0) {
-      return;
+      return null;
     }
 
     let builtComponent;
@@ -398,15 +416,14 @@ export class HTMLMapper {
       case 'https://e.infogram.com':
         builtComponent = HTMLMapper.toInfogram(url);
         builtComponent.id = id;
-        break;
-
+        return builtComponent;
       case 'https://www.youtube.com':
         builtComponent = HTMLMapper.toYoutube(url);
         builtComponent.id = id;
-        break;
+        return builtComponent;
     }
 
-    return builtComponent;
+    return null;
   }
 
   static toYoutube(url: URL): YoutubeComponent {
@@ -500,7 +517,9 @@ export class HTMLMapper {
     const id = attributes.get('id');
 
     if (tagName === 'figure') {
-      const imageComponent: ImageComponent = HTMLMapper.fromFigure(node);
+      const imageComponent: ImageComponent = HTMLMapper.fromFigure(
+        node
+      ) as ImageComponent;
       imageComponent.id = id;
       return imageComponent;
     }
@@ -539,7 +558,14 @@ export class HTMLMapper {
     };
   }
 
-  static fromFigure(node: ElementNode): ImageComponent {
+  static fromFigure(
+    node: ElementNode
+  ):
+    | ImageComponent
+    | VideoComponent
+    | AudioComponent
+    | YoutubeComponent
+    | null {
     let imageurl = '';
     const errors: Error[] = [];
     const warnings: string[] = [];
@@ -547,6 +573,38 @@ export class HTMLMapper {
     let credit: string | undefined;
     let link: string | undefined;
     let alt: string | undefined;
+    let width: number | undefined;
+    let height: number | undefined;
+
+    // Handle caption
+    if (node.type === 'element') {
+      const r = HTMLMapper.fromFigcaption(node);
+      if (r.credit) {
+        credit = r.credit;
+      }
+
+      if (r.caption) {
+        caption = r.caption;
+      }
+    }
+
+    const components = node.children
+      .map((n: Node) => HTMLMapper.fromNode(n))
+      .flat()
+      .filter(
+        (c) =>
+          c &&
+          !Array.isArray(c) &&
+          (c.component === 'video' || c.component === 'audio')
+      );
+    if (components.length) {
+      const component: VideoComponent | AudioComponent = components.pop() as
+        | VideoComponent
+        | AudioComponent;
+      component.caption = caption;
+      component.credit = credit;
+      return component;
+    }
 
     const linkNodes = node.children.filter(
       (n) => n.type === 'element' && n.tagName === 'a'
@@ -576,6 +634,20 @@ export class HTMLMapper {
         if (n.type !== 'element') continue;
         const attributes = getAttributes(n.attributes);
         const src = attributes.get('src');
+        const widthAttr = attributes.get('width');
+        const heightAttr = attributes.get('height');
+        if (widthAttr) {
+          const w = parseInt(widthAttr, 10);
+          if (!Number.isNaN(w)) {
+            width = w;
+          }
+        }
+        if (heightAttr) {
+          const h = parseInt(heightAttr, 10);
+          if (!Number.isNaN(h)) {
+            height = h;
+          }
+        }
         alt = attributes.get('alt');
         if (!src) {
           errors.push(new Error('src attribute is missing'));
@@ -605,18 +677,6 @@ export class HTMLMapper {
       }
     }
 
-    // Handle caption
-    if (node.type === 'element') {
-      const r = HTMLMapper.fromFigcaption(node);
-      if (r.credit) {
-        credit = r.credit;
-      }
-
-      if (r.caption) {
-        caption = r.caption;
-      }
-    }
-
     if (!imageurl) {
       errors.push(new Error('imageurl is empty'));
     }
@@ -626,6 +686,8 @@ export class HTMLMapper {
       imageurl,
       alt,
       link,
+      width,
+      height,
       errors,
       warnings,
       caption: caption
