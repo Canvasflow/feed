@@ -560,7 +560,12 @@ export class HTMLMapper {
 
   static fromFigure(
     node: ElementNode
-  ): ImageComponent | VideoComponent | AudioComponent | null {
+  ):
+    | ImageComponent
+    | VideoComponent
+    | AudioComponent
+    | YoutubeComponent
+    | null {
     let imageurl = '';
     const errors: Error[] = [];
     const warnings: string[] = [];
@@ -581,28 +586,22 @@ export class HTMLMapper {
       }
     }
 
-    // Check if the figure is video
-    const videoNodes = node.children.filter(
-      (n) => n.type === 'element' && n.tagName === 'video'
-    );
-    const isVideo = videoNodes.length > 0;
-    if (isVideo) {
-      const videoComponent = HTMLMapper.toVideo(videoNodes[0] as ElementNode);
-      videoComponent.caption = caption;
-      videoComponent.credit = credit;
-      return videoComponent;
-    }
-
-    // Check if the figure is audio
-    const audioNodes = node.children.filter(
-      (n) => n.type === 'element' && n.tagName === 'audio'
-    );
-    const isAudio = audioNodes.length > 0;
-    if (isAudio) {
-      const audioComponent = HTMLMapper.toAudio(audioNodes[0] as ElementNode);
-      audioComponent.caption = caption;
-      audioComponent.credit = credit;
-      return audioComponent;
+    const components = node.children
+      .map((n: Node) => HTMLMapper.fromNode(n))
+      .flat()
+      .filter(
+        (c) =>
+          c &&
+          !Array.isArray(c) &&
+          (c.component === 'video' || c.component === 'audio')
+      );
+    if (components.length) {
+      const component: VideoComponent | AudioComponent = components.pop() as
+        | VideoComponent
+        | AudioComponent;
+      component.caption = caption;
+      component.credit = credit;
+      return component;
     }
 
     const linkNodes = node.children.filter(

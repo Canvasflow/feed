@@ -134,6 +134,33 @@ describe('HTMLMapper', () => {
       expect(component.vidtype).toBe('youtube');
       expect(component.params).toEqual({ id: 'ZrCs3HYxflk' });
     });
+    test('It should create an Youtube embed component from figure', () => {
+      const components = HTMLMapper.toComponents(
+        `<figure>
+          <div>
+            <iframe
+              loading="lazy"
+              title="[DIY] Building a PORTABLE All-in-One PlayStation 5"
+              width="500"
+              height="281"
+              src="https://www.youtube.com/embed/XQ87p2Rhb_A?feature=oembed"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen>
+            </iframe>
+          </div>
+        </figure>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('youtube');
+      expect(component.params).toEqual({ id: 'XQ87p2Rhb_A' });
+    });
   });
 
   describe('Image component', () => {
@@ -494,6 +521,35 @@ describe('HTMLMapper', () => {
             controls
             loop
             muted/>
+          <figcaption>
+            ${caption}
+          </figcaption>
+        </figure>
+        `;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as AudioComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+      expect(component.caption).toBe(caption);
+    });
+    test('It should process an audio using figure with div between the tag', () => {
+      const src = 'audio.mp3';
+      const caption = 'Example audio';
+      const content = `
+        <figure>
+          <div>
+            <audio
+              src="${src}"
+              controls
+              loop
+              muted/>
+          </div>
           <figcaption>
             ${caption}
           </figcaption>

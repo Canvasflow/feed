@@ -37,12 +37,12 @@ export interface TextComponent extends Component {
 
 export interface VideoComponent extends Component {
   component: 'video';
-  url: string;
-  controls: boolean;
-  autoplay: boolean;
-  loop: boolean;
-  muted: boolean;
-  movietype: 'hosted';
+  url?: string;
+  controls?: boolean;
+  autoplay?: boolean;
+  loop?: boolean;
+  muted?: boolean;
+  movietype?: 'hosted';
   poster?: string;
   caption?: string;
   credit?: string;
@@ -76,8 +76,7 @@ export interface InstagramComponent extends Component {
   type: 'post' | 'reel' | 'tv';
 }
 
-export interface YoutubeComponent extends Component {
-  component: 'video';
+export interface YoutubeComponent extends VideoComponent {
   vidtype: 'youtube';
   params: { id: string };
 }
