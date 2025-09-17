@@ -163,7 +163,7 @@ export class HTMLMapper {
       return HTMLMapper.toGallery(node);
     }
 
-    if (tagName === 'figure') {
+    if (tagName === 'figure' && HTMLMapper.hasCaption(node)) {
       return HTMLMapper.fromFigure(node);
     }
 
@@ -556,6 +556,16 @@ export class HTMLMapper {
       errors,
       warnings,
     };
+  }
+
+  static hasCaption(node: ElementNode): boolean {
+    for (const child of node.children) {
+      if (child.type === 'element' && child.tagName === 'figcaption') {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   static fromFigure(
