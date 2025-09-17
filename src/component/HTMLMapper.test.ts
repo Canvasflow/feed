@@ -117,6 +117,45 @@ describe('HTMLMapper', () => {
       expect(component.params.account).toBe(`NASCARONFOX`);
       expect(component.params.id).toBe(`1397629106427101185`);
     });
+    test('It should create a twitter tweet component', () => {
+      const components = HTMLMapper.toComponents(
+        `<div
+    class="wp-block-embed is-type-rich is-provider-twitter wp-block-embed-twitter"
+>
+    <div class="wp-block-embed__wrapper">
+        <blockquote class="twitter-tweet" data-width="500" data-dnt="true">
+            <p lang="en" dir="ltr">
+                Yep. Did you know iPhone unit sales peaked 10 years ago?
+                Clearly, Apple’s flagship product is in terminal decline. Yet
+                it’s managed to keep revenue growth alive solely by raising
+                iPhone prices.
+                <a href="https://t.co/0lP3kv2erM">pic.twitter.com/0lP3kv2erM</a>
+            </p>
+            &mdash; Stephen McBride (@DisruptionHedge)
+            <a
+                href="https://twitter.com/DisruptionHedge/status/1967940731861184847?ref_src=twsrc%5Etfw"
+                >September 16, 2025</a
+            >
+        </blockquote>
+        <script
+            async
+            src="https://platform.twitter.com/widgets.js"
+            charset="utf-8"
+        ></script>
+    </div>
+</div>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TwitterComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('twitter');
+      expect(component.height).toBe(`350`);
+      expect(component.params.account).toBe(`DisruptionHedge`);
+      expect(component.params.id).toBe(`1967940731861184847`);
+    });
   });
 
   describe('Youtube Component', () => {
@@ -160,6 +199,35 @@ describe('HTMLMapper', () => {
       expect(component.component).toBe('video');
       expect(component.vidtype).toBe('youtube');
       expect(component.params).toEqual({ id: 'XQ87p2Rhb_A' });
+    });
+    test('It should create an Youtube embed component from figure with caption', () => {
+      const components = HTMLMapper.toComponents(
+        `<figure>
+          <div>
+            <iframe
+              loading="lazy"
+              title="[DIY] Building a PORTABLE All-in-One PlayStation 5"
+              width="500"
+              height="281"
+              src="https://www.youtube.com/embed/XQ87p2Rhb_A?feature=oembed"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen>
+            </iframe>
+          </div>
+          <figcaption>This is a valid caption</figcaption>
+        </figure>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('youtube');
+      expect(component.params).toEqual({ id: 'XQ87p2Rhb_A' });
+      expect(component?.caption).toBe('This is a valid caption');
     });
   });
 
