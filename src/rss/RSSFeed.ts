@@ -1,7 +1,14 @@
 import { DateTime } from 'luxon';
 import { XMLParser } from 'fast-xml-parser';
 
-import type { RSS, Item, Enclosure, MediaContent, MediaGroup } from './RSS';
+import type {
+  RSS,
+  Item,
+  Enclosure,
+  MediaContent,
+  MediaGroup,
+  Thumbnail,
+} from './RSS';
 import { Tag } from './Tag';
 
 import * as Attributes from './Attributes';
@@ -351,6 +358,64 @@ export default class RSSFeed {
           `the value for 'cf:isPaid' is invalid: "${item['cf:isPaid']}"`
         );
       }
+    }
+
+    if (item['cf:thumbnail']) {
+      const cfThumbnail = item['cf:thumbnail'] as {
+        '@_url'?: string;
+        '@_width'?: string;
+        '@_height'?: string;
+        '@_type'?: string;
+        '@_fileSize'?: string;
+      };
+      const thumbnail: Thumbnail = {
+        url: cfThumbnail['@_url'] || '',
+        width: cfThumbnail['@_width']
+          ? parseInt(cfThumbnail['@_width'], 10)
+          : undefined,
+        height: cfThumbnail['@_height']
+          ? parseInt(cfThumbnail['@_height'], 10)
+          : undefined,
+        type: cfThumbnail['@_type'] || undefined,
+        fileSize: cfThumbnail['@_fileSize']
+          ? parseInt(cfThumbnail['@_fileSize'], 10)
+          : undefined,
+      };
+      if (!thumbnail.url) {
+        errors.push(new Error(`property 'url' is required for 'cf:thumbnail'`));
+      }
+      if (thumbnail.type !== undefined) {
+        if (typeof thumbnail.type !== 'string') {
+          warnings.push(`property 'type' is invalid for 'cf:thumbnail'`);
+          thumbnail.type = undefined;
+        } else {
+          const validMimeTypes = new Set([
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'image/webp',
+          ]);
+          if (!validMimeTypes.has(thumbnail.type)) {
+            warnings.push(
+              `property 'type' is not a valid mime type for 'cf:thumbnail'`
+            );
+            thumbnail.type = undefined;
+          }
+        }
+      }
+      if (thumbnail.width !== undefined && isNaN(thumbnail.width)) {
+        warnings.push(`property 'width' is invalid for 'cf:thumbnail'`);
+        thumbnail.width = undefined;
+      }
+      if (thumbnail.height !== undefined && isNaN(thumbnail.height)) {
+        warnings.push(`property 'height' is invalid for 'cf:thumbnail'`);
+        thumbnail.height = undefined;
+      }
+      if (thumbnail.fileSize !== undefined && isNaN(thumbnail.fileSize)) {
+        warnings.push(`property 'fileSize' is invalid for 'cf:thumbnail'`);
+        thumbnail.fileSize = undefined;
+      }
+      response['cf:thumbnail'] = thumbnail;
     }
 
     response.components = HTMLMapper.toComponents(contentEncoded, this.params);
