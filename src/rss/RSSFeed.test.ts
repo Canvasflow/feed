@@ -141,6 +141,67 @@ describe('Newsweek', () => {
     if (!item) return;
     expect(item['dc:creator']).toBe('Sonam Sheth, John Doe');
   });
+
+  test(`It should test cf:thumbnail`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
+    expect(feed.errors.length).toBe(0);
+    const rss = await feed.build();
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(rss, replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    expect(rss.channel?.title).toBe('Newsweek feed for VMG');
+    let item = rss.channel.items[0];
+    expect(item).toBeDefined();
+    if (!item) return;
+    expect(item['cf:thumbnail']).toEqual({
+      url: 'https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg',
+      width: 2500,
+      height: 1712,
+      type: 'image/jpeg',
+      fileSize: 1459000,
+    });
+    expect(item['dc:creator']).toBe('Drew VonScio');
+    item = rss.channel.items[1];
+    expect(item).toBeDefined();
+    if (!item) return;
+    expect(item['dc:creator']).toBe('Sonam Sheth, John Doe');
+  });
+
+  test(`It should fail invalid mime-type cf:thumbnail`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
+    expect(feed.errors.length).toBe(0);
+    const rss = await feed.build();
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(rss, replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    expect(rss.channel?.title).toBe('Newsweek feed for VMG');
+    const item = rss.channel.items[1];
+    expect(item).toBeDefined();
+    if (!item) return;
+    expect(item['cf:thumbnail']).toEqual({
+      url: 'https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg',
+      width: 300,
+      height: 400,
+      type: undefined,
+      fileSize: 45900,
+    });
+    expect(item.warnings).toBeDefined();
+    expect(item.warnings.length).toBeGreaterThan(0);
+  });
 });
 
 describe('Autocar', () => {

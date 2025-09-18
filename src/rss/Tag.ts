@@ -24,6 +24,7 @@ export const Tag = {
           'cf:hasAffiliateLinks',
           'cf:isSponsored',
           'cf:isPaid',
+          'cf:thumbnail',
           'dc:creator',
           'dc:date',
           'dc:language',
