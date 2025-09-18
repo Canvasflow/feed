@@ -116,6 +116,13 @@
                     <![CDATA[ Newsweek/AP ]]>
                 </media:credit>
             </media:content>
+            <cf:thumbnail 
+                url="https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg" 
+                width="300" 
+                height="400"  
+                type="image/svg+xml"
+                fileSize="45900"
+            />
         </item>
         <item>
             <title>
@@ -146,6 +153,13 @@
                     <![CDATA[ There have been multiple arrests made in connection with the death of Matthew Perry, including at least one doctor, per TMZ. ]]>
                 </media:description>
             </media:content>
+            <cf:thumbnail 
+                url="https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg" 
+                width="300" 
+                height="400"  
+                type="image/svg+xml"
+                fileSize="145900"
+            />
         </item>
         <item>
             <title>
