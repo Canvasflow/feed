@@ -57,6 +57,7 @@ export interface Item {
   'cf:hasAffiliateLinks'?: boolean;
   'cf:isSponsored'?: boolean;
   'cf:isPaid'?: boolean;
+  'cf:thumbnail'?: Thumbnail;
   'dc:creator'?: string;
   'dc:date'?: string;
   'dc:language'?: string;
@@ -67,6 +68,14 @@ export interface Item {
     'atom:uri'?: string;
     'atom:email'?: string;
   };
+}
+
+export interface Thumbnail {
+  url: string;
+  width?: number;
+  height?: number;
+  type?: string;
+  fileSize?: number;
 }
 
 export interface Enclosure {
