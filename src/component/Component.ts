@@ -81,6 +81,11 @@ export interface YoutubeComponent extends VideoComponent {
   params: { id: string };
 }
 
+export interface TikTokComponent extends VideoComponent {
+  vidtype: 'tiktok';
+  params: { id: string; username: string };
+}
+
 export interface InfogramComponent extends Component {
   component: 'infogram';
   params: { id: string; parentUrl: string; src: 'embed' };

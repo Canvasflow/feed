@@ -10,6 +10,7 @@ import type {
   YoutubeComponent,
   VideoComponent,
   AudioComponent,
+  TikTokComponent,
 } from './Component';
 
 describe('HTMLMapper', () => {
@@ -228,6 +229,122 @@ describe('HTMLMapper', () => {
       expect(component.vidtype).toBe('youtube');
       expect(component.params).toEqual({ id: 'XQ87p2Rhb_A' });
       expect(component?.caption).toBe('This is a valid caption');
+    });
+  });
+
+  describe('TikTok Component', () => {
+    test('It should create a TikTok embed component', () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote
+          class="tiktok-embed"
+          cite="https://www.tiktok.com/@kingar4__/video/7388884417025985824">
+        </blockquote> `
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TikTokComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('tiktok');
+      expect(component.params).toEqual({
+        id: '7388884417025985824',
+        username: '@kingar4__',
+      });
+    });
+
+    test('It should create a TikTok embed component inside a figure', () => {
+      const components = HTMLMapper.toComponents(
+        `
+        <figure>
+          <blockquote
+            class="tiktok-embed"
+            cite="https://www.tiktok.com/@kingar4__/video/7388884417025985824">
+          </blockquote>
+        </figure>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TikTokComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('tiktok');
+      expect(component.params).toEqual({
+        id: '7388884417025985824',
+        username: '@kingar4__',
+      });
+    });
+
+    test('It should create a TikTok embed component inside a div', () => {
+      const components = HTMLMapper.toComponents(
+        `
+        <div>
+          <blockquote
+            class="tiktok-embed"
+            cite="https://www.tiktok.com/@kingar4__/video/7388884417025985824">
+          </blockquote>
+        </div>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TikTokComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('tiktok');
+      expect(component.params).toEqual({
+        id: '7388884417025985824',
+        username: '@kingar4__',
+      });
+    });
+
+    test('It should return errors for an invalid TikTok URL', () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote
+        class="tiktok-embed"
+        cite="https://www.tiktok.com/invalid-url-format">
+      </blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TikTokComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('tiktok');
+      expect(component.params).toEqual({
+        id: '',
+        username: '',
+      });
+      expect(component.errors.length).toBeGreaterThan(0);
+      expect(component.errors[0].message).toBe(
+        'TikTok URL not properly formatted.'
+      );
+    });
+
+    test('It should return errors if TikTok cite attribute is missing', () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="tiktok-embed"></blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TikTokComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('tiktok');
+      expect(component.params).toEqual({
+        id: '',
+        username: '',
+      });
+      expect(component.errors.length).toBeGreaterThan(0);
+      expect(component.errors[0].message).toBe('cite attribute is missing');
     });
   });
 
