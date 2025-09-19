@@ -18,6 +18,7 @@ import {
   type YoutubeComponent,
   type InfogramComponent,
   type AudioComponent,
+  type TikTokComponent,
 } from './Component';
 
 const imageTags = new Set(['img', 'picture', 'figure']);
@@ -135,6 +136,14 @@ export class HTMLMapper {
     // This process instagram
     if (tagName === 'blockquote' && attributes.get('data-instgrm-permalink')) {
       return HTMLMapper.toInstagram(node);
+    }
+
+    if (
+      tagName === 'blockquote' &&
+      classNames &&
+      classNames.includes('tiktok-embed')
+    ) {
+      return HTMLMapper.toTikTok(node);
     }
 
     // This process twitter
@@ -356,6 +365,38 @@ export class HTMLMapper {
         component.type = type;
         break;
     }
+    return component;
+  }
+
+  static toTikTok(node: ElementNode): TikTokComponent {
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+    const attributes = getAttributes(node.attributes);
+    const params = {
+      username: '',
+      id: '',
+    };
+    const cite = attributes.get('cite') || '';
+    if (!cite) {
+      errors.push(new Error('cite attribute is missing'));
+    }
+
+    const match = cite.match(
+      /^https:\/\/www\.tiktok\.com\/(@[\w.\-_]+)\/video\/(\d+)(?:[/?].*)?$/
+    );
+    if (match) {
+      params.username = match[1] || '';
+      params.id = match[2] || '';
+    } else {
+      errors.push(new Error('TikTok URL not properly formatted.'));
+    }
+    const component: TikTokComponent = {
+      component: 'video',
+      vidtype: 'tiktok',
+      params,
+      errors,
+      warnings,
+    };
     return component;
   }
 
