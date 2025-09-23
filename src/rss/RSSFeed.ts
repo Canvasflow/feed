@@ -596,10 +596,13 @@ export function replaceErrors(_: string, value: unknown) {
  *
  * @returns {Boolean}
  */
-function isIterable(input: any): boolean {
+function isIterable(input: unknown): boolean {
   if (input === null || input === undefined) {
     return false;
   }
 
-  return typeof input[Symbol.iterator] === 'function';
+  return (
+    typeof (input as { [Symbol.iterator]: unknown })[Symbol.iterator] ===
+    'function'
+  );
 }
