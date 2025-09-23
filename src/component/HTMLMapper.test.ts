@@ -27,17 +27,18 @@ describe('HTMLMapper', () => {
 
     test('It should set a text45 component base on role', () => {
       const id = 'cf-123';
-      const content = `<p id="${id}" role="text45">Hello world</p>`;
+      const textContent = `<p id="${id}" role="text45">Hello world</p>`;
+      const content = `${textContent}<style>body {color: red;}</style>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
-      const component = components.pop() as TextComponent;
+      const component = components.shift() as TextComponent;
       expect(component).toBeDefined();
       if (!component) {
         return;
       }
       expect(component.component).toBe('text45');
       expect(component.id).toBe(id);
-      expect(component.text).toBe(content);
+      expect(component.text).toBe(textContent);
     });
 
     test('It should remove the image component', () => {

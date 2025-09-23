@@ -133,6 +133,10 @@ export class HTMLMapper {
       ul: 'body',
     };
 
+    if (tagName === 'style') {
+      return null;
+    }
+
     // This process instagram
     if (tagName === 'blockquote' && attributes.get('data-instgrm-permalink')) {
       return HTMLMapper.toInstagram(node);
