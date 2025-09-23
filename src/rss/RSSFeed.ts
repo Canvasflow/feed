@@ -64,7 +64,17 @@ export default class RSSFeed {
       return;
     }
 
-    this.validateItems(data.rss.channel.item);
+    const items = data.rss?.channel?.item;
+
+    if (items === null || items === undefined) {
+      return;
+    }
+
+    if (Array.isArray(items)) {
+      this.validateItems(items);
+    } else {
+      this.validateItems([items]);
+    }
   }
 
   async build(): Promise<RSS> {
@@ -206,6 +216,9 @@ export default class RSSFeed {
   }
 
   private validateItems(items: Array<Record<string, unknown>>) {
+    if (!isIterable(items)) {
+      return;
+    }
     for (const item of items) {
       this.validateItem(item);
     }
@@ -576,4 +589,20 @@ export function replaceErrors(_: string, value: unknown) {
   }
 
   return value;
+}
+
+/**
+ * Determine whether the given `input` is iterable.
+ *
+ * @returns {Boolean}
+ */
+function isIterable(input: unknown): boolean {
+  if (input === null || input === undefined) {
+    return false;
+  }
+
+  return (
+    typeof (input as { [Symbol.iterator]: unknown })[Symbol.iterator] ===
+    'function'
+  );
 }
