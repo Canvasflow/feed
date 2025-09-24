@@ -21,7 +21,7 @@ import {
   type TikTokComponent,
 } from './Component';
 
-const imageTags = new Set(['img', 'picture', 'figure']);
+const imageTags = new Set(['img', 'picture']);
 
 export const textTags = [
   'h1',
@@ -203,6 +203,7 @@ export class HTMLMapper {
         const c = HTMLMapper.fromNode(n, params);
         if (!c) continue;
         if (Array.isArray(c)) {
+          if (!c.length) continue;
           components.push(...c);
         } else {
           components.push(c);
@@ -525,9 +526,10 @@ export class HTMLMapper {
         ? 'vertical'
         : 'horizontal';
 
+    const galleryTags = new Set([...imageTags, 'figure']);
     const images: Array<GalleryImage> = node.children
       // Validate the only image tag are supported
-      .filter((n) => n.type === 'element' && imageTags.has(n.tagName))
+      .filter((n) => n.type === 'element' && galleryTags.has(n.tagName))
       // Map the node to an image component
       .map((n: Node): ImageComponent => {
         return HTMLMapper.toImage(n as ElementNode);
