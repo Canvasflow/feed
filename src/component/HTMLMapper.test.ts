@@ -119,33 +119,35 @@ describe('HTMLMapper', () => {
       expect(component.params.account).toBe(`NASCARONFOX`);
       expect(component.params.id).toBe(`1397629106427101185`);
     });
-    test('It should create a twitter tweet component', () => {
+    test('It should create a twitter tweet component inside a figure', () => {
       const components = HTMLMapper.toComponents(
-        `<div
-    class="wp-block-embed is-type-rich is-provider-twitter wp-block-embed-twitter"
+        `<figure
+	class="wp-block-embed is-type-rich is-provider-twitter wp-block-embed-twitter"
 >
-    <div class="wp-block-embed__wrapper">
-        <blockquote class="twitter-tweet" data-width="500" data-dnt="true">
-            <p lang="en" dir="ltr">
-                Yep. Did you know iPhone unit sales peaked 10 years ago?
-                Clearly, Apple’s flagship product is in terminal decline. Yet
-                it’s managed to keep revenue growth alive solely by raising
-                iPhone prices.
-                <a href="https://t.co/0lP3kv2erM">pic.twitter.com/0lP3kv2erM</a>
-            </p>
-            &mdash; Stephen McBride (@DisruptionHedge)
-            <a
-                href="https://twitter.com/DisruptionHedge/status/1967940731861184847?ref_src=twsrc%5Etfw"
-                >September 16, 2025</a
-            >
-        </blockquote>
-        <script
-            async
-            src="https://platform.twitter.com/widgets.js"
-            charset="utf-8"
-        ></script>
-    </div>
-</div>`
+	<div class="wp-block-embed__wrapper">
+		<blockquote class="twitter-tweet" data-width="500" data-dnt="true">
+			<p lang="en" dir="ltr">
+				Greetings, Vault Hunters - We need to share that the release of
+				Borderlands 4 on Nintendo Switch 2 is being delayed. We do not
+				take this decision lightly, but are committed to ensuring we
+				deliver the best possible experience to our fans, and the game
+				needs additional development…
+			</p>
+			&mdash; Borderlands (@Borderlands)
+			<a
+				href="https://twitter.com/Borderlands/status/1970609156936868102?ref_src=twsrc%5Etfw"
+				>September 23, 2025</a
+			>
+		</blockquote>
+		<script
+			async
+			src="https://platform.twitter.com/widgets.js"
+			charset="utf-8"
+		></script>
+	</div>
+</figure>
+
+`
       );
       expect(components.length).toBe(1);
       const component = components.pop() as TwitterComponent;
@@ -155,8 +157,8 @@ describe('HTMLMapper', () => {
       }
       expect(component.component).toBe('twitter');
       expect(component.height).toBe(`350`);
-      expect(component.params.account).toBe(`DisruptionHedge`);
-      expect(component.params.id).toBe(`1967940731861184847`);
+      expect(component.params.account).toBe(`Borderlands`);
+      expect(component.params.id).toBe(`1970609156936868102`);
     });
   });
 
