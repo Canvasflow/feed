@@ -48,6 +48,12 @@ export interface VideoComponent extends Component {
   credit?: string;
 }
 
+export interface ButtonComponent extends Component {
+  component: 'button';
+  text?: string;
+  link?: string;
+}
+
 export interface AudioComponent extends Component {
   component: 'audio';
   url: string;

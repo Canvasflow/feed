@@ -19,6 +19,7 @@ import {
   type InfogramComponent,
   type AudioComponent,
   type TikTokComponent,
+  type ButtonComponent,
 } from './Component';
 
 const imageTags = new Set(['img', 'picture']);
@@ -150,6 +151,11 @@ export class HTMLMapper {
       return HTMLMapper.toTikTok(node);
     }
 
+    // This process button component
+    if (tagName === 'button' || (tagName === 'a' && role === 'button')) {
+      return HTMLMapper.toButton(node);
+    }
+
     // This process twitter
     if (
       (tagName === 'blockquote' || tagName === 'a') &&
@@ -243,6 +249,73 @@ export class HTMLMapper {
       errors: [],
       warnings,
       text,
+    };
+  }
+
+  static toButton(node: ElementNode): ButtonComponent {
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+    const attributes = getAttributes(node.attributes);
+    let text: string | undefined;
+    let link: string | undefined;
+
+    // Process from a tag with role button
+    if (node.tagName === 'a') {
+      link = attributes.get('href');
+      text = node.children
+        .filter((n) => n.type === 'text')
+        .map((n) => n.content)
+        .join(' ')
+        .trim();
+      if (!text) {
+        errors.push(new Error('button text is empty'));
+      }
+    } else if (node.tagName === 'button') {
+      const anchorNodes = node.children.filter(
+        (n) => n.type === 'element' && n.tagName === 'a'
+      );
+      if (anchorNodes.length > 0) {
+        const aNode = anchorNodes[0] as ElementNode;
+        const aAttributes = getAttributes(aNode.attributes);
+        link = aAttributes.get('href');
+        if (!link) {
+          errors.push(new Error('href attribute is missing'));
+        }
+        text = aNode.children
+          .filter((n) => n.type === 'text')
+          .map((n) => n.content)
+          .join(' ')
+          .trim();
+        if (!text) {
+          errors.push(new Error('button text is empty'));
+        }
+      } else {
+        text = node.children
+          .filter((n) => n.type === 'text')
+          .map((n) => n.content)
+          .join(' ')
+          .trim();
+        if (!text) {
+          errors.push(new Error('button text is empty'));
+        }
+        warnings.push(
+          'button without a link is not clickable, consider using an a tag with role button'
+        );
+      }
+    } else {
+      errors.push(new Error('invalid button implementation'));
+    }
+
+    if (!link) {
+      errors.push(new Error('button link is empty'));
+    }
+
+    return {
+      component: 'button',
+      text,
+      link,
+      errors,
+      warnings,
     };
   }
 

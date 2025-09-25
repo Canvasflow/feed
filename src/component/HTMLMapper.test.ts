@@ -11,6 +11,7 @@ import type {
   VideoComponent,
   AudioComponent,
   TikTokComponent,
+  ButtonComponent,
 } from './Component';
 
 describe('HTMLMapper', () => {
@@ -100,6 +101,61 @@ describe('HTMLMapper', () => {
       expect(component.component).toBe('instagram');
       expect(component.type).toBe(`tv`);
       expect(component.id).toBe(`DLA3R_4SSKy`);
+    });
+  });
+
+  describe('Button component', () => {
+    test('It should create an button component from a tag', () => {
+      const text = `Buy Now`;
+      const link = 'https://example.com';
+      const components = HTMLMapper.toComponents(
+        `<a
+          href="${link}"
+          role="button"
+          rel="nofollow noopener"
+          aria-label="${text}"
+          target="_blank">
+            ${text}
+        </a>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as ButtonComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('button');
+      expect(component.text).toBeDefined();
+      expect(component.text).toBe(text);
+      expect(component.link).toBeDefined();
+      expect(component.link).toBe(link);
+    });
+
+    test('It should create an button component from button tag', () => {
+      const text = `Buy Now`;
+      const link = 'https://example.com';
+      const components = HTMLMapper.toComponents(
+        `<button>
+          <a
+            href="${link}"
+            rel="nofollow noopener"
+            aria-label="${text}"
+            target="_blank">
+              ${text}
+          </a>
+        </button>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as ButtonComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('button');
+      expect(component.text).toBeDefined();
+      expect(component.text).toBe(text);
+      expect(component.link).toBeDefined();
+      expect(component.link).toBe(link);
     });
   });
 
