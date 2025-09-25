@@ -113,7 +113,7 @@ describe('HTMLMapper', () => {
           href="${link}"
           role="button"
           rel="nofollow noopener"
-          aria-label="Shop At Revival "
+          aria-label="${text}"
           target="_blank">
             ${text}
         </a>`
@@ -139,7 +139,7 @@ describe('HTMLMapper', () => {
           <a
             href="${link}"
             rel="nofollow noopener"
-            aria-label="Shop At Revival "
+            aria-label="${text}"
             target="_blank">
               ${text}
           </a>
