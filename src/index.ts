@@ -23,6 +23,7 @@ export type {
   TikTokComponent,
   SpacerComponent,
   ComponentType,
+  ButtonComponent,
   TextType,
 } from './component/Component';
 export { isValidTextRole } from './component/Component';
