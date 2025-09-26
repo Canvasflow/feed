@@ -28,3 +28,8 @@ export type {
 } from './component/Component';
 export { isValidTextRole } from './component/Component';
 export { isValidParams } from './component/HTMLMapper';
+export type {
+  Params as HTMLParams,
+  Mapping as HTMLMapping,
+  Filter as HTMLFilter,
+} from './component/HTMLMapper';
