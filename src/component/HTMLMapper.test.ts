@@ -570,16 +570,101 @@ describe('HTMLMapper', () => {
       expect(component.images[0]).toEqual({
         caption: 'Image 1 Caption',
         imageurl: 'image1.jpg',
+        credit: 'Photographer 1',
       });
       expect(component.images[1]).toEqual({
         caption: 'Image 2 Caption',
         imageurl: 'image2.jpg',
+        credit: 'Photographer 2',
       });
       expect(component.images[2]).toEqual({
         imageurl: 'image3.jpg',
       });
       expect(component.images[3]).toEqual({
+        alt: 'My image',
         imageurl: 'image4.jpg',
+      });
+    });
+    test('It should create a gallery component from wordpress', () => {
+      const components = HTMLMapper.toComponents(`
+        <figure role="gallery"
+          class="wp-block-gallery has-nested-images columns-default 
+          is-cropped wp-block-gallery-1 is-layout-flex 
+          wp-block-gallery-is-layout-flex">
+          <figure class="wp-block-image wp-lightbox size-large">
+            <a href="https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-1TB-storage-upgrade-failure.jpg">
+              <img
+                loading="lazy" 
+                decoding="async" 
+                width="728" 
+                height="453" 
+                data-id="1664604"
+                src="https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-1TB-storage-upgrade-failure-728x453.jpg"
+                alt="iPhone Air modded storage upgrade failure" class="wp-image-1664604"
+                srcset="https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-1TB-storage-upgrade-failure-728x453.jpg 728w, https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-1TB-storage-upgrade-failure-564x351.jpg 564w, https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-1TB-storage-upgrade-failure.jpg 1102w"
+                sizes="auto, (max-width: 728px) 100vw, 728px" />
+            </a>
+          </figure>
+
+          <figure class="wp-block-image wp-lightbox size-large">
+            <img 
+              loading="lazy" 
+              decoding="async" 
+              width="728" 
+              height="446"
+              data-id="1664603"
+              src="https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-512GB-storage-upgrade-failure-728x446.jpg"
+              alt="iPhone Air modded storage upgrade failure" class="wp-image-1664603"
+              srcset="https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-512GB-storage-upgrade-failure-728x446.jpg 728w, https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-512GB-storage-upgrade-failure-564x346.jpg 564w, https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-512GB-storage-upgrade-failure.jpg 1116w"
+              sizes="auto, (max-width: 728px) 100vw, 728px" />
+          </figure>
+
+          <figure class="wp-block-image wp-lightbox size-large">
+            <img 
+              loading="lazy" 
+              decoding="async" 
+              width="728" 
+              height="455"
+              data-id="1664602"
+              src="https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-256GB-storage-upgrade-failure-728x455.jpg"
+              alt="iPhone Air modded storage upgrade failure" class="wp-image-1664602"
+              srcset="https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-256GB-storage-upgrade-failure-728x455.jpg 728w, https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-256GB-storage-upgrade-failure-564x352.jpg 564w, https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-256GB-storage-upgrade-failure.jpg 1095w"
+              sizes="auto, (max-width: 728px) 100vw, 728px" />
+            </figure>
+        </figure>
+      `);
+      expect(components.length).toBe(1);
+      const component = components.pop() as GalleryComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('gallery');
+      expect(component.direction).toBe('horizontal');
+      expect(component.errors).toHaveLength(0);
+      expect(component.warnings).toHaveLength(0);
+      expect(component.images.length).toBe(3);
+      expect(component.images[0]).toEqual({
+        link: 'https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-1TB-storage-upgrade-failure.jpg',
+        alt: 'iPhone Air modded storage upgrade failure',
+        imageurl:
+          'https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-1TB-storage-upgrade-failure-728x453.jpg',
+        height: 453,
+        width: 728,
+      });
+      expect(component.images[1]).toEqual({
+        alt: 'iPhone Air modded storage upgrade failure',
+        height: 446,
+        width: 728,
+        imageurl:
+          'https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-512GB-storage-upgrade-failure-728x446.jpg',
+      });
+      expect(component.images[2]).toEqual({
+        alt: 'iPhone Air modded storage upgrade failure',
+        imageurl:
+          'https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-256GB-storage-upgrade-failure-728x455.jpg',
+        height: 455,
+        width: 728,
       });
     });
   });

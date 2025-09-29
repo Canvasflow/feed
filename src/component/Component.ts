@@ -17,6 +17,11 @@ export interface GalleryComponent extends Component {
 export interface GalleryImage {
   imageurl: string;
   caption?: string;
+  link?: string;
+  alt?: string;
+  credit?: string;
+  width?: number;
+  height?: number;
 }
 
 export interface ImageComponent extends Component {
