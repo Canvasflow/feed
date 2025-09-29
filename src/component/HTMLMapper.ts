@@ -611,9 +611,16 @@ export class HTMLMapper {
       .filter((i) => !!i)
       // Map Valid image components to gallery items
       .map((imageComponent: ImageComponent): GalleryImage => {
+        const { link, alt, credit, width, height, imageurl, caption } =
+          imageComponent;
         return {
-          imageurl: imageComponent.imageurl,
-          caption: imageComponent.caption,
+          imageurl,
+          caption,
+          link,
+          alt,
+          credit,
+          width,
+          height,
         };
       });
 
@@ -752,6 +759,14 @@ export class HTMLMapper {
       if (imageLink.alt) {
         alt = imageLink.alt;
       }
+
+      if (imageLink.width) {
+        width = imageLink.width;
+      }
+
+      if (imageLink.height) {
+        height = imageLink.height;
+      }
     } else {
       // Handle image
       const imageNodes = node.children.filter(
@@ -767,7 +782,7 @@ export class HTMLMapper {
         const widthAttr = attributes.get('width');
         const heightAttr = attributes.get('height');
         if (widthAttr) {
-          const w = parseInt(widthAttr, 10);
+          const w = parseInt(`${widthAttr}`, 10);
           if (!Number.isNaN(w)) {
             width = w;
           }
@@ -879,6 +894,9 @@ export class HTMLMapper {
     const link = attributes.get('href') || '';
     const errors: Error[] = [];
     const warnings: string[] = [];
+    let height: number | undefined;
+    let width: number | undefined;
+
     let imageurl = '';
     let alt: string = '';
     if (node.children) {
@@ -899,6 +917,16 @@ export class HTMLMapper {
           errors.push(new Error('src attribute is missing'));
         }
 
+        const widthAttr = attributes.get('width');
+        if (widthAttr) {
+          width = parseInt(`${widthAttr}`, 10);
+        }
+
+        const heightAttr = attributes.get('height');
+        if (heightAttr) {
+          height = parseInt(`${heightAttr}`, 10);
+        }
+
         imageurl = src || '';
         break;
       }
@@ -913,6 +941,8 @@ export class HTMLMapper {
       alt,
       imageurl,
       warnings,
+      width,
+      height,
       errors,
     };
   }
@@ -1172,6 +1202,8 @@ interface LinkResponse {
   alt: string;
   warnings: string[];
   errors: Error[];
+  width: number | undefined;
+  height: number | undefined;
 }
 
 export class SetUtils {
