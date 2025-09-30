@@ -519,3 +519,45 @@ describe('PureNews', () => {
     expect(rss.channel?.title).toBe('Wccftech');
   });
 });
+
+describe('Saga', () => {
+  let filePath: string = '';
+  let outFilePath: string = '';
+  beforeEach(() => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `saga.rss`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `saga.json`);
+    }
+  });
+  test(`It should build the content`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    const rss = await feed.build();
+
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(RSSFeed.toJSON(rss), replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    const { items, language, title } = rss.channel;
+    expect(language).toBe('en-gb');
+    expect(title).toBe('Saga Magazine Apple News Feed');
+    expect(items.length).toBeGreaterThan(0);
+    if (!items.length) return;
+    const item = items.shift();
+    expect(item).toBeDefined();
+    if (!item) return;
+    expect(item.mediaContent).toBeDefined();
+    if (!item.mediaContent) return;
+    expect(item.mediaContent.length).toBe(1);
+    const media = item.mediaContent[0];
+    expect(media.url).toEqual(
+      'https://www.saga.co.uk/helix-contentlibrary/saga/magazine/articles/2025/08aug/older-driver-gettyimages-523556820.jpg'
+    );
+    expect(media.title).toEqual('Older drivers: what are the rules now?');
+    expect(media.medium).toEqual('image');
+  });
+});

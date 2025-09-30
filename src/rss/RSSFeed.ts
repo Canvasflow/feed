@@ -25,6 +25,7 @@ export default class RSSFeed {
   public rss: RSS;
   public errors: Error[] = [];
   private params: Params | undefined;
+  private origin: string | undefined;
 
   constructor(content: string, params?: Params) {
     this.content = content;
@@ -93,6 +94,11 @@ export default class RSSFeed {
       category,
       ttl,
     } = channel;
+
+    if (link) {
+      const url = new URL(link);
+      this.origin = url.origin;
+    }
 
     let lastBuildDate: undefined | string;
     if (channel.lastBuildDate) {
@@ -318,8 +324,8 @@ export default class RSSFeed {
       link,
       pubDate,
       enclosure: this.getEnclosure(item),
-      mediaGroup: this.getMediaGroup(item),
-      mediaContent: this.getMediaContent(item),
+      mediaGroup: this.getMediaGroup(item, this.origin),
+      mediaContent: this.getMediaContent(item, this.origin),
       components: [],
       warnings,
       errors,
@@ -447,7 +453,10 @@ export default class RSSFeed {
     return (item.enclosure as Array<Attributes.Enclosure>).map(mapEnclosure);
   }
 
-  private getMediaGroup(item: Record<string, unknown>): Array<MediaGroup> {
+  private getMediaGroup(
+    item: Record<string, unknown>,
+    origin: string | undefined
+  ): Array<MediaGroup> {
     if (!item['media:group']) {
       return [];
     }
@@ -456,11 +465,14 @@ export default class RSSFeed {
       item['media:group'] = [item['media:group']];
     }
     return (item['media:group'] as Array<Attributes.MediaGroup>).map(
-      mapMediaGroup
+      mapMediaGroup(origin)
     );
   }
 
-  private getMediaContent(item: Record<string, unknown>): Array<MediaContent> {
+  private getMediaContent(
+    item: Record<string, unknown>,
+    origin: string | undefined
+  ): Array<MediaContent> {
     if (!item['media:content']) {
       return [];
     }
@@ -470,7 +482,7 @@ export default class RSSFeed {
     }
 
     return (item['media:content'] as Array<Attributes.MediaContent>).map(
-      mapMediaContent
+      mapMediaContent(origin)
     );
   }
 }
@@ -496,83 +508,100 @@ function mapEnclosure(e: Attributes.Enclosure): Enclosure {
   };
 }
 
-function mapMediaGroup(mediaGroup: Attributes.MediaGroup): MediaGroup {
-  const errors: Error[] = [];
-  const warnings: string[] = [];
-  const mediaContent = mediaGroup['media:content'];
-  if (!mediaContent) {
-    errors.push(new Error('at least one media:content is required'));
-  }
-  return {
-    title: mediaGroup['media:title'],
-    mediaContent: mediaContent ? mediaContent.map(mapMediaContent) : [],
-    errors,
-    warnings,
+function mapMediaGroup(
+  origin: string | undefined
+): (mediaGroup: Attributes.MediaGroup) => MediaGroup {
+  return (mediaGroup: Attributes.MediaGroup): MediaGroup => {
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+    const mediaContent = mediaGroup['media:content'];
+    if (!mediaContent) {
+      errors.push(new Error('at least one media:content is required'));
+    }
+    return {
+      title: mediaGroup['media:title'],
+      mediaContent: mediaContent
+        ? mediaContent.map(mapMediaContent(origin))
+        : [],
+      errors,
+      warnings,
+    };
   };
 }
 
-function mapMediaContent(mediaContent: Attributes.MediaContent): MediaContent {
-  const errors: Error[] = [];
-  const warnings: string[] = [];
-  const url = mediaContent['@_url'] || '';
-  const type = mediaContent['@_type'];
-  const medium = mediaContent['@_medium'];
-  let credit: string | undefined;
-  let thumbnail: string | undefined;
-  let title: string | undefined;
-  const isDefault: undefined | boolean = mediaContent['@_isDefault']
-    ? mediaContent['@_isDefault'] === 'true'
-    : undefined;
+function mapMediaContent(
+  origin: string | undefined
+): (mediaContent: Attributes.MediaContent) => MediaContent {
+  return (mediaContent: Attributes.MediaContent): MediaContent => {
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+    let url = mediaContent['@_url'] || '';
+    const type = mediaContent['@_type'];
+    const medium = mediaContent['@_medium'];
+    let credit: string | undefined;
+    let thumbnail: string | undefined;
+    let title: string | undefined;
+    const isDefault: undefined | boolean = mediaContent['@_isDefault']
+      ? mediaContent['@_isDefault'] === 'true'
+      : undefined;
 
-  if (!url) {
-    errors.push(new Error(`property 'url' is required`));
-  }
-  if (!type) {
-    warnings.push(`property 'type' is suggested`);
-  }
-  if (!medium && !type) {
-    warnings.push(`property 'medium' is suggested`);
-  }
-
-  let tmpCredit = mediaContent['media:credit'];
-  if (tmpCredit) {
-    if (Array.isArray(tmpCredit)) {
-      warnings.push('can only exist one "media:credit"');
-      tmpCredit = tmpCredit[0];
+    if (!url) {
+      errors.push(new Error(`property 'url' is required`));
+    }
+    if (!type) {
+      warnings.push(`property 'type' is suggested`);
+    }
+    if (!medium && !type) {
+      warnings.push(`property 'medium' is suggested`);
     }
 
-    credit = tmpCredit['#text'];
-  }
+    let tmpCredit = mediaContent['media:credit'];
+    if (tmpCredit) {
+      if (Array.isArray(tmpCredit)) {
+        warnings.push('can only exist one "media:credit"');
+        tmpCredit = tmpCredit[0];
+      }
 
-  let tmpThumbnail = mediaContent['media:thumbnail'];
-  if (tmpThumbnail) {
-    if (Array.isArray(tmpThumbnail)) {
-      warnings.push('can only exist one "media:thumbnail"');
-      tmpThumbnail = tmpThumbnail[0];
+      credit = tmpCredit['#text'];
     }
 
-    thumbnail = tmpThumbnail['@_url'];
-  }
+    let tmpThumbnail = mediaContent['media:thumbnail'];
+    if (tmpThumbnail) {
+      if (Array.isArray(tmpThumbnail)) {
+        warnings.push('can only exist one "media:thumbnail"');
+        tmpThumbnail = tmpThumbnail[0];
+      }
 
-  const tmpTitle = mediaContent['media:title'];
-  if (tmpTitle) {
-    if (typeof tmpTitle === 'string') {
-      title = tmpTitle;
-    } else {
-      title = tmpTitle['#text'];
+      thumbnail = tmpThumbnail['@_url'];
     }
-  }
 
-  return {
-    url,
-    type,
-    medium,
-    isDefault,
-    errors,
-    warnings,
-    credit,
-    thumbnail,
-    title,
+    const tmpTitle = mediaContent['media:title'];
+    if (tmpTitle) {
+      if (typeof tmpTitle === 'string') {
+        title = tmpTitle;
+      } else {
+        title = tmpTitle['#text'];
+      }
+    }
+
+    if (url && !url.startsWith('http') && !url.startsWith('https')) {
+      warnings.push(`property 'url' is not an absolute URL`);
+      if (origin) {
+        url = new URL(url, origin).href;
+      }
+    }
+
+    return {
+      url,
+      type,
+      medium,
+      isDefault,
+      errors,
+      warnings,
+      credit,
+      thumbnail,
+      title,
+    };
   };
 }
 
