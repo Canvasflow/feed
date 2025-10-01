@@ -3,7 +3,7 @@ import type { Component } from '../component/Component';
 export interface RSS {
   modules?: string[];
   channel: Channel;
-  errors: Error[];
+  errors: string[];
   warnings: string[];
 }
 
@@ -20,7 +20,7 @@ export interface Channel {
   category?: string[];
   items: Item[];
   ttl?: number;
-  errors: Error[];
+  errors: string[];
   warnings: string[];
   'atom:link'?: {
     href?: string;
@@ -50,7 +50,7 @@ export interface Item {
   mediaGroup: MediaGroup[];
   mediaContent: MediaContent[];
   pubDate?: string;
-  errors: Error[];
+  errors: string[];
   warnings: string[];
   components: Component[];
   'content:encoded'?: string;
@@ -82,7 +82,7 @@ export interface Enclosure {
   length: number;
   type: string;
   url: string;
-  errors: Error[];
+  errors: string[];
   warnings: string[];
 }
 
@@ -92,7 +92,7 @@ export interface MediaGroup {
   /**
    * Array of errors from the media content
    */
-  errors: Error[];
+  errors: string[];
   /**
    * Array of warnings from the media content
    */
@@ -138,7 +138,7 @@ export interface MediaContent {
   /**
    * Array of errors from the media content
    */
-  errors: Error[];
+  errors: string[];
   /**
    * Array of warnings from the media content
    */
