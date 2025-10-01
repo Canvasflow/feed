@@ -293,10 +293,10 @@ export default class RSSFeed {
       ? Array.isArray(item.category)
         ? item.category.map((c) => (typeof c === 'string' ? c.trim() : c))
         : [
-            typeof item.category === 'string'
-              ? item.category.trim()
-              : item.category,
-          ]
+          typeof item.category === 'string'
+            ? item.category.trim()
+            : item.category,
+        ]
       : [];
 
     let pubDate: undefined | string;
@@ -349,35 +349,9 @@ export default class RSSFeed {
         : undefined,
     };
 
-    if (item['cf:hasAffiliateLinks']) {
-      if (typeof item['cf:hasAffiliateLinks'] === 'boolean') {
-        response['cf:hasAffiliateLinks'] = item['cf:hasAffiliateLinks'];
-      } else {
-        warnings.push(
-          `the value for 'cf:hasAffiliateLinks' is invalid: "${item['cf:hasAffiliateLinks']}"`
-        );
-      }
-    }
-
-    if (item['cf:isSponsored']) {
-      if (typeof item['cf:isSponsored'] === 'boolean') {
-        response['cf:isSponsored'] = item['cf:isSponsored'];
-      } else {
-        warnings.push(
-          `the value for 'cf:isSponsored' is invalid: "${item['cf:isSponsored']}"`
-        );
-      }
-    }
-
-    if (item['cf:isPaid']) {
-      if (typeof item['cf:isPaid'] === 'boolean') {
-        response['cf:isPaid'] = item['cf:isPaid'];
-      } else {
-        warnings.push(
-          `the value for 'cf:isPaid' is invalid: "${item['cf:isPaid']}"`
-        );
-      }
-    }
+    this.processCanvasflowBooleanTag(item, response, 'cf:hasAffiliateLinks');
+    this.processCanvasflowBooleanTag(item, response, 'cf:isSponsored');
+    this.processCanvasflowBooleanTag(item, response, 'cf:isPaid');
 
     if (item['cf:thumbnail']) {
       const cfThumbnail = item['cf:thumbnail'] as {
@@ -401,11 +375,11 @@ export default class RSSFeed {
           : undefined,
       };
       if (!thumbnail.url) {
-        errors.push(new Error(`property 'url' is required for 'cf:thumbnail'`));
+        response.errors.push(new Error(`property 'url' is required for 'cf:thumbnail'`));
       }
       if (thumbnail.type !== undefined) {
         if (typeof thumbnail.type !== 'string') {
-          warnings.push(`property 'type' is invalid for 'cf:thumbnail'`);
+          response.warnings.push(`property 'type' is invalid for 'cf:thumbnail'`);
           thumbnail.type = undefined;
         } else {
           const validMimeTypes = new Set([
@@ -415,7 +389,7 @@ export default class RSSFeed {
             'image/webp',
           ]);
           if (!validMimeTypes.has(thumbnail.type)) {
-            warnings.push(
+            response.warnings.push(
               `property 'type' is not a valid mime type for 'cf:thumbnail'`
             );
             thumbnail.type = undefined;
@@ -423,15 +397,15 @@ export default class RSSFeed {
         }
       }
       if (thumbnail.width !== undefined && isNaN(thumbnail.width)) {
-        warnings.push(`property 'width' is invalid for 'cf:thumbnail'`);
+        response.warnings.push(`property 'width' is invalid for 'cf:thumbnail'`);
         thumbnail.width = undefined;
       }
       if (thumbnail.height !== undefined && isNaN(thumbnail.height)) {
-        warnings.push(`property 'height' is invalid for 'cf:thumbnail'`);
+        response.warnings.push(`property 'height' is invalid for 'cf:thumbnail'`);
         thumbnail.height = undefined;
       }
       if (thumbnail.fileSize !== undefined && isNaN(thumbnail.fileSize)) {
-        warnings.push(`property 'fileSize' is invalid for 'cf:thumbnail'`);
+        response.warnings.push(`property 'fileSize' is invalid for 'cf:thumbnail'`);
         thumbnail.fileSize = undefined;
       }
       response['cf:thumbnail'] = thumbnail;
@@ -439,6 +413,45 @@ export default class RSSFeed {
 
     response.components = HTMLMapper.toComponents(contentEncoded, this.params);
     return response;
+  }
+
+  private processCanvasflowBooleanTag(item: Record<string, unknown>, response: Item, tagName: CanvasflowBooleanTag): void {
+    if (!item[tagName]) {
+      return;
+    }
+    if (typeof item[tagName] === 'boolean') {
+      response[tagName] = item[tagName];
+      return;
+    }
+
+    if (typeof item[tagName] !== 'object') {
+      response.errors.push(
+        new Error(
+          `Invalid value for '${tagName}': "${item[tagName]}". Expected a boolean, "true", or "false".`
+        )
+      );
+      return;
+    }
+
+    if (
+
+      item[tagName] !== null &&
+      typeof (item[tagName] as { [key: string]: unknown })['#text'] === 'string'
+    ) {
+      response.warnings.push(
+        `attributes are not allowed for the '${tagName}' tag`
+      );
+      const text = (item[tagName] as { [key: string]: unknown })['#text'] as string;
+      if (text === 'true' || text === 'false') {
+        response[tagName] = text === 'true';
+        return;
+      }
+      response.errors.push(
+        new Error(
+          `Invalid value for '${tagName}': "${text}". Expected "true" or "false".`
+        )
+      );
+    }
   }
 
   private getEnclosure(item: Record<string, unknown>): Array<Enclosure> {
@@ -635,3 +648,5 @@ function isIterable(input: unknown): boolean {
     'function'
   );
 }
+
+type CanvasflowBooleanTag = 'cf:hasAffiliateLinks' | 'cf:isSponsored' | 'cf:isPaid';
