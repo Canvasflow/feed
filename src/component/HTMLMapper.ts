@@ -258,7 +258,7 @@ export class HTMLMapper {
   }
 
   static toButton(node: ElementNode): ButtonComponent {
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
     const attributes = getAttributes(node.attributes);
     let text: string | undefined;
@@ -273,7 +273,7 @@ export class HTMLMapper {
         .join(' ')
         .trim();
       if (!text) {
-        errors.push(new Error('button text is empty'));
+        errors.push('Button text is required');
       }
     } else if (node.tagName === 'button') {
       const anchorNodes = node.children.filter(
@@ -284,7 +284,7 @@ export class HTMLMapper {
         const aAttributes = getAttributes(aNode.attributes);
         link = aAttributes.get('href');
         if (!link) {
-          errors.push(new Error('href attribute is missing'));
+          errors.push('href attribute is required in a button link');
         }
         text = aNode.children
           .filter((n) => n.type === 'text')
@@ -292,7 +292,7 @@ export class HTMLMapper {
           .join(' ')
           .trim();
         if (!text) {
-          errors.push(new Error('button text is empty'));
+          errors.push('Button text is required');
         }
       } else {
         text = node.children
@@ -301,18 +301,18 @@ export class HTMLMapper {
           .join(' ')
           .trim();
         if (!text) {
-          errors.push(new Error('button text is empty'));
+          errors.push('Button text is required');
         }
         warnings.push(
           'button without a link is not clickable, consider using an a tag with role button'
         );
       }
     } else {
-      errors.push(new Error('invalid button implementation'));
+      errors.push('invalid button implementation');
     }
 
     if (!link) {
-      errors.push(new Error('button link is empty'));
+      errors.push('Button link is required');
     }
 
     return {
@@ -325,7 +325,7 @@ export class HTMLMapper {
   }
 
   static toAnchorButton(node: ElementNode): ButtonComponent {
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
     const attributes = getAttributes(node.attributes);
     let text: string | undefined;
@@ -344,11 +344,11 @@ export class HTMLMapper {
         .trim();
     }
     if (!text) {
-      errors.push(new Error('button text is empty'));
+      errors.push('Button text is required');
     }
 
     if (!link) {
-      errors.push(new Error('button link is empty'));
+      errors.push('Button link is required');
     }
 
     return {
@@ -361,7 +361,7 @@ export class HTMLMapper {
   }
 
   static toVideo(node: ElementNode): VideoComponent {
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
     const attributes = getAttributes(node.attributes);
     let url = '';
@@ -389,7 +389,7 @@ export class HTMLMapper {
     }
 
     if (!url) {
-      errors.push(new Error('video source is required'));
+      errors.push('Video source is required');
     }
 
     return {
@@ -407,7 +407,7 @@ export class HTMLMapper {
   }
 
   static toAudio(node: ElementNode): AudioComponent {
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
     const attributes = getAttributes(node.attributes);
     let url = '';
@@ -434,7 +434,7 @@ export class HTMLMapper {
     }
 
     if (!url) {
-      errors.push(new Error('audio source is required'));
+      errors.push('Audio source is required');
     }
 
     return {
@@ -450,7 +450,7 @@ export class HTMLMapper {
   }
 
   static toInstagram(node: ElementNode): InstagramComponent {
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
 
     const attributes = getAttributes(node.attributes);
@@ -460,11 +460,11 @@ export class HTMLMapper {
     const type = splitUrl[1] ? splitUrl[1].toLowerCase() : 'post';
 
     if (!splitUrl[1]) {
-      errors.push(new Error('Url do not contain Type '));
+      errors.push('URL does not contain a type.');
     }
 
     if (!splitUrl[2]) {
-      errors.push(new Error('Url do not contain ID '));
+      errors.push('URL does not contain an ID.');
     }
 
     const component: InstagramComponent = {
@@ -488,7 +488,7 @@ export class HTMLMapper {
   }
 
   static toTikTok(node: ElementNode): TikTokComponent {
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
     const attributes = getAttributes(node.attributes);
     const params = {
@@ -497,7 +497,7 @@ export class HTMLMapper {
     };
     const cite = attributes.get('cite') || '';
     if (!cite) {
-      errors.push(new Error('cite attribute is missing'));
+      errors.push('cite attribute is required');
     }
 
     const match = cite.match(
@@ -507,7 +507,7 @@ export class HTMLMapper {
       params.username = match[1] || '';
       params.id = match[2] || '';
     } else {
-      errors.push(new Error('TikTok URL not properly formatted.'));
+      errors.push('Invalid TikTok video URL format.');
     }
     const component: TikTokComponent = {
       component: 'video',
@@ -520,7 +520,7 @@ export class HTMLMapper {
   }
 
   static toTwitter(node: ElementNode): TwitterComponent {
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
     let tweetNode: ElementNode | undefined;
     const params: { id?: string; account?: string } = {};
@@ -587,20 +587,20 @@ export class HTMLMapper {
   }
 
   static toYoutube(url: URL): YoutubeComponent {
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
 
     const regExp =
       /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
 
     if (!regExp.test(url.href)) {
-      errors.push(new Error('Youtube video URL not properly formatted.'));
+      errors.push('Invalid Youtube video URL format.');
     }
 
     const id = url.pathname.split('/').pop() as string;
 
     if (!/^[a-zA-Z0-9_-]{11}$/.test(id)) {
-      errors.push(new Error('Invalid Youtube video id'));
+      errors.push('Invalid YouTube video ID.');
     }
 
     return {
@@ -615,7 +615,7 @@ export class HTMLMapper {
   }
 
   static toInfogram(url: URL): InfogramComponent {
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
 
     return {
@@ -631,7 +631,7 @@ export class HTMLMapper {
   }
 
   static toGallery(node: ElementNode): GalleryComponent {
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
     const attributes = getAttributes(node.attributes);
     const role = attributes.get('role') === 'mosaic' ? 'mosaic' : 'default';
@@ -698,12 +698,12 @@ export class HTMLMapper {
       return imageComponent;
     }
 
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
     let imageurl = '';
 
     if (!attributes) {
-      errors.push(new Error('Attribute in node not found'));
+      errors.push('No attributes found on image node');
     }
 
     const src = attributes.get('src');
@@ -754,7 +754,7 @@ export class HTMLMapper {
     | YoutubeComponent
     | null {
     let imageurl = '';
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
     let caption: string | undefined;
     let credit: string | undefined;
@@ -823,7 +823,7 @@ export class HTMLMapper {
         (n) => n.type === 'element' && n.tagName === 'img'
       );
       if (imageNodes.length > 1) {
-        warnings.push('Only one img tag per figure tag is valid');
+        warnings.push('Only one <img> tag is allowed per <figure> element');
       }
       for (const n of imageNodes) {
         if (n.type !== 'element') continue;
@@ -845,7 +845,7 @@ export class HTMLMapper {
         }
         alt = attributes.get('alt');
         if (!src) {
-          errors.push(new Error('src attribute is missing'));
+          errors.push('Image src attribute is missing');
         }
 
         imageurl = src || '';
@@ -873,7 +873,7 @@ export class HTMLMapper {
     }
 
     if (!imageurl) {
-      errors.push(new Error('imageurl is empty'));
+      errors.push('imageurl is empty');
     }
 
     return {
@@ -901,7 +901,7 @@ export class HTMLMapper {
   static fromPicture(node: ElementNode): ImageComponent {
     let imageurl = '';
     let alt: string | undefined;
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
 
     // Handle image
@@ -917,7 +917,7 @@ export class HTMLMapper {
       const attributes = getAttributes(n.attributes);
       const src = attributes.get('src');
       if (!src) {
-        errors.push(new Error('src attribute is missing'));
+        errors.push('Image src attribute is missing');
       }
 
       alt = attributes.get('alt');
@@ -927,7 +927,7 @@ export class HTMLMapper {
     }
 
     if (!imageurl) {
-      errors.push(new Error('imageurl is empty'));
+      errors.push('imageurl is empty');
     }
 
     return {
@@ -942,7 +942,7 @@ export class HTMLMapper {
   static getImageLink(node: ElementNode): LinkResponse {
     const attributes = getAttributes(node.attributes);
     const link = attributes.get('href') || '';
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
     let height: number | undefined;
     let width: number | undefined;
@@ -964,7 +964,7 @@ export class HTMLMapper {
         const src = attributes.get('src');
         alt = attributes.get('alt') || '';
         if (!src) {
-          errors.push(new Error('src attribute is missing'));
+          errors.push('Image src attribute is missing');
         }
 
         const widthAttr = attributes.get('width');
@@ -1251,7 +1251,7 @@ interface LinkResponse {
   imageurl: string;
   alt: string;
   warnings: string[];
-  errors: Error[];
+  errors: string[];
   width: number | undefined;
   height: number | undefined;
 }

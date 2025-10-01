@@ -1,7 +1,7 @@
 export interface Component {
   id?: string;
   component: ComponentType;
-  errors: Error[];
+  errors: string[];
   warnings: string[];
 }
 

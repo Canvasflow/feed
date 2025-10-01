@@ -23,7 +23,7 @@ export default class RSSFeed {
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   public data: any;
   public rss: RSS;
-  public errors: Error[] = [];
+  public errors: string[] = [];
   private params: Params | undefined;
   private origin: string | undefined;
 
@@ -52,7 +52,7 @@ export default class RSSFeed {
     const { data } = this;
     this.errors = [];
     if (!data.rss) {
-      const error = new Error('rss missing at root level');
+      const error = 'Required property "rss" is missing at the root level';
       this.errors.push(error);
       this.rss.errors.push(error);
       return;
@@ -149,7 +149,7 @@ export default class RSSFeed {
       }
     } else {
       this.rss.channel.errors.push(
-        new Error('channel do not have item elements')
+        'Required property "item" is missing in channel'
       );
     }
 
@@ -176,7 +176,7 @@ export default class RSSFeed {
 
     if (requiredTags.size) {
       for (const key of [...requiredTags]) {
-        const error = new Error(`Required property "${key}" is missing`);
+        const error = `Missing required property '${key}'`;
         this.errors.push(error);
         this.rss.errors.push(error);
       }
@@ -186,7 +186,7 @@ export default class RSSFeed {
     // Add warning for tags that are invalid at the rss level
     for (const key in rss) {
       if (!Tag.rss.validTags.has(key)) {
-        this.rss.warnings.push(`Invalid property '${key}'`);
+        this.rss.warnings.push(`Invalid property "${key}"`);
         delete rss[key];
       }
     }
@@ -204,10 +204,8 @@ export default class RSSFeed {
 
     if (requiredTags.size) {
       for (const key of [...requiredTags]) {
-        this.errors.push(new Error(`Required property "${key}" is missing`));
-        this.rss.channel.errors.push(
-          new Error(`Required property "${key}" is missing`)
-        );
+        this.errors.push(`Required property "${key}" is missing`);
+        this.rss.channel.errors.push(`Required property "${key}" is missing`);
       }
       return;
     }
@@ -215,7 +213,7 @@ export default class RSSFeed {
     // Add warning for tags that are invalid at the rss level
     for (const key in channel) {
       if (!Tag.rss.channel.validTags.has(key)) {
-        this.rss.channel.warnings.push(`Invalid property '${key}'`);
+        this.rss.channel.warnings.push(`Invalid property "${key}"`);
         delete channel[`${key}`];
       }
     }
@@ -239,10 +237,10 @@ export default class RSSFeed {
       }
     }
 
-    const errors: Error[] = [];
+    const errors: string[] = [];
     if (requiredTags.size) {
       for (const key of [...requiredTags]) {
-        const error = new Error(`Required property "${key}" is missing`);
+        const error = `Required property "${key}" is missing`;
         errors.push(error);
         this.errors.push(error);
       }
@@ -252,7 +250,7 @@ export default class RSSFeed {
     const warnings: string[] = [];
     for (const key in item) {
       if (!Tag.rss.channel.item.validTags.has(key)) {
-        warnings.push(`Invalid property '${key}'`);
+        warnings.push(`Invalid property "${key}"`);
         delete item[`${key}`];
       }
     }
@@ -281,7 +279,7 @@ export default class RSSFeed {
       typeof item['content:encoded'] === 'string'
         ? item['content:encoded'].trim()
         : '';
-    let errors: Error[] = [];
+    let errors: string[] = [];
     let warnings: string[] = [];
     if (item.errors && Array.isArray(item.errors)) {
       errors = item.errors;
@@ -293,10 +291,10 @@ export default class RSSFeed {
       ? Array.isArray(item.category)
         ? item.category.map((c) => (typeof c === 'string' ? c.trim() : c))
         : [
-          typeof item.category === 'string'
-            ? item.category.trim()
-            : item.category,
-        ]
+            typeof item.category === 'string'
+              ? item.category.trim()
+              : item.category,
+          ]
       : [];
 
     let pubDate: undefined | string;
@@ -375,11 +373,15 @@ export default class RSSFeed {
           : undefined,
       };
       if (!thumbnail.url) {
-        response.errors.push(new Error(`property 'url' is required for 'cf:thumbnail'`));
+        response.errors.push(
+          `Required property "url" is missing in 'cf:thumbnail'`
+        );
       }
       if (thumbnail.type !== undefined) {
         if (typeof thumbnail.type !== 'string') {
-          response.warnings.push(`property 'type' is invalid for 'cf:thumbnail'`);
+          response.warnings.push(
+            `Invalid value for property 'type' in 'cf:thumbnail'`
+          );
           thumbnail.type = undefined;
         } else {
           const validMimeTypes = new Set([
@@ -390,22 +392,28 @@ export default class RSSFeed {
           ]);
           if (!validMimeTypes.has(thumbnail.type)) {
             response.warnings.push(
-              `property 'type' is not a valid mime type for 'cf:thumbnail'`
+              `Invalid value for property 'type' in 'cf:thumbnail'.`
             );
             thumbnail.type = undefined;
           }
         }
       }
       if (thumbnail.width !== undefined && isNaN(thumbnail.width)) {
-        response.warnings.push(`property 'width' is invalid for 'cf:thumbnail'`);
+        response.warnings.push(
+          `Invalid value for property 'width' in 'cf:thumbnail'`
+        );
         thumbnail.width = undefined;
       }
       if (thumbnail.height !== undefined && isNaN(thumbnail.height)) {
-        response.warnings.push(`property 'height' is invalid for 'cf:thumbnail'`);
+        response.warnings.push(
+          `Invalid value for property 'height' in 'cf:thumbnail'`
+        );
         thumbnail.height = undefined;
       }
       if (thumbnail.fileSize !== undefined && isNaN(thumbnail.fileSize)) {
-        response.warnings.push(`property 'fileSize' is invalid for 'cf:thumbnail'`);
+        response.warnings.push(
+          `Invalid value for property 'fileSize' in 'cf:thumbnail'`
+        );
         thumbnail.fileSize = undefined;
       }
       response['cf:thumbnail'] = thumbnail;
@@ -415,7 +423,11 @@ export default class RSSFeed {
     return response;
   }
 
-  private processCanvasflowBooleanTag(item: Record<string, unknown>, response: Item, tagName: CanvasflowBooleanTag): void {
+  private processCanvasflowBooleanTag(
+    item: Record<string, unknown>,
+    response: Item,
+    tagName: CanvasflowBooleanTag
+  ): void {
     if (!item[tagName]) {
       return;
     }
@@ -426,30 +438,27 @@ export default class RSSFeed {
 
     if (typeof item[tagName] !== 'object') {
       response.errors.push(
-        new Error(
-          `Invalid value for '${tagName}': "${item[tagName]}". Expected a boolean, "true", or "false".`
-        )
+        `Invalid value for '${tagName}': "${item[tagName]}". Expected a boolean, "true", or "false".`
       );
       return;
     }
 
     if (
-
       item[tagName] !== null &&
       typeof (item[tagName] as { [key: string]: unknown })['#text'] === 'string'
     ) {
       response.warnings.push(
-        `attributes are not allowed for the '${tagName}' tag`
+        `Attributes are not allowed for the '${tagName}' property.`
       );
-      const text = (item[tagName] as { [key: string]: unknown })['#text'] as string;
+      const text = (item[tagName] as { [key: string]: unknown })[
+        '#text'
+      ] as string;
       if (text === 'true' || text === 'false') {
         response[tagName] = text === 'true';
         return;
       }
       response.errors.push(
-        new Error(
-          `Invalid value for '${tagName}': "${text}". Expected "true" or "false".`
-        )
+        `Invalid value for '${tagName}': "${text}". Expected "true" or "false".`
       );
     }
   }
@@ -501,16 +510,16 @@ export default class RSSFeed {
 }
 
 function mapEnclosure(e: Attributes.Enclosure): Enclosure {
-  const errors: Error[] = [];
+  const errors: string[] = [];
   const warnings: string[] = [];
   if (!e['@_url']) {
-    errors.push(new Error(`property 'url' is required`));
+    errors.push(`Required property "url" is missing`);
   }
   if (!e['@_type']) {
-    warnings.push(`property 'type' is suggested`);
+    warnings.push(`Property "type" is suggested`);
   }
   if (!e['@_length']) {
-    warnings.push(`property 'length' is suggested`);
+    warnings.push(`Property "length" is suggested`);
   }
   return {
     length: e['@_length'] ? parseInt(`${e['@_length']}`, 10) : 0,
@@ -525,11 +534,11 @@ function mapMediaGroup(
   origin: string | undefined
 ): (mediaGroup: Attributes.MediaGroup) => MediaGroup {
   return (mediaGroup: Attributes.MediaGroup): MediaGroup => {
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
     const mediaContent = mediaGroup['media:content'];
     if (!mediaContent) {
-      errors.push(new Error('at least one media:content is required'));
+      errors.push(`Required property "media:content" is missing`);
     }
     return {
       title: mediaGroup['media:title'],
@@ -546,7 +555,7 @@ function mapMediaContent(
   origin: string | undefined
 ): (mediaContent: Attributes.MediaContent) => MediaContent {
   return (mediaContent: Attributes.MediaContent): MediaContent => {
-    const errors: Error[] = [];
+    const errors: string[] = [];
     const warnings: string[] = [];
     let url = mediaContent['@_url'] || '';
     const type = mediaContent['@_type'];
@@ -559,19 +568,19 @@ function mapMediaContent(
       : undefined;
 
     if (!url) {
-      errors.push(new Error(`property 'url' is required`));
+      errors.push(`Required property "url" is missing`);
     }
     if (!type) {
-      warnings.push(`property 'type' is suggested`);
+      warnings.push(`Property "type" is suggested`);
     }
     if (!medium && !type) {
-      warnings.push(`property 'medium' is suggested`);
+      warnings.push(`Property "medium" is suggested`);
     }
 
     let tmpCredit = mediaContent['media:credit'];
     if (tmpCredit) {
       if (Array.isArray(tmpCredit)) {
-        warnings.push('can only exist one "media:credit"');
+        warnings.push('Only one "media:credit" element is allowed');
         tmpCredit = tmpCredit[0];
       }
 
@@ -581,7 +590,7 @@ function mapMediaContent(
     let tmpThumbnail = mediaContent['media:thumbnail'];
     if (tmpThumbnail) {
       if (Array.isArray(tmpThumbnail)) {
-        warnings.push('can only exist one "media:thumbnail"');
+        warnings.push('Only one "media:thumbnail" element is allowed');
         tmpThumbnail = tmpThumbnail[0];
       }
 
@@ -598,7 +607,7 @@ function mapMediaContent(
     }
 
     if (url && !url.startsWith('http') && !url.startsWith('https')) {
-      warnings.push(`property 'url' is not an absolute URL`);
+      warnings.push(`Property "url" is not an absolute URL`);
       if (origin) {
         url = new URL(url, origin).href;
       }
@@ -649,4 +658,7 @@ function isIterable(input: unknown): boolean {
   );
 }
 
-type CanvasflowBooleanTag = 'cf:hasAffiliateLinks' | 'cf:isSponsored' | 'cf:isPaid';
+type CanvasflowBooleanTag =
+  | 'cf:hasAffiliateLinks'
+  | 'cf:isSponsored'
+  | 'cf:isPaid';
