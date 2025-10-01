@@ -408,9 +408,7 @@ describe('HTMLMapper', () => {
         username: '',
       });
       expect(component.errors.length).toBeGreaterThan(0);
-      expect(component.errors[0].message).toBe(
-        'TikTok URL not properly formatted.'
-      );
+      expect(component.errors[0]).toBe('Invalid TikTok video URL format.');
     });
 
     test('It should return errors if TikTok cite attribute is missing', () => {
@@ -430,7 +428,7 @@ describe('HTMLMapper', () => {
         username: '',
       });
       expect(component.errors.length).toBeGreaterThan(0);
-      expect(component.errors[0].message).toBe('cite attribute is missing');
+      expect(component.errors[0]).toBe('cite attribute is required');
     });
   });
 
