@@ -138,6 +138,11 @@ export class HTMLMapper {
       return null;
     }
 
+    // This is a hack for forbes
+    if (tagName === 'a' && HTMLMapper.hasButton(node)) {
+      return HTMLMapper.toAnchorButton(node);
+    }
+
     // This process instagram
     if (tagName === 'blockquote' && attributes.get('data-instgrm-permalink')) {
       return HTMLMapper.toInstagram(node);
@@ -304,6 +309,42 @@ export class HTMLMapper {
       }
     } else {
       errors.push(new Error('invalid button implementation'));
+    }
+
+    if (!link) {
+      errors.push(new Error('button link is empty'));
+    }
+
+    return {
+      component: 'button',
+      text,
+      link,
+      errors,
+      warnings,
+    };
+  }
+
+  static toAnchorButton(node: ElementNode): ButtonComponent {
+    const errors: Error[] = [];
+    const warnings: string[] = [];
+    const attributes = getAttributes(node.attributes);
+    let text: string | undefined;
+    const link: string | undefined = attributes.get('href');
+    const buttonsNode = node.children.filter(
+      (n) => n.type === 'element' && n.tagName === 'button'
+    );
+
+    if (buttonsNode.length > 0) {
+      const button = buttonsNode[0] as ElementNode;
+
+      text = button.children
+        .filter((n) => n.type === 'text')
+        .map((n) => n.content)
+        .join(' ')
+        .trim();
+    }
+    if (!text) {
+      errors.push(new Error('button text is empty'));
     }
 
     if (!link) {
@@ -692,6 +733,15 @@ export class HTMLMapper {
       }
     }
 
+    return false;
+  }
+
+  static hasButton(node: ElementNode): boolean {
+    for (const child of node.children) {
+      if (child.type === 'element' && child.tagName === 'button') {
+        return true;
+      }
+    }
     return false;
   }
 
