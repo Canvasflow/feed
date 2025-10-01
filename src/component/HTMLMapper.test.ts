@@ -157,6 +157,33 @@ describe('HTMLMapper', () => {
       expect(component.link).toBeDefined();
       expect(component.link).toBe(link);
     });
+
+    test('It should create an button component from a tag with button as children', () => {
+      const text = `Buy Now`;
+      const link = 'https://example.com';
+      const components = HTMLMapper.toComponents(
+        `<a
+          href="${link}"
+          rel="nofollow noopener"
+          aria-label="${text}"
+          target="_blank">
+        <button>
+          ${text}
+        </button>
+        </a>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as ButtonComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('button');
+      expect(component.text).toBeDefined();
+      expect(component.text).toBe(text);
+      expect(component.link).toBeDefined();
+      expect(component.link).toBe(link);
+    });
   });
 
   describe('Twitter Component', () => {
