@@ -73,8 +73,38 @@ export class HTMLMapper {
     );
 
     return nodes
+      .filter(HTMLMapper.filterAnchors)
       .reduce(HTMLMapper.reduceComponents(params), [])
       .filter((i) => !!i);
+  }
+
+  static filterAnchors(node: Node): boolean {
+    const { type } = node;
+    if (type === 'element' && node.tagName === 'a') {
+      const attributes = getAttributes(node.attributes);
+      const role = attributes.get('role');
+      const classNames = attributes.get('class');
+
+      // This is a hack for forbes
+      if (HTMLMapper.hasButton(node)) {
+        return true;
+      }
+
+      // This process button component
+      if (role === 'button') {
+        return true;
+      }
+
+      if (
+        classNames &&
+        new Set(['twitter-tweet', 'twitter-timeline']).has(classNames)
+      ) {
+        return true;
+      }
+
+      return false;
+    }
+    return true;
   }
 
   static reduceComponents(
