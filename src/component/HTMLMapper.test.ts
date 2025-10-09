@@ -26,6 +26,25 @@ describe('HTMLMapper', () => {
       expect(component?.text).toBe(`<p>${content}</p>`);
     });
 
+    test('It should create a body component from anchor', () => {
+      const content = `<a
+  href="https://www.forbes.com/sites/iainmartin/2025/07/23/vibe-coding-turned-this-swedish-ai-unicorn-into-the-fastest-growing-software-startup-ever/"
+  rel="nofollow noopener noreferrer"
+  aria-label="Vibe Coding Turned This Swedish AI Unicorn Into The Fastest Growing Software Startup Ever" target="_self" role-fo>
+  <div>
+  <span>MORE FROM FORBES</span><span>Vibe Coding Turned This Swedish AI Unicorn Into The Fastest Growing Software Startup Ever</span>
+<small>By Iain Martin</small>
+  </div>
+  <img
+    src="https://specials-images.forbesimg.com/imageserve/6880ed77fb9e5395d961b1fc/960x0.jpg">
+</a>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as TextComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('body');
+    });
+
     test('It should set a text45 component base on role', () => {
       const id = 'cf-123';
       const textContent = `<p id="${id}" role="text45">Hello world</p>`;
