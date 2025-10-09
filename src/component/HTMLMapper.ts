@@ -36,6 +36,7 @@ export const textTags = [
   'blockquote',
   'ol',
   'ul',
+  'a',
 ];
 
 export const textTagsSet = new Set([...textTags]);
@@ -63,6 +64,8 @@ const textAllowedTags = [
     'del',
     's',
     'p',
+    'span',
+    'small',
   ]),
 ];
 
@@ -72,10 +75,12 @@ export class HTMLMapper {
       HTMLMapper.filterEmptyTextNode
     );
 
-    return nodes
-      .filter(HTMLMapper.filterAnchors)
-      .reduce(HTMLMapper.reduceComponents(params), [])
-      .filter((i) => !!i);
+    return (
+      nodes
+        // .filter(HTMLMapper.filterAnchors)
+        .reduce(HTMLMapper.reduceComponents(params), [])
+        .filter((i) => !!i)
+    );
   }
 
   static filterAnchors(node: Node): boolean {
@@ -162,6 +167,7 @@ export class HTMLMapper {
       p: 'body',
       ol: 'body',
       ul: 'body',
+      a: 'body',
     };
 
     if (tagName === 'style') {
@@ -200,19 +206,6 @@ export class HTMLMapper {
       return HTMLMapper.toTwitter(node);
     }
 
-    // Handle mapping send by the user
-    const textType = getMappingComponent(node, params?.mappings);
-    if (textType) {
-      return HTMLMapper.toText(node, textType);
-    }
-
-    // This section validates text tags
-    for (const tag in textTagMapping) {
-      if (tagName === tag) {
-        return HTMLMapper.toText(node, textTagMapping[tag]);
-      }
-    }
-
     if (role === 'gallery' || role === 'mosaic') {
       return HTMLMapper.toGallery(node);
     }
@@ -236,6 +229,19 @@ export class HTMLMapper {
         return HTMLMapper.fromIframe(node);
       default:
         break;
+    }
+
+    // Handle mapping send by the user
+    const textType = getMappingComponent(node, params?.mappings);
+    if (textType) {
+      return HTMLMapper.toText(node, textType);
+    }
+
+    // This section validates text tags
+    for (const tag in textTagMapping) {
+      if (tagName === tag) {
+        return HTMLMapper.toText(node, textTagMapping[tag]);
+      }
     }
 
     if (node.children) {
