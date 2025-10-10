@@ -44,8 +44,14 @@ export const textTagsSet = new Set([...textTags]);
 const textAllowedAttributes: Record<string, Array<string>> = {
   a: ['href', 'target', 'rel'],
 };
+
 for (const tag of textTags) {
-  textAllowedAttributes[tag] = ['id', 'role', 'style', 'class'];
+  let attributes = ['id', 'role', 'style', 'class'];
+  const allowedAttributes = textAllowedAttributes[tag] || [];
+  if (allowedAttributes.length) {
+    attributes = attributes.concat(allowedAttributes);
+  }
+  textAllowedAttributes[tag] = attributes;
 }
 
 const textAllowedTags = [
@@ -122,6 +128,10 @@ export class HTMLMapper {
     const attributes = getAttributes(node.attributes);
     const role = attributes.get('role');
     const classNames = attributes.get('class');
+
+    if (attributes.get('data-cf-ignore') !== undefined) {
+      return null;
+    }
 
     const textTagMapping: Record<string, TextType> = {
       h1: 'headline',
@@ -236,9 +246,12 @@ export class HTMLMapper {
     const warnings: string[] = [];
     const attributes = getAttributes(node.attributes);
 
+    const allowedTags = textAllowedTags;
+    const allowedAttributes = textAllowedAttributes;
+
     const text = sanitizeHtml(html, {
-      allowedTags: textAllowedTags,
-      allowedAttributes: textAllowedAttributes,
+      allowedTags,
+      allowedAttributes,
     });
     const id = attributes.get('id');
     const role = attributes.get('role');

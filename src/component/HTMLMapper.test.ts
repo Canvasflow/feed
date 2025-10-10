@@ -74,6 +74,26 @@ describe('HTMLMapper', () => {
       expect(component.component).toBe('text45');
       expect(component.text).toBe(`<p role="text45">Hello <b>world</b></p>`);
     });
+
+    test('It should ignore the component', () => {
+      const components = HTMLMapper.toComponents(`
+        <p role="text45" data-cf-ignore>Hello world</p>
+      `);
+      expect(components.length).toBe(0);
+    });
+    test('Anchors should be present', () => {
+      const content =
+        '<a href="https://example.com" target="_blank" rel="nofollow noopener">Hello world</a>';
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as TextComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('body');
+      expect(component.text).toBe(content);
+    });
   });
 
   describe('Instagram component', () => {
@@ -632,16 +652,16 @@ describe('HTMLMapper', () => {
     test('It should create a gallery component from wordpress', () => {
       const components = HTMLMapper.toComponents(`
         <figure role="gallery"
-          class="wp-block-gallery has-nested-images columns-default 
-          is-cropped wp-block-gallery-1 is-layout-flex 
+          class="wp-block-gallery has-nested-images columns-default
+          is-cropped wp-block-gallery-1 is-layout-flex
           wp-block-gallery-is-layout-flex">
           <figure class="wp-block-image wp-lightbox size-large">
             <a href="https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-1TB-storage-upgrade-failure.jpg">
               <img
-                loading="lazy" 
-                decoding="async" 
-                width="728" 
-                height="453" 
+                loading="lazy"
+                decoding="async"
+                width="728"
+                height="453"
                 data-id="1664604"
                 src="https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-1TB-storage-upgrade-failure-728x453.jpg"
                 alt="iPhone Air modded storage upgrade failure" class="wp-image-1664604"
@@ -651,10 +671,10 @@ describe('HTMLMapper', () => {
           </figure>
 
           <figure class="wp-block-image wp-lightbox size-large">
-            <img 
-              loading="lazy" 
-              decoding="async" 
-              width="728" 
+            <img
+              loading="lazy"
+              decoding="async"
+              width="728"
               height="446"
               data-id="1664603"
               src="https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-512GB-storage-upgrade-failure-728x446.jpg"
@@ -664,10 +684,10 @@ describe('HTMLMapper', () => {
           </figure>
 
           <figure class="wp-block-image wp-lightbox size-large">
-            <img 
-              loading="lazy" 
-              decoding="async" 
-              width="728" 
+            <img
+              loading="lazy"
+              decoding="async"
+              width="728"
               height="455"
               data-id="1664602"
               src="https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-256GB-storage-upgrade-failure-728x455.jpg"
