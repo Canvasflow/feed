@@ -144,7 +144,8 @@ export default class RSSFeed {
     this.rss.channel['sy:updatePeriod'] = channel['sy:updatePeriod'];
     this.rss.channel['sy:updateBase'] = channel['sy:updateBase'];
 
-    let items: any = channel.item;
+    let items: Record<string, unknown> | Array<Record<string, unknown>> =
+      channel.item;
 
     if (channel.item) {
       if (!Array.isArray(items)) {
