@@ -394,6 +394,32 @@ describe('Forbes', () => {
     );
     expect(item?.['atom:author']?.['atom:email']).toBe('yezen@forbes.com');
   });
+
+  test(`It should build content with single item`, async () => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `single-item-forbes.rss`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(
+        `${process.env.FEEDS_OUT_PATH}`,
+        `single-item-forbes.json`
+      );
+    }
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    const rss = await feed.build();
+
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(RSSFeed.toJSON(rss), replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    const { items } = rss.channel;
+    expect(items.length).toBeGreaterThan(0);
+    const item = items.shift();
+    expect(item).toBeDefined();
+  });
 });
 
 describe('Womens Running', () => {
