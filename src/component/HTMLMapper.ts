@@ -669,6 +669,28 @@ export class HTMLMapper {
     };
   }
 
+  // TOOD Apply logic with sanitize html
+  static applyRelativeLinks(link: string, html: string): string {
+    const allowedTags = textAllowedTags;
+    const allowedAttributes = textAllowedAttributes;
+    return sanitizeHtml(html, {
+      allowedTags,
+      allowedAttributes,
+      transformTags: {
+        a: function (tagName, attribs) {
+          const href = attribs.href;
+          console.log('HREF', href);
+          // Override the attribute
+          attribs.href = '/';
+          return {
+            tagName,
+            attribs,
+          };
+        },
+      },
+    });
+  }
+
   static toGallery(node: ElementNode): GalleryComponent {
     const errors: string[] = [];
     const warnings: string[] = [];

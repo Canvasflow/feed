@@ -1304,4 +1304,14 @@ describe('HTMLMapper', () => {
       });
     });
   });
+
+  // TODO Test that validates relative links
+  describe('Relative links', () => {
+    test('It should apply relative links', () => {
+      const link = 'https://google.com';
+      const html = '';
+      const content = HTMLMapper.applyRelativeLinks(link, html);
+      expect(content).toBeDefined();
+    });
+  });
 });
