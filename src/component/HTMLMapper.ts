@@ -20,6 +20,7 @@ import {
   type AudioComponent,
   type TikTokComponent,
   type ButtonComponent,
+  type RecipeComponent,
 } from './Component';
 
 const imageTags = new Set(['img', 'picture']);
@@ -40,6 +41,7 @@ export const textTags = [
 ];
 
 export const textTagsSet = new Set([...textTags]);
+export const mappingTagsSet: Set<string> = new Set([...textTags, 'recipe']);
 
 const textAllowedAttributes: Record<string, Array<string>> = {
   a: ['href', 'target', 'rel'],
@@ -210,9 +212,12 @@ export class HTMLMapper {
     }
 
     // Handle mapping send by the user
-    const textType = getMappingComponent(node, params?.mappings);
-    if (textType) {
-      return HTMLMapper.toText(node, textType);
+    const mappedComponent = getMappingComponent(node, params?.mappings);
+    if (mappedComponent) {
+      if (mappedComponent === 'recipe') {
+        return HTMLMapper.toRecipe(node, params);
+      }
+      return HTMLMapper.toText(node, mappedComponent);
     }
 
     // This section validates text tags
@@ -239,6 +244,23 @@ export class HTMLMapper {
     }
 
     return null;
+  }
+
+  static toRecipe(node: ElementNode, params?: Params): RecipeComponent {
+    const warnings: string[] = [];
+    const attributes = getAttributes(node.attributes);
+    const id = attributes.get('id');
+
+    const components: Array<Component> = node.children.length
+      ? HTMLMapper.toComponents(stringify(node.children), params)
+      : [];
+    return {
+      id,
+      component: 'recipe',
+      components,
+      errors: [],
+      warnings,
+    };
   }
 
   static toText(node: ElementNode, component: TextType): TextComponent {
@@ -1123,10 +1145,10 @@ function isEmpty(content: string) {
 function getMappingComponent(
   node: ElementNode,
   mappings?: Array<Mapping>
-): TextType | undefined {
-  const { tagName } = node;
+): TextType | undefined | 'recipe' {
+  //const { tagName } = node;
   if (!mappings || !mappings.length) return;
-  if (!textTagsSet.has(tagName)) return;
+  // if (!mappingTagsSet.has(tagName)) return;
 
   for (const mapping of mappings) {
     const { component, match, filters } = mapping;
@@ -1245,7 +1267,7 @@ export interface Params {
 
 export interface Mapping {
   name?: string;
-  component: TextType;
+  component: TextType | 'recipe';
   match: MatchType;
   filters: Filter[];
 }
