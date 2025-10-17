@@ -53,6 +53,12 @@ export interface VideoComponent extends Component {
   credit?: string;
 }
 
+export interface RecipeComponent extends Component {
+  component: 'recipe';
+  url?: string;
+  components: Array<Component>;
+}
+
 export interface ButtonComponent extends Component {
   component: 'button';
   text?: string;
@@ -126,7 +132,8 @@ export type ComponentType =
   | 'columns'
   | 'container'
   | 'spacer'
-  | 'divider';
+  | 'divider'
+  | 'recipe';
 
 export type TextType =
   | 'headline'

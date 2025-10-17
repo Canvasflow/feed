@@ -12,6 +12,7 @@ import type {
   AudioComponent,
   TikTokComponent,
   ButtonComponent,
+  RecipeComponent,
 } from './Component';
 
 describe('HTMLMapper', () => {
@@ -959,6 +960,75 @@ describe('HTMLMapper', () => {
       expect(component.controls).toBe(true);
       expect(component.muted).toBe(true);
       expect(component.caption).toBe(caption);
+    });
+  });
+
+  describe('Recipe components', () => {
+    test('It should map recipe component from class attribute', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'recipe',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['recipe'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <div class="recipe top">
+            <h4 class="text-lg hidden-xs">
+              This is a large text
+            </h4>
+            <p>Subtitle</p>
+        </div>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+      const recipeComponent = components.pop() as RecipeComponent;
+      expect(recipeComponent).toBeDefined();
+      if (!recipeComponent) {
+        return;
+      }
+      expect(recipeComponent.components[0].component).toBe('intro');
+      expect(recipeComponent.components[1].component).toBe('body');
+    });
+    test('It should map empty recipe component', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'recipe',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['recipe'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <div class="recipe"></div>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+      const recipeComponent = components.pop() as RecipeComponent;
+      expect(recipeComponent).toBeDefined();
+      if (!recipeComponent) {
+        return;
+      }
+      expect(recipeComponent.components.length).toBe(0);
     });
   });
 
