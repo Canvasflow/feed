@@ -672,14 +672,13 @@ export class HTMLMapper {
   static applyRelativeLinks(link: string, html: string): string {
     const allowedTags = textAllowedTags;
     const allowedAttributes = textAllowedAttributes;
-    const isRelative = (url: any) => !URL.canParse(url);
+    const isRelative = (url: string) => !URL.canParse(url);
     return sanitizeHtml(html, {
       allowedTags,
       allowedAttributes,
       transformTags: {
         a: function (tagName, attribs) {
-          let href = attribs.href;
-
+          const href = attribs.href;
           if (isRelative(href)) {
             attribs.href = link + href;
           }
