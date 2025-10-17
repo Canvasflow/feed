@@ -7,6 +7,11 @@ export interface RSS {
   warnings: string[];
 }
 
+// TODO Create the structure
+export interface Recipe {
+  '@type': 'Recipe';
+}
+
 export interface Channel {
   title?: string;
   link?: string;

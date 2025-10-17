@@ -8,6 +8,7 @@ import type {
   MediaContent,
   MediaGroup,
   Thumbnail,
+  Recipe,
 } from './RSS';
 import { Tag } from './Tag';
 
@@ -46,6 +47,12 @@ export default class RSSFeed {
         warnings: [],
       },
     };
+  }
+
+  // TODO Implement function
+  static async getRecipeFromUrl(url: string): Promise<Recipe | undefined> {
+    console.log(url);
+    return undefined;
   }
 
   async validate(): Promise<void> {

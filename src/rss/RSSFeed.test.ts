@@ -587,3 +587,12 @@ describe('Saga', () => {
     expect(media.medium).toEqual('image');
   });
 });
+
+// TODO Implement test
+describe.skip('Recipe', () => {
+  test(`It return a recipe object`, async () => {
+    const url = '';
+    const recipe = await RSSFeed.getRecipeFromUrl(url);
+    expect(recipe).toBeDefined();
+  });
+});
