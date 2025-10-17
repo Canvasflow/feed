@@ -1304,4 +1304,16 @@ describe('HTMLMapper', () => {
       });
     });
   });
+
+  describe('Relative links', () => {
+    test('It should apply relative links', () => {
+      const link =
+        'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge';
+      const html =
+        '<a href="~/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>';
+      const content = HTMLMapper.applyRelativeLinks(link, html);
+      console.log(content);
+      expect(content).toBeDefined();
+    });
+  });
 });

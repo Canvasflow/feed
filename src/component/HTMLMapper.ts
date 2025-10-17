@@ -669,6 +669,29 @@ export class HTMLMapper {
     };
   }
 
+  static applyRelativeLinks(link: string, html: string): string {
+    const allowedTags = textAllowedTags;
+    const allowedAttributes = textAllowedAttributes;
+    const isRelative = (url: string) => !URL.canParse(url);
+    return sanitizeHtml(html, {
+      allowedTags,
+      allowedAttributes,
+      transformTags: {
+        a: function (tagName, attribs) {
+          const href = attribs.href;
+          if (isRelative(href)) {
+            attribs.href = link + href;
+          }
+
+          return {
+            tagName,
+            attribs,
+          };
+        },
+      },
+    });
+  }
+
   static toGallery(node: ElementNode): GalleryComponent {
     const errors: string[] = [];
     const warnings: string[] = [];
