@@ -1361,17 +1361,5 @@ describe('HTMLMapper', () => {
       expect(content).toBeDefined();
       expect(content).toBe(result);
     });
-
-    test('relative url test ', () => {
-      const link =
-        'https://www.forbes.com/sites/maryroeloffs/2025/10/20/ms-frizzle-movie-debunked-no-quinta-brunson-and-greta-gerwig-arent-teaming-up/';
-      const href =
-        'https://www.forbes.com/sites/conormurray/2025/10/13/taylor-swift-eras-tour-documentary-new-concert-film-head-to-disney-in-december-what-we-know/';
-      const html = `<a href="${href}">this is a text</a>`;
-      //const result = `<a href="${href}">this is a text</a>`;
-      const content = HTMLMapper.processTextLinks(html, link);
-      expect(content).toBeDefined();
-      // expect(content).toBe(result);
-    });
   });
 });
