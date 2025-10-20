@@ -1368,7 +1368,7 @@ describe('HTMLMapper', () => {
       const href =
         'https://www.forbes.com/sites/conormurray/2025/10/13/taylor-swift-eras-tour-documentary-new-concert-film-head-to-disney-in-december-what-we-know/';
       const html = `<a href="${href}">this is a text</a>`;
-      const result = `<a href="${href}">this is a text</a>`;
+      //const result = `<a href="${href}">this is a text</a>`;
       const content = HTMLMapper.processTextLinks(html, link);
       expect(content).toBeDefined();
       // expect(content).toBe(result);
