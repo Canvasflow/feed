@@ -28,17 +28,7 @@ describe('HTMLMapper', () => {
     });
 
     test('It should create a body component from anchor', () => {
-      const content = `<a
-  href="https://www.forbes.com/sites/iainmartin/2025/07/23/vibe-coding-turned-this-swedish-ai-unicorn-into-the-fastest-growing-software-startup-ever/"
-  rel="nofollow noopener noreferrer"
-  aria-label="Vibe Coding Turned This Swedish AI Unicorn Into The Fastest Growing Software Startup Ever" target="_self" role-fo>
-  <div>
-  <span>MORE FROM FORBES</span><span>Vibe Coding Turned This Swedish AI Unicorn Into The Fastest Growing Software Startup Ever</span>
-<small>By Iain Martin</small>
-  </div>
-  <img
-    src="https://specials-images.forbesimg.com/imageserve/6880ed77fb9e5395d961b1fc/960x0.jpg">
-</a>`;
+      const content = `<p>Sunshine-loving&nbsp;<a href="~/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z" target="_blank" title="View page">tomatoes</a> loathe the cold and deteriorate rapidly when chilled.</p>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
       const component = components.pop() as TextComponent;
@@ -1306,14 +1296,70 @@ describe('HTMLMapper', () => {
   });
 
   describe('Relative links', () => {
-    test('It should apply relative links', () => {
+    test('It should apply relative links with ~ symbol', () => {
       const link =
         'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge';
-      const html =
-        '<a href="~/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>';
-      const content = HTMLMapper.applyRelativeLinks(link, html);
-      console.log(content);
+      const href = '~/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
+      const html = `<a href="${href}">this is a text</a>`;
+      const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/~/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
+      const content = HTMLMapper.processTextLinks(html, link);
       expect(content).toBeDefined();
+      expect(content).toBe(result);
+    });
+
+    test('It should apply relative links without trailing slash', () => {
+      const link =
+        'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge';
+      const href = 'link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
+      const html = `<a href="${href}">this is a text</a>`;
+      const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
+      //www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&_z=z
+      const content = HTMLMapper.processTextLinks(html, link);
+      expect(content).toBeDefined();
+      expect(content).toBe(result);
+    });
+
+    test('It should apply relative links with local directory', () => {
+      const link =
+        'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge';
+      const href = './link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
+      const html = `<a href="${href}">this is a text</a>`;
+      const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
+      const content = HTMLMapper.processTextLinks(html, link);
+      expect(content).toBeDefined();
+      expect(content).toBe(result);
+    });
+
+    test('It should apply relative links with trailing url', () => {
+      const link =
+        'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/';
+      const href = './link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
+      const html = `<a href="${href}">this is a text</a>`;
+      const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
+
+      const content = HTMLMapper.processTextLinks(html, link);
+      expect(content).toBeDefined();
+      expect(content).toBe(result);
+    });
+
+    test('It should apply relative links with trailing url double slash', () => {
+      const link =
+        'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/';
+      const href = '//link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
+      const html = `<a href="${href}">this is a text</a>`;
+      const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
+      const content = HTMLMapper.processTextLinks(html, link);
+      expect(content).toBeDefined();
+      expect(content).toBe(result);
+    });
+
+    test('It should apply relative links invalid port ', () => {
+      const href = 'https://javascript:null/';
+      const html = `<a href="${href}">this is a text</a>`;
+      const result = `<a href="/">this is a text</a>`;
+      const content = HTMLMapper.processTextLinks(html);
+      expect(content).toBeDefined();
+      expect(content).toBe(result);
     });
   });
 });

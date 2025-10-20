@@ -669,7 +669,11 @@ export class HTMLMapper {
     };
   }
 
-  static applyRelativeLinks(link: string, html: string): string {
+  static processTextLinks(html: string, link: string = '/'): string {
+    if (link && !link.endsWith('/')) {
+      link += '/';
+    }
+
     const allowedTags = textAllowedTags;
     const allowedAttributes = textAllowedAttributes;
     const isRelative = (url: string) => !URL.canParse(url);
@@ -678,7 +682,23 @@ export class HTMLMapper {
       allowedAttributes,
       transformTags: {
         a: function (tagName, attribs) {
-          const href = attribs.href;
+          let href = attribs.href;
+
+          if (href.includes(':')) {
+            const port = getPortFromUrl(href);
+
+            if (port === null) {
+              attribs.href = '/';
+              return {
+                tagName,
+                attribs,
+              };
+            }
+          }
+
+          if (href.startsWith('//') || href.startsWith('./')) {
+            href = href.slice(2);
+          }
           if (isRelative(href)) {
             attribs.href = link + href;
           }
@@ -1337,4 +1357,13 @@ export class SetUtils {
     if (a.size !== b.size) return false;
     return [...a].every((x) => b.has(x));
   }
+}
+function getPortFromUrl(url: string) {
+  const regex = /:(\d+)/;
+  const match = url.match(regex);
+
+  if (match && match[1]) {
+    return parseInt(match[1], 10);
+  }
+  return null;
 }
