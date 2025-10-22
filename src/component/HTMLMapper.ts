@@ -682,7 +682,20 @@ export class HTMLMapper {
       allowedAttributes,
       transformTags: {
         a: function (tagName, attribs) {
+          if (!attribs) {
+            return {
+              tagName,
+              attribs: {},
+            };
+          }
+
           let href = attribs.href;
+          if (!href) {
+            return {
+              tagName,
+              attribs,
+            };
+          }
 
           if (href.includes(':')) {
             const port = getPortFromUrl(href);

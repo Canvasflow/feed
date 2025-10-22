@@ -1353,10 +1353,17 @@ describe('HTMLMapper', () => {
       expect(content).toBe(result);
     });
 
-    test('It should apply relative links invalid port ', () => {
+    test('It should apply relative links invalid port', () => {
       const href = 'https://javascript:null/';
       const html = `<a href="${href}">this is a text</a>`;
       const result = `<a href="/">this is a text</a>`;
+      const content = HTMLMapper.processTextLinks(html);
+      expect(content).toBeDefined();
+      expect(content).toBe(result);
+    });
+    test('It should skip anchor tags that do not have attributes', () => {
+      const html = `<a>this is a text</a>`;
+      const result = `<a>this is a text</a>`;
       const content = HTMLMapper.processTextLinks(html);
       expect(content).toBeDefined();
       expect(content).toBe(result);
