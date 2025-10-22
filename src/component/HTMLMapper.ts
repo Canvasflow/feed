@@ -697,7 +697,7 @@ export class HTMLMapper {
             };
           }
 
-          if (href.includes(':')) {
+          if (removeProtocol(href).includes(':')) {
             const port = getPortFromUrl(href);
 
             if (port === null) {
@@ -1371,6 +1371,7 @@ export class SetUtils {
     return [...a].every((x) => b.has(x));
   }
 }
+
 function getPortFromUrl(url: string) {
   const regex = /:(\d+)/;
   const match = url.match(regex);
@@ -1379,4 +1380,14 @@ function getPortFromUrl(url: string) {
     return parseInt(match[1], 10);
   }
   return null;
+}
+
+function removeProtocol(url: string) {
+  if (url.startsWith('https:')) {
+    url = url.slice(6);
+  }
+  if (url.startsWith('http:')) {
+    url = url.slice(5);
+  }
+  return url;
 }
