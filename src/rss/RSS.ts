@@ -11,7 +11,7 @@ export interface RSS {
 export interface Recipe {
   '@type': 'Recipe';
   name?: string;
-  author?: { '@id': String };
+  author?: { '@id': string };
   description?: string;
   datePublished?: string;
   image?: string | string[];
@@ -44,8 +44,8 @@ export interface Recipe {
     sugarContent?: string;
     unsaturatedFatContent?: string;
   };
-  '@id': String;
-  isPartOf?: { '@id': String };
+  '@id': string;
+  isPartOf?: { '@id': string };
   mainEntityOfPage?: string;
 }
 
