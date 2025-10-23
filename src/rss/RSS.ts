@@ -7,48 +7,6 @@ export interface RSS {
   warnings: string[];
 }
 
-// TODO Create the structure
-export interface Recipe {
-  '@type': 'Recipe';
-  name?: string;
-  author?: { '@id': string };
-  description?: string;
-  datePublished?: string;
-  image?: string | string[];
-  recipeYield?: string[];
-  prepTime?: string;
-  cookTime?: string;
-  totalTime?: string;
-  recipeIngredient?: string[];
-  recipeInstructions?: Array<{
-    '@type': 'HowToStep';
-    text: string;
-    name: string;
-    url: string;
-  }>;
-  recipeCategory?: string[];
-  recipeCuisine?: string[];
-  keywords?: string;
-  nutrition?: {
-    '@type': 'NutritionInformation';
-    servingSize?: string;
-    calories?: string;
-
-    carbohydrateContent?: string;
-    proteinContent?: string;
-    fatContent?: string;
-    saturatedFatContent?: string;
-    transFatContent?: string;
-    sodiumContent?: string;
-    fiberContent?: string;
-    sugarContent?: string;
-    unsaturatedFatContent?: string;
-  };
-  '@id': string;
-  isPartOf?: { '@id': string };
-  mainEntityOfPage?: string;
-}
-
 export interface Channel {
   title?: string;
   link?: string;
