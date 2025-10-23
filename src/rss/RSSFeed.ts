@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import { XMLParser } from 'fast-xml-parser';
+import * as cheerio from 'cheerio';
 
 import type {
   RSS,
@@ -8,6 +9,7 @@ import type {
   MediaContent,
   MediaGroup,
   Thumbnail,
+  Recipe,
 } from './RSS';
 import { Tag } from './Tag';
 
@@ -46,6 +48,35 @@ export default class RSSFeed {
         warnings: [],
       },
     };
+  }
+
+  static async getRecipeFromUrl(url: string): Promise<Recipe | null> {
+    let recipe: Recipe | null = null;
+    const html = await this.getHtmlContent(url);
+    const $ = cheerio.load(html);
+    const content = $('script[type=application/ld+json]').html();
+    if (content) {
+      const parseContent: any = JSON.parse(content);
+      if (parseContent['@graph'] && parseContent['@graph'].length) {
+        for (const item of parseContent['@graph']) {
+          if (item['@type'] && item['@type'] === 'Recipe') {
+            recipe = item as Recipe;
+          }
+        }
+      }
+    }
+    return recipe;
+  }
+
+  static async getHtmlContent(url: string) {
+    try {
+      const response = await fetch(url, { method: 'GET' });
+      const data = await response.text();
+      return data;
+    } catch (err) {
+      console.error('Error:', err);
+      throw err;
+    }
   }
 
   async validate(): Promise<void> {

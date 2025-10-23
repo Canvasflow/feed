@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { test, expect, describe, beforeEach } from 'vitest';
 
 import RSSFeed, { replaceErrors } from './RSSFeed';
+import type { Recipe } from './RSS';
 
 describe('Invalid RSS', () => {
   test(`It should throw error because the rss is invalid`, async () => {
@@ -585,5 +586,92 @@ describe('Saga', () => {
     );
     expect(media.title).toEqual('Older drivers: what are the rules now?');
     expect(media.medium).toEqual('image');
+  });
+});
+
+// TODO Implement test
+describe.only('Recipe', () => {
+  test(`It return a recipe object, whenever a valid recipe is found`, async () => {
+    const url =
+      'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding';
+    const result: Recipe = {
+      '@type': 'Recipe',
+      name: 'Vegan Steamed Jam Suet Sponge Pudding',
+      author: {
+        '@id':
+          'https://www.veganfoodandliving.com/#/schema/person/62be92366f201f8fd50f286ece9fc0df',
+      },
+      description:
+        'This vegan steamed jam suet sponge pudding is a nostalgic trip down memory lane, offering a taste of a classic British dessert with a compassionate twist.',
+      datePublished: '2022-09-20T15:47:48+00:00',
+      image: [
+        'https://www.veganfoodandliving.com/wp-content/uploads/2022/09/Vegan-Steamed-Jam-Suet-Sponge-Pudding-close-up.jpg',
+        'https://www.veganfoodandliving.com/wp-content/uploads/2022/09/Vegan-Steamed-Jam-Suet-Sponge-Pudding-close-up-500x500.jpg',
+        'https://www.veganfoodandliving.com/wp-content/uploads/2022/09/Vegan-Steamed-Jam-Suet-Sponge-Pudding-close-up-500x375.jpg',
+        'https://www.veganfoodandliving.com/wp-content/uploads/2022/09/Vegan-Steamed-Jam-Suet-Sponge-Pudding-close-up-480x270.jpg',
+      ],
+      recipeYield: ['6'],
+      prepTime: 'PT10M',
+      cookTime: 'PT60M',
+      totalTime: 'PT70M',
+      recipeIngredient: [
+        '300 g self-raising flour',
+        '75 g caster sugar',
+        '1  lemon (zest only)',
+        '6 Tbsp jam',
+        '150 g vegetable suet',
+        'A pinch of cinnamon',
+        '240 ml soya milk',
+      ],
+      recipeInstructions: [
+        {
+          '@type': 'HowToStep',
+          text: 'Add the flour, suet, sugar, cinnamon, lemon zest and milk to a bowl and mix together to form a soft sticky dough.',
+          name: 'Add the flour, suet, sugar, cinnamon, lemon zest and milk to a bowl and mix together to form a soft sticky dough.',
+          url: 'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/#wprm-recipe-118147-step-0-0',
+        },
+        {
+          '@type': 'HowToStep',
+          text: 'Put a tablespoon of jam into the bottom of each mould and spoon in a sixth of the pudding mixture, cover with tin foil. Steam for 50-60 minutes or until the pudding is cooked through. Serve warm.',
+          name: 'Put a tablespoon of jam into the bottom of each mould and spoon in a sixth of the pudding mixture, cover with tin foil. Steam for 50-60 minutes or until the pudding is cooked through. Serve warm.',
+          url: 'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/#wprm-recipe-118147-step-0-1',
+        },
+      ],
+      recipeCategory: ['Dessert'],
+      recipeCuisine: ['British'],
+      keywords:
+        'dairy free dessert, egg free dessert, plant based dessert, vegan dessert',
+      nutrition: {
+        '@type': 'NutritionInformation',
+        servingSize: '152 g',
+        calories: '486 kcal',
+        carbohydrateContent: '68 g',
+        proteinContent: '7 g',
+        fatContent: '27 g',
+        saturatedFatContent: '6 g',
+        transFatContent: '3 g',
+        sodiumContent: '29 mg',
+        fiberContent: '2 g',
+        sugarContent: '23 g',
+        unsaturatedFatContent: '19 g',
+      },
+      '@id':
+        'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/#recipe',
+      isPartOf: {
+        '@id':
+          'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/#article',
+      },
+      mainEntityOfPage:
+        'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/',
+    };
+    const recipe = await RSSFeed.getRecipeFromUrl(url);
+    expect(recipe).toEqual(result);
+  });
+
+  test(`Invalid recipe`, async () => {
+    const url =
+      'https://www.veganfoodandliving.com/news/wagamama-vegatsu-vegan-options-menu-cuts/';
+    const recipe = await RSSFeed.getRecipeFromUrl(url);
+    expect(recipe).toBe(null);
   });
 });
