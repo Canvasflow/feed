@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { test, expect, describe, beforeEach } from 'vitest';
 
 import RSSFeed, { replaceErrors } from './RSSFeed';
-import type { Recipe } from './RSS';
+import type { Recipe } from '../component/Component';
 
 describe('Invalid RSS', () => {
   test(`It should throw error because the rss is invalid`, async () => {
@@ -589,8 +589,7 @@ describe('Saga', () => {
   });
 });
 
-// TODO Implement test
-describe.only('Recipe', () => {
+describe('Recipe', () => {
   test(`It return a recipe object, whenever a valid recipe is found`, async () => {
     const url =
       'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding';
@@ -668,7 +667,7 @@ describe.only('Recipe', () => {
     expect(recipe).toEqual(result);
   });
 
-  test(`Invalid recipe`, async () => {
+  test(`It should return null, because the recipe is not found`, async () => {
     const url =
       'https://www.veganfoodandliving.com/news/wagamama-vegatsu-vegan-options-menu-cuts/';
     const recipe = await RSSFeed.getRecipeFromUrl(url);

@@ -9,7 +9,6 @@ import type {
   MediaContent,
   MediaGroup,
   Thumbnail,
-  Recipe,
 } from './RSS';
 import { Tag } from './Tag';
 
@@ -19,6 +18,7 @@ import {
   type Params,
   isValidParams,
 } from '../component/HTMLMapper';
+import type { Recipe } from '../component/Component';
 
 export default class RSSFeed {
   public content: string;
