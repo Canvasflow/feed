@@ -77,6 +77,8 @@ const textAllowedTags = [
   ]),
 ];
 
+const allowedCaptionTags = ['b', 'strong', 'em', 'i'];
+
 export class HTMLMapper {
   static toComponents(content: string, params?: Params): Component[] {
     const nodes: Array<Node> = parse(content).filter(
@@ -982,12 +984,12 @@ export class HTMLMapper {
       warnings,
       caption: caption
         ? sanitizeHtml(caption, {
-            allowedTags: [],
+            allowedTags: [...allowedCaptionTags],
           })
         : undefined,
       credit: credit
         ? sanitizeHtml(credit, {
-            allowedTags: [],
+            allowedTags: [...allowedCaptionTags],
           })
         : undefined,
     };

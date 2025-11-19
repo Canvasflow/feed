@@ -56,7 +56,8 @@ export default class RSSFeed {
     const $ = cheerio.load(html);
     const content = $('script[type=application/ld+json]').html();
     if (content) {
-      const parseContent: any = JSON.parse(content);
+      // eslint-disable-next-line
+      const parseContent = JSON.parse(content) as any;
       if (parseContent['@graph'] && parseContent['@graph'].length) {
         for (const item of parseContent['@graph']) {
           if (item['@type'] && item['@type'] === 'Recipe') {
