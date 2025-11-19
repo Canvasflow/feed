@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { test, expect, describe, beforeEach } from 'vitest';
 
 import RSSFeed, { replaceErrors } from './RSSFeed';
-import type { Recipe } from '../component/Component';
+import type { ImageComponent, Recipe } from '../component/Component';
 
 describe('Invalid RSS', () => {
   test(`It should throw error because the rss is invalid`, async () => {
@@ -586,6 +586,51 @@ describe('Saga', () => {
     );
     expect(media.title).toEqual('Older drivers: what are the rules now?');
     expect(media.medium).toEqual('image');
+  });
+});
+
+describe('Cultured Magazine', () => {
+  let filePath: string = '';
+  let outFilePath: string = '';
+  beforeEach(() => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `culturedmag.rss`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(
+        `${process.env.FEEDS_OUT_PATH}`,
+        `culturedmag.json`
+      );
+    }
+  });
+  test(`It should build the content`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    const rss = await feed.build();
+
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(RSSFeed.toJSON(rss), replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    const { items, language, title } = rss.channel;
+    expect(language).toBe('en-US');
+    expect(title).toBe('Cultured Mag');
+    expect(items.length).toBeGreaterThan(0);
+    if (!items.length) return;
+    const item = items[9];
+    expect(item).toBeDefined();
+    if (!item) return;
+    const imageComponent = item.components[15] as ImageComponent | undefined;
+    expect(imageComponent).toBeDefined();
+    if (imageComponent?.component !== 'image') return;
+    expect(imageComponent.imageurl).toEqual(
+      'https://culturedmag.nyc3.digitaloceanspaces.com/uploads/2025/11/14105632/Kenya-Hara_DRAW.jpg'
+    );
+    expect(imageComponent.caption).toEqual(
+      'Spread from<em>Draw</em>. Image courtesy of Lars Müller Publishers.'
+    );
   });
 });
 
