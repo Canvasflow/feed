@@ -336,14 +336,6 @@ export default class RSSFeed {
           ]
       : [];
 
-    let pubDate: undefined | string;
-    if (item.pubDate) {
-      const pubDateTime = DateTime.fromJSDate(new Date(`${item.pubDate}`));
-      if (pubDateTime.isValid) {
-        pubDate = pubDateTime.toISO();
-      }
-    }
-
     if (item['dc:creator'] && Array.isArray(item['dc:creator'])) {
       item['dc:creator'] = item['dc:creator']
         .map((c: string) => c.trim())
@@ -359,7 +351,7 @@ export default class RSSFeed {
       }),
       description,
       link,
-      pubDate,
+      pubDate: item.pubDate ? `${item.pubDate}` : undefined,
       enclosure: this.getEnclosure(item),
       mediaGroup: this.getMediaGroup(item, this.origin),
       mediaContent: this.getMediaContent(item, this.origin),
