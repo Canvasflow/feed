@@ -594,6 +594,7 @@ function mapMediaContent(
     let credit: string | undefined;
     let thumbnail: string | undefined;
     let title: string | undefined;
+    let description: string | undefined;
     const isDefault: undefined | boolean = mediaContent['@_isDefault']
       ? mediaContent['@_isDefault'] === 'true'
       : undefined;
@@ -637,6 +638,15 @@ function mapMediaContent(
       }
     }
 
+    const tmpDescription = mediaContent['media:description'];
+    if (tmpTitle) {
+      if (typeof tmpDescription === 'string') {
+        description = tmpDescription;
+      } else {
+        description = tmpDescription?.['#text'];
+      }
+    }
+
     if (url && !url.startsWith('http') && !url.startsWith('https')) {
       warnings.push(`Property "url" is not an absolute URL`);
       if (origin) {
@@ -654,6 +664,7 @@ function mapMediaContent(
       credit,
       thumbnail,
       title,
+      description,
     };
   };
 }

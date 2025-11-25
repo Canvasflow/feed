@@ -49,7 +49,13 @@ export interface MediaContent {
    * Notable entity and the contribution to the creation of the
    * media object. (Optional)
    */
-  'media:credit'?: MediaCredit | MediaCredit[];
+  'media:credit'?:
+    | {
+        '#text'?: string;
+      }
+    | {
+        '#text'?: string;
+      }[];
 
   /**
    * Allows particular images to be used as representative images
@@ -60,20 +66,25 @@ export interface MediaContent {
   /**
    * The title of the particular media object
    */
-  'media:title'?: string | MediaTitle;
+  'media:title'?:
+    | string
+    | {
+        '#text'?: string;
+      };
+
+  /**
+    Short description describing the media object typically a sentence in length
+   */
+  'media:description'?:
+    | string
+    | {
+        '#text'?: string;
+      };
 }
 
 export interface MediaThumbnail {
   '#text'?: string;
   '@_url'?: string;
-}
-
-export interface MediaCredit {
-  '#text'?: string;
-}
-
-export interface MediaTitle {
-  '#text'?: string;
 }
 
 export interface AtomLink {
