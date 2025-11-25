@@ -40,6 +40,11 @@ export interface TextComponent extends Component {
   text: string;
 }
 
+export interface HTMLTableComponent extends Component {
+  component: 'htmltable';
+  html: string;
+}
+
 export interface VideoComponent extends Component {
   component: 'video';
   url?: string;
@@ -175,6 +180,7 @@ export type ComponentType =
   | 'container'
   | 'spacer'
   | 'divider'
+  | 'htmltable'
   | 'recipe';
 
 export type TextType =

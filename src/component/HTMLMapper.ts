@@ -21,6 +21,7 @@ import {
   type TikTokComponent,
   type ButtonComponent,
   type RecipeComponent,
+  type HTMLTableComponent,
 } from './Component';
 
 const imageTags = new Set(['img', 'picture']);
@@ -78,6 +79,28 @@ const textAllowedTags = [
 ];
 
 const allowedCaptionTags = ['b', 'strong', 'em', 'i'];
+
+const htmlTableAllowedTags = [
+  'table',
+  'thead',
+  'tbody',
+  'tfoot',
+  'tr',
+  'th',
+  'td',
+  'em',
+  'i',
+  'b',
+  'strong',
+  'sup',
+  'sub',
+  'span',
+  'br',
+  'small',
+  's',
+  'span',
+  'a',
+];
 
 export class HTMLMapper {
   static toComponents(content: string, params?: Params): Component[] {
@@ -164,6 +187,21 @@ export class HTMLMapper {
     // This process instagram
     if (tagName === 'blockquote' && attributes.get('data-instgrm-permalink')) {
       return HTMLMapper.toInstagram(node);
+    }
+
+    // This process html table
+    if (tagName === 'table') {
+      return HTMLMapper.toHTMLTable(node);
+    }
+
+    // This process html table inside figure
+    if (tagName === 'figure' && HTMLMapper.hasTable(node)) {
+      for (const child of node.children) {
+        if (child.type === 'element' && child.tagName === 'table') {
+          return HTMLMapper.toHTMLTable(child);
+        }
+      }
+      return null;
     }
 
     if (
@@ -528,6 +566,37 @@ export class HTMLMapper {
     return component;
   }
 
+  static toHTMLTable(node: ElementNode): HTMLTableComponent {
+    let html = stringify([node]);
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    const attributes = getAttributes(node.attributes);
+
+    const allowedTags = htmlTableAllowedTags;
+    const allowedAttributes = textAllowedAttributes;
+
+    html = sanitizeHtml(html, {
+      allowedTags,
+      allowedAttributes,
+    })
+      .replace(/[\r\n\t]/g, '')
+      .replace(/\s\s+/g, ' ')
+      .trim();
+
+    const id = attributes.get('id');
+
+    const component: HTMLTableComponent = {
+      id,
+      component: 'htmltable',
+      html,
+      errors,
+      warnings,
+    };
+
+    return component;
+  }
+
   static toTikTok(node: ElementNode): TikTokComponent {
     const errors: string[] = [];
     const warnings: string[] = [];
@@ -826,6 +895,16 @@ export class HTMLMapper {
   static hasCaption(node: ElementNode): boolean {
     for (const child of node.children) {
       if (child.type === 'element' && child.tagName === 'figcaption') {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  static hasTable(node: ElementNode): boolean {
+    for (const child of node.children) {
+      if (child.type === 'element' && child.tagName === 'table') {
         return true;
       }
     }

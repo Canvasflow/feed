@@ -121,6 +121,163 @@
 			<media:content medium="image" url="https://cdn.wccftech.com/wp-content/uploads/2025/09/75-percent-vs-65-percent-keyboard-1456x819.jpg" width="1456" height="819" />
 		</item>
 		<item>
+			<title><![CDATA[Intel W890 Platform Details Leak: Granite Rapids Workstation CPUs With Up To 350W TDP, Up To 2 TB Quad-Channel DDR5 RDIMM Memory, 112 PCIe Lanes]]></title>
+			<link>https://wccftech.com/intel-w890-platform-details-leak-granite-rapids-workstation-cpus-350w-tdp-2-tb-quad-channel-ddr5-rdimm-memory/</link>
+
+			<dc:creator><![CDATA[Hassan Mujtaba]]></dc:creator>
+			<pubDate>Sun, 23 Nov 2025 16:50:11 +0000</pubDate>
+			<category><![CDATA[Featured]]></category>
+			<category><![CDATA[News]]></category>
+			<category><![CDATA[Sticky]]></category>
+			<category><![CDATA[ASPEED AST2600]]></category>
+			<category><![CDATA[DDR5]]></category>
+			<category><![CDATA[Granite Rapids]]></category>
+			<category><![CDATA[Granite Rapids CPUs]]></category>
+			<category><![CDATA[Granite Rapids Workstation]]></category>
+			<category><![CDATA[Intel CPUs]]></category>
+			<category><![CDATA[Intel Granite Rapids]]></category>
+			<category><![CDATA[Intel W890]]></category>
+			<category><![CDATA[Intel W890 Platform]]></category>
+			<category><![CDATA[Intel Workstation]]></category>
+			<category><![CDATA[LGA 4710]]></category>
+			<category><![CDATA[Nuvoton NCT6126D]]></category>
+			<category><![CDATA[PCIe Gen5]]></category>
+			<category><![CDATA[RDIMM]]></category>
+			<category><![CDATA[Threadripper 9000]]></category>
+			<category><![CDATA[W890]]></category>
+			<category><![CDATA[Xeon-WS]]></category>
+			<guid isPermaLink="false">https://wccftech.com/?p=1677384</guid>
+
+			<description><![CDATA[Full details of Intel's W890 platform, designed for the upcoming Granite Rapids Workstation CPUs, have leaked out. Intel W890 Platform To Support Up To 350W Granite Rapids Workstation CPUs, 96 PCIe Gen5 &#38; 16 Gen4 Lanes Intel's Granite Rapids Workstation CPUs, which will be part of the next-gen Xeon-WS family, are right around the corner. We recently covered some preliminary lineup specs here and even got to see the flagship chip in action, offering 86 cores and 172 threads. Now, we have more details regarding the W890 platform, which will be powering these upcoming WS CPUs. The W890 platform is [&#8230;]]]></description>
+			<content:encoded><![CDATA[<p><a href="https://wccftech.com/intel-w890-platform-details-leak-granite-rapids-workstation-cpus-350w-tdp-2-tb-quad-channel-ddr5-rdimm-memory/"><img width="728" height="486" src="https://cdn.wccftech.com/wp-content/uploads/2025/11/Intel-Xeon-Chip-728x486.jpg" class="attachment-large size-large wp-post-image" alt="A person in a lab coat holds an &#039;intel xeon&#039; processor chip in a laboratory setting." decoding="async" loading="lazy" srcset="https://cdn.wccftech.com/wp-content/uploads/2025/11/Intel-Xeon-Chip-728x486.jpg 728w, https://cdn.wccftech.com/wp-content/uploads/2025/11/Intel-Xeon-Chip-540x360.jpg 540w, https://cdn.wccftech.com/wp-content/uploads/2025/11/Intel-Xeon-Chip-1456x971.jpg 1456w, https://cdn.wccftech.com/wp-content/uploads/2025/11/Intel-Xeon-Chip-1920x1281.jpg 1920w" sizes="auto, (max-width: 728px) 100vw, 728px" /></a></p>
+<p>Full details of Intel's W890 platform, designed for the upcoming Granite Rapids Workstation CPUs, have leaked out.</p>
+
+
+
+<h2 class="wp-block-heading" id="h-intel-w890-platform-to-support-up-to-350w-granite-rapids-workstation-cpus-96-pcie-gen5-amp-16-gen4-lanes">Intel W890 Platform To Support Up To 350W Granite Rapids Workstation CPUs, 96 PCIe Gen5 &amp; 16 Gen4 Lanes</h2>
+
+
+
+<p>Intel's Granite Rapids Workstation CPUs, which will be part of the next-gen Xeon-WS family, are right around the corner. We recently covered some <a class="dracula-style-txt-border dracula-style-link dracula-processed" data-dracula_alpha_bg="rgba(0, 0, 0, 0)" href="https://wccftech.com/intel-xeon-654-granite-rapids-workstation-cpu-leak-18-cores-preliminary-lineup-specs/" target="_blank" rel="noreferrer noopener">preliminary lineup specs here</a> and even got to see the flagship chip in action, <a class="dracula-style-txt-border dracula-style-link dracula-processed" data-dracula_alpha_bg="rgba(0, 0, 0, 0)" href="https://wccftech.com/intel-granite-rapids-xeon-workstation-cpu-leak-86-cores-172-threads-w890-platform/" target="_blank" rel="noreferrer noopener">offering 86 cores and 172 threads</a>.</p>
+
+
+
+<p>Now, we have more details regarding the W890 platform, which will be powering these upcoming WS CPUs. The W890 platform is based around the E2 Socket (LGA 4710), which will be featured on both Expert and Mainstream segments. The socket supports CPUs with up to 350W TDPs, &amp; up to 16 P-Cores.</p>
+
+
+
+<p>While Intel has been getting close to AMD's Threadripper in terms of core count, the&nbsp;<a href="https://wccftech.com/amd-ryzen-threadripper-pro-9000-cpus-launch/" target="_blank" rel="noreferrer noopener">Threadripper 9000 chips</a>&nbsp;still offer 12% more cores (96 vs 86). Furthermore, Zen 5 is a very efficient architecture, so it will be interesting to see how the next-gen Intel Xeon Workstation fares against the competition. AMD's CPUs also offer 80-128 PCIe Gen 5 lanes, up to 384 MB of cache, and up to 350W TDPs. So it looks like the fight is going to be really close.</p>
+
+
+
+<figure class="wp-block-image wp-lightbox size-large is-resized"><img loading="lazy" decoding="async" width="728" height="496" src="https://cdn.wccftech.com/wp-content/uploads/2025/11/Intel-W890-Granite-Rapids-Workstation-Xeon-CPU-Platform-_1-728x496.jpg" alt="A block diagram displays the architecture of an Intel CPU Socket-E2 LGA 4710 (Granite Rapids) Expert Workstation with various PCIe, USB, and Ethernet connections." class="wp-image-1677388" style="width:840px;height:auto" srcset="https://cdn.wccftech.com/wp-content/uploads/2025/11/Intel-W890-Granite-Rapids-Workstation-Xeon-CPU-Platform-_1-728x496.jpg 728w, https://cdn.wccftech.com/wp-content/uploads/2025/11/Intel-W890-Granite-Rapids-Workstation-Xeon-CPU-Platform-_1-529x360.jpg 529w, https://cdn.wccftech.com/wp-content/uploads/2025/11/Intel-W890-Granite-Rapids-Workstation-Xeon-CPU-Platform-_1.jpg 1234w" sizes="auto, (max-width: 728px) 100vw, 728px" /><figcaption class="wp-element-caption">Image Source: Momomo_US</figcaption></figure>
+
+
+
+<p>The Intel Granite Rapids Workstation Xeon CPUs will support both standard DDR5 DIMMs and RDIMMs. The RDIMMs support will include speeds of up to 5200 MT/s and up to 2 TB capacities that operate in quad-channel mode (2DPC configuration).</p>
+
+
+
+<p>In terms of PCIe lanes, the Expert CPUs will carry a total of 112 PCIe lanes, of which 96 will be Gen5 and 16 will be Gen4 lanes. The Mainstream platform will carry a total of 80 PCIe Gen5 lanes &amp; no Gen4 PCIe lanes. The CPUs will be connected to the W890 chipset using a Gen4 x8 lane DMI interface. The PCH is also feature-rich, offering:</p>
+
+
+
+<ul class="wp-block-list">
+<li>1 x Intel Ethernet Controller I226-V (2.5 GbE LAN)</li>
+
+
+
+<li>9 x USB 2.0/1.1 Links</li>
+
+
+
+<li>10 x USB 3.2 Links</li>
+
+
+
+<li>8 x SATA III Links</li>
+
+
+
+<li>2 x SlimSAS Links (PCIe Gen4x4 Each)</li>
+
+
+
+<li>Server IPMC ASPEED AST2600 Controller</li>
+
+
+
+<li>Nuvoton NCT6126D</li>
+</ul>
+
+
+
+<p>The platform will receive power through a single 24-pin ATX connector and up to four 8-pin ATX connectors to feed the 350W base TDP of Intel's Granite Rapids Xeon Workstation CPUs. </p>
+
+
+
+<p>Overall, Intel's W890 looks to be a very feature-rich platform, and should offer decent capabilities against the AMD Threadripper 9000 family is positioned well in terms of value and performance. We expect to see a launch next year, with a possible unveil planned for CES 2026, so stay tuned.</p>
+
+
+<h2 id="tablepress-175-name" class="tablepress-table-name tablepress-table-name-id-175">Intel HEDT/Workstation Processor Families:</h2>
+
+<table id="tablepress-175" class="tablepress tablepress-id-175" aria-labelledby="tablepress-175-name">
+<thead>
+<tr class="row-1">
+	<th class="column-1">Intel HEDT Family</th><th class="column-2">Granite Rapids</th><th class="column-3">Sapphire Rapids Refresh</th><th class="column-4">Sapphire Rapids</th><th class="column-5">Cascade Lake</th><th class="column-6">Skylake</th><th class="column-7">Skylake</th><th class="column-8">Skylake</th><th class="column-9">Broadwell</th><th class="column-10">Haswell</th><th class="column-11">Ivy Bridge</th><th class="column-12">Sandy Bridge</th><th class="column-13">Gulftown</th>
+</tr>
+</thead>
+<tbody class="row-striping row-hover">
+<tr class="row-2">
+	<td class="column-1">Process Node</td><td class="column-2">Intel 3</td><td class="column-3">10nm ESF</td><td class="column-4">10nm ESF</td><td class="column-5">14nm++</td><td class="column-6">14nm+</td><td class="column-7">14nm+</td><td class="column-8">14nm+</td><td class="column-9">14nm</td><td class="column-10">22nm</td><td class="column-11">22nm</td><td class="column-12">32nm</td><td class="column-13">32nm</td>
+</tr>
+<tr class="row-3">
+	<td class="column-1">Flagship SKU</td><td class="column-2">TBD</td><td class="column-3">Xeon W9-3595X<br />
+Xeon W7-2595X</td><td class="column-4">Xeon W9-3495X<br />
+Xeon W7-2495X</td><td class="column-5">Core i9-10980XE</td><td class="column-6">Xeon W-3175X</td><td class="column-7">Core i9-9980XE</td><td class="column-8">Core i9-7980XE</td><td class="column-9">Core i7-6950X</td><td class="column-10">Core i7-5960X</td><td class="column-11">Core i7-4960X</td><td class="column-12">Core i7-3960X</td><td class="column-13">Core i7-980X</td>
+</tr>
+<tr class="row-4">
+	<td class="column-1">Max Cores/Threads</td><td class="column-2">86/172?</td><td class="column-3">60/120<br />
+26/52</td><td class="column-4">56/112<br />
+24/48</td><td class="column-5">18/36</td><td class="column-6">28/56</td><td class="column-7">18/36</td><td class="column-8">18/36</td><td class="column-9">10/20</td><td class="column-10">8/16</td><td class="column-11">6/12</td><td class="column-12">6/12</td><td class="column-13">6/12</td>
+</tr>
+<tr class="row-5">
+	<td class="column-1">Clock Speeds</td><td class="column-2">TBD</td><td class="column-3">4.8 GHz</td><td class="column-4">4.8 GHz</td><td class="column-5">3.00 / 4.80 GHz</td><td class="column-6">3.10/4.30 GHz</td><td class="column-7">3.00/4.50 GHz</td><td class="column-8">2.60/4.20 GHz</td><td class="column-9">3.00/3.50 GHz</td><td class="column-10">3.00/3.50 GHz</td><td class="column-11">3.60/4.00 GHz</td><td class="column-12">3.30/3.90 GHz</td><td class="column-13">3.33/3,60 GHz</td>
+</tr>
+<tr class="row-6">
+	<td class="column-1">Max Cache</td><td class="column-2">TBD</td><td class="column-3">105 MB L3</td><td class="column-4">105 MB L3</td><td class="column-5">24.75 MB L3</td><td class="column-6">38.5 MB L3</td><td class="column-7">24.75 MB L3</td><td class="column-8">24.75 MB L3</td><td class="column-9">25 MB L3</td><td class="column-10">20 MB L3</td><td class="column-11">15 MB L3</td><td class="column-12">15 MB L3</td><td class="column-13">12 MB L3</td>
+</tr>
+<tr class="row-7">
+	<td class="column-1">Max PCI-Express Lanes (CPU)</td><td class="column-2">128 Gen 5</td><td class="column-3">112 Gen 5</td><td class="column-4">112 Gen 5</td><td class="column-5">44 Gen3</td><td class="column-6">44 Gen3</td><td class="column-7">44 Gen3</td><td class="column-8">44 Gen3</td><td class="column-9">40 Gen3</td><td class="column-10">40 Gen3</td><td class="column-11">40 Gen3</td><td class="column-12">40 Gen2</td><td class="column-13">32 Gen2</td>
+</tr>
+<tr class="row-8">
+	<td class="column-1">Chipset Compatiblity</td><td class="column-2">W890</td><td class="column-3">W790</td><td class="column-4">W790</td><td class="column-5">X299</td><td class="column-6">C612E</td><td class="column-7">X299</td><td class="column-8">X299</td><td class="column-9">X99 Chipset</td><td class="column-10">X99 Chipset</td><td class="column-11">X79 Chipset</td><td class="column-12">X79 Chipset</td><td class="column-13">X58 Chipset</td>
+</tr>
+<tr class="row-9">
+	<td class="column-1">Socket Compatiblity</td><td class="column-2">LGA 4710?</td><td class="column-3">LGA 4677</td><td class="column-4">LGA 4677</td><td class="column-5">LGA 2066</td><td class="column-6">LGA 3647</td><td class="column-7">LGA 2066</td><td class="column-8">LGA 2066</td><td class="column-9">LGA 2011-3</td><td class="column-10">LGA 2011-3</td><td class="column-11">LGA 2011</td><td class="column-12">LGA 2011</td><td class="column-13">LGA 1366</td>
+</tr>
+<tr class="row-10">
+	<td class="column-1">Memory Compatiblity</td><td class="column-2">DDR5-6000?</td><td class="column-3">DDR5-4800</td><td class="column-4">DDR5-4800</td><td class="column-5">DDR4-2933</td><td class="column-6">DDR4-2666</td><td class="column-7">DDR4-2800</td><td class="column-8">DDR4-2666</td><td class="column-9">DDR4-2400</td><td class="column-10">DDR4-2133</td><td class="column-11">DDR3-1866</td><td class="column-12">DDR3-1600</td><td class="column-13">DDR3-1066</td>
+</tr>
+<tr class="row-11">
+	<td class="column-1">Max TDP</td><td class="column-2">350W?</td><td class="column-3">350W</td><td class="column-4">350W</td><td class="column-5">165W</td><td class="column-6">255W</td><td class="column-7">165W</td><td class="column-8">165W</td><td class="column-9">140W</td><td class="column-10">140W</td><td class="column-11">130W</td><td class="column-12">130W</td><td class="column-13">130W</td>
+</tr>
+<tr class="row-12">
+	<td class="column-1">Launch</td><td class="column-2">2025?</td><td class="column-3">2024</td><td class="column-4">2023</td><td class="column-5">Q4 2019</td><td class="column-6">Q4 2018</td><td class="column-7">Q4 2018</td><td class="column-8">Q3 2017</td><td class="column-9">Q2 2016</td><td class="column-10">Q3 2014</td><td class="column-11">Q3 2013</td><td class="column-12">Q4 2011</td><td class="column-13">Q1 2010</td>
+</tr>
+<tr class="row-13">
+	<td class="column-1">Launch Price (Top SKU)</td><td class="column-2">TBD</td><td class="column-3">TBD</td><td class="column-4">$5889</td><td class="column-5">$979 US</td><td class="column-6">~$4000 US</td><td class="column-7">$1979 US</td><td class="column-8">$1999 US</td><td class="column-9">$1700 US</td><td class="column-10">$1059 US</td><td class="column-11">$999 US</td><td class="column-12">$999 US</td><td class="column-13">$999 US</td>
+</tr>
+</tbody>
+</table>
+<!-- #tablepress-175 from cache -->]]></content:encoded>
+
+
+
+			<category><![CDATA[Hardware]]></category>
+			<media:content medium="image" url="https://cdn.wccftech.com/wp-content/uploads/2025/11/Intel-Xeon-Chip-1456x971.jpg" width="1456" height="971" />
+		</item>
+		<item>
 			<title>Ubisoft Might&#8217;ve Shut Down The Crew&#8217;s Servers, But The Crew Unlimited Community Effort Has Brought the Game Back to Life</title>
 			<link>https://wccftech.com/ubisoft-shut-down-the-crew-but-the-crew-unlimited-brought-it-back-to-life/</link>
 
