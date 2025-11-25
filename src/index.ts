@@ -24,6 +24,7 @@ export type {
   SpacerComponent,
   ComponentType,
   ButtonComponent,
+  HTMLTableComponent,
   TextType,
 } from './component/Component';
 export { isValidTextRole } from './component/Component';
