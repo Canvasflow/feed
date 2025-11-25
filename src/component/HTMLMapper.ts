@@ -194,6 +194,16 @@ export class HTMLMapper {
       return HTMLMapper.toHTMLTable(node);
     }
 
+    // This process html table inside figure
+    if (tagName === 'figure' && HTMLMapper.hasTable(node)) {
+      for (const child of node.children) {
+        if (child.type === 'element' && child.tagName === 'table') {
+          return HTMLMapper.toHTMLTable(child);
+        }
+      }
+      return null;
+    }
+
     if (
       tagName === 'blockquote' &&
       classNames &&
@@ -885,6 +895,16 @@ export class HTMLMapper {
   static hasCaption(node: ElementNode): boolean {
     for (const child of node.children) {
       if (child.type === 'element' && child.tagName === 'figcaption') {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  static hasTable(node: ElementNode): boolean {
+    for (const child of node.children) {
+      if (child.type === 'element' && child.tagName === 'table') {
         return true;
       }
     }

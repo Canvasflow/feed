@@ -957,6 +957,135 @@ describe('HTMLMapper', () => {
       expect(component.id).toBe('tablepress-175');
       expect(component.html).toBeDefined();
     });
+
+    test('It should create a simple htmltable component that is inside a figure', () => {
+      const components = HTMLMapper.toComponents(`
+        <figure class="wp-block-table table-wrapper">
+          <table class="has-fixed-layout tablepress">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Specification</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>I/O</strong></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Displays</td>
+                <td>
+                  <strong>DisplayPort 1.4:</strong><br/>- Up to 4K @ 240Hz or
+                  8K@60Hz<br/>- Supports HDR, FreeSync, daisy-chaining<br/><strong>HDMI 2.0:
+                  </strong><br/>- Up to 4K @ 120Hz<br/>- Supports HDR, FreeSync, CEC
+                </td>
+              </tr>
+              <tr>
+                <td>USB</td>
+                <td>
+                  - Two USB-A 3.2 Gen 1 (front)<br/>- Two USB-A 2.0 High
+                  speed (back)<br/>- One USB-C 3.2 Gen 2 (back)
+                </td>
+              </tr>
+              <tr>
+                <td>Networking</td>
+                <td>Gigabit ethernet</td>
+              </tr>
+              <tr>
+                <td>LED Strip</td>
+                <td>
+                  17 individually addressable RGB LEDs for system status and
+                  customization
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Size &amp; Weight</strong></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Size</td>
+                <td>
+                  152 mm tall (148 mm without feet), 162.4 mm deep, 156 mm
+                  wide
+                </td>
+              </tr>
+              <tr>
+                <td>Weight</td>
+                <td>2.6 kg</td>
+              </tr>
+              <tr>
+                <td><strong>Software</strong></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Operating System</td>
+                <td>SteamOS 3 (Arch-based)</td>
+              </tr>
+              <tr>
+                <td>Desktop</td>
+                <td>KDE Plasma</td>
+              </tr>
+              <tr>
+                <td><strong>General</strong></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>CPU</td>
+                <td>
+                  Semi-custom AMD Zen 4 6C/12T<br/>- Up to 4.8 GHz, 30W TDP
+                </td>
+              </tr>
+              <tr>
+                <td>GPU</td>
+                <td>
+                  Semi-custom AMD RDNA3 28CUs<br/>- 2.45GHz max sustained
+                  clock, 110W TDP
+                </td>
+              </tr>
+              <tr>
+                <td>RAM</td>
+                <td>16GB DDR5 + 8GB GDDR6 VRAM</td>
+              </tr>
+              <tr>
+                <td>Power</td>
+                <td>Internal power supply, AC 110-240V</td>
+              </tr>
+              <tr>
+                <td>Storage</td>
+                <td>
+                  Two models:<br/>- 512GB NVMe SSD<br/>- 2TB NVMe SSD<br/>-
+                  Both include a high-speed microSD slot
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Connectivity</strong></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Wi-Fi</td>
+                <td>2x2 Wi-Fi 6E</td>
+              </tr>
+              <tr>
+                <td>Bluetooth</td>
+                <td>Bluetooth 5.3 (dedicated antenna)</td>
+              </tr>
+              <tr>
+                <td>Steam Controller</td>
+                <td>Integrated 2.4 GHz Steam Controller wireless adapter</td>
+              </tr>
+            </tbody>
+          </table>
+        </figure>`);
+      expect(components.length).toBe(1);
+      const component = components.pop() as HTMLTableComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('htmltable');
+      expect(component.html).toBeDefined();
+    });
   });
 
   describe('Video component', () => {
