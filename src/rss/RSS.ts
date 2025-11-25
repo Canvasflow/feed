@@ -126,6 +126,10 @@ export interface MediaContent {
    */
   title?: string;
   /**
+   * Short description describing the media object typically a sentence in length
+   */
+  description?: string;
+  /**
    * Allows particular images to be used as representative images
    * for the media object. (Optional)
    */
