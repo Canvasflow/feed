@@ -3,7 +3,8 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { test, expect, describe, beforeEach } from 'vitest';
 
 import RSSFeed, { replaceErrors } from './RSSFeed';
-import type { ImageComponent, Recipe } from '../component/Component';
+import type { ImageComponent } from '../component/Component';
+import type { Recipe } from '../component/Schema';
 
 describe('Invalid RSS', () => {
   test(`It should throw error because the rss is invalid`, async () => {

@@ -28,6 +28,14 @@ export type {
   TextType,
 } from './component/Component';
 export { isValidTextRole } from './component/Component';
+export type {
+  Recipe,
+  Person,
+  Organization,
+  QuantitativeValue,
+  NutritionInformation,
+  ListItem,
+} from './component/Schema';
 export { isValidParams, HTMLMapper } from './component/HTMLMapper';
 export type {
   Params as HTMLParams,

@@ -18,7 +18,7 @@ import {
   type Params,
   isValidParams,
 } from '../component/HTMLMapper';
-import type { Recipe } from '../component/Component';
+import type { Recipe } from '../component/Schema';
 
 export default class RSSFeed {
   public content: string;
