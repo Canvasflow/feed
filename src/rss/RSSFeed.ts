@@ -328,7 +328,9 @@ export default class RSSFeed {
     }
     const category: Array<string | { '#text': string }> = item.category
       ? Array.isArray(item.category)
-        ? item.category.map((c) => (typeof c === 'string' ? c.trim() : c))
+        ? item.category.map((c) =>
+            typeof c === 'string' || typeof c === 'number' ? `${c}`.trim() : c
+          )
         : [
             typeof item.category === 'string'
               ? item.category.trim()
@@ -345,10 +347,12 @@ export default class RSSFeed {
     const response: Item = {
       guid,
       title: title ? title.trim() : '',
-      category: category.map((c) => {
-        if (typeof c === 'string') return c;
-        return c['#text'];
-      }),
+      category: category
+        .filter((i) => !!i)
+        .map((c) => {
+          if (typeof c === 'string') return c;
+          return c['#text'];
+        }),
       description,
       link,
       pubDate: item.pubDate ? `${item.pubDate}` : undefined,

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	xmlns:media="http://search.yahoo.com/mrss/">
+
+	<channel>
+		<title>Wccftech</title>
+		<atom:link href="https://wccftech.com/feed/?feed_name=purenews" rel="self" type="application/rss+xml" />
+		<link>https://wccftech.com/</link>
+		<description>We bring you the latest from hardware, mobile and gaming industries in news, reviews, and guides.</description>
+		<lastBuildDate>Wed, 03 Dec 2025 16:11:56 +0000</lastBuildDate>
+		<language>en-US</language>
+		<sy:updatePeriod>hourly</sy:updatePeriod>
+		<sy:updateFrequency>1</sy:updateFrequency>
+		<generator>https://wordpress.org/?v=6.8.3</generator>
+	<item>
+			<title><![CDATA[AMD EPYC “9006” Embedded Venice CPUs Rock Up To 96 “Zen 6” Cores & PCIe Gen6, EPYC Embedded 2005 “Fire Range” & Annapurna Families Confirmed Too]]></title>
+			<link>https://wccftech.com/amd-epyc-9006-embedded-venice-cpus-96-zen-6-cores-embedded-2005-fire-range-annapurna/</link>
+
+			<dc:creator><![CDATA[Hassan Mujtaba]]></dc:creator>
+			<pubDate>Wed, 03 Dec 2025 09:55:36 +0000</pubDate>
+			<category><![CDATA[Featured]]></category>
+			<category><![CDATA[News]]></category>
+			<category><![CDATA[Sticky]]></category>
+			<category><![CDATA[4005]]></category>
+			<category><![CDATA[AMD]]></category>
+			<category><![CDATA[AMD EPYC Embedded]]></category>
+			<category><![CDATA[AMD Zen 6]]></category>
+			<category><![CDATA[Annapurna]]></category>
+			<category><![CDATA[EPYC Embedded]]></category>
+			<category><![CDATA[EPYC Fire Range]]></category>
+			<category><![CDATA[EPYC Zen 6]]></category>
+			<category><![CDATA[Fire Range]]></category>
+			<category><![CDATA[Genoa]]></category>
+			<category><![CDATA[Granite Ridge]]></category>
+			<category><![CDATA[Venice]]></category>
+			<category><![CDATA[Zen 5]]></category>
+			<category><![CDATA[Zen 6]]></category>
+			<guid isPermaLink="false">https://wccftech.com/?p=1679695</guid>
+
+			<description><![CDATA[AMD is preparing a range of EPYC Embedded family, such as Venice "Zen 6" series, Fire Range "Zen 5" series &#38; Annapurna lineups. AMD EPYC Embedded CPUs Get Detailed: Next-Gen Venice With Up To 96 Zen 6 Cores, Fire Range With Up To 16 Zen 5 Cores, &#38; Annapurna AMD's most recent EPYC Embedded family, the 4005 lineup, is based on the Granite Ridge "Zen 5" family and features up to 16 cores with PCIe Gen5 support. AMD also offered its high-end Embedded "Genoa" lineup with up to 192 "Zen 5" cores, and up to 512 MB of L3 cache [&#8230;]]]></description>
+			<content:encoded><![CDATA[<p><a href="https://wccftech.com/amd-epyc-9006-embedded-venice-cpus-96-zen-6-cores-embedded-2005-fire-range-annapurna/"><img width="728" height="406" src="https://cdn.wccftech.com/wp-content/uploads/2025/12/AMD-EPYC-Embedded-CPUs-728x406.png" class="attachment-large size-large wp-post-image" alt="AMD EPYC &quot;9006&quot; Embedded Venice CPUs Rock Up To 96 &quot;Zen 6&quot; Cores &amp; PCIe Gen6, EPYC Embedded 2005 &quot;Fire Range&quot; &amp; Annapurna Families Confirmed Too 1" decoding="async" loading="lazy" srcset="https://cdn.wccftech.com/wp-content/uploads/2025/12/AMD-EPYC-Embedded-CPUs-728x406.png 728w, https://cdn.wccftech.com/wp-content/uploads/2025/12/AMD-EPYC-Embedded-CPUs-564x315.png 564w, https://cdn.wccftech.com/wp-content/uploads/2025/12/AMD-EPYC-Embedded-CPUs-1456x812.png 1456w, https://cdn.wccftech.com/wp-content/uploads/2025/12/AMD-EPYC-Embedded-CPUs.png 1506w" sizes="auto, (max-width: 728px) 100vw, 728px" /></a></p>
+<p>AMD is preparing a range of EPYC Embedded family, such as <a class="dracula-style-txt-border dracula-style-link dracula-processed" data-dracula_alpha_bg="rgba(0, 0, 0, 0)" href="https://wccftech.com/amd-confirms-zen-6-zen-7-cpu-core-architectures-more-performance-efficiency-ai/" target="_blank" rel="noreferrer noopener">Venice "Zen 6" series</a>, Fire Range "Zen 5" series &amp; Annapurna lineups.</p>
+
+
+
+<h2 class="wp-block-heading" id="h-amd-epyc-embedded-cpus-get-detailed-next-gen-venice-with-up-to-96-zen-6-cores-fire-range-with-up-to-16-zen-5-cores-amp-annapurna">AMD EPYC Embedded CPUs Get Detailed: Next-Gen Venice With Up To 96 Zen 6 Cores, Fire Range With Up To 16 Zen 5 Cores, &amp; Annapurna</h2>
+
+
+
+<p>AMD's most recent EPYC Embedded family, <a class="dracula-style-link dracula-style-txt-border dracula-processed" data-dracula_alpha_bg="rgba(0, 0, 0, 0)" data-dracula_preserved_classes="dracula-style-txt-border dracula-style-link dracula-processed" href="https://wccftech.com/amd-epyc-4005-am5-desktop-cpus-edge-launch-up-to-16-zen-5-cores-5-7-ghz-170w/" target="_blank" rel="noreferrer noopener">the 4005 lineup</a>, is based on the Granite Ridge "Zen 5" family and features up to 16 cores with PCIe Gen5 support. AMD also offered its high-end Embedded "<a class="dracula-style-txt-border dracula-style-link dracula-processed" data-dracula_alpha_bg="rgba(0, 0, 0, 0)" href="https://wccftech.com/amd-epyc-9654-genoa-fastest-cpu-on-passmark-30-percent-faster-than-previous-fastest/" target="_blank" rel="noreferrer noopener">Genoa</a>" lineup with up to 192 "Zen 5" cores, and up to 512 MB of L3 cache with 128 PCIe Gen5 lanes. These lines have been on the market for a while.</p>
+
+
+
+<p>But it looks like AMD has several additional lineups in the works, as spotted by <a href="https://x.com/InstLatX64/status/1995889988370657331" target="_blank" rel="noreferrer noopener">InstLatX64</a>. As per the new information, <a href="https://docs.amd.com/v/u/en-US/ug1765-amd-epyc-processors-embedded" target="_blank" rel="noreferrer noopener">three new families have been spotted</a>, which include EPYC Embedded Venice, Embedded 4005 Series, and EPYC Embedded Annapurna. Each of these lineups aims at different segments, so let's get into the details.</p>
+
+
+
+<figure class="wp-block-image wp-lightbox size-large is-resized"><a href="https://cdn.wccftech.com/wp-content/uploads/2025/12/AMD-EPYC-Embedded.png"><img loading="lazy" decoding="async" width="728" height="427" src="https://cdn.wccftech.com/wp-content/uploads/2025/12/AMD-EPYC-Embedded-728x427.png" alt="A collage of AMD EPYC embedded processor series including 'Embedded Fire Range (EPYC Embedded 2005 Series)', 'Embedded 4005 Series', 'EPYC Embedded Annapurna', 'Embedded Venice', 'Embedded Turin (EPYC Embedded 9005 Series)', and 'Embedded Bergamo (EPYC Embedded 97x4 Series)', each with" class="wp-image-1679696" style="width:840px;height:auto" srcset="https://cdn.wccftech.com/wp-content/uploads/2025/12/AMD-EPYC-Embedded-728x427.png 728w, https://cdn.wccftech.com/wp-content/uploads/2025/12/AMD-EPYC-Embedded-564x331.png 564w, https://cdn.wccftech.com/wp-content/uploads/2025/12/AMD-EPYC-Embedded.png 1400w" sizes="auto, (max-width: 728px) 100vw, 728px" /></a><figcaption class="wp-element-caption">Image Source: AMD</figcaption></figure>
+
+
+
+<p>First up, we have the AMD EPYC Embedded lineup, which is listed to be part of the Venice family. Do note that the Venice family also includes server and data center offerings based on the next-gen Zen 6 core architecture. While Venice will offer up to <a class="dracula-style-txt-border dracula-style-link dracula-processed" data-dracula_alpha_bg="rgba(0, 0, 0, 0)" href="https://wccftech.com/amd-zen-6-epyc-venice-zen-6-cpus-256-cores-2026-epyc-verano-zen-7-instinct-mi500-gpus-2027/" target="_blank" rel="noreferrer noopener">256 cores based on TSMC's 2nm process technology</a>, the EPYC Embedded Venice chips feature up to 96 "Zen 6" cores with PCIe Gen6 and DDR5/MRDIMM support. The lineup should be tagged under the EPYC Embedded "9006" series.</p>
+
+
+
+<p>Next up, we have the AMD EPYC Embedded Fire Range series, which is aimed at mid-range platforms. The lineup offers up to 16 "Zen 5" cores and offers various capabilities such as PCIe Gen5, DDR5-5600, &amp; utilizes the same dies as the <a class="dracula-style-link dracula-style-txt-border dracula-processed" data-dracula_alpha_bg="rgba(0, 0, 0, 0)" data-dracula_preserved_classes="dracula-style-txt-border dracula-style-link dracula-processed" href="https://wccftech.com/amd-ryzen-9000-fire-range-laptop-cpus-ryzen-9-9955hx3d-3d-v-cache-9955hx-16-9850hx-12-core/" target="_blank" rel="noreferrer noopener">Ryzen 9000HX mobile family</a>. These mobile chips are essentially desktop dies repurposed for mobile platforms. Target segments include Networking, Storage, and Industrial use-cases.</p>
+
+
+
+<figure class="wp-block-image wp-lightbox size-large is-resized"><a href="https://cdn.wccftech.com/wp-content/uploads/2025/11/2025-11-12_3-48-39-scaled.png"><img loading="lazy" decoding="async" width="728" height="410" src="https://cdn.wccftech.com/wp-content/uploads/2025/11/2025-11-12_3-48-39-728x410.png" alt="AMD Zen CPU Roadmap FAD 2025" class="wp-image-1674842" style="width:840px;height:auto" srcset="https://cdn.wccftech.com/wp-content/uploads/2025/11/2025-11-12_3-48-39-728x410.png 728w, https://cdn.wccftech.com/wp-content/uploads/2025/11/2025-11-12_3-48-39-564x317.png 564w, https://cdn.wccftech.com/wp-content/uploads/2025/11/2025-11-12_3-48-39-1456x819.png 1456w, https://cdn.wccftech.com/wp-content/uploads/2025/11/2025-11-12_3-48-39-1920x1080.png 1920w" sizes="auto, (max-width: 728px) 100vw, 728px" /></a><figcaption class="wp-element-caption">Image Source: AMD</figcaption></figure>
+
+
+
+<p>Lastly, we have the AMD EPYC Embedded Annapurna family, which are said to be highly integrated x86 CPUs optimized for Network Control planes. These chips feature leading performance per watt &amp; perf / $, making them perfect for entry switches, routers, security, appliances, and optical transport. AMD has not detailed the core architecture of these chips.</p>
+
+
+
+<p>We expect AMD to unveil these next-gen EPYC Embedded platforms through 2026-2027, further making ground within the Embedded market.</p>
+]]>			</content:encoded>
+
+
+
+			<category><![CDATA[Hardware]]></category>
+			<media:content medium="image" url="https://cdn.wccftech.com/wp-content/uploads/2025/12/AMD-EPYC-Embedded-CPUs-1456x812.png" width="1456" height="812" />
+		</item>
+	</channel>
+</rss>
