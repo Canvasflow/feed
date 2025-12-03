@@ -548,6 +548,38 @@ describe('PureNews', () => {
   });
 });
 
+describe('Wccftech', () => {
+  let filePath: string = '';
+  let outFilePath: string = '';
+  beforeEach(() => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `wccftech.rss`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `wccftech.json`);
+    }
+  });
+  test(`It should build the content`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    const rss = await feed.build();
+
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(RSSFeed.toJSON(rss), replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    const { items } = rss.channel;
+    expect(items.length).toBeGreaterThan(0);
+    if (!items.length) return;
+    const item = items.shift();
+    expect(item).toBeDefined();
+    if (!item) return;
+    expect(rss.channel?.title).toBe('Wccftech');
+  });
+});
+
 describe('Saga', () => {
   let filePath: string = '';
   let outFilePath: string = '';
