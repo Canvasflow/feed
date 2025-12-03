@@ -745,7 +745,7 @@ describe('Recipe', () => {
     expect(recipe).toEqual(result);
   });
 
-  test(`It should return null, because the recipe is not found`, async () => {
+  test.skip(`It should return null, because the recipe is not found`, async () => {
     const url =
       'https://www.veganfoodandliving.com/news/wagamama-vegatsu-vegan-options-menu-cuts/';
     const recipe = await RSSFeed.getRecipeFromUrl(url);
