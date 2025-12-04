@@ -1,9 +1,11 @@
 import { parseHTML } from 'linkedom';
 
 export function splitParagraphImages(html: string): string {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parsed = parseHTML(html) as any;
 
   // Always treat content as a fragment (RSS-safe)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const root: any =
     parsed.fragment ??
     parsed.document ??
