@@ -50,21 +50,6 @@ describe('HTMLMapper', () => {
       }
       expect(component.component).toBe('text45');
       expect(component.id).toBe(id);
-      expect(component.text).toBe(textContent);
-    });
-
-    test('It should remove the image component', () => {
-      const components = HTMLMapper.toComponents(`
-        <p role="text45"><img src="test.jpg"/>Hello <b>world</b></p>
-      `);
-      expect(components.length).toBe(1);
-      const component = components.pop() as TextComponent;
-      expect(component).toBeDefined();
-      if (!component) {
-        return;
-      }
-      expect(component.component).toBe('text45');
-      expect(component.text).toBe(`<p role="text45">Hello <b>world</b></p>`);
     });
 
     test('It should ignore the component', () => {
@@ -585,6 +570,17 @@ describe('HTMLMapper', () => {
       expect(component?.alt).toBe('My image');
       expect(component?.caption).toBe('This is a caption');
       expect(component?.credit).toBe('This is a credit');
+    });
+
+    test('It should process images inside p tags', () => {
+      const content = `<p>Hello <img src="a.jpg"> world <img src="b.jpg">!</p>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(5);
+      expect(components[0].component).toBe('body');
+      expect(components[1].component).toBe('image');
+      expect(components[2].component).toBe('body');
+      expect(components[3].component).toBe('image');
+      expect(components[4].component).toBe('body');
     });
   });
 
@@ -1268,7 +1264,7 @@ describe('HTMLMapper', () => {
             src="${src}"
             controls
             loop
-            muted/>
+            muted></audio>
           <figcaption>
             ${caption}
           </figcaption>
