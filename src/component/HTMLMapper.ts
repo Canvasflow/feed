@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 /* @ts-expect-error */
 import { parse, stringify } from 'himalaya';
+
 import sanitizeHtml from 'sanitize-html';
 import { z } from 'zod';
 
@@ -23,6 +24,7 @@ import {
   type RecipeComponent,
   type HTMLTableComponent,
 } from './Component';
+import { splitParagraphImages } from './Utils';
 
 const imageTags = new Set(['img', 'picture']);
 
@@ -104,6 +106,7 @@ const htmlTableAllowedTags = [
 
 export class HTMLMapper {
   static toComponents(content: string, params?: Params): Component[] {
+    content = splitParagraphImages(content.replace(/(\r\n|\n|\r)/gm, ''));
     const nodes: Array<Node> = parse(content).filter(
       HTMLMapper.filterEmptyTextNode
     );
