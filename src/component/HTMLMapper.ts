@@ -105,7 +105,12 @@ const htmlTableAllowedTags = [
 
 export class HTMLMapper {
   static toComponents(content: string, params?: Params): Component[] {
-    content = splitParagraphImages(content.replace(/(\r\n|\n|\r)/gm, ''));
+    content = content.replace(/(\r\n|\n|\r)/gm, '');
+    const tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+    for (const tag of tags) {
+      content = splitParagraphImages(content, tag);
+    }
+
     const nodes: Array<Node> = parse(content).filter(
       HTMLMapper.filterEmptyTextNode
     );
@@ -1475,7 +1480,7 @@ function removeProtocol(url: string) {
   return url;
 }
 
-export function splitParagraphImages(html: string): string {
+export function splitParagraphImages(html: string, tag: string): string {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parsed = parseHTML(html) as any;
 
@@ -1488,7 +1493,7 @@ export function splitParagraphImages(html: string): string {
       throw new Error('Unable to parse HTML snippet');
     })();
 
-  const paragraphs = Array.from(root.querySelectorAll('p'));
+  const paragraphs = Array.from(root.querySelectorAll(tag));
 
   for (const paragraph of paragraphs) {
     const p = paragraph as Element;
@@ -1505,7 +1510,7 @@ export function splitParagraphImages(html: string): string {
     }));
 
     const createNewP = () => {
-      const newP = root.createElement('p');
+      const newP = root.createElement(tag);
       // copy attributes
       for (const { name, value } of originalAttrs) {
         newP.setAttribute(name, value);
