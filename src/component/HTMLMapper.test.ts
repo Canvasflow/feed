@@ -582,6 +582,7 @@ describe('HTMLMapper', () => {
       expect(components[3].component).toBe('image');
       expect(components[4].component).toBe('body');
     });
+
     test('It should process images inside headers tags', () => {
       const headers = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
       for (const header of headers) {
@@ -593,6 +594,113 @@ describe('HTMLMapper', () => {
         expect(component.imageurl).toBe(
           'https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-scaled.jpg'
         );
+      }
+    });
+
+    test('It should process images with link', () => {
+      const content = `
+        <a 
+          href="https://wwww.example.com"
+          rel="attachment wp-att-74859">
+          <img 
+            loading="lazy" 
+            decoding="async" 
+            class="alignnone size-large wp-image-74859"
+            src="https://wwww.example.com/image.jpg"
+            alt="My image" 
+            width="600" 
+            height="800">
+        </a>
+      `;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe('https://wwww.example.com/image.jpg');
+      expect(component?.link).toBe('https://wwww.example.com');
+      expect(component?.alt).toBe('My image');
+    });
+
+    test('It should process images with wrapper elements', () => {
+      const content = `
+        <div>
+        <a 
+          href="https://wwww.example.com"
+          rel="attachment wp-att-74859">
+          <img 
+            loading="lazy" 
+            decoding="async" 
+            class="alignnone size-large wp-image-74859"
+            src="https://wwww.example.com/image.jpg"
+            alt="My image" 
+            width="600" 
+            height="800">
+        </a>
+        </div>
+      `;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe('https://wwww.example.com/image.jpg');
+      expect(component?.link).toBe('https://wwww.example.com');
+      expect(component?.alt).toBe('My image');
+    });
+
+    test('It should process images with link inside a p tag', () => {
+      const content = `
+      <p>
+        <a 
+          href="https://wwww.example.com"
+          rel="attachment wp-att-74859">
+          <img 
+            loading="lazy" 
+            decoding="async" 
+            class="alignnone size-large wp-image-74859"
+            src="https://wwww.example.com/image.jpg"
+            alt="My image" 
+            width="600" 
+            height="800">
+        </a>
+      </p>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe('https://wwww.example.com/image.jpg');
+      expect(component?.link).toBe('https://wwww.example.com');
+      expect(component?.alt).toBe('My image');
+    });
+
+    test('It should process images with link inside header tags', () => {
+      const headers = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+      for (const header of headers) {
+        const content = `
+  <${header}>
+        <a 
+          href="https://wwww.example.com"
+          rel="attachment wp-att-74859">
+          <img 
+            loading="lazy" 
+            decoding="async" 
+            class="alignnone size-large wp-image-74859"
+            src="https://wwww.example.com/image.jpg"
+            alt="My image" 
+            width="600" 
+            height="800">
+        </a></${header}>
+      `;
+        const components = HTMLMapper.toComponents(content);
+        expect(components.length).toBe(1);
+        const component = components.pop() as ImageComponent;
+        expect(component).toBeDefined();
+        expect(component.component).toBe('image');
+        expect(component?.imageurl).toBe('https://wwww.example.com/image.jpg');
+        expect(component?.link).toBe('https://wwww.example.com');
+        expect(component?.alt).toBe('My image');
       }
     });
   });

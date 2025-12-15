@@ -106,6 +106,7 @@ const htmlTableAllowedTags = [
 export class HTMLMapper {
   static toComponents(content: string, params?: Params): Component[] {
     content = content.replace(/(\r\n|\n|\r)/gm, '');
+    content = extractAnchorsWithImages(content);
     const tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
     for (const tag of tags) {
       content = splitParagraphImages(content, tag);
@@ -242,7 +243,10 @@ export class HTMLMapper {
     }
 
     // Check if the tag belongs to an image tag
-    if (imageTags.has(tagName)) {
+    if (
+      imageTags.has(tagName) ||
+      (tagName === 'a' && HTMLMapper.hasImage(node))
+    ) {
       return HTMLMapper.toImage(node);
     }
 
@@ -636,6 +640,39 @@ export class HTMLMapper {
     return component;
   }
 
+  static getLinkFromImageNode(node: ElementNode): {
+    node: ElementNode;
+    link?: string;
+  } {
+    let attributes: Map<string, string> = new Map();
+    let link: string | undefined;
+    if (node.tagName === 'a') {
+      attributes = getAttributes(node.attributes);
+      const href = attributes.get('href');
+      if (href) {
+        link = href;
+      }
+      if (node.children) {
+        for (const c of node.children) {
+          if (
+            c.type === 'element' &&
+            (c.tagName === 'img' ||
+              c.tagName === 'picture' ||
+              c.tagName === 'figure')
+          ) {
+            node = c;
+            break;
+          }
+        }
+      }
+    }
+
+    return {
+      node,
+      link,
+    };
+  }
+
   static toTwitter(node: ElementNode): TwitterComponent {
     const errors: string[] = [];
     const warnings: string[] = [];
@@ -853,6 +890,16 @@ export class HTMLMapper {
 
   // Aqui hay que procesar dos posibles casos, utilizando figure o img directo
   static toImage(node: ElementNode): ImageComponent {
+    let link: string | undefined;
+    if (node.tagName === 'a') {
+      const nodeResp = HTMLMapper.getLinkFromImageNode(node);
+      if (nodeResp.node) {
+        node = nodeResp.node;
+      }
+
+      link = nodeResp.link;
+    }
+
     const { tagName } = node;
     const attributes = getAttributes(node.attributes);
     const id = attributes.get('id');
@@ -862,12 +909,19 @@ export class HTMLMapper {
         node
       ) as ImageComponent;
       imageComponent.id = id;
+      if (link) {
+        imageComponent.link = link;
+      }
+
       return imageComponent;
     }
 
     if (tagName === 'picture') {
       const imageComponent: ImageComponent = HTMLMapper.fromPicture(node);
       imageComponent.id = id;
+      if (link) {
+        imageComponent.link = link;
+      }
       return imageComponent;
     }
 
@@ -892,6 +946,7 @@ export class HTMLMapper {
       component: 'image',
       imageurl,
       alt,
+      link,
       width: width ? parseInt(`${width}`, 10) : undefined,
       height: height ? parseInt(`${height}`, 10) : undefined,
       errors,
@@ -922,6 +977,20 @@ export class HTMLMapper {
   static hasButton(node: ElementNode): boolean {
     for (const child of node.children) {
       if (child.type === 'element' && child.tagName === 'button') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static hasImage(node: ElementNode): boolean {
+    for (const child of node.children) {
+      if (
+        child.type === 'element' &&
+        (child.tagName === 'img' ||
+          child.tagName === 'figure' ||
+          child.tagName === 'picture')
+      ) {
         return true;
       }
     }
@@ -1478,6 +1547,50 @@ function removeProtocol(url: string) {
     url = url.slice(5);
   }
   return url;
+}
+
+/**
+ * Extract all <a> elements that contain <img> tags
+ * and are wrapped inside p or heading tags.
+ */
+export function extractAnchorsWithImages(html: string): string {
+  // Fast path: plain text
+  if (!html.includes('<')) {
+    return html;
+  }
+
+  const REMOVABLE_PARENTS = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
+
+  const { document } = parseHTML(html);
+
+  const anchors = Array.from(document.querySelectorAll('a'));
+
+  for (const anchor of anchors) {
+    // Only anchors with images
+    if (!anchor.querySelector('img')) continue;
+
+    const parent = anchor.parentElement;
+    if (!parent) continue;
+
+    // Only unwrap p or h1–h6
+    if (!REMOVABLE_PARENTS.has(parent.tagName.toLowerCase())) continue;
+
+    // 🔑 CLONE before replacing to avoid linkedom bug
+    const clonedAnchor = anchor.cloneNode(true) as HTMLElement;
+
+    // Replace the parent with the anchor
+    parent.replaceWith(clonedAnchor);
+  }
+  // We need an outer wrapper to serialize correctly
+  const wrapper = document.createElement('div');
+
+  // move all top-level nodes into wrapper
+  while (document.firstChild) {
+    wrapper.appendChild(document.firstChild as any);
+  }
+
+  // return the HTML of the wrapper — this is your final HTML string
+  return wrapper.innerHTML;
 }
 
 export function splitParagraphImages(html: string, tag: string): string {
