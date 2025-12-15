@@ -1586,6 +1586,7 @@ export function extractAnchorsWithImages(html: string): string {
 
   // move all top-level nodes into wrapper
   while (document.firstChild) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     wrapper.appendChild(document.firstChild as any);
   }
 
