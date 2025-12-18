@@ -99,7 +99,6 @@ const htmlTableAllowedTags = [
   'br',
   'small',
   's',
-  'span',
   'a',
 ];
 
