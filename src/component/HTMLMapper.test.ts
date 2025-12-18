@@ -71,6 +71,34 @@ describe('HTMLMapper', () => {
       expect(component.component).toBe('body');
       expect(component.text).toBe(content);
     });
+
+    test('Anchors should be present', () => {
+      const content =
+        '<a href="https://example.com" target="_blank" rel="nofollow noopener">Hello world</a>';
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as TextComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('body');
+      expect(component.text).toBe(content);
+    });
+
+    test('Replace invalid links with #', () => {
+      const content = `<p><a href="https://hello world">Hello</a></p>`;
+      const expectedContent = `<p><a href="#">Hello</a></p>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as TextComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('body');
+      expect(component.text).toBe(expectedContent);
+    });
   });
 
   describe('Instagram component', () => {
