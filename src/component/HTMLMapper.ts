@@ -105,6 +105,7 @@ const htmlTableAllowedTags = [
 export class HTMLMapper {
   static toComponents(content: string, params?: Params): Component[] {
     content = content.replace(/(\r\n|\n|\r)/gm, '');
+    content = sanitizeInvalidAnchorHrefs(content);
     content = extractAnchorsWithImages(content);
     const tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
     for (const tag of tags) {
@@ -1659,4 +1660,64 @@ export function splitParagraphImages(html: string, tag: string): string {
   }
 
   return root.toString().trim();
+}
+
+/**
+ * Detect invalid anchor hrefs and replace them with '#'
+ *
+ * @param {string} html
+ * @returns {string}
+ */
+export function sanitizeInvalidAnchorHrefs(html: string) {
+  const { document } = parseHTML(html);
+
+  const anchors = document.querySelectorAll('a[href]');
+
+  for (const anchor of anchors) {
+    const href = anchor.getAttribute('href');
+
+    if (href && !isValidHref(href)) {
+      anchor.setAttribute('href', '#');
+    }
+  }
+
+  const response = document.toString();
+
+  // linkedom preserves the original markup structure as much as possible
+  return response;
+}
+
+/**
+ * Determines whether an href value is valid
+ *
+ * Rules:
+ * - Allow relative URLs
+ * - Allow hash and query links
+ * - Validate absolute URLs via URL constructor
+ */
+function isValidHref(href: string) {
+  if (!href) return false;
+
+  const value = href.trim();
+
+  if (value === '') return false;
+
+  // Valid relative / in-page references
+  if (
+    value.startsWith('/') ||
+    value.startsWith('./') ||
+    value.startsWith('../') ||
+    value.startsWith('#') ||
+    value.startsWith('?')
+  ) {
+    return true;
+  }
+
+  // Absolute URL validation
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
 }
