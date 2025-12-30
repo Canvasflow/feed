@@ -36,6 +36,17 @@ describe('HTMLMapper', () => {
       expect(component).toBeDefined();
       expect(component.component).toBe('body');
     });
+    test('It should create a body component from anchor that also has an image', () => {
+      const content = `<a href="https://example.com">
+        <div><p>Example</p><div>
+        <img src="https://example.com/image.jpg"/>
+      </a>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as TextComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('body');
+    });
 
     test('It should set a text45 component base on role', () => {
       const id = 'cf-123';

@@ -984,17 +984,19 @@ export class HTMLMapper {
   }
 
   static hasImage(node: ElementNode): boolean {
-    for (const child of node.children) {
+    let imageCount = 0;
+    const children = node.children.filter((n) => n.type === 'element');
+    for (const child of children) {
       if (
         child.type === 'element' &&
         (child.tagName === 'img' ||
           child.tagName === 'figure' ||
           child.tagName === 'picture')
       ) {
-        return true;
+        imageCount += 1;
       }
     }
-    return false;
+    return imageCount === 1 && children.length === imageCount;
   }
 
   static fromFigure(
