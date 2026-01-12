@@ -567,6 +567,31 @@ describe('HTMLMapper', () => {
       expect(component?.caption).toBe('This is a caption');
     });
 
+    test('It should process a figure component with caption and html', () => {
+      const content = `
+        <figure>
+          <img src="cover.jpg" 
+            alt="Aaron Moten in the second season of Fallout, image courtesy of Amazon Prime Video" 
+            width="2560" 
+            height="1814"/>
+          <figcaption>
+            Aaron Moten in <em>Fallout</em>. All imagery courtesy of Amazon Prime Video.
+          </figcaption>
+        </figure>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe('cover.jpg');
+      expect(component?.alt).toBe(
+        'Aaron Moten in the second season of Fallout, image courtesy of Amazon Prime Video'
+      );
+      expect(component?.caption).toBe(
+        'Aaron Moten in <em>Fallout</em>. All imagery courtesy of Amazon Prime Video.'
+      );
+    });
+
     test('It should process a figure component with caption and credit', () => {
       const content = `
         <figure>
