@@ -1276,8 +1276,8 @@ export class HTMLMapper {
     }
 
     return {
-      caption,
-      credit,
+      caption: caption ? caption.trim() : caption,
+      credit: credit ? credit.trim() : credit,
     };
   }
 
@@ -1302,10 +1302,7 @@ export class HTMLMapper {
         return acc;
       }
 
-      const content = n.content
-        .replace(/[\r\n\t]/g, '')
-        .replace(/\s\s+/g, ' ')
-        .trim();
+      const content = n.content.replace(/[\r\n\t]/g, '').replace(/\s\s+/g, ' ');
 
       if (content.length) {
         n.content = content;
@@ -1314,7 +1311,7 @@ export class HTMLMapper {
 
       return acc;
     }, []);
-    return credit;
+    return credit ? credit.trim() : credit;
   }
 }
 

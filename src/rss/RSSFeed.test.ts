@@ -662,7 +662,7 @@ describe('Cultured Magazine', () => {
       'https://culturedmag.nyc3.digitaloceanspaces.com/uploads/2025/11/14105632/Kenya-Hara_DRAW.jpg'
     );
     expect(imageComponent.caption).toEqual(
-      'Spread from<em>Draw</em>. Image courtesy of Lars Müller Publishers.'
+      'Spread from <em>Draw</em>. Image courtesy of Lars Müller Publishers.'
     );
   });
 });
