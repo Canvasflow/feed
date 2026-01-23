@@ -229,7 +229,9 @@ export class HTMLMapper {
     if (
       (tagName === 'blockquote' || tagName === 'a') &&
       classNames &&
-      new Set(['twitter-tweet', 'twitter-timeline']).has(classNames)
+      classNames
+        .split(' ')
+        .some((v) => new Set(['twitter-tweet', 'twitter-timeline']).has(v))
     ) {
       return HTMLMapper.toTwitter(node);
     }

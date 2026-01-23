@@ -3,11 +3,13 @@
     xmlns:mi="http://schemas.ingestion.microsoft.com/common/"
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+    xmlns:cf="https://canvasflow.notion.site/Canvasflow-Feed-RSS-239b831c7109806a9038e7db96c86065"
     xmlns:dcterms="http://purl.org/dc/terms/" version="2.0">
     <channel>
         <title>Newsweek feed for VMG</title>
         <link>https://feeds.newsweek.com/feeds/1zfgy.rss</link>
-        <atom:link href="https://feeds.newsweek.com/feeds/1zfgy.rss" rel="self" type="application/rss+xml" />
+        <atom:link href="https://feeds.newsweek.com/feeds/1zfgy.rss" rel="self"
+            type="application/rss+xml" />
         <description />
         <language>en</language>
         <item>
@@ -36,7 +38,9 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T07:30:50-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:30:50-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649345/new-york-yankees-outfielder-cody-bellinger.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1712">
+            <media:content
+                url="https://d.newsweek.com/en/full/2649345/new-york-yankees-outfielder-cody-bellinger.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1712">
                 <media:title>
                     <![CDATA[ New York Yankees, Outfielder, Cody Bellinger ]]>
                 </media:title>
@@ -47,9 +51,12 @@
                     <![CDATA[ NEW YORK, NEW YORK - MAY 18: Cody Bellinger #35 of the New York Yankees hits a grand slam home run against Génesis Cabrera #92 of the New York Mets in the eighth inning during their game at Yankee Stadium on May 18, 2025 in New York City. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3080/mlb-2025-predictions-here-1743200245.mp4" type="video/mp4" medium="video" duration="69">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3080/mlb-2025-predictions-here-1743200245.mp4"
+                type="video/mp4" medium="video" duration="69">
                 <guid>616154</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg" />
                 <media:title>
                     <![CDATA[ MLB Expert Predictions for Entire 2025 Season ]]>
                 </media:title>
@@ -60,10 +67,10 @@
                     <![CDATA[ various sources ]]>
                 </media:credit>
             </media:content>
-            <cf:thumbnail 
-                url="https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg" 
-                width="2500" 
-                height="1712"  
+            <cf:thumbnail
+                url="https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg"
+                width="2500"
+                height="1712"
                 type="image/jpeg"
                 fileSize="1459000"
             />
@@ -92,7 +99,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-21T13:58:36-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:30:43-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649162/trump-ramaphosa.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
+            <media:content url="https://d.newsweek.com/en/full/2649162/trump-ramaphosa.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
                 <media:title>
                     <![CDATA[ Trump Ramaphosa ]]>
                 </media:title>
@@ -103,9 +111,12 @@
                     <![CDATA[ President Donald Trump meets South African President Cyril Ramaphosa in the Oval Office of the White House, Wednesday, May 21, 2025, in Washington. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3098/sa-plane-1747849653.mp4" type="video/mp4" medium="video" duration="10">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3098/sa-plane-1747849653.mp4"
+                type="video/mp4" medium="video" duration="10">
                 <guid>619638</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2649169/south-africas-president-ribs-trump-i-dont.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2649169/south-africas-president-ribs-trump-i-dont.jpg" />
                 <media:title>
                     <![CDATA[ Ramaphosa Teases Trump: 'I Don't Have A Plane To Give You' ]]>
                 </media:title>
@@ -116,10 +127,10 @@
                     <![CDATA[ Newsweek/AP ]]>
                 </media:credit>
             </media:content>
-            <cf:thumbnail 
-                url="https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg" 
-                width="300" 
-                height="400"  
+            <cf:thumbnail
+                url="https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg"
+                width="300"
+                height="400"
                 type="image/svg+xml"
                 fileSize="45900"
             />
@@ -145,7 +156,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T07:05:28-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:30:32-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2450666/breaking-news.jpg" type="image/jpeg" medium="image" expression="full" width="1200" height="800">
+            <media:content url="https://d.newsweek.com/en/full/2450666/breaking-news.jpg"
+                type="image/jpeg" medium="image" expression="full" width="1200" height="800">
                 <media:title>
                     <![CDATA[ Breaking News ]]>
                 </media:title>
@@ -153,10 +165,10 @@
                     <![CDATA[ There have been multiple arrests made in connection with the death of Matthew Perry, including at least one doctor, per TMZ. ]]>
                 </media:description>
             </media:content>
-            <cf:thumbnail 
-                url="https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg" 
-                width="300" 
-                height="400"  
+            <cf:thumbnail
+                url="https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg"
+                width="300"
+                height="400"
                 type="image/svg+xml"
                 fileSize="145900"
             />
@@ -186,7 +198,9 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T04:05:16-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:30:06-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649481/sara-milgrim-yaron-lishinksy.jpg" type="image/jpeg" medium="image" expression="full" width="3000" height="2000">
+            <media:content
+                url="https://d.newsweek.com/en/full/2649481/sara-milgrim-yaron-lishinksy.jpg"
+                type="image/jpeg" medium="image" expression="full" width="3000" height="2000">
                 <media:title>
                     <![CDATA[ Sara Milgrim and Yaron Lishinksy ]]>
                 </media:title>
@@ -197,7 +211,9 @@
                     <![CDATA[ Sara Milgrim and Yaron Lishinksy. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3098/israel-shooting-1747904564.mp4" type="video/mp4" medium="video" duration="55">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3098/israel-shooting-1747904564.mp4"
+                type="video/mp4" medium="video" duration="55">
                 <guid>619664</guid>
                 <media:thumbnail url="https://d.newsweek.com/en/full/2649413/shooting.jpg" />
                 <media:title>
@@ -233,7 +249,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T07:30:01-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:30:01-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649358/golf.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
+            <media:content url="https://d.newsweek.com/en/full/2649358/golf.jpg" type="image/jpeg"
+                medium="image" expression="full" width="2500" height="1667">
                 <media:title>
                     <![CDATA[ Golf ]]>
                 </media:title>
@@ -244,9 +261,12 @@
                     <![CDATA[ Scottie Scheffler of the United States lines up a putt on the ninth green during the third round of the Charles Schwab Challenge at Colonial Country Club on May 25, 2024 in Fort Worth, Texas. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3086/rory-mcllroy-1744655760.mp4" type="video/mp4" medium="video" duration="47">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3086/rory-mcllroy-1744655760.mp4"
+                type="video/mp4" medium="video" duration="47">
                 <guid>617216</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2627033/rory-mcilroy-masters-golf-winner-2025.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2627033/rory-mcilroy-masters-golf-winner-2025.jpg" />
                 <media:title>
                     <![CDATA[ Rory McIlroy Breaks Down Amid Winning the Masters ]]>
                 </media:title>
@@ -280,7 +300,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T07:12:17-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:26:39-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649319/johnson-trump.jpg" type="image/jpeg" medium="image" expression="full" width="3513" height="2342">
+            <media:content url="https://d.newsweek.com/en/full/2649319/johnson-trump.jpg"
+                type="image/jpeg" medium="image" expression="full" width="3513" height="2342">
                 <media:title>
                     <![CDATA[ Johnson and Trump ]]>
                 </media:title>
@@ -291,7 +312,9 @@
                     <![CDATA[ Speaker of the House Mike Johnson, R-La., and President Donald Trump arrive for a House Republican conference meeting, Tuesday, May 20, 2025, at the U.S. Capitol in Washington. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3097/johnson-paints-peachy-gop-mood-over-budget-bill-1747822341.mp4" type="video/mp4" medium="video" duration="49">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3097/johnson-paints-peachy-gop-mood-over-budget-bill-1747822341.mp4"
+                type="video/mp4" medium="video" duration="49">
                 <guid>619566</guid>
                 <media:thumbnail url="https://d.newsweek.com/en/full/2648737/picture-video.jpg" />
                 <media:title>
@@ -327,7 +350,9 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T06:23:49-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:25:30-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649428/sara-milgram-yaron-lishinksy.jpg" type="image/jpeg" medium="image" expression="full" width="2070" height="1380">
+            <media:content
+                url="https://d.newsweek.com/en/full/2649428/sara-milgram-yaron-lishinksy.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2070" height="1380">
                 <media:title>
                     <![CDATA[ Sara Milgram and Yaron Lishinksy ]]>
                 </media:title>
@@ -338,7 +363,9 @@
                     <![CDATA[ Sara Milgram and Yaron Lishinksy. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3098/israel-fm-1747909391.mp4" type="video/mp4" medium="video" duration="56">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3098/israel-fm-1747909391.mp4"
+                type="video/mp4" medium="video" duration="56">
                 <guid>619683</guid>
                 <media:thumbnail url="https://d.newsweek.com/en/full/2649511/israeli-fm.jpg" />
                 <media:title>
@@ -374,7 +401,9 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T07:25:01-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:25:01-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649340/san-diego-padres-starting-pitcher-michael-king.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
+            <media:content
+                url="https://d.newsweek.com/en/full/2649340/san-diego-padres-starting-pitcher-michael-king.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
                 <media:title>
                     <![CDATA[ San Diego Padres, Starting Pitcher, Michael King ]]>
                 </media:title>
@@ -385,9 +414,12 @@
                     <![CDATA[ SAN DIEGO, CALIFORNIA - MAY 18: Michael King #34 of the San Diego Padres pitches against the Seattle Mariners during the first inning at Petco Park on May 18, 2025 in San Diego, California. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3080/mlb-2025-predictions-here-1743200245.mp4" type="video/mp4" medium="video" duration="69">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3080/mlb-2025-predictions-here-1743200245.mp4"
+                type="video/mp4" medium="video" duration="69">
                 <guid>616154</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg" />
                 <media:title>
                     <![CDATA[ MLB Expert Predictions for Entire 2025 Season ]]>
                 </media:title>
@@ -420,7 +452,9 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T06:58:50-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:21:22-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649306/donald-trump-mike-johnson.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
+            <media:content
+                url="https://d.newsweek.com/en/full/2649306/donald-trump-mike-johnson.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
                 <media:title>
                     <![CDATA[ Donald Trump and Mike Johnson ]]>
                 </media:title>
@@ -431,7 +465,9 @@
                     <![CDATA[ President Donald Trump and House Speaker Mike Johnson speak with reporters after a House Republican Conference meeting at the U.S. Capitol on May 20, 2025. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3098/trumps-tax-and-spending-bill-narrowly-passed-by-the-house-1747912519.mp4" type="video/mp4" medium="video" duration="21">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3098/trumps-tax-and-spending-bill-narrowly-passed-by-the-house-1747912519.mp4"
+                type="video/mp4" medium="video" duration="21">
                 <guid>619691</guid>
                 <media:thumbnail url="https://d.newsweek.com/en/full/2649568/picture-video.jpg" />
                 <media:title>
@@ -466,7 +502,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T07:20:00-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:20:00-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649064/pokemon.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1626">
+            <media:content url="https://d.newsweek.com/en/full/2649064/pokemon.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1626">
                 <media:title>
                     <![CDATA[ Pokemon ]]>
                 </media:title>
@@ -477,9 +514,12 @@
                     <![CDATA[ Stock image. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/2994/chappell-roan-1725536239.mp4" type="video/mp4" medium="video" duration="76">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/2994/chappell-roan-1725536239.mp4"
+                type="video/mp4" medium="video" duration="76">
                 <guid>598856</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2464892/chappell-roan-targets-scalpers-days-after-oasis-furore.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2464892/chappell-roan-targets-scalpers-days-after-oasis-furore.jpg" />
                 <media:title>
                     <![CDATA[ Chappell Roan Targets Scalpers Days After Oasis Furore ]]>
                 </media:title>
@@ -512,7 +552,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T07:18:15-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:18:15-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649446/va-memorial-day.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
+            <media:content url="https://d.newsweek.com/en/full/2649446/va-memorial-day.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
                 <media:title>
                     <![CDATA[ VA Memorial Day ]]>
                 </media:title>
@@ -523,7 +564,9 @@
                     <![CDATA[ File photo: a member of the Army visits Section 60 of Arlington National Cemetery, in Arlington, Virginia, in 2024 on Memorial Day. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/2949/is-there-mail-on-memorial-day-post-office-open-hours-today-1716802873.mp4" type="video/mp4" medium="video" duration="56">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/2949/is-there-mail-on-memorial-day-post-office-open-hours-today-1716802873.mp4"
+                type="video/mp4" medium="video" duration="56">
                 <guid>589859</guid>
                 <media:thumbnail url="https://d.newsweek.com/en/full/2398382/usps.jpg" />
                 <media:title>
@@ -558,7 +601,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T07:17:53-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:17:53-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2450666/breaking-news.jpg" type="image/jpeg" medium="image" expression="full" width="1200" height="800">
+            <media:content url="https://d.newsweek.com/en/full/2450666/breaking-news.jpg"
+                type="image/jpeg" medium="image" expression="full" width="1200" height="800">
                 <media:title>
                     <![CDATA[ Breaking News ]]>
                 </media:title>
@@ -566,9 +610,12 @@
                     <![CDATA[ There have been multiple arrests made in connection with the death of Matthew Perry, including at least one doctor, per TMZ. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3080/vance-greenland-1743181144.mp4" type="video/mp4" medium="video" duration="47">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3080/vance-greenland-1743181144.mp4"
+                type="video/mp4" medium="video" duration="47">
                 <guid>616125</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2616905/jd-usha-vance-visit-greenland-space.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2616905/jd-usha-vance-visit-greenland-space.jpg" />
                 <media:title>
                     <![CDATA[ JD And Usha Vance Visit US Military Base In Greenland ]]>
                 </media:title>
@@ -602,7 +649,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-21T03:34:16-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:15:55-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2648620/walmart.jpg" type="image/jpeg" medium="image" expression="full" width="3911" height="2824">
+            <media:content url="https://d.newsweek.com/en/full/2648620/walmart.jpg"
+                type="image/jpeg" medium="image" expression="full" width="3911" height="2824">
                 <media:title>
                     <![CDATA[ walmart ]]>
                 </media:title>
@@ -613,7 +661,9 @@
                     <![CDATA[ Customers enter a Walmart store on April 09, 2025 in San Leandro, California. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3097/walmart-1747667548.mp4" type="video/mp4" medium="video" duration="57">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3097/walmart-1747667548.mp4"
+                type="video/mp4" medium="video" duration="57">
                 <guid>619401</guid>
                 <media:thumbnail url="https://d.newsweek.com/en/full/2647304/picture-video.jpg" />
                 <media:title>
@@ -648,7 +698,9 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T07:15:21-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:15:21-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649455/russian-president-vladimir-putin.jpg" type="image/jpeg" medium="image" expression="full" width="3883" height="2589">
+            <media:content
+                url="https://d.newsweek.com/en/full/2649455/russian-president-vladimir-putin.jpg"
+                type="image/jpeg" medium="image" expression="full" width="3883" height="2589">
                 <media:title>
                     <![CDATA[ Russian President Vladimir Putin ]]>
                 </media:title>
@@ -659,9 +711,12 @@
                     <![CDATA[ In this pool photograph distributed by Russia's state agency Sputnik, Russian President Vladimir Putin gives an interview to TV host and Director General of Rossiya Segodnya (RIA Novosti) news agency Dmitry Kiselyov (not pictured) at the Kremlin in Moscow on March 12, 2024. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3098/putin-war-crimes-1-1747857386.mp4" type="video/mp4" medium="video" duration="46">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3098/putin-war-crimes-1-1747857386.mp4"
+                type="video/mp4" medium="video" duration="46">
                 <guid>619648</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2649254/democrat-confronts-rubio-putin-war.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2649254/democrat-confronts-rubio-putin-war.jpg" />
                 <media:title>
                     <![CDATA[ Democrat Confronts Rubio: Is Putin A 'War Criminal?' ]]>
                 </media:title>
@@ -694,7 +749,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T07:10:37-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:10:37-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649454/elon-musk.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1666">
+            <media:content url="https://d.newsweek.com/en/full/2649454/elon-musk.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1666">
                 <media:title>
                     <![CDATA[ Elon Musk ]]>
                 </media:title>
@@ -705,9 +761,12 @@
                     <![CDATA[ Elon Musk in the Oval Office at the White House on May 21, 2025 in Washington, DC. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3079/cspan-status-1904617345160532395-1-1742935471.mp4" type="video/mp4" medium="video" duration="56">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3079/cspan-status-1904617345160532395-1-1742935471.mp4"
+                type="video/mp4" medium="video" duration="56">
                 <guid>615844</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2614601/donald-trump-defends-signal-app-amid-war.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2614601/donald-trump-defends-signal-app-amid-war.jpg" />
                 <media:title>
                     <![CDATA[ Donald Trump Defends Signal App Amid War Texts Backlash ]]>
                 </media:title>
@@ -740,7 +799,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T07:05:04-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:05:04-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649395/sumy-ukraine.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
+            <media:content url="https://d.newsweek.com/en/full/2649395/sumy-ukraine.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
                 <media:title>
                     <![CDATA[ Sumy, Ukraine ]]>
                 </media:title>
@@ -751,7 +811,9 @@
                     <![CDATA[ This image from April 13, 2025 shows a Ukrainian rescuer at the site of a missile attack in Sumy, northeastern Ukraine. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3097/putin-kursk-1747820220.mp4" type="video/mp4" medium="video" duration="42">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3097/putin-kursk-1747820220.mp4"
+                type="video/mp4" medium="video" duration="42">
                 <guid>619565</guid>
                 <media:thumbnail url="https://d.newsweek.com/en/full/2648715/vladimir-putin.jpg" />
                 <media:title>
@@ -786,7 +848,9 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T07:05:00-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:05:00-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649016/plane-passenger-hands-covering-face.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1662">
+            <media:content
+                url="https://d.newsweek.com/en/full/2649016/plane-passenger-hands-covering-face.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1662">
                 <media:title>
                     <![CDATA[ Plane passenger with hands covering face. ]]>
                 </media:title>
@@ -797,9 +861,12 @@
                     <![CDATA[ Stock image: Passenger on a plane appearing frustrated with hands over his face. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3097/passenger-mortified-by-unexpected-interaction-on-plane-1747761613.mp4" type="video/mp4" medium="video" duration="14">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3097/passenger-mortified-by-unexpected-interaction-on-plane-1747761613.mp4"
+                type="video/mp4" medium="video" duration="14">
                 <guid>619511</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2648193/passenger-mortified-unexpected-interaction-plane.png" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2648193/passenger-mortified-unexpected-interaction-plane.png" />
                 <media:title>
                     <![CDATA[ Passenger Mortified By Unexpected Interaction On Plane ]]>
                 </media:title>
@@ -833,7 +900,9 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T07:00:02-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:00:02-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649301/forest-nature-preservation-panama.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1664">
+            <media:content
+                url="https://d.newsweek.com/en/full/2649301/forest-nature-preservation-panama.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1664">
                 <media:title>
                     <![CDATA[ Forest Nature Preservation Panama ]]>
                 </media:title>
@@ -844,9 +913,12 @@
                     <![CDATA[ View of an over 400-year-old tree in Barro Colorado island, in the artificial Gatun Lake of the Panama Canal. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/2898/nature-based-solutions-1-1706737729.mp4" type="video/mp4" medium="video" duration="137">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/2898/nature-based-solutions-1-1706737729.mp4"
+                type="video/mp4" medium="video" duration="137">
                 <guid>579645</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2343247/nature-based-solutions.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2343247/nature-based-solutions.jpg" />
                 <media:title>
                     <![CDATA[ Harnessing the Power of Nature is Helping Us Fight Climate Change ]]>
                 </media:title>
@@ -880,7 +952,9 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T07:00:01-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T07:00:01-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649202/group-faculty-staff-students.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
+            <media:content
+                url="https://d.newsweek.com/en/full/2649202/group-faculty-staff-students.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
                 <media:title>
                     <![CDATA[ A group of faculty, staff, and students ]]>
                 </media:title>
@@ -891,9 +965,12 @@
                     <![CDATA[ A group of faculty, staff, and students of George Washington University meet in the yard where there was a pro-Palestine encampment last year, on May 8, 2025, in Washington D.C. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3097/bring-your-kids-2-1747766352.mp4" type="video/mp4" medium="video" duration="22">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3097/bring-your-kids-2-1747766352.mp4"
+                type="video/mp4" medium="video" duration="22">
                 <guid>619515</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2648246/trumps-favorite-wh-room-has-maga-gold.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2648246/trumps-favorite-wh-room-has-maga-gold.jpg" />
                 <media:title>
                     <![CDATA[ Trump's Oval Office Is 'Decked Out' In 'MAGA Gold' ]]>
                 </media:title>
@@ -926,7 +1003,9 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T06:59:22-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T06:59:22-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649541/generic-computer-hacking-image.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1871">
+            <media:content
+                url="https://d.newsweek.com/en/full/2649541/generic-computer-hacking-image.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1871">
                 <media:title>
                     <![CDATA[ Generic computer hacking image ]]>
                 </media:title>
@@ -937,9 +1016,12 @@
                     <![CDATA[ This generic image from 2017 shows a computer exploited by computer hackers. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/2807/587bb9ddb6f8ea0598adaaf54b8e7a3406dbbc60-1690372743.mp4" type="video/mp4" medium="video" duration="41">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/2807/587bb9ddb6f8ea0598adaaf54b8e7a3406dbbc60-1690372743.mp4"
+                type="video/mp4" medium="video" duration="41">
                 <guid>561417</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2262141/group-ib-cybersecurity-firm-co-founder-ilya-sachkov.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2262141/group-ib-cybersecurity-firm-co-founder-ilya-sachkov.jpg" />
                 <media:title>
                     <![CDATA[ Russian Cyber Expert Accused of Spying for U.S. Gets 14 Years Behind Bars ]]>
                 </media:title>
@@ -972,7 +1054,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T06:54:20-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T06:54:20-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649427/marco-rubio.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
+            <media:content url="https://d.newsweek.com/en/full/2649427/marco-rubio.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
                 <media:title>
                     <![CDATA[ Marco Rubio ]]>
                 </media:title>
@@ -983,9 +1066,12 @@
                     <![CDATA[ Secretary of State Marco Rubio testifies before House Committee on Appropriations subcommittee budget hearing for the Department of State and related programs on Capitol Hill in Washington, Wednesday, May 21, 2025. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3098/putin-war-crimes-1-1747857386.mp4" type="video/mp4" medium="video" duration="46">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3098/putin-war-crimes-1-1747857386.mp4"
+                type="video/mp4" medium="video" duration="46">
                 <guid>619648</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2649254/democrat-confronts-rubio-putin-war.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2649254/democrat-confronts-rubio-putin-war.jpg" />
                 <media:title>
                     <![CDATA[ Democrat Confronts Rubio: Is Putin A 'War Criminal?' ]]>
                 </media:title>
@@ -1019,7 +1105,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T03:50:19-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T06:46:20-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649390/washington-dc.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1597">
+            <media:content url="https://d.newsweek.com/en/full/2649390/washington-dc.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1597">
                 <media:title>
                     <![CDATA[ Washington DC ]]>
                 </media:title>
@@ -1030,7 +1117,9 @@
                     <![CDATA[ A man draped in the Israeli flag, bearing a cross and the name 'Jesus' at its center, gestures as Metropolitan Police officers secure the area outside the Capital Jewish Museum following a shooting that left two people dead in Washington, DC, in the early hours of May 22, 2025. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3098/eu-israel-shots-1747839238.mp4" type="video/mp4" medium="video" duration="50">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3098/eu-israel-shots-1747839238.mp4"
+                type="video/mp4" medium="video" duration="50">
                 <guid>619612</guid>
                 <media:thumbnail url="https://d.newsweek.com/en/full/2648982/eu.jpg" />
                 <media:title>
@@ -1066,7 +1155,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T06:45:01-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T06:45:01-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649378/tiger-woods.jpg" type="image/jpeg" medium="image" expression="full" width="2825" height="1883">
+            <media:content url="https://d.newsweek.com/en/full/2649378/tiger-woods.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2825" height="1883">
                 <media:title>
                     <![CDATA[ tiger woods ]]>
                 </media:title>
@@ -1077,9 +1167,12 @@
                     <![CDATA[ Tiger Woods of the United States plays his shot from the 15th tee during the second round of the PNC Championship at Ritz-Carlton Golf Club on December 22, 2024 in Orlando, Florida. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3073/0340fec71f9e3df7f308b58baf6a8a6cb35247fe-1741746999.mp4" type="video/mp4" medium="video" duration="55">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3073/0340fec71f9e3df7f308b58baf6a8a6cb35247fe-1741746999.mp4"
+                type="video/mp4" medium="video" duration="55">
                 <guid>614759</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2602779/tiger-woods-genesis-invitational-pga-tour.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2602779/tiger-woods-genesis-invitational-pga-tour.jpg" />
                 <media:title>
                     <![CDATA[ Tiger Woods Ruptures Achilles, Undergoes Surgery Before The PLAYERS ]]>
                 </media:title>
@@ -1112,7 +1205,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T06:39:54-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T06:39:54-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2648782/french-bulldog-owner.jpg" type="image/jpeg" medium="image" expression="full" width="1500" height="1000">
+            <media:content url="https://d.newsweek.com/en/full/2648782/french-bulldog-owner.jpg"
+                type="image/jpeg" medium="image" expression="full" width="1500" height="1000">
                 <media:title>
                     <![CDATA[ French bulldog and owner ]]>
                 </media:title>
@@ -1123,7 +1217,9 @@
                     <![CDATA[ A file photo of a dog owner and her French Bulldog. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3068/tiktik-1740647867.mp4" type="video/mp4" medium="video" duration="36">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3068/tiktik-1740647867.mp4"
+                type="video/mp4" medium="video" duration="36">
                 <guid>613620</guid>
                 <media:thumbnail url="https://d.newsweek.com/en/full/2596620/picture-video.jpg" />
                 <media:title>
@@ -1158,7 +1254,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T06:32:34-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T06:32:34-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649437/trump.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
+            <media:content url="https://d.newsweek.com/en/full/2649437/trump.jpg" type="image/jpeg"
+                medium="image" expression="full" width="2500" height="1667">
                 <media:title>
                     <![CDATA[ Trump ]]>
                 </media:title>
@@ -1169,7 +1266,9 @@
                     <![CDATA[ President Donald Trump holds up the $5 million gold card as he speaks to reporters while in flight on board Air Force One, en route to Miami, Thursday, April 3, 2025. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3082/gold-card-1743753077.mp4" type="video/mp4" medium="video" duration="29">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3082/gold-card-1743753077.mp4"
+                type="video/mp4" medium="video" duration="29">
                 <guid>616573</guid>
                 <media:thumbnail url="https://d.newsweek.com/en/full/2620724/trump-gold-card.jpg" />
                 <media:title>
@@ -1205,7 +1304,9 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T06:30:01-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T06:30:01-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2648954/ginger-cat-standing-wooden-floor.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
+            <media:content
+                url="https://d.newsweek.com/en/full/2648954/ginger-cat-standing-wooden-floor.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
                 <media:title>
                     <![CDATA[ ginger cat standing on wooden floor ]]>
                 </media:title>
@@ -1216,9 +1317,12 @@
                     <![CDATA[ A stock image shows a ginger cat standing on wooden floor with a bedroom in the background. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/2651/hhow-to-discipline-your-cat-effectively-according-to-experts-1650384518.mp4" type="video/mp4" medium="video" duration="96">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/2651/hhow-to-discipline-your-cat-effectively-according-to-experts-1650384518.mp4"
+                type="video/mp4" medium="video" duration="96">
                 <guid>530333</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2022354/how-discipline-your-cat-effectively-according-experts.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2022354/how-discipline-your-cat-effectively-according-experts.jpg" />
                 <media:title>
                     <![CDATA[ How To Discipline Your Cat Effectively According To Experts ]]>
                 </media:title>
@@ -1252,7 +1356,9 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T02:19:22-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T06:27:20-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649393/israeli-prime-minister-benjamin-netanyahu.jpg" type="image/jpeg" medium="image" expression="full" width="3329" height="2184">
+            <media:content
+                url="https://d.newsweek.com/en/full/2649393/israeli-prime-minister-benjamin-netanyahu.jpg"
+                type="image/jpeg" medium="image" expression="full" width="3329" height="2184">
                 <media:title>
                     <![CDATA[ Israeli Prime Minister Benjamin Netanyahu ]]>
                 </media:title>
@@ -1263,7 +1369,9 @@
                     <![CDATA[ Israeli Prime Minister Benjamin Netanyahu speaks during a press conference in Jerusalem on May 21, 2025. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3098/israel-fm-1747909391.mp4" type="video/mp4" medium="video" duration="56">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3098/israel-fm-1747909391.mp4"
+                type="video/mp4" medium="video" duration="56">
                 <guid>619683</guid>
                 <media:thumbnail url="https://d.newsweek.com/en/full/2649511/israeli-fm.jpg" />
                 <media:title>
@@ -1299,7 +1407,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T06:15:01-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T06:15:01-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2647671/john-daly.jpg" type="image/jpeg" medium="image" expression="full" width="3000" height="2100">
+            <media:content url="https://d.newsweek.com/en/full/2647671/john-daly.jpg"
+                type="image/jpeg" medium="image" expression="full" width="3000" height="2100">
                 <media:title>
                     <![CDATA[ john daly ]]>
                 </media:title>
@@ -1310,7 +1419,9 @@
                     <![CDATA[ John Daly drives from the ninth tee during the second round of the PODS Championship at Innisbrook Resort and Golf Club in Palm Harbor, Florida on March 9, 2007. Daly later withdrew from the tournament. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/2775/golf-fun-facts-fc-1682544154.mp4" type="video/mp4" medium="video" duration="121">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/2775/golf-fun-facts-fc-1682544154.mp4"
+                type="video/mp4" medium="video" duration="121">
                 <guid>554929</guid>
                 <media:thumbnail url="https://d.newsweek.com/en/full/2227068/golf-stock-image.jpg" />
                 <media:title>
@@ -1345,7 +1456,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T06:05:00-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T06:05:00-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2648031/tornado.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
+            <media:content url="https://d.newsweek.com/en/full/2648031/tornado.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1667">
                 <media:title>
                     <![CDATA[ Tornado ]]>
                 </media:title>
@@ -1356,9 +1468,12 @@
                     <![CDATA[ Stock image. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3097/riley22ann-tiktok-1747728656.mp4" type="video/mp4" medium="video" duration="31">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3097/riley22ann-tiktok-1747728656.mp4"
+                type="video/mp4" medium="video" duration="31">
                 <guid>619457</guid>
-                <media:thumbnail url="https://d.newsweek.com/en/full/2647690/ring-cam-shows-woman-rescuing-93-year-old-neighbor-tornado-sirens-wail.jpg" />
+                <media:thumbnail
+                    url="https://d.newsweek.com/en/full/2647690/ring-cam-shows-woman-rescuing-93-year-old-neighbor-tornado-sirens-wail.jpg" />
                 <media:title>
                     <![CDATA[ Ring Cam Shows Woman Rescuing 93-Year-Old Neighbor As Tornado Sirens Wail ]]>
                 </media:title>
@@ -1391,7 +1506,8 @@
             </category>
             <mi:dateTimeWritten>2025-05-22T03:20:11-04:00</mi:dateTimeWritten>
             <dcterms:modified>2025-05-22T06:04:55-04:00</dcterms:modified>
-            <media:content url="https://d.newsweek.com/en/full/2649420/dc-shooting.jpg" type="image/jpeg" medium="image" expression="full" width="2500" height="1597">
+            <media:content url="https://d.newsweek.com/en/full/2649420/dc-shooting.jpg"
+                type="image/jpeg" medium="image" expression="full" width="2500" height="1597">
                 <media:title>
                     <![CDATA[ DC shooting ]]>
                 </media:title>
@@ -1402,7 +1518,9 @@
                     <![CDATA[ A man draped in the Israeli flag, bearing a cross and the name "Jesus" at its center, gestures as Metropolitan Police officers secure the area outside the Capital Jewish Museum following a shooting that left two people dead in Washington, DC, in the early hours of May 22, 2025. ]]>
                 </media:description>
             </media:content>
-            <media:content url="https://video.newsweek.com/transcoder/_INPUTS/3098/israel-shooting-1747904564.mp4" type="video/mp4" medium="video" duration="55">
+            <media:content
+                url="https://video.newsweek.com/transcoder/_INPUTS/3098/israel-shooting-1747904564.mp4"
+                type="video/mp4" medium="video" duration="55">
                 <guid>619664</guid>
                 <media:thumbnail url="https://d.newsweek.com/en/full/2649413/shooting.jpg" />
                 <media:title>
@@ -1420,7 +1538,10 @@
     <style type="text/css">#adBoven, #adRechts, #adRechts2, #advertentie, .advertentie-2-container,
         .advertentie_226, .advertentie_links, .content-rechts-ad, .gamereel_featured-ad,
         .gesponsord_blokje, .gesponsord_blokje_wrap, .hoofdAd2, .kwebler-ad-minimal,
-        .massarius-dfp-unit, a[href^="https://go2.go2cloud.org/"], a[href^="https://mt67.net/"], a[href^="https://www.2k19.nl/"], a[href^="https://www.flirtadvertenties.nl/direct-sexdating/"], a[href^="https://xltube.nl/click/"], #advertentieblokjeid, #gesponsordelink, #reclame2,
+        .massarius-dfp-unit, a[href^="https://go2.go2cloud.org/"], a[href^="https://mt67.net/"],
+        a[href^="https://www.2k19.nl/"],
+        a[href^="https://www.flirtadvertenties.nl/direct-sexdating/"],
+        a[href^="https://xltube.nl/click/"], #advertentieblokjeid, #gesponsordelink, #reclame2,
         #reclame_rechts, #reclamebanner, #reclamediv, #rightbanner_adbest, #semilo-lrectangle,
         #sidereclame, #vipAdmarktBannerBlock, .ads-mobiel, .adstekst, .advertentie, .advertenties,
         .advertorial_koersen_home_top, .ankeiler--advertisement, .aw_url_admarkt_bottom,
@@ -1508,8 +1629,30 @@
         .werbungSkygrapperTop, .werbungTabelle, .werbung_300x250, .werbung_728, .werbung_banner,
         .werbung_bereich { display: none !important; } .werbung_box, .werbung_fuer_300er,
         .werbung_h, .werbung_index, .werbung_links, .werbung_sidebar, .werbung_text, .werbungamazon,
-        .werbunganzeigen, .werbungarea, .werbungimthread, .werbungrechtstitel, .widget-werbung, a[aria-label="Werbelink"], a[href*=".prodtraff.com/"], a[href="https://www.focus.de/deal/focus-online-deal-mit-weltsparen-setzen-sie-jetzt-auf-zinserhoehungen-weltsparen-schenkt-ihnen-dafuer-150-euro_id_11868745.html"]
-        > img, a[href^="http://landing.fickzeit.com/?ag="], a[href^="http://landing.parkplatzkartei.com/?ag="], a[href^="http://partners.adklick.de/tracking.php?"], a[href^="http://wittered-mainging.com/"], a[href^="http://www.deinfickdate.com/?wm="], a[href^="http://www.deinsexdate.com/?wm="], a[href^="http://www.eis.de/index.phtml?refid="], a[href^="http://www.heutenochficken.com/?wm="], a[href^="http://www.hw-area.com/?dp="], a[href^="http://www.ichwuerde.com/?ref="], a[href^="http://www.kontakt-vermittler.de/?wm="], a[href^="http://www.rastplatzsex.com/?wm="], a[href^="http://www.rotlichtkartei.com/?sc="], a[href^="http://www.sexkontaktportal.com/?wm="], a[href^="https://ads.sunmaker.com/tracking.php?"], a[href^="https://bd742.com/"], a[href^="https://clicks.imaxcash.com/?aff_"], a[href^="https://dpm.affaire18.com/click.php?dp="], a[href^="https://dpm.jungekontakte.com/click.php?dp="], a[href^="https://feed.solads.media/"], a[href^="https://maidings-mectland.com/"], a[href^="https://marketing.net.brillen.de/"], a[href^="https://media.datingpartner.com/click.php?dp="], a[href^="https://ofrbpu.smartbroker.de/"], a[href^="https://stream.justhdfilme.com/kkiste-kinox/"], a[href^="https://t.trafai.com/"], a[href^="https://trk.imobtrk.com/"], a[href^="https://www.handy-sextreffen.info/?c="], a[href^="https://www.tik-tok-date.com/"], a[href^="https://www.tipico.com/?affiliateId="], a[href^="https://www.vavoo.tv/promo/"] > img, a[href^="https://www.wazazu.com/NWS/"],
+        .werbunganzeigen, .werbungarea, .werbungimthread, .werbungrechtstitel, .widget-werbung,
+        a[aria-label="Werbelink"], a[href*=".prodtraff.com/"],
+        a[href="https://www.focus.de/deal/focus-online-deal-mit-weltsparen-setzen-sie-jetzt-auf-zinserhoehungen-weltsparen-schenkt-ihnen-dafuer-150-euro_id_11868745.html"]
+        > img, a[href^="http://landing.fickzeit.com/?ag="],
+        a[href^="http://landing.parkplatzkartei.com/?ag="],
+        a[href^="http://partners.adklick.de/tracking.php?"],
+        a[href^="http://wittered-mainging.com/"], a[href^="http://www.deinfickdate.com/?wm="],
+        a[href^="http://www.deinsexdate.com/?wm="], a[href^="http://www.eis.de/index.phtml?refid="],
+        a[href^="http://www.heutenochficken.com/?wm="], a[href^="http://www.hw-area.com/?dp="],
+        a[href^="http://www.ichwuerde.com/?ref="], a[href^="http://www.kontakt-vermittler.de/?wm="],
+        a[href^="http://www.rastplatzsex.com/?wm="], a[href^="http://www.rotlichtkartei.com/?sc="],
+        a[href^="http://www.sexkontaktportal.com/?wm="],
+        a[href^="https://ads.sunmaker.com/tracking.php?"], a[href^="https://bd742.com/"],
+        a[href^="https://clicks.imaxcash.com/?aff_"],
+        a[href^="https://dpm.affaire18.com/click.php?dp="],
+        a[href^="https://dpm.jungekontakte.com/click.php?dp="],
+        a[href^="https://feed.solads.media/"], a[href^="https://maidings-mectland.com/"],
+        a[href^="https://marketing.net.brillen.de/"],
+        a[href^="https://media.datingpartner.com/click.php?dp="],
+        a[href^="https://ofrbpu.smartbroker.de/"],
+        a[href^="https://stream.justhdfilme.com/kkiste-kinox/"], a[href^="https://t.trafai.com/"],
+        a[href^="https://trk.imobtrk.com/"], a[href^="https://www.handy-sextreffen.info/?c="],
+        a[href^="https://www.tik-tok-date.com/"], a[href^="https://www.tipico.com/?affiliateId="],
+        a[href^="https://www.vavoo.tv/promo/"] > img, a[href^="https://www.wazazu.com/NWS/"],
         #Publi300600x, #PublicidadSuperior { display: none !important; } #ads_singles_bottom,
         #audimaAdDesktop, #banner_publi, #bloque-publicidad-1, #bloque-publicidad-2,
         #bloque-publicidad-9, #bloque-publicidad-campania, #ctl00_PublicidadSuperior,
@@ -1521,7 +1664,10 @@
         .content_gpt_caja2_ads, .edi-advertising, .publi, .publi300x250-sidebar,
         .publi300x600-sidebard, .publi_MPU, .publi_space, .publicidad-pie, .publicidad_cabecera,
         .publicidad_dfp, .publicidad_footer_sticky, .publicidadbflotante, .publicolumna,
-        .publinker-ad, .v-adv, .voc-advertising, .voc-article--sponsored, .voc-sponsored, a[href^="https://ad.soicos.com/"], a[href^="https://go.betobet.online/"], a[href^="https://startgaming.net/tienda/"][href*="?offer_id="] { display: none !important; } a[href^="https://vario.tv/?offer_id="], a[href^="https://vario.tv/?raf="], ned-ad,
+        .publinker-ad, .v-adv, .voc-advertising, .voc-article--sponsored, .voc-sponsored,
+        a[href^="https://ad.soicos.com/"], a[href^="https://go.betobet.online/"],
+        a[href^="https://startgaming.net/tienda/"][href*="?offer_id="] { display: none !important; }
+        a[href^="https://vario.tv/?offer_id="], a[href^="https://vario.tv/?raf="], ned-ad,
         #PubMiddle1, #PubMiddle2, #PubRight, #PubTop1, #PubTop2, #PubliFixedLeft, #RobaPagina,
         #adGgV160, #ad_250x300, #adsforsearchGrid, #adsforsearch_content, #afsposicion1,
         #afsposicion2, #contenedor_pub_superior, #content-ads-top, #derpub, #eplAdDivlateralder,
@@ -1563,9 +1709,13 @@
         .roba-container, .robapagina, .robapaginas, .spub, .story-patrocinio,
         .td-g-rec-id-custom_ad_3, .top-add, .topads728, .txtPubli, .views-row-ads,
         .vip-section-advertising, .voc-sponsored-and-adv, .widget-publi, .widget_categorias_publi,
-        .widget_text_publicidad, .wrap-bnr, a[href*=".kfiopkln.com/"], a[href*="://adpv.com/?idpartner="], a[href*="://mobidea.com/?r="], a[href*="://yllix.com/publishers/"], a[href*="aclaritics.info/"] { display: none !important;
-        } a[href^="://popads.net/users/refer/"], a[href^="://seedingup.es/afiliados.html?id="], a[href^="http://wlx-secure.com/"], a[href^="http://www.amigos.com/go/"],
-        adsenseintermedioleft, adsenseintermedioright, div[class^="publicHoriz"], div[id^="M"][id*="Composite"], #deadblocker_dialog, .adblockInfo, .deadblocker-header-bar,
+        .widget_text_publicidad, .wrap-bnr, a[href*=".kfiopkln.com/"],
+        a[href*="://adpv.com/?idpartner="], a[href*="://mobidea.com/?r="],
+        a[href*="://yllix.com/publishers/"], a[href*="aclaritics.info/"] { display: none !important;
+        } a[href^="://popads.net/users/refer/"], a[href^="://seedingup.es/afiliados.html?id="],
+        a[href^="http://wlx-secure.com/"], a[href^="http://www.amigos.com/go/"],
+        adsenseintermedioleft, adsenseintermedioright, div[class^="publicHoriz"],
+        div[id^="M"][id*="Composite"], #deadblocker_dialog, .adblockInfo, .deadblocker-header-bar,
         .regular.closable, #ADSblock, #ad-300_atf-label, #ad-banner-mobile, #ad-banner_atf,
         #ad-desktop-top-banner, #ad-masonry, #ad-medium-rectangle-1, #ad-medium-rectangle-2, #ad3,
         #ad_video, #balloonads, #balloonads2, #ban728, #ban_pub, #bandeau_pub, #bandeau_publicite,
@@ -1914,7 +2064,12 @@
         .with-corner-ad, .wppasrotate, .wrap-pub { display: none !important; } .wrapper.ad,
         .wrapperPub, .wrapper_pub_sidebar, .xads-wrappe, .xadv-invid, .xadv-invid2,
         .xplayer-banner-bottom, .yourcolor-ads, .zone_annonceurs, .zone_pub_orange, .zonepub,
-        [data-ad-position], [data-ad-text], [data-ads-core], [id^="adswidget"], [id^="dfp_ban_"], [id^="dfp_banner"], a[href*=".atimaze.com/"], a[href*=".digital2cloud.com/?"], a[href*=".irtyd.com/"], a[href*="/aff_c?offer_id="] > img, a[href*="/afu.php?"], a[href*="/www/delivery/"], a[href*="?bz=160*600"] > img[src*=".alicdn.com/"], a[href*="?bz=300*250"] > img[src*=".alicdn.com/"], a[href*="?bz=725*90"] > img[src*=".alicdn.com/"], div[class$="-adlabel"], div[data-ad-id], div[data-ad],
+        [data-ad-position], [data-ad-text], [data-ads-core], [id^="adswidget"], [id^="dfp_ban_"],
+        [id^="dfp_banner"], a[href*=".atimaze.com/"], a[href*=".digital2cloud.com/?"],
+        a[href*=".irtyd.com/"], a[href*="/aff_c?offer_id="] > img, a[href*="/afu.php?"],
+        a[href*="/www/delivery/"], a[href*="?bz=160*600"] > img[src*=".alicdn.com/"],
+        a[href*="?bz=300*250"] > img[src*=".alicdn.com/"], a[href*="?bz=725*90"] >
+        img[src*=".alicdn.com/"], div[class$="-adlabel"], div[data-ad-id], div[data-ad],
         div[data-iab-tag], .incontent-promo-blitz-container, iframe[style="border: 0; width: 728px;
         height: 110px;"], iframe[style="border: 0; width: 970px; height: 110px;"] { display: none
         !important; }</style>

@@ -298,6 +298,28 @@ describe('HTMLMapper', () => {
       expect(component.params.account).toBe(`Borderlands`);
       expect(component.params.id).toBe(`1970609156936868102`);
     });
+    test('It should create a twitter tweet inside a div', () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="twitter-tweet hawk-ignore" data-lang="en">
+    <p lang="en" dir="ltr">
+        Samsung Galaxy S26 Series Timeline (South Korea)Unpacked Event:
+        February 25Pre-order period: February 26 to March 4Pre-sale period:
+        March 5 to March 10Market launch date: March 11
+    </p>
+    <a href="https://twitter.com/cantworkitout/status/2013951595541913988">January 21, 2026</a>
+</blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TwitterComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('twitter');
+      expect(component.height).toBe(`350`);
+      expect(component.params.account).toBe(`cantworkitout`);
+      expect(component.params.id).toBe(`2013951595541913988`);
+    });
   });
 
   describe('Youtube Component', () => {
