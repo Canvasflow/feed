@@ -425,6 +425,23 @@ describe('HTMLMapper', () => {
     });
   });
 
+  describe('Dailymotion Component', () => {
+    test('It should create an Dailymotion embed component', () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fgeo.dailymotion.com%2Fplayer.html%3Fvideo%3Dx9z6sty%26&display_name=Dailymotion&url=https%3A%2F%2Fwww.dailymotion.com%2Fvideo%2Fx9z6sty&image=https%3A%2F%2Fs1.dmcdn.net%2Fv%2FZzPvs1fWfaf6KsK8h%2Fx240&type=text%2Fhtml&schema=dailymotion" width="480" height="269" scrolling="no" title="Dailymotion embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('dailymotion');
+      expect(component.params).toEqual({ id: 'x9z6sty' });
+    });
+  });
+
   describe('TikTok Component', () => {
     test('It should create a TikTok embed component', () => {
       const components = HTMLMapper.toComponents(

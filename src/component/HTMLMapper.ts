@@ -23,6 +23,7 @@ import {
   type ButtonComponent,
   type RecipeComponent,
   type HTMLTableComponent,
+  type DailymotionComponent,
 } from './Component';
 
 const imageTags = new Set(['img', 'picture']);
@@ -714,7 +715,7 @@ export class HTMLMapper {
 
   static fromIframe(
     node: ElementNode
-  ): YoutubeComponent | InfogramComponent | null {
+  ): YoutubeComponent | InfogramComponent | DailymotionComponent | null {
     const attributes = getAttributes(node.attributes);
     const id = attributes.get('id');
 
@@ -745,6 +746,7 @@ export class HTMLMapper {
     }
 
     const searchParamSrc = url.searchParams.get('src');
+    const searchParamUrl = url.searchParams.get('url');
 
     // Check if youtube is in the source url
     if (
@@ -752,6 +754,16 @@ export class HTMLMapper {
       searchParamSrc.startsWith('https://www.youtube.com')
     ) {
       builtComponent = HTMLMapper.toYoutube(new URL(searchParamSrc));
+      builtComponent.id = id;
+      return builtComponent;
+    }
+
+    // Check if Dailymotion is in the source url
+    if (
+      searchParamUrl &&
+      searchParamUrl.startsWith('https://www.dailymotion.')
+    ) {
+      builtComponent = HTMLMapper.toDailymotion(new URL(searchParamUrl));
       builtComponent.id = id;
       return builtComponent;
     }
@@ -779,6 +791,30 @@ export class HTMLMapper {
     return {
       component: 'video',
       vidtype: 'youtube',
+      params: {
+        id,
+      },
+      errors,
+      warnings,
+    };
+  }
+
+  static toDailymotion(url: URL): DailymotionComponent {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    const regExp =
+      /(?:dailymotion\.com\/(?:video|hub)|dai\.ly)\/([0-9a-z]+)(?:[-_0-9a-zA-Z]+#video=([a-z0-9]+))?/;
+
+    if (!regExp.test(url.href)) {
+      errors.push('Invalid  Dailymotion video URL format.');
+    }
+
+    const id = url.pathname.split('/').pop() as string;
+
+    return {
+      component: 'video',
+      vidtype: 'dailymotion',
       params: {
         id,
       },
