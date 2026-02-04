@@ -106,6 +106,11 @@ export interface YoutubeComponent extends VideoComponent {
   params: { id: string };
 }
 
+export interface VimeoComponent extends VideoComponent {
+  vidtype: 'vimeo';
+  params: { id: string };
+}
+
 export interface DailymotionComponent extends VideoComponent {
   vidtype: 'dailymotion';
   params: { id: string };
