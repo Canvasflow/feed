@@ -745,25 +745,27 @@ export class HTMLMapper {
         return builtComponent;
     }
 
-    const searchParamSrc = url.searchParams.get('src');
-    const searchParamUrl = url.searchParams.get('url');
+    const searchParams = {
+      src: url.searchParams.get('src'),
+      url: url.searchParams.get('url'),
+    };
 
     // Check if youtube is in the source url
     if (
-      searchParamSrc &&
-      searchParamSrc.startsWith('https://www.youtube.com')
+      searchParams.src &&
+      searchParams.src.startsWith('https://www.youtube.com')
     ) {
-      builtComponent = HTMLMapper.toYoutube(new URL(searchParamSrc));
+      builtComponent = HTMLMapper.toYoutube(new URL(searchParams.src));
       builtComponent.id = id;
       return builtComponent;
     }
 
     // Check if Dailymotion is in the source url
     if (
-      searchParamUrl &&
-      searchParamUrl.startsWith('https://www.dailymotion.')
+      searchParams.url &&
+      searchParams.url.startsWith('https://www.dailymotion.com')
     ) {
-      builtComponent = HTMLMapper.toDailymotion(new URL(searchParamUrl));
+      builtComponent = HTMLMapper.toDailymotion(new URL(searchParams.url));
       builtComponent.id = id;
       return builtComponent;
     }

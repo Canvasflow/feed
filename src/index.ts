@@ -20,6 +20,7 @@ export type {
   InstagramComponent,
   InfogramComponent,
   YoutubeComponent,
+  DailymotionComponent,
   TikTokComponent,
   SpacerComponent,
   ComponentType,
