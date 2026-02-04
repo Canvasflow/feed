@@ -14,6 +14,8 @@ import type {
   ButtonComponent,
   RecipeComponent,
   HTMLTableComponent,
+  DailymotionComponent,
+  VimeoComponent,
 } from './Component';
 
 describe('HTMLMapper', () => {
@@ -431,7 +433,7 @@ describe('HTMLMapper', () => {
         `<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fgeo.dailymotion.com%2Fplayer.html%3Fvideo%3Dx9z6sty%26&display_name=Dailymotion&url=https%3A%2F%2Fwww.dailymotion.com%2Fvideo%2Fx9z6sty&image=https%3A%2F%2Fs1.dmcdn.net%2Fv%2FZzPvs1fWfaf6KsK8h%2Fx240&type=text%2Fhtml&schema=dailymotion" width="480" height="269" scrolling="no" title="Dailymotion embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>`
       );
       expect(components.length).toBe(1);
-      const component = components.pop() as YoutubeComponent;
+      const component = components.pop() as DailymotionComponent;
       expect(component).toBeDefined();
       if (!component) {
         return;
@@ -439,6 +441,23 @@ describe('HTMLMapper', () => {
       expect(component.component).toBe('video');
       expect(component.vidtype).toBe('dailymotion');
       expect(component.params).toEqual({ id: 'x9z6sty' });
+    });
+  });
+
+  describe('Vimeo Component', () => {
+    test('It should create a Vimeo embed component', () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fplayer.vimeo.com%2Fvideo%2F1138248349%3Fapp_id%3D122963&dntp=1&display_name=Vimeo&url=https%3A%2F%2Fvimeo.com%2F1138248349&image=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F2084551378-2d500d442b25ca58722aab3e62d9ca47a8c9ac2e57afe061995a01c8fd71ac92-d_1280%3Fregion%3Dus&type=text%2Fhtml&schema=vimeo" width="500" height="281" scrolling="no" title="Vimeo embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as VimeoComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('vimeo');
+      expect(component.params).toEqual({ id: '1138248349' });
     });
   });
 
