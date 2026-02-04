@@ -218,7 +218,20 @@ export class HTMLMapper {
       classNames &&
       classNames.includes('tiktok-embed')
     ) {
-      return HTMLMapper.toTikTok(node);
+      if (!attributes.get('cite')) {
+        return {
+          component: 'video',
+          vidtype: 'tiktok',
+          params: {
+            username: '',
+            id: '',
+          },
+          warnings: [],
+          errors: ['cite attribute is required'],
+        } as TikTokComponent;
+      }
+
+      return HTMLMapper.toTikTok(new URL(attributes.get('cite') || ''));
     }
 
     // This process button component
@@ -611,22 +624,20 @@ export class HTMLMapper {
     return component;
   }
 
-  static toTikTok(node: ElementNode): TikTokComponent {
+  static toTikTok(url: URL): TikTokComponent {
     const errors: string[] = [];
     const warnings: string[] = [];
-    const attributes = getAttributes(node.attributes);
+
     const params = {
       username: '',
       id: '',
     };
-    const cite = attributes.get('cite') || '';
-    if (!cite) {
-      errors.push('cite attribute is required');
-    }
 
-    const match = cite.match(
-      /^https:\/\/www\.tiktok\.com\/(@[\w.\-_]+)\/video\/(\d+)(?:[/?].*)?$/
-    );
+    const match = url
+      .toString()
+      .match(
+        /^https:\/\/www\.tiktok\.com\/(@[\w.\-_]+)\/video\/(\d+)(?:[/?].*)?$/
+      );
     if (match) {
       params.username = match[1] || '';
       params.id = match[2] || '';
@@ -715,7 +726,12 @@ export class HTMLMapper {
 
   static fromIframe(
     node: ElementNode
-  ): YoutubeComponent | InfogramComponent | DailymotionComponent | null {
+  ):
+    | YoutubeComponent
+    | InfogramComponent
+    | DailymotionComponent
+    | TikTokComponent
+    | null {
     const attributes = getAttributes(node.attributes);
     const id = attributes.get('id');
 
@@ -756,6 +772,16 @@ export class HTMLMapper {
       searchParams.src.startsWith('https://www.youtube.com')
     ) {
       builtComponent = HTMLMapper.toYoutube(new URL(searchParams.src));
+      builtComponent.id = id;
+      return builtComponent;
+    }
+
+    // Check if youtube is in the source url
+    if (
+      searchParams.url &&
+      searchParams.url.startsWith('https://www.tiktok.com')
+    ) {
+      builtComponent = HTMLMapper.toTikTok(new URL(searchParams.url));
       builtComponent.id = id;
       return builtComponent;
     }

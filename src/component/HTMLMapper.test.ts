@@ -463,7 +463,6 @@ describe('HTMLMapper', () => {
         username: '@kingar4__',
       });
     });
-
     test('It should create a TikTok embed component inside a figure', () => {
       const components = HTMLMapper.toComponents(
         `
@@ -487,7 +486,6 @@ describe('HTMLMapper', () => {
         username: '@kingar4__',
       });
     });
-
     test('It should create a TikTok embed component inside a div', () => {
       const components = HTMLMapper.toComponents(
         `
@@ -511,7 +509,6 @@ describe('HTMLMapper', () => {
         username: '@kingar4__',
       });
     });
-
     test('It should return errors for an invalid TikTok URL', () => {
       const components = HTMLMapper.toComponents(
         `<blockquote
@@ -534,7 +531,6 @@ describe('HTMLMapper', () => {
       expect(component.errors.length).toBeGreaterThan(0);
       expect(component.errors[0]).toBe('Invalid TikTok video URL format.');
     });
-
     test('It should return errors if TikTok cite attribute is missing', () => {
       const components = HTMLMapper.toComponents(
         `<blockquote class="tiktok-embed"></blockquote>`
@@ -553,6 +549,33 @@ describe('HTMLMapper', () => {
       });
       expect(component.errors.length).toBeGreaterThan(0);
       expect(component.errors[0]).toBe('cite attribute is required');
+    });
+    test('It should create a Tiktok component from embed.ly', () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe 
+          class="embedly-embed" 
+          src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.tiktok.com%2Fembed%2Fv2%2F7593022588272561430&display_name=tiktok&url=https%3A%2F%2Fwww.tiktok.com%2F%40rickastleyofficial%2Fvideo%2F7593022588272561430&image=https%3A%2F%2Fp19-common-sign.tiktokcdn-us.com%2Ftos-no1a-p-0037-no%2Fo0RBVFFlD1yfKtXxdpH6AykfhHQEQA40D91JEg%7Etplv-tiktokx-origin.image%3Fdr%3D9636%26x-expires%3D1770382800%26x-signature%3DSub%252FfFdUPmtmCszcGV3IaEFu9NI%253D%26t%3D4d5b0474%26ps%3D13740610%26shp%3D81f88b70%26shcp%3D43f4a2f9%26idc%3Duseast8&type=text%2Fhtml&schema=tiktok" 
+          width="340" 
+          height="700" 
+          scrolling="no" 
+          title="tiktok embed" 
+          frameborder="0" 
+          allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" 
+          allowfullscreen="true">
+        </iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TikTokComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('tiktok');
+      expect(component.params).toEqual({
+        id: '7593022588272561430',
+        username: '@rickastleyofficial',
+      });
     });
   });
 
