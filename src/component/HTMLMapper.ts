@@ -718,16 +718,21 @@ export class HTMLMapper {
     const attributes = getAttributes(node.attributes);
     const id = attributes.get('id');
 
-    const src = attributes.get('src') || '';
+    let src = attributes.get('src') || '';
 
     // If the iframe do not have a src we just ignore it
     if (!src || src.length === 0) {
       return null;
     }
 
+    if (src.startsWith('//')) {
+      src = `https:${src}`;
+    }
+
     let builtComponent;
 
     const url = new URL(src);
+
     switch (url.origin) {
       case 'https://e.infogram.com':
         builtComponent = HTMLMapper.toInfogram(url);
@@ -737,6 +742,18 @@ export class HTMLMapper {
         builtComponent = HTMLMapper.toYoutube(url);
         builtComponent.id = id;
         return builtComponent;
+    }
+
+    const searchParamSrc = url.searchParams.get('src');
+
+    // Check if youtube is in the source url
+    if (
+      searchParamSrc &&
+      searchParamSrc.startsWith('https://www.youtube.com')
+    ) {
+      builtComponent = HTMLMapper.toYoutube(new URL(searchParamSrc));
+      builtComponent.id = id;
+      return builtComponent;
     }
 
     return null;

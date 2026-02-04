@@ -260,23 +260,23 @@ describe('HTMLMapper', () => {
     test('It should create a twitter tweet component inside a figure', () => {
       const components = HTMLMapper.toComponents(
         `<figure
-	class="wp-block-embed is-type-rich is-provider-twitter wp-block-embed-twitter"
->
-	<div class="wp-block-embed__wrapper">
-		<blockquote class="twitter-tweet" data-width="500" data-dnt="true">
-			<p lang="en" dir="ltr">
-				Greetings, Vault Hunters - We need to share that the release of
-				Borderlands 4 on Nintendo Switch 2 is being delayed. We do not
-				take this decision lightly, but are committed to ensuring we
-				deliver the best possible experience to our fans, and the game
-				needs additional development…
-			</p>
-			&mdash; Borderlands (@Borderlands)
-			<a
-				href="https://twitter.com/Borderlands/status/1970609156936868102?ref_src=twsrc%5Etfw"
-				>September 23, 2025</a
-			>
-		</blockquote>
+	        class="wp-block-embed is-type-rich 
+            is-provider-twitter wp-block-embed-twitter"
+        >
+	        <div class="wp-block-embed__wrapper">
+		        <blockquote class="twitter-tweet" data-width="500" data-dnt="true">
+			        <p lang="en" dir="ltr">
+                Greetings, Vault Hunters - We need to share that the release of
+                Borderlands 4 on Nintendo Switch 2 is being delayed. We do not
+                take this decision lightly, but are committed to ensuring we
+                deliver the best possible experience to our fans, and the game
+                needs additional development…
+			        </p>
+			        &mdash; Borderlands (@Borderlands)
+			        <a
+				        href="https://twitter.com/Borderlands/status/1970609156936868102?ref_src=twsrc%5Etfw"
+				        >September 23, 2025</a>
+		        </blockquote>
 		<script
 			async
 			src="https://platform.twitter.com/widgets.js"
@@ -392,6 +392,36 @@ describe('HTMLMapper', () => {
       expect(component.vidtype).toBe('youtube');
       expect(component.params).toEqual({ id: 'XQ87p2Rhb_A' });
       expect(component?.caption).toBe('This is a valid caption');
+    });
+    test('It should create an Youtube embed component from embed.ly', () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe
+            src="https://embedly.forbes.com/widgets/media.html?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DdQw4w9WgXcQ&amp;type=text%2Fhtml&amp;schema=youtu&amp;display_name=YouTube&amp;src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FdQw4w9WgXcQ">
+        </iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('youtube');
+      expect(component.params).toEqual({ id: 'dQw4w9WgXcQ' });
+    });
+    test('It should create an Youtube embed component from embed.ly with short url', () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FF_Rf-ubc8zQ%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DF_Rf-ubc8zQ&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FF_Rf-ubc8zQ%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="500" height="281" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('youtube');
+      expect(component.params).toEqual({ id: 'F_Rf-ubc8zQ' });
     });
   });
 
