@@ -260,23 +260,23 @@ describe('HTMLMapper', () => {
     test('It should create a twitter tweet component inside a figure', () => {
       const components = HTMLMapper.toComponents(
         `<figure
-	class="wp-block-embed is-type-rich is-provider-twitter wp-block-embed-twitter"
->
-	<div class="wp-block-embed__wrapper">
-		<blockquote class="twitter-tweet" data-width="500" data-dnt="true">
-			<p lang="en" dir="ltr">
-				Greetings, Vault Hunters - We need to share that the release of
-				Borderlands 4 on Nintendo Switch 2 is being delayed. We do not
-				take this decision lightly, but are committed to ensuring we
-				deliver the best possible experience to our fans, and the game
-				needs additional development…
-			</p>
-			&mdash; Borderlands (@Borderlands)
-			<a
-				href="https://twitter.com/Borderlands/status/1970609156936868102?ref_src=twsrc%5Etfw"
-				>September 23, 2025</a
-			>
-		</blockquote>
+	        class="wp-block-embed is-type-rich 
+            is-provider-twitter wp-block-embed-twitter"
+        >
+	        <div class="wp-block-embed__wrapper">
+		        <blockquote class="twitter-tweet" data-width="500" data-dnt="true">
+			        <p lang="en" dir="ltr">
+                Greetings, Vault Hunters - We need to share that the release of
+                Borderlands 4 on Nintendo Switch 2 is being delayed. We do not
+                take this decision lightly, but are committed to ensuring we
+                deliver the best possible experience to our fans, and the game
+                needs additional development…
+			        </p>
+			        &mdash; Borderlands (@Borderlands)
+			        <a
+				        href="https://twitter.com/Borderlands/status/1970609156936868102?ref_src=twsrc%5Etfw"
+				        >September 23, 2025</a>
+		        </blockquote>
 		<script
 			async
 			src="https://platform.twitter.com/widgets.js"
@@ -393,6 +393,53 @@ describe('HTMLMapper', () => {
       expect(component.params).toEqual({ id: 'XQ87p2Rhb_A' });
       expect(component?.caption).toBe('This is a valid caption');
     });
+    test('It should create an Youtube embed component from embed.ly', () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe
+            src="https://embedly.forbes.com/widgets/media.html?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DdQw4w9WgXcQ&amp;type=text%2Fhtml&amp;schema=youtu&amp;display_name=YouTube&amp;src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FdQw4w9WgXcQ">
+        </iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('youtube');
+      expect(component.params).toEqual({ id: 'dQw4w9WgXcQ' });
+    });
+    test('It should create an Youtube embed component from embed.ly with short url', () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FF_Rf-ubc8zQ%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DF_Rf-ubc8zQ&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FF_Rf-ubc8zQ%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="500" height="281" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('youtube');
+      expect(component.params).toEqual({ id: 'F_Rf-ubc8zQ' });
+    });
+  });
+
+  describe('Dailymotion Component', () => {
+    test('It should create an Dailymotion embed component', () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fgeo.dailymotion.com%2Fplayer.html%3Fvideo%3Dx9z6sty%26&display_name=Dailymotion&url=https%3A%2F%2Fwww.dailymotion.com%2Fvideo%2Fx9z6sty&image=https%3A%2F%2Fs1.dmcdn.net%2Fv%2FZzPvs1fWfaf6KsK8h%2Fx240&type=text%2Fhtml&schema=dailymotion" width="480" height="269" scrolling="no" title="Dailymotion embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('dailymotion');
+      expect(component.params).toEqual({ id: 'x9z6sty' });
+    });
   });
 
   describe('TikTok Component', () => {
@@ -416,7 +463,6 @@ describe('HTMLMapper', () => {
         username: '@kingar4__',
       });
     });
-
     test('It should create a TikTok embed component inside a figure', () => {
       const components = HTMLMapper.toComponents(
         `
@@ -440,7 +486,6 @@ describe('HTMLMapper', () => {
         username: '@kingar4__',
       });
     });
-
     test('It should create a TikTok embed component inside a div', () => {
       const components = HTMLMapper.toComponents(
         `
@@ -464,7 +509,6 @@ describe('HTMLMapper', () => {
         username: '@kingar4__',
       });
     });
-
     test('It should return errors for an invalid TikTok URL', () => {
       const components = HTMLMapper.toComponents(
         `<blockquote
@@ -487,7 +531,6 @@ describe('HTMLMapper', () => {
       expect(component.errors.length).toBeGreaterThan(0);
       expect(component.errors[0]).toBe('Invalid TikTok video URL format.');
     });
-
     test('It should return errors if TikTok cite attribute is missing', () => {
       const components = HTMLMapper.toComponents(
         `<blockquote class="tiktok-embed"></blockquote>`
@@ -506,6 +549,33 @@ describe('HTMLMapper', () => {
       });
       expect(component.errors.length).toBeGreaterThan(0);
       expect(component.errors[0]).toBe('cite attribute is required');
+    });
+    test('It should create a Tiktok component from embed.ly', () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe 
+          class="embedly-embed" 
+          src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.tiktok.com%2Fembed%2Fv2%2F7593022588272561430&display_name=tiktok&url=https%3A%2F%2Fwww.tiktok.com%2F%40rickastleyofficial%2Fvideo%2F7593022588272561430&image=https%3A%2F%2Fp19-common-sign.tiktokcdn-us.com%2Ftos-no1a-p-0037-no%2Fo0RBVFFlD1yfKtXxdpH6AykfhHQEQA40D91JEg%7Etplv-tiktokx-origin.image%3Fdr%3D9636%26x-expires%3D1770382800%26x-signature%3DSub%252FfFdUPmtmCszcGV3IaEFu9NI%253D%26t%3D4d5b0474%26ps%3D13740610%26shp%3D81f88b70%26shcp%3D43f4a2f9%26idc%3Duseast8&type=text%2Fhtml&schema=tiktok" 
+          width="340" 
+          height="700" 
+          scrolling="no" 
+          title="tiktok embed" 
+          frameborder="0" 
+          allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" 
+          allowfullscreen="true">
+        </iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TikTokComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('tiktok');
+      expect(component.params).toEqual({
+        id: '7593022588272561430',
+        username: '@rickastleyofficial',
+      });
     });
   });
 

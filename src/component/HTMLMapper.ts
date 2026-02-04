@@ -23,6 +23,7 @@ import {
   type ButtonComponent,
   type RecipeComponent,
   type HTMLTableComponent,
+  type DailymotionComponent,
 } from './Component';
 
 const imageTags = new Set(['img', 'picture']);
@@ -217,7 +218,20 @@ export class HTMLMapper {
       classNames &&
       classNames.includes('tiktok-embed')
     ) {
-      return HTMLMapper.toTikTok(node);
+      if (!attributes.get('cite')) {
+        return {
+          component: 'video',
+          vidtype: 'tiktok',
+          params: {
+            username: '',
+            id: '',
+          },
+          warnings: [],
+          errors: ['cite attribute is required'],
+        } as TikTokComponent;
+      }
+
+      return HTMLMapper.toTikTok(new URL(attributes.get('cite') || ''));
     }
 
     // This process button component
@@ -610,22 +624,20 @@ export class HTMLMapper {
     return component;
   }
 
-  static toTikTok(node: ElementNode): TikTokComponent {
+  static toTikTok(url: URL): TikTokComponent {
     const errors: string[] = [];
     const warnings: string[] = [];
-    const attributes = getAttributes(node.attributes);
+
     const params = {
       username: '',
       id: '',
     };
-    const cite = attributes.get('cite') || '';
-    if (!cite) {
-      errors.push('cite attribute is required');
-    }
 
-    const match = cite.match(
-      /^https:\/\/www\.tiktok\.com\/(@[\w.\-_]+)\/video\/(\d+)(?:[/?].*)?$/
-    );
+    const match = url
+      .toString()
+      .match(
+        /^https:\/\/www\.tiktok\.com\/(@[\w.\-_]+)\/video\/(\d+)(?:[/?].*)?$/
+      );
     if (match) {
       params.username = match[1] || '';
       params.id = match[2] || '';
@@ -714,20 +726,30 @@ export class HTMLMapper {
 
   static fromIframe(
     node: ElementNode
-  ): YoutubeComponent | InfogramComponent | null {
+  ):
+    | YoutubeComponent
+    | InfogramComponent
+    | DailymotionComponent
+    | TikTokComponent
+    | null {
     const attributes = getAttributes(node.attributes);
     const id = attributes.get('id');
 
-    const src = attributes.get('src') || '';
+    let src = attributes.get('src') || '';
 
     // If the iframe do not have a src we just ignore it
     if (!src || src.length === 0) {
       return null;
     }
 
+    if (src.startsWith('//')) {
+      src = `https:${src}`;
+    }
+
     let builtComponent;
 
     const url = new URL(src);
+
     switch (url.origin) {
       case 'https://e.infogram.com':
         builtComponent = HTMLMapper.toInfogram(url);
@@ -737,6 +759,41 @@ export class HTMLMapper {
         builtComponent = HTMLMapper.toYoutube(url);
         builtComponent.id = id;
         return builtComponent;
+    }
+
+    const searchParams = {
+      src: url.searchParams.get('src'),
+      url: url.searchParams.get('url'),
+    };
+
+    // Check if youtube is in the source url
+    if (
+      searchParams.src &&
+      searchParams.src.startsWith('https://www.youtube.com')
+    ) {
+      builtComponent = HTMLMapper.toYoutube(new URL(searchParams.src));
+      builtComponent.id = id;
+      return builtComponent;
+    }
+
+    // Check if youtube is in the source url
+    if (
+      searchParams.url &&
+      searchParams.url.startsWith('https://www.tiktok.com')
+    ) {
+      builtComponent = HTMLMapper.toTikTok(new URL(searchParams.url));
+      builtComponent.id = id;
+      return builtComponent;
+    }
+
+    // Check if Dailymotion is in the source url
+    if (
+      searchParams.url &&
+      searchParams.url.startsWith('https://www.dailymotion.com')
+    ) {
+      builtComponent = HTMLMapper.toDailymotion(new URL(searchParams.url));
+      builtComponent.id = id;
+      return builtComponent;
     }
 
     return null;
@@ -762,6 +819,30 @@ export class HTMLMapper {
     return {
       component: 'video',
       vidtype: 'youtube',
+      params: {
+        id,
+      },
+      errors,
+      warnings,
+    };
+  }
+
+  static toDailymotion(url: URL): DailymotionComponent {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    const regExp =
+      /(?:dailymotion\.com\/(?:video|hub)|dai\.ly)\/([0-9a-z]+)(?:[-_0-9a-zA-Z]+#video=([a-z0-9]+))?/;
+
+    if (!regExp.test(url.href)) {
+      errors.push('Invalid  Dailymotion video URL format.');
+    }
+
+    const id = url.pathname.split('/').pop() as string;
+
+    return {
+      component: 'video',
+      vidtype: 'dailymotion',
       params: {
         id,
       },
