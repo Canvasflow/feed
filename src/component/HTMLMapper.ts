@@ -24,6 +24,7 @@ import {
   type RecipeComponent,
   type HTMLTableComponent,
   type DailymotionComponent,
+  type VimeoComponent,
 } from './Component';
 
 const imageTags = new Set(['img', 'picture']);
@@ -731,6 +732,7 @@ export class HTMLMapper {
     | InfogramComponent
     | DailymotionComponent
     | TikTokComponent
+    | VimeoComponent
     | null {
     const attributes = getAttributes(node.attributes);
     const id = attributes.get('id');
@@ -796,6 +798,13 @@ export class HTMLMapper {
       return builtComponent;
     }
 
+    // Check if Dailymotion is in the source url
+    if (searchParams.url && searchParams.url.startsWith('https://vimeo.com')) {
+      builtComponent = HTMLMapper.toVimeo(new URL(searchParams.url));
+      builtComponent.id = id;
+      return builtComponent;
+    }
+
     return null;
   }
 
@@ -843,6 +852,27 @@ export class HTMLMapper {
     return {
       component: 'video',
       vidtype: 'dailymotion',
+      params: {
+        id,
+      },
+      errors,
+      warnings,
+    };
+  }
+
+  static toVimeo(url: URL): VimeoComponent {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    if (!url.toString().startsWith('https://vimeo.com')) {
+      errors.push('Invalid  Dailymotion video URL format.');
+    }
+
+    const id = url.pathname.split('/').pop() as string;
+
+    return {
+      component: 'video',
+      vidtype: 'vimeo',
       params: {
         id,
       },

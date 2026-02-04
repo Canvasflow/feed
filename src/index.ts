@@ -21,6 +21,7 @@ export type {
   InfogramComponent,
   YoutubeComponent,
   DailymotionComponent,
+  VimeoComponent,
   TikTokComponent,
   SpacerComponent,
   ComponentType,
