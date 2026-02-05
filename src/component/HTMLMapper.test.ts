@@ -322,6 +322,40 @@ describe('HTMLMapper', () => {
       expect(component.params.account).toBe(`cantworkitout`);
       expect(component.params.id).toBe(`2013951595541913988`);
     });
+    test('It should create a x tweet from an iframe', () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe 
+          src="https://embedly.forbes.com/widgets/media.html?type=text%2Fhtml&amp;key=3ce26dc7e3454db5820ba084d28b4935&amp;schema=twitter&amp;url=https%3A//x.com/delayed3A/status/2018627889923826089&amp;image=">
+        </iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TwitterComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('twitter');
+      expect(component.height).toBe(`350`);
+      expect(component.params.account).toBe(`delayed3A`);
+      expect(component.params.id).toBe(`2018627889923826089`);
+    });
+    test('It should create a twitter tweet from an iframe', () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe 
+          src="https://embedly.forbes.com/widgets/media.html?type=text%2Fhtml&amp;key=3ce26dc7e3454db5820ba084d28b4935&amp;schema=twitter&amp;url=https%3A//twitter.com/delayed3A/status/2018627889923826089&amp;image=">
+        </iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TwitterComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('twitter');
+      expect(component.height).toBe(`350`);
+      expect(component.params.account).toBe(`delayed3A`);
+      expect(component.params.id).toBe(`2018627889923826089`);
+    });
   });
 
   describe('Youtube Component', () => {
