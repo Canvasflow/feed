@@ -688,7 +688,10 @@ export class HTMLMapper {
     };
   }
 
-  static toTwitter(node: ElementNode): TwitterComponent {
+  static toTwitter(node: ElementNode | URL): TwitterComponent {
+    if (node instanceof URL) {
+      return HTMLMapper.toTweetFromUrl(node);
+    }
     const errors: string[] = [];
     const warnings: string[] = [];
     let tweetNode: ElementNode | undefined;
@@ -733,6 +736,7 @@ export class HTMLMapper {
     | DailymotionComponent
     | TikTokComponent
     | VimeoComponent
+    | TwitterComponent
     | null {
     const attributes = getAttributes(node.attributes);
     const id = attributes.get('id');
@@ -801,6 +805,16 @@ export class HTMLMapper {
     // Check if Dailymotion is in the source url
     if (searchParams.url && searchParams.url.startsWith('https://vimeo.com')) {
       builtComponent = HTMLMapper.toVimeo(new URL(searchParams.url));
+      builtComponent.id = id;
+      return builtComponent;
+    }
+
+    if (
+      searchParams.url &&
+      (searchParams.url.startsWith('https://twitter.com') ||
+        searchParams.url.startsWith('https://x.com'))
+    ) {
+      builtComponent = HTMLMapper.toTwitter(new URL(searchParams.url));
       builtComponent.id = id;
       return builtComponent;
     }
@@ -892,6 +906,50 @@ export class HTMLMapper {
         parentUrl: url.searchParams.get('parent_url') || '', // TODO validar si searchparams puede ser not null
         src: 'embed',
       },
+      errors,
+      warnings,
+    };
+  }
+
+  static toTweetFromUrl(uri: URL): TwitterComponent {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    const params: { id?: string; account?: string } = {};
+
+    const url = uri.toString();
+
+    if (
+      !url.startsWith('https://x.com') &&
+      !url.startsWith('https://twitter.com')
+    ) {
+      errors.push('Invalid Twitter video URL format.');
+      return {
+        height: '350',
+        fixedheight: 'on',
+        bleed: 'on',
+        params,
+        component: 'twitter',
+        errors,
+        warnings,
+      };
+    }
+
+    const tweetUrl = uri.pathname;
+
+    const twitterRegex = /\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
+
+    const values: Array<string> = twitterRegex.exec(tweetUrl) || [];
+    params.id = values[3];
+    params.account = values[1];
+
+    //validamos si tiene los valores 1 y 3 para errors
+
+    return {
+      height: '350',
+      fixedheight: 'on',
+      bleed: 'on',
+      params,
+      component: 'twitter',
       errors,
       warnings,
     };
