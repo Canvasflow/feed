@@ -25,6 +25,7 @@ import {
   type HTMLTableComponent,
   type DailymotionComponent,
   type VimeoComponent,
+  type CustomComponent,
 } from './Component';
 
 const imageTags = new Set(['img', 'picture']);
@@ -737,6 +738,7 @@ export class HTMLMapper {
     | TikTokComponent
     | VimeoComponent
     | TwitterComponent
+    | CustomComponent
     | null {
     const attributes = getAttributes(node.attributes);
     const id = attributes.get('id');
@@ -819,7 +821,20 @@ export class HTMLMapper {
       return builtComponent;
     }
 
-    return null;
+    return HTMLMapper.toCustom(node);
+  }
+
+  static toCustom(node: ElementNode): CustomComponent {
+    const content = stringify([node]);
+    const attributes = getAttributes(node.attributes);
+    const id = attributes.get('id');
+    return {
+      id,
+      component: 'custom',
+      errors: [],
+      warnings: [],
+      content,
+    };
   }
 
   static toYoutube(url: URL): YoutubeComponent {
