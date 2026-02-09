@@ -25,6 +25,7 @@ import {
   type HTMLTableComponent,
   type DailymotionComponent,
   type VimeoComponent,
+  type ContainerComponent,
 } from './Component';
 
 const imageTags = new Set(['img', 'picture']);
@@ -45,7 +46,11 @@ export const textTags = [
 ];
 
 export const textTagsSet = new Set([...textTags]);
-export const mappingTagsSet: Set<string> = new Set([...textTags, 'recipe']);
+export const mappingTagsSet: Set<string> = new Set([
+  ...textTags,
+  'recipe',
+  'container',
+]);
 
 const textAllowedAttributes: Record<string, Array<string>> = {
   a: ['href', 'target', 'rel'],
@@ -282,8 +287,8 @@ export class HTMLMapper {
     // Handle mapping send by the user
     const mappedComponent = getMappingComponent(node, params?.mappings);
     if (mappedComponent) {
-      if (mappedComponent === 'recipe') {
-        return HTMLMapper.toRecipe(node, params);
+      if (mappedComponent === 'recipe' || mappedComponent === 'container') {
+        return HTMLMapper.toContainer(mappedComponent, node, params);
       }
       return HTMLMapper.toText(node, mappedComponent);
     }
@@ -314,7 +319,11 @@ export class HTMLMapper {
     return null;
   }
 
-  static toRecipe(node: ElementNode, params?: Params): RecipeComponent {
+  static toContainer(
+    component: 'container' | 'recipe',
+    node: ElementNode,
+    params?: Params
+  ): RecipeComponent | ContainerComponent {
     const warnings: string[] = [];
     const attributes = getAttributes(node.attributes);
     const id = attributes.get('id');
@@ -324,7 +333,7 @@ export class HTMLMapper {
       : [];
     return {
       id,
-      component: 'recipe',
+      component,
       components,
       errors: [],
       warnings,
@@ -903,7 +912,7 @@ export class HTMLMapper {
       component: 'infogram',
       params: {
         id: url.pathname.replace('/', ''),
-        parentUrl: url.searchParams.get('parent_url') || '', // TODO validar si searchparams puede ser not null
+        parentUrl: url.searchParams.get('parent_url') || '',
         src: 'embed',
       },
       errors,
@@ -1528,7 +1537,7 @@ function isEmpty(content: string) {
 function getMappingComponent(
   node: ElementNode,
   mappings?: Array<Mapping>
-): TextType | undefined | 'recipe' {
+): TextType | undefined | 'recipe' | 'container' {
   //const { tagName } = node;
   if (!mappings || !mappings.length) return;
   // if (!mappingTagsSet.has(tagName)) return;
@@ -1650,7 +1659,7 @@ export interface Params {
 
 export interface Mapping {
   name?: string;
-  component: TextType | 'recipe';
+  component: TextType | 'recipe' | 'container';
   match: MatchType;
   filters: Filter[];
 }

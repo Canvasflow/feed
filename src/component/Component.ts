@@ -67,6 +67,11 @@ export interface RecipeComponent extends Component {
   components: Array<Component>;
 }
 
+export interface ContainerComponent extends Component {
+  component: 'container';
+  components: Array<Component>;
+}
+
 export interface ButtonComponent extends Component {
   component: 'button';
   text?: string;
