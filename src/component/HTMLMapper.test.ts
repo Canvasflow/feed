@@ -16,6 +16,7 @@ import type {
   HTMLTableComponent,
   DailymotionComponent,
   VimeoComponent,
+  ContainerComponent,
 } from './Component';
 
 describe('HTMLMapper', () => {
@@ -262,7 +263,7 @@ describe('HTMLMapper', () => {
     test('It should create a twitter tweet component inside a figure', () => {
       const components = HTMLMapper.toComponents(
         `<figure
-	        class="wp-block-embed is-type-rich 
+	        class="wp-block-embed is-type-rich
             is-provider-twitter wp-block-embed-twitter"
         >
 	        <div class="wp-block-embed__wrapper">
@@ -324,7 +325,7 @@ describe('HTMLMapper', () => {
     });
     test('It should create a x tweet from an iframe', () => {
       const components = HTMLMapper.toComponents(
-        `<iframe 
+        `<iframe
           src="https://embedly.forbes.com/widgets/media.html?type=text%2Fhtml&amp;key=3ce26dc7e3454db5820ba084d28b4935&amp;schema=twitter&amp;url=https%3A//x.com/delayed3A/status/2018627889923826089&amp;image=">
         </iframe>`
       );
@@ -341,7 +342,7 @@ describe('HTMLMapper', () => {
     });
     test('It should create a twitter tweet from an iframe', () => {
       const components = HTMLMapper.toComponents(
-        `<iframe 
+        `<iframe
           src="https://embedly.forbes.com/widgets/media.html?type=text%2Fhtml&amp;key=3ce26dc7e3454db5820ba084d28b4935&amp;schema=twitter&amp;url=https%3A//twitter.com/delayed3A/status/2018627889923826089&amp;image=">
         </iframe>`
       );
@@ -605,15 +606,15 @@ describe('HTMLMapper', () => {
     });
     test('It should create a Tiktok component from embed.ly', () => {
       const components = HTMLMapper.toComponents(
-        `<iframe 
-          class="embedly-embed" 
-          src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.tiktok.com%2Fembed%2Fv2%2F7593022588272561430&display_name=tiktok&url=https%3A%2F%2Fwww.tiktok.com%2F%40rickastleyofficial%2Fvideo%2F7593022588272561430&image=https%3A%2F%2Fp19-common-sign.tiktokcdn-us.com%2Ftos-no1a-p-0037-no%2Fo0RBVFFlD1yfKtXxdpH6AykfhHQEQA40D91JEg%7Etplv-tiktokx-origin.image%3Fdr%3D9636%26x-expires%3D1770382800%26x-signature%3DSub%252FfFdUPmtmCszcGV3IaEFu9NI%253D%26t%3D4d5b0474%26ps%3D13740610%26shp%3D81f88b70%26shcp%3D43f4a2f9%26idc%3Duseast8&type=text%2Fhtml&schema=tiktok" 
-          width="340" 
-          height="700" 
-          scrolling="no" 
-          title="tiktok embed" 
-          frameborder="0" 
-          allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" 
+        `<iframe
+          class="embedly-embed"
+          src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.tiktok.com%2Fembed%2Fv2%2F7593022588272561430&display_name=tiktok&url=https%3A%2F%2Fwww.tiktok.com%2F%40rickastleyofficial%2Fvideo%2F7593022588272561430&image=https%3A%2F%2Fp19-common-sign.tiktokcdn-us.com%2Ftos-no1a-p-0037-no%2Fo0RBVFFlD1yfKtXxdpH6AykfhHQEQA40D91JEg%7Etplv-tiktokx-origin.image%3Fdr%3D9636%26x-expires%3D1770382800%26x-signature%3DSub%252FfFdUPmtmCszcGV3IaEFu9NI%253D%26t%3D4d5b0474%26ps%3D13740610%26shp%3D81f88b70%26shcp%3D43f4a2f9%26idc%3Duseast8&type=text%2Fhtml&schema=tiktok"
+          width="340"
+          height="700"
+          scrolling="no"
+          title="tiktok embed"
+          frameborder="0"
+          allow="autoplay; fullscreen; encrypted-media; picture-in-picture;"
           allowfullscreen="true">
         </iframe>`
       );
@@ -715,9 +716,9 @@ describe('HTMLMapper', () => {
     test('It should process a figure component with caption and html', () => {
       const content = `
         <figure>
-          <img src="cover.jpg" 
-            alt="Aaron Moten in the second season of Fallout, image courtesy of Amazon Prime Video" 
-            width="2560" 
+          <img src="cover.jpg"
+            alt="Aaron Moten in the second season of Fallout, image courtesy of Amazon Prime Video"
+            width="2560"
             height="1814"/>
           <figcaption>
             Aaron Moten in <em>Fallout</em>. All imagery courtesy of Amazon Prime Video.
@@ -808,16 +809,16 @@ describe('HTMLMapper', () => {
 
     test('It should process images with link', () => {
       const content = `
-        <a 
+        <a
           href="https://wwww.example.com"
           rel="attachment wp-att-74859">
-          <img 
-            loading="lazy" 
-            decoding="async" 
+          <img
+            loading="lazy"
+            decoding="async"
             class="alignnone size-large wp-image-74859"
             src="https://wwww.example.com/image.jpg"
-            alt="My image" 
-            width="600" 
+            alt="My image"
+            width="600"
             height="800">
         </a>
       `;
@@ -834,16 +835,16 @@ describe('HTMLMapper', () => {
     test('It should process images with wrapper elements', () => {
       const content = `
         <div>
-        <a 
+        <a
           href="https://wwww.example.com"
           rel="attachment wp-att-74859">
-          <img 
-            loading="lazy" 
-            decoding="async" 
+          <img
+            loading="lazy"
+            decoding="async"
             class="alignnone size-large wp-image-74859"
             src="https://wwww.example.com/image.jpg"
-            alt="My image" 
-            width="600" 
+            alt="My image"
+            width="600"
             height="800">
         </a>
         </div>
@@ -861,16 +862,16 @@ describe('HTMLMapper', () => {
     test('It should process images with link inside a p tag', () => {
       const content = `
       <p>
-        <a 
+        <a
           href="https://wwww.example.com"
           rel="attachment wp-att-74859">
-          <img 
-            loading="lazy" 
-            decoding="async" 
+          <img
+            loading="lazy"
+            decoding="async"
             class="alignnone size-large wp-image-74859"
             src="https://wwww.example.com/image.jpg"
-            alt="My image" 
-            width="600" 
+            alt="My image"
+            width="600"
             height="800">
         </a>
       </p>`;
@@ -889,16 +890,16 @@ describe('HTMLMapper', () => {
       for (const header of headers) {
         const content = `
   <${header}>
-        <a 
+        <a
           href="https://wwww.example.com"
           rel="attachment wp-att-74859">
-          <img 
-            loading="lazy" 
-            decoding="async" 
+          <img
+            loading="lazy"
+            decoding="async"
             class="alignnone size-large wp-image-74859"
             src="https://wwww.example.com/image.jpg"
-            alt="My image" 
-            width="600" 
+            alt="My image"
+            width="600"
             height="800">
         </a></${header}>
       `;
@@ -1709,6 +1710,71 @@ describe('HTMLMapper', () => {
         return;
       }
       expect(recipeComponent.components.length).toBe(0);
+    });
+  });
+
+  describe('Container components', () => {
+    test('It should map container component from class attribute', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['cmc-container'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <div class="cmc-container cmc-example">
+            <h1>Test</h1>
+        </div>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+      const containerComponent = components.pop() as ContainerComponent;
+      expect(containerComponent).toBeDefined();
+      if (!containerComponent) {
+        return;
+      }
+      expect(containerComponent.components.length).toBe(1);
+    });
+    test('It should map empty recipe component', () => {
+      const mappings: Array<Mapping> = [
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['cmc'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <div class="cmc"></div>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+      const containerComponent = components.pop() as ContainerComponent;
+      expect(containerComponent).toBeDefined();
+      if (!containerComponent) {
+        return;
+      }
+      expect(containerComponent.components.length).toBe(0);
     });
   });
 
