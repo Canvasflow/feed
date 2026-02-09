@@ -27,6 +27,7 @@ export type {
   ComponentType,
   ButtonComponent,
   HTMLTableComponent,
+  CustomComponent,
   ContainerComponent,
   TextType,
 } from './component/Component';
