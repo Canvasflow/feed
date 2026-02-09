@@ -17,6 +17,7 @@ import type {
   DailymotionComponent,
   VimeoComponent,
   ContainerComponent,
+  CustomComponent,
 } from './Component';
 
 describe('HTMLMapper', () => {
@@ -1641,6 +1642,18 @@ describe('HTMLMapper', () => {
       expect(component.controls).toBe(true);
       expect(component.muted).toBe(true);
       expect(component.caption).toBe(caption);
+    });
+  });
+
+  describe('Custom components', () => {
+    test('It should create a custom component from iframe', () => {
+      const content = `<iframe src="https://embedly.forbes.com/widgets/media.html?src=https%3A%2F%2Fe.infogram.com%2F_%2FuUje4914RW8zjHHygco0%3Fsrc%3Dembed&amp;display_name=Infogram&amp;url=https%3A%2F%2Finfogram.com%2F1pmnnkvl01yrzki3700wv0e50rhz07ljp0e&amp;image=https%3A%2F%2Finfogram-thumbs-1024.s3-eu-west-1.amazonaws.com%2Fec5e8245-6cc0-4919-830c-aa3a9c2f10e9.jpg&amp;type=text%2Fhtml&amp;schema=infogram"></iframe>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as CustomComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('custom');
+      expect(component?.content.length).toBeGreaterThan(0);
     });
   });
 

@@ -136,6 +136,11 @@ export interface SpacerComponent extends Component {
   margin: `margin-${1 | 20 | 50 | 75 | 100}`;
 }
 
+export interface CustomComponent extends Component {
+  component: 'custom';
+  content: string;
+}
+
 export type ComponentType =
   | TextType
   | 'image'
