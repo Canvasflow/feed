@@ -1,7 +1,7 @@
 {
   "name": "@canvasflow/feed",
   "description": "This is canvasflow utility for processing feeds",
-  "version": "1.5.31",
+  "version": "1.5.32",
   "type": "module",
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
@@ -69,8 +69,6 @@
     "@vitest/ui": "^4.0.17",
     "cz-conventional-changelog": "^3.0.1",
     "cz-git": "^1.11.1",
-    "eslint": "^9.27.0",
-    "eslint-config-prettier": "^10.1.5",
     "globals": "^16.2.0",
     "husky": "^8.0.3",
     "lint-staged": "^16.1.0",

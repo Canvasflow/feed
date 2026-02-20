@@ -667,6 +667,52 @@ describe('Cultured Magazine', () => {
   });
 });
 
+describe('The New World', () => {
+  let filePath: string = '';
+  let outFilePath: string = '';
+  beforeEach(() => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `thenewworld.rss`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(
+        `${process.env.FEEDS_OUT_PATH}`,
+        `thenewworld.json`
+      );
+    }
+  });
+  test(`It should build the content`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    const rss = await feed.build();
+
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(RSSFeed.toJSON(rss), replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    const { items, title } = rss.channel;
+    expect(title).toBe('The New World');
+    expect(items.length).toBeGreaterThan(0);
+    if (!items.length) return;
+    const item = items[0];
+    expect(item).toBeDefined();
+    if (!item) return;
+    const { mediaContent } = item;
+    expect(mediaContent.length).toBe(1);
+    const lastMediaContent = mediaContent.pop();
+    expect(lastMediaContent).toBeDefined();
+    if (!lastMediaContent) return;
+    expect(lastMediaContent.url).toBe(
+      'https://www.thenewworld.co.uk/wp-content/uploads/sites/2/2026/02/472_READE_BIRTHRATES2.jpg'
+    );
+    expect(lastMediaContent.description).toBe(
+      'The falling birth rate is not the fault of women. Image: TNW/Getty'
+    );
+  });
+});
+
 describe.skip('Recipe', () => {
   test.skip(`It return a recipe object, whenever a valid recipe is found`, async () => {
     const url =
