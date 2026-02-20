@@ -643,7 +643,7 @@ function mapMediaContent(
     }
 
     const tmpDescription = mediaContent['media:description'];
-    if (tmpTitle) {
+    if (tmpDescription) {
       if (typeof tmpDescription === 'string') {
         description = tmpDescription;
       } else {
