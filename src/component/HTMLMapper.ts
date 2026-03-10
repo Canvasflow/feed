@@ -286,12 +286,20 @@ export class HTMLMapper {
     }
 
     // Handle mapping send by the user
-    const mappedComponent = getMappingComponent(node, params?.mappings);
+    const { mappedComponent, properties } = getMappingComponent(
+      node,
+      params?.mappings
+    );
     if (mappedComponent) {
       if (mappedComponent === 'recipe' || mappedComponent === 'container') {
-        return HTMLMapper.toContainer(mappedComponent, node, params);
+        return HTMLMapper.toContainer(
+          mappedComponent,
+          node,
+          params,
+          properties
+        );
       }
-      return HTMLMapper.toText(node, mappedComponent);
+      return HTMLMapper.toText(node, mappedComponent, properties);
     }
 
     // This section validates text tags
@@ -323,7 +331,8 @@ export class HTMLMapper {
   static toContainer(
     component: 'container' | 'recipe',
     node: ElementNode,
-    params?: Params
+    params?: Params,
+    properties?: Record<string, unknown>
   ): RecipeComponent | ContainerComponent {
     const warnings: string[] = [];
     const attributes = getAttributes(node.attributes);
@@ -338,10 +347,15 @@ export class HTMLMapper {
       components,
       errors: [],
       warnings,
+      properties,
     };
   }
 
-  static toText(node: ElementNode, component: TextType): TextComponent {
+  static toText(
+    node: ElementNode,
+    component: TextType,
+    properties?: Record<string, unknown>
+  ): TextComponent {
     const html = stringify([node]);
     const warnings: string[] = [];
     const attributes = getAttributes(node.attributes);
@@ -370,6 +384,7 @@ export class HTMLMapper {
       component,
       errors: [],
       warnings,
+      properties,
       text,
     };
   }
@@ -1552,24 +1567,45 @@ function isEmpty(content: string) {
 function getMappingComponent(
   node: ElementNode,
   mappings?: Array<Mapping>
-): TextType | undefined | 'recipe' | 'container' {
+): MappingComponentResponse /*TextType | undefined | 'recipe' | 'container'*/ {
   //const { tagName } = node;
-  if (!mappings || !mappings.length) return;
+  if (!mappings || !mappings.length) {
+    return {
+      mappedComponent: undefined,
+      properties: undefined,
+    };
+  }
   // if (!mappingTagsSet.has(tagName)) return;
 
   for (const mapping of mappings) {
-    const { component, match, filters } = mapping;
+    const { component, match, filters, properties } = mapping;
     if (match === 'all') {
       if (filterAllMapping(node, filters)) {
-        return component;
+        return {
+          mappedComponent: component,
+          properties,
+        };
       }
     }
     if (match === 'any') {
       if (filterAnyMapping(node, filters)) {
-        return component;
+        return {
+          mappedComponent: component,
+          properties,
+        };
       }
     }
   }
+
+  return {
+    mappedComponent: undefined,
+    properties: undefined,
+  };
+}
+
+interface MappingComponentResponse {
+  mappedComponent?: TextType | 'recipe' | 'container';
+  properties?: Record<string, unknown>;
 }
 
 // If at least one filter matches then is valid
@@ -1677,6 +1713,7 @@ export interface Mapping {
   component: TextType | 'recipe' | 'container';
   match: MatchType;
   filters: Filter[];
+  properties?: Record<string, unknown>;
 }
 
 export type Filter = TagFilter | ClassFilter;
