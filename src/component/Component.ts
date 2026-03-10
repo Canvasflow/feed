@@ -3,6 +3,7 @@ import type { Recipe } from './Schema';
 export interface Component {
   id?: string;
   component: ComponentType;
+  properties?: Record<string, unknown>;
   errors: string[];
   warnings: string[];
 }

@@ -2029,7 +2029,42 @@ describe('HTMLMapper', () => {
       expect(components[1].component).toBe('headline');
       expect(components[2].component).toBe('subtitle');
     });
-
+    test('It should map components with match all filters with properties', () => {
+      const properties = {
+        styles: [1233, 1111],
+        targetElement: '1-col',
+      };
+      const mappings: Array<Mapping> = [
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['cmc'],
+            },
+          ],
+          properties,
+        },
+      ];
+      const content = `
+        <div class="cmc"></div>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+      const containerComponent = components.pop() as ContainerComponent;
+      expect(containerComponent).toBeDefined();
+      if (!containerComponent) {
+        return;
+      }
+      expect(containerComponent.components.length).toBe(0);
+      expect(containerComponent.properties).toBe(properties);
+    });
     describe('Validation', () => {
       test('It should return a valid mapping', () => {
         const mappings = [
