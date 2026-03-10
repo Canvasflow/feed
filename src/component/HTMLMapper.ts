@@ -684,6 +684,7 @@ export class HTMLMapper {
     node: ElementNode;
     link?: string;
   } {
+    // eslint-disable-next-line no-useless-assignment
     let attributes: Map<string, string> = new Map();
     let link: string | undefined;
     if (node.tagName === 'a') {
