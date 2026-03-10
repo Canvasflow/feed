@@ -27,8 +27,8 @@ export type {
   ComponentType,
   ButtonComponent,
   HTMLTableComponent,
-  CustomComponent,
   ContainerComponent,
+  CustomComponent,
   TextType,
 } from './component/Component';
 export { isValidTextRole } from './component/Component';
