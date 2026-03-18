@@ -1922,6 +1922,17 @@ describe('HTMLMapper', () => {
           ],
         },
         {
+          component: 'title',
+          match: 'all',
+          filters: [
+            {
+              type: 'attribute',
+              key: 'id',
+              value: 'title',
+            },
+          ],
+        },
+        {
           component: 'text48',
           match: 'any',
           filters: [
@@ -1951,14 +1962,17 @@ describe('HTMLMapper', () => {
         </h4>
         <p class="sub-sm">Subtitle</p>
         <p class="text-md">Headline</p>
+        <h5 id="title">This is a title component</h5>
       `;
       const components = HTMLMapper.toComponents(content, { mappings });
-      expect(components.length).toBe(4);
+      expect(components.length).toBe(5);
       expect(components[0].component).toBe('headline');
       expect(components[1].component).toBe('text48');
       expect(components[2].component).toBe('subtitle');
       expect(components[3].component).toBe('headline');
+      expect(components[4].component).toBe('title');
     });
+
     test('It should map components using match any with filters all', () => {
       const mappings: Array<ComponentMapping> = [
         {
@@ -1993,6 +2007,7 @@ describe('HTMLMapper', () => {
       expect(components[0].component).toBe('text33');
       expect(components[1].component).toBe('body');
     });
+
     test('It should map components using match any with filters equal', () => {
       const mappings: Array<ComponentMapping> = [
         {
@@ -2016,6 +2031,7 @@ describe('HTMLMapper', () => {
       expect(components[0].component).toBe('text36');
       expect(components[1].component).toBe('body');
     });
+
     test('It should map components using match all with filters any', () => {
       const mappings: Array<ComponentMapping> = [
         {
@@ -2060,6 +2076,7 @@ describe('HTMLMapper', () => {
       expect(components[1].component).toBe('title');
       expect(components[2].component).toBe('subtitle');
     });
+
     test('It should map components using match all with filters all', () => {
       const mappings: Array<ComponentMapping> = [
         {
@@ -2112,6 +2129,7 @@ describe('HTMLMapper', () => {
       expect(components[4].component).toBe('body');
       expect(components[5].component).toBe('text35');
     });
+
     test('It should map components using match all with filters equal', () => {
       const mappings: Array<ComponentMapping> = [
         {
@@ -2141,6 +2159,7 @@ describe('HTMLMapper', () => {
       expect(components[1].component).toBe('headline');
       expect(components[2].component).toBe('subtitle');
     });
+
     test('It should map components with match all filters with properties', () => {
       const properties = {
         styles: [1233, 1111],
@@ -2177,6 +2196,7 @@ describe('HTMLMapper', () => {
       expect(containerComponent.components.length).toBe(0);
       expect(containerComponent.properties).toBe(properties);
     });
+
     describe('Validation', () => {
       test('It should return a valid mapping', () => {
         const mappings = [
@@ -2201,6 +2221,7 @@ describe('HTMLMapper', () => {
         });
         expect(isValid).toBe(true);
       });
+
       test('It should throw an invalid null mapping', () => {
         const mappings = [null];
         const isValid = isValidParams({
