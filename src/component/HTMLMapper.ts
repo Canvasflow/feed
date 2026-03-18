@@ -111,6 +111,16 @@ const htmlTableAllowedTags = [
 ];
 
 export class HTMLMapper {
+  static getRootElement(content: string, mapping: Mapping): string | null {
+    content = content.replace(/(\r\n|\n|\r)/gm, '');
+    const nodes: Array<Node> = parse(content).reduce(
+      HTMLMapper.reduceEmptyTextNode,
+      []
+    );
+    const rootNode = getRootElement(nodes, mapping);
+    return rootNode ? stringify([rootNode]).replace(/'/g, '"') : null;
+  }
+
   static toComponents(content: string, params?: Params): Component[] {
     content = content.replace(/(\r\n|\n|\r)/gm, '');
     content = sanitizeInvalidAnchorHrefs(content);
@@ -165,6 +175,13 @@ export class HTMLMapper {
         warnings: [],
         text: `<p>${node.content}</p>`,
       } as TextComponent;
+    }
+
+    if (params?.excludes?.length) {
+      const isNodeExcluded = excludeNode(node, params.excludes);
+      if (isNodeExcluded) {
+        return null;
+      }
     }
 
     const { tagName } = node;
@@ -385,7 +402,7 @@ export class HTMLMapper {
       errors: [],
       warnings,
       properties,
-      text,
+      text: typeof text === 'string' ? text.trim() : text,
     };
   }
 
@@ -1462,13 +1479,28 @@ export class HTMLMapper {
     };
   }
 
-  static filterEmptyTextNode(node: Node) {
+  static filterEmptyTextNode(node: Node): boolean {
     if (node.type !== 'text') return true;
 
     const { content } = node;
     if (!content) return false;
 
     return !isEmpty(content);
+  }
+
+  static reduceEmptyTextNode(nodes: Array<Node>, node: Node): Array<Node> {
+    if (node.type === 'text') {
+      if (!isEmpty(node.content)) {
+        nodes.push(node);
+      }
+      return nodes;
+    }
+
+    if (node.children) {
+      node.children = node.children.reduce(HTMLMapper.reduceEmptyTextNode, []);
+    }
+    nodes.push(node);
+    return nodes;
   }
 
   static fromFigcaption(node: ElementNode): FigcaptionResponse {
@@ -1567,7 +1599,7 @@ function isEmpty(content: string) {
 
 function getMappingComponent(
   node: ElementNode,
-  mappings?: Array<Mapping>
+  mappings?: Array<ComponentMapping>
 ): MappingComponentResponse /*TextType | undefined | 'recipe' | 'container'*/ {
   //const { tagName } = node;
   if (!mappings || !mappings.length) {
@@ -1609,6 +1641,53 @@ interface MappingComponentResponse {
   properties?: Record<string, unknown>;
 }
 
+function getRootElement(
+  nodes: Array<Node>,
+  mapping: Mapping
+): ElementNode | null {
+  const { match, filters } = mapping;
+  for (const node of nodes) {
+    if (node.type === 'text') continue;
+    if (match === 'all') {
+      if (filterAllMapping(node, filters)) {
+        return node;
+      }
+    }
+
+    if (match === 'any') {
+      if (filterAnyMapping(node, filters)) {
+        return node;
+      }
+    }
+
+    if (node.children) {
+      const rootElement = getRootElement(node.children, mapping);
+      if (!rootElement) continue;
+      return rootElement;
+    }
+  }
+
+  return null;
+}
+
+function excludeNode(node: ElementNode, excludes: Mapping[]): boolean {
+  for (const mapping of excludes) {
+    const { match, filters } = mapping;
+    if (match === 'all') {
+      if (filterAllMapping(node, filters)) {
+        return true;
+      }
+    }
+    if (match === 'any') {
+      if (filterAnyMapping(node, filters)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 // If at least one filter matches then is valid
 function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
   const { tagName } = node;
@@ -1616,6 +1695,11 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
   for (const filter of filters) {
     if (filter.type === 'tag') {
       if (new Set([...filter.items]).has(tagName)) return true;
+    }
+    if (filter.type === 'attribute') {
+      const attributeValue = attributes.get(filter.key);
+      if (attributeValue === undefined) return false;
+      return attributeValue === filter.value;
     }
     if (filter.type === 'class') {
       const classNames = attributes.get('class');
@@ -1647,6 +1731,11 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
   for (const filter of filters) {
     if (filter.type === 'tag') {
       if (!new Set([...filter.items]).has(tagName)) return false;
+    }
+    if (filter.type === 'attribute') {
+      const attributeValue = attributes.get(filter.key);
+      if (attributeValue === undefined) return false;
+      return attributeValue === filter.value;
     }
     if (filter.type === 'class') {
       const classNames = attributes.get('class');
@@ -1706,18 +1795,22 @@ export function isValidParams(params: any): boolean {
 export type MatchType = 'any' | 'all';
 
 export interface Params {
-  mappings?: Mapping[];
+  mappings?: ComponentMapping[];
+  excludes?: Mapping[];
 }
 
 export interface Mapping {
-  name?: string;
-  component: TextType | 'recipe' | 'container';
   match: MatchType;
   filters: Filter[];
+}
+
+export interface ComponentMapping extends Mapping {
+  name?: string;
+  component: TextType | 'recipe' | 'container';
   properties?: Record<string, unknown>;
 }
 
-export type Filter = TagFilter | ClassFilter;
+export type Filter = TagFilter | ClassFilter | AttributeFilter;
 
 interface TagFilter {
   type: 'tag';
@@ -1728,6 +1821,12 @@ interface ClassFilter {
   type: 'class';
   match: MatchType | 'equal';
   items: string[];
+}
+
+interface AttributeFilter {
+  type: 'attribute';
+  key: string;
+  value: string | null;
 }
 
 interface LinkResponse {

@@ -43,6 +43,6 @@ export type {
 export { isValidParams, HTMLMapper } from './component/HTMLMapper';
 export type {
   Params as HTMLParams,
-  Mapping as HTMLMapping,
+  ComponentMapping as HTMLMapping,
   Filter as HTMLFilter,
 } from './component/HTMLMapper';
