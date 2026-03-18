@@ -1671,6 +1671,11 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
     if (filter.type === 'tag') {
       if (new Set([...filter.items]).has(tagName)) return true;
     }
+    if (filter.type === 'attribute') {
+      const attributeValue = attributes.get(filter.key);
+      if (attributeValue === undefined) return false;
+      return attributeValue === filter.value;
+    }
     if (filter.type === 'class') {
       const classNames = attributes.get('class');
 
@@ -1701,6 +1706,11 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
   for (const filter of filters) {
     if (filter.type === 'tag') {
       if (!new Set([...filter.items]).has(tagName)) return false;
+    }
+    if (filter.type === 'attribute') {
+      const attributeValue = attributes.get(filter.key);
+      if (attributeValue === undefined) return false;
+      return attributeValue === filter.value;
     }
     if (filter.type === 'class') {
       const classNames = attributes.get('class');
@@ -1790,7 +1800,7 @@ interface ClassFilter {
 
 interface AttributeFilter {
   type: 'attribute';
-  name: string;
+  key: string;
   value: string | null;
 }
 

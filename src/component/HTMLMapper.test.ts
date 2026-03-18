@@ -78,6 +78,30 @@ describe('HTMLMapper', () => {
       expect(rootContent).toBe(rootElement);
     });
 
+    test('It should return the root element with any filter with an id', () => {
+      const rootMapping: Mapping = {
+        match: 'all',
+        filters: [
+          {
+            type: 'attribute',
+            key: 'id',
+            value: 'main',
+          },
+        ],
+      };
+      const rootElement = `<div id="main"><p>This is the first content</p><h2>This is a title</h2></div>`;
+      const content = `
+        <html>
+          <div data-widget="header">
+            <h1 data-component-on>Example</h1>
+          </div>
+          ${rootElement}
+        </html>
+      `;
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(rootElement);
+    });
+
     test('It should return empty because the root element do not match the all mapping', () => {
       const rootMapping: Mapping = {
         match: 'all',
