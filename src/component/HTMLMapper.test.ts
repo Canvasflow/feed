@@ -1,6 +1,11 @@
 import { test, expect, describe } from 'vitest';
 
-import { HTMLMapper, type Mapping, isValidParams } from './HTMLMapper';
+import {
+  HTMLMapper,
+  type ComponentMapping,
+  isValidParams,
+  type Mapping,
+} from './HTMLMapper';
 import type {
   GalleryComponent,
   ImageComponent,
@@ -21,6 +26,87 @@ import type {
 } from './Component';
 
 describe('HTMLMapper', () => {
+  describe('Root Element', () => {
+    test('It should return the root element with an all filter with tag', () => {
+      const rootMapping: Mapping = {
+        match: 'all',
+        filters: [
+          {
+            type: 'tag',
+            items: ['main'],
+          },
+        ],
+      };
+      const rootElement = `<main><p class="text-md">This is the first content</p><h2>This is a title</h2></main>`;
+      const content = `
+        <html>
+          <div data-widget="header">
+            <h1>Example</h1>
+          </div>
+          ${rootElement}
+        </html>
+      `;
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(rootElement);
+    });
+
+    test('It should return the root element with any filter with tag or class', () => {
+      const rootMapping: Mapping = {
+        match: 'any',
+        filters: [
+          {
+            type: 'tag',
+            items: ['main'],
+          },
+          {
+            type: 'class',
+            match: 'any',
+            items: ['main'],
+          },
+        ],
+      };
+      const rootElement = `<div class="main"><p>This is the first content</p><h2>This is a title</h2></div>`;
+      const content = `
+        <html>
+          <div data-widget="header">
+            <h1>Example</h1>
+          </div>
+          ${rootElement}
+        </html>
+      `;
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(rootElement);
+    });
+
+    test('It should return empty because the root element do not match the all mapping', () => {
+      const rootMapping: Mapping = {
+        match: 'all',
+        filters: [
+          {
+            type: 'tag',
+            items: ['main'],
+          },
+          {
+            type: 'class',
+            match: 'any',
+            items: ['main'],
+          },
+        ],
+      };
+      const rootElement = `<div class="main"><p>This is the first content</p><h2>This is a title</h2></div>`;
+      const content = `
+        <html>
+          <div data-widget="header">
+            <h1 data-component-on>Example</h1>
+          </div>
+          ${rootElement}
+        </html>
+      `;
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(null);
+    });
+  });
+
   describe('Text components', () => {
     test('It should create a p component from plain text', () => {
       const content = `Hello world`;
@@ -40,6 +126,7 @@ describe('HTMLMapper', () => {
       expect(component).toBeDefined();
       expect(component.component).toBe('body');
     });
+
     test('It should create a body component from anchor that also has an image', () => {
       const content = `<a href="https://example.com">
         <div><p>Example</p><div>
@@ -73,6 +160,7 @@ describe('HTMLMapper', () => {
       `);
       expect(components.length).toBe(0);
     });
+
     test('Anchors should be present', () => {
       const content =
         '<a href="https://example.com" target="_blank" rel="nofollow noopener">Hello world</a>';
@@ -1659,7 +1747,7 @@ describe('HTMLMapper', () => {
 
   describe('Recipe components', () => {
     test('It should map recipe component from class attribute', () => {
-      const mappings: Array<Mapping> = [
+      const mappings: Array<ComponentMapping> = [
         {
           component: 'recipe',
           match: 'all',
@@ -1695,7 +1783,7 @@ describe('HTMLMapper', () => {
       expect(recipeComponent.components[1].component).toBe('body');
     });
     test('It should map empty recipe component', () => {
-      const mappings: Array<Mapping> = [
+      const mappings: Array<ComponentMapping> = [
         {
           component: 'recipe',
           match: 'all',
@@ -1728,7 +1816,7 @@ describe('HTMLMapper', () => {
 
   describe('Container components', () => {
     test('It should map container component from class attribute', () => {
-      const mappings: Array<Mapping> = [
+      const mappings: Array<ComponentMapping> = [
         {
           component: 'container',
           match: 'all',
@@ -1760,7 +1848,7 @@ describe('HTMLMapper', () => {
       expect(containerComponent.components.length).toBe(1);
     });
     test('It should map empty recipe component', () => {
-      const mappings: Array<Mapping> = [
+      const mappings: Array<ComponentMapping> = [
         {
           component: 'container',
           match: 'all',
@@ -1793,7 +1881,7 @@ describe('HTMLMapper', () => {
 
   describe('Mapping', () => {
     test('It should map components using match any with filters any', () => {
-      const mappings: Array<Mapping> = [
+      const mappings: Array<ComponentMapping> = [
         {
           component: 'headline',
           match: 'any',
@@ -1848,7 +1936,7 @@ describe('HTMLMapper', () => {
       expect(components[3].component).toBe('headline');
     });
     test('It should map components using match any with filters all', () => {
-      const mappings: Array<Mapping> = [
+      const mappings: Array<ComponentMapping> = [
         {
           component: 'text33',
           match: 'any',
@@ -1882,7 +1970,7 @@ describe('HTMLMapper', () => {
       expect(components[1].component).toBe('body');
     });
     test('It should map components using match any with filters equal', () => {
-      const mappings: Array<Mapping> = [
+      const mappings: Array<ComponentMapping> = [
         {
           component: 'text36',
           match: 'any',
@@ -1905,7 +1993,7 @@ describe('HTMLMapper', () => {
       expect(components[1].component).toBe('body');
     });
     test('It should map components using match all with filters any', () => {
-      const mappings: Array<Mapping> = [
+      const mappings: Array<ComponentMapping> = [
         {
           component: 'text48',
           match: 'all',
@@ -1949,7 +2037,7 @@ describe('HTMLMapper', () => {
       expect(components[2].component).toBe('subtitle');
     });
     test('It should map components using match all with filters all', () => {
-      const mappings: Array<Mapping> = [
+      const mappings: Array<ComponentMapping> = [
         {
           component: 'text33',
           match: 'all',
@@ -2001,7 +2089,7 @@ describe('HTMLMapper', () => {
       expect(components[5].component).toBe('text35');
     });
     test('It should map components using match all with filters equal', () => {
-      const mappings: Array<Mapping> = [
+      const mappings: Array<ComponentMapping> = [
         {
           component: 'text36',
           match: 'all',
@@ -2034,7 +2122,7 @@ describe('HTMLMapper', () => {
         styles: [1233, 1111],
         targetElement: '1-col',
       };
-      const mappings: Array<Mapping> = [
+      const mappings: Array<ComponentMapping> = [
         {
           component: 'container',
           match: 'all',
