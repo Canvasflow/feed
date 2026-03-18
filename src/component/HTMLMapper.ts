@@ -177,6 +177,13 @@ export class HTMLMapper {
       } as TextComponent;
     }
 
+    if (params?.excludes?.length) {
+      const isNodeExcluded = excludeNode(node, params.excludes);
+      if (isNodeExcluded) {
+        return null;
+      }
+    }
+
     const { tagName } = node;
     const attributes = getAttributes(node.attributes);
     const role = attributes.get('role');
@@ -395,7 +402,7 @@ export class HTMLMapper {
       errors: [],
       warnings,
       properties,
-      text,
+      text: typeof text === 'string' ? text.trim() : text,
     };
   }
 
@@ -1663,6 +1670,24 @@ function getRootElement(
   return null;
 }
 
+function excludeNode(node: ElementNode, excludes: Mapping[]): boolean {
+  for (const mapping of excludes) {
+    const { match, filters } = mapping;
+    if (match === 'all') {
+      if (filterAllMapping(node, filters)) {
+        return true;
+      }
+    }
+    if (match === 'any') {
+      if (filterAnyMapping(node, filters)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 // If at least one filter matches then is valid
 function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
   const { tagName } = node;
@@ -1771,7 +1796,7 @@ export type MatchType = 'any' | 'all';
 
 export interface Params {
   mappings?: ComponentMapping[];
-  root?: Mapping;
+  excludes?: Mapping[];
 }
 
 export interface Mapping {

@@ -2197,6 +2197,100 @@ describe('HTMLMapper', () => {
       expect(containerComponent.properties).toBe(properties);
     });
 
+    test('It should exclude components based on tags', () => {
+      const excludes: Array<Mapping> = [
+        {
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['section'],
+            },
+          ],
+        },
+        {
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['script'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <main>
+          <script>console.log('hello world')</script>
+          <section>
+            <h1>This is a headline that shouldn't show</h1>
+          </section>
+          <div>
+            <p>This text is a body</p>
+          </div>
+          <footer>
+            <p>This text should be displayed</p>
+          </footer>
+        </main>
+      `;
+      const components = HTMLMapper.toComponents(content, { excludes });
+      expect(components.length).toBe(2);
+      const textComponent = components.shift() as TextComponent;
+      expect(textComponent).toBeDefined();
+      expect(textComponent.component).toBe('body');
+    });
+
+    test('It should exclude components based on tags and class', () => {
+      const excludes: Array<Mapping> = [
+        {
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['section'],
+            },
+          ],
+        },
+        {
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['script'],
+            },
+          ],
+        },
+        {
+          match: 'all',
+          filters: [
+            {
+              type: 'class',
+              match: 'all',
+              items: ['excluded'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <main>
+          <script>console.log('hello world')</script>
+          <section>
+            <h1>This is a headline that shouldn't show</h1>
+          </section>
+          <div class="excluded">
+            <p>This text is a body</p>
+          </div>
+          <footer>
+            <p>This text should be displayed</p>
+          </footer>
+        </main>
+      `;
+      const components = HTMLMapper.toComponents(content, { excludes });
+      expect(components.length).toBe(1);
+      const textComponent = components.shift() as TextComponent;
+      expect(textComponent).toBeDefined();
+      expect(textComponent.component).toBe('footer');
+    });
+
     describe('Validation', () => {
       test('It should return a valid mapping', () => {
         const mappings = [
