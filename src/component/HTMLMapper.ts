@@ -701,11 +701,9 @@ export class HTMLMapper {
     node: ElementNode;
     link?: string;
   } {
-    // eslint-disable-next-line no-useless-assignment
-    let attributes: Map<string, string> = new Map();
     let link: string | undefined;
     if (node.tagName === 'a') {
-      attributes = getAttributes(node.attributes);
+      const attributes = getAttributes(node.attributes);
       const href = attributes.get('href');
       if (href) {
         link = href;
