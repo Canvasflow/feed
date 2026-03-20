@@ -122,7 +122,7 @@ export class HTMLMapper {
   }
 
   static toComponents(content: string, params?: Params): Component[] {
-    content = content.replace(/(\r\n|\n|\r)/gm, '');
+    content = removeBreaklines(content);
     content = sanitizeInvalidAnchorHrefs(content);
     content = extractAnchorsWithImages(content);
     const tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
@@ -2049,4 +2049,9 @@ function isValidHref(href: string) {
   } catch {
     return false;
   }
+}
+
+function removeBreaklines(value: string | undefined): string {
+  if (!value) return '';
+  return value.replace(/(\r\n|\n|\r)/gm, '');
 }
