@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import he from 'he';
 import { XMLParser } from 'fast-xml-parser';
 import * as cheerio from 'cheerio';
 
@@ -33,6 +34,7 @@ export default class RSSFeed {
     this.content = content;
     const parser = new XMLParser({
       ignoreAttributes: false,
+      processEntities: false,
     });
     this.data = parser.parse(content);
     if (params && isValidParams(params)) {
@@ -150,13 +152,18 @@ export default class RSSFeed {
       }
     }
 
-    this.rss.channel.title = title;
+    this.rss.channel.title = he.decode(title);
     this.rss.channel.link = link;
-    this.rss.channel.description = description;
+    this.rss.channel.description = description
+      ? he.decode(description)
+      : description;
     this.rss.channel.language = language;
     this.rss.channel.lastBuildDate = lastBuildDate;
     this.rss.channel.docs = docs;
     this.rss.channel.category = category;
+    if (image?.title) {
+      image.title = he.decode(image.title);
+    }
     this.rss.channel.image = image;
     this.rss.channel.ttl = ttl;
     this.rss.channel.pubDate = pubDate;
@@ -346,14 +353,14 @@ export default class RSSFeed {
 
     const response: Item = {
       guid,
-      title: title ? title.trim() : '',
+      title: title ? he.decode(title.trim()) : '',
       category: category
         .filter((i) => !!i)
         .map((c) => {
           if (typeof c === 'string') return c;
           return c['#text'];
         }),
-      description,
+      description: description ? he.decode(description) : description,
       link,
       pubDate: item.pubDate ? `${item.pubDate}` : undefined,
       enclosure: this.getEnclosure(item),
@@ -362,7 +369,9 @@ export default class RSSFeed {
       components: [],
       warnings,
       errors,
-      'content:encoded': contentEncoded,
+      'content:encoded': contentEncoded
+        ? he.decode(contentEncoded)
+        : contentEncoded,
       'cf:hasAffiliateLinks': false,
       'cf:isSponsored': false,
       'cf:isPaid': false,
