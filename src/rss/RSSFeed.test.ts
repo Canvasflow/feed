@@ -361,12 +361,14 @@ describe('Motor1', () => {
 describe('Forbes', () => {
   let filePath: string = '';
   let outFilePath: string = '';
+
   beforeEach(() => {
     filePath = path.join(`${process.env.FEEDS_PATH}`, `forbes.rss`);
     if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
       outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `forbes.json`);
     }
   });
+
   test(`It should build the content`, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
@@ -422,6 +424,32 @@ describe('Forbes', () => {
     const item = items.shift();
     expect(item).toBeDefined();
   });
+
+  test(`It should build large feed`, async () => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `forbes-large.rss`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(
+        `${process.env.FEEDS_OUT_PATH}`,
+        `forbes-large.json`
+      );
+    }
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    const rss = await feed.build();
+
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(RSSFeed.toJSON(rss), replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    const { items } = rss.channel;
+    expect(items.length).toBeGreaterThan(0);
+    const item = items.shift();
+    expect(item).toBeDefined();
+  });
 });
 
 describe('Womens Running', () => {
@@ -449,7 +477,7 @@ describe('Womens Running', () => {
       );
     }
 
-    expect(rss.channel?.title).toBe('Women&#039;s Running');
+    expect(rss.channel?.title).toBe("Women's Running");
   });
 });
 
