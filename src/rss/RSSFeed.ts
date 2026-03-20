@@ -34,7 +34,10 @@ export default class RSSFeed {
     this.content = content;
     const parser = new XMLParser({
       ignoreAttributes: false,
-      processEntities: false,
+      processEntities: {
+        maxTotalExpansions: Infinity,
+        maxEntitySize: Infinity,
+      },
     });
     this.data = parser.parse(content);
     if (params && isValidParams(params)) {
@@ -369,9 +372,7 @@ export default class RSSFeed {
       components: [],
       warnings,
       errors,
-      'content:encoded': contentEncoded
-        ? he.decode(contentEncoded)
-        : contentEncoded,
+      'content:encoded': contentEncoded,
       'cf:hasAffiliateLinks': false,
       'cf:isSponsored': false,
       'cf:isPaid': false,
@@ -463,7 +464,13 @@ export default class RSSFeed {
       response['cf:thumbnail'] = thumbnail;
     }
 
-    response.components = HTMLMapper.toComponents(contentEncoded, this.params);
+    if (contentEncoded) {
+      response.components = HTMLMapper.toComponents(
+        contentEncoded,
+        this.params
+      );
+    }
+
     return response;
   }
 
