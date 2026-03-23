@@ -16,7 +16,9 @@ import { Tag } from './Tag';
 import * as Attributes from './Attributes';
 import {
   HTMLMapper,
+  type Mapping,
   type Params,
+  isValidMapping,
   isValidParams,
 } from '../component/HTMLMapper';
 import type { Recipe } from '../component/Schema';
@@ -29,6 +31,7 @@ export default class RSSFeed {
   public errors: string[] = [];
   private params: Params | undefined;
   private origin: string | undefined;
+  private _root: Mapping | undefined;
 
   constructor(content: string, params?: Params) {
     this.content = content;
@@ -53,6 +56,13 @@ export default class RSSFeed {
         warnings: [],
       },
     };
+  }
+
+  set root(rootMapping: Mapping | undefined) {
+    if (!isValidMapping(rootMapping)) {
+      return;
+    }
+    this._root = rootMapping;
   }
 
   static async getRecipeFromUrl(url: string): Promise<Recipe | null> {
@@ -324,10 +334,16 @@ export default class RSSFeed {
         ? item.description.trim()
         : undefined;
     const link = typeof item.link === 'string' ? item.link.trim() : undefined;
-    const contentEncoded =
+    let contentEncoded =
       typeof item['content:encoded'] === 'string'
         ? item['content:encoded'].trim()
         : '';
+    if (this._root && contentEncoded) {
+      const rootElement = HTMLMapper.getRootElement(contentEncoded, this._root);
+      if (rootElement) {
+        contentEncoded = rootElement;
+      }
+    }
     let errors: string[] = [];
     let warnings: string[] = [];
     if (item.errors && Array.isArray(item.errors)) {

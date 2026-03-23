@@ -111,13 +111,13 @@ const htmlTableAllowedTags = [
 ];
 
 export class HTMLMapper {
-  static getRootElement(content: string, mapping: Mapping): string | null {
+  static getRootElement(content: string, rootMapping: Mapping): string | null {
     content = content.replace(/(\r\n|\n|\r)/gm, '');
     const nodes: Array<Node> = parse(content).reduce(
       HTMLMapper.reduceEmptyTextNode,
       []
     );
-    const rootNode = getRootElement(nodes, mapping);
+    const rootNode = getRootElement(nodes, rootMapping);
     return rootNode ? stringify([rootNode]).replace(/'/g, '"') : null;
   }
 
@@ -1761,6 +1761,29 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
         return false;
       }
     }
+  }
+  return true;
+}
+
+// eslint-disable-next-line
+export function isValidMapping(mapping: any): boolean {
+  if (!mapping) return false;
+  // Zod Schema validation
+  const ParamsSchema = z.object({
+    mappings: z
+      .object({
+        match: z.custom<MatchType>(),
+        filters: z.custom<Filter>().array(),
+      })
+      .array(),
+  });
+  try {
+    ParamsSchema.parse(mapping);
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      return false;
+    }
+    return false;
   }
   return true;
 }

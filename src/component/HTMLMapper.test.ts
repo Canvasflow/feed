@@ -5,6 +5,7 @@ import {
   type ComponentMapping,
   isValidParams,
   type Mapping,
+  isValidMapping,
 } from './HTMLMapper';
 import type {
   GalleryComponent,
@@ -2310,8 +2311,25 @@ describe('HTMLMapper', () => {
             ],
           },
         ];
+        const excludes = [
+          {
+            match: 3,
+            filters: [
+              {
+                type: 'tag',
+                items: ['p'],
+              },
+              {
+                type: 'class',
+                match: 'equal',
+                items: ['head', 'story'],
+              },
+            ],
+          },
+        ];
         const isValid = isValidParams({
           mappings,
+          excludes,
         });
         expect(isValid).toBe(true);
       });
@@ -2319,6 +2337,34 @@ describe('HTMLMapper', () => {
       test('It should throw an invalid null mapping', () => {
         const mappings = [null];
         const isValid = isValidParams({
+          mappings,
+        });
+        expect(isValid).toBe(false);
+      });
+
+      test('It should return that a root mapping is valid', () => {
+        const mappings = {
+          match: 'all',
+          component: 'body',
+          filters: [
+            {
+              type: 'tag',
+              items: ['p'],
+            },
+            {
+              type: 'class',
+              match: 'equal',
+              items: ['head', 'story'],
+            },
+          ],
+        };
+        const isValid = isValidMapping(mappings);
+        expect(isValid).toBe(false);
+      });
+
+      test('It should throw an invalid null root mapping', () => {
+        const mappings = [{ hello: 'world' }];
+        const isValid = isValidMapping({
           mappings,
         });
         expect(isValid).toBe(false);
