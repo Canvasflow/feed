@@ -6,7 +6,7 @@ export const Tag = {
       requiredTags: new Set(['title', 'item']),
       validTags: new Set(['title', 'item', 'link', 'description', 'language']),
       item: {
-        requiredTags: new Set(['title', 'content:encoded', 'guid', 'pubDate']),
+        requiredTags: new Set(['title', 'guid', 'pubDate']),
         validTags: new Set([
           'title',
           'guid',
