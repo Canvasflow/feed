@@ -37,10 +37,7 @@ export default class RSSFeed {
     this.content = content;
     const parser = new XMLParser({
       ignoreAttributes: false,
-      processEntities: {
-        maxTotalExpansions: Infinity,
-        maxEntitySize: Infinity,
-      },
+      processEntities: false,
     });
     this.data = parser.parse(content);
     if (params && isValidParams(params)) {
