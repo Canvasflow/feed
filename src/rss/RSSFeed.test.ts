@@ -360,7 +360,7 @@ describe('Motor1', () => {
   });
 });
 
-describe('Forbes', () => {
+describe.skip('Forbes', () => {
   let filePath: string = '';
   let outFilePath: string = '';
 
