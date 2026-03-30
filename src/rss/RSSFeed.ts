@@ -37,7 +37,6 @@ export default class RSSFeed {
     this.content = content;
     const parser = new XMLParser({
       ignoreAttributes: false,
-      processEntities: false,
     });
     this.data = parser.parse(content);
     if (params && isValidParams(params)) {
