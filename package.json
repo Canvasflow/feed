@@ -1,7 +1,7 @@
 {
   "name": "@canvasflow/feed",
   "description": "This is canvasflow utility for processing feeds",
-  "version": "1.6.10",
+  "version": "1.6.11",
   "type": "module",
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
@@ -85,7 +85,7 @@
     "node": ">=20.19.2"
   },
   "volta": {
-    "node": "20.19.2"
+    "node": "24.14.1"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
