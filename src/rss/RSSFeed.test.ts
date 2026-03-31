@@ -6,8 +6,6 @@ import RSSFeed, { replaceErrors } from './RSSFeed';
 import type { ImageComponent } from '../component/Component';
 import type { Recipe } from '../component/Schema';
 
-process.env.FEEDS_OUT_PATH = '/Users/jjzcru/Desktop';
-
 describe('Invalid RSS', () => {
   test(`It should throw error because the rss is invalid`, async () => {
     const filePath = path.join(`${process.env.FEEDS_PATH}`, `invalid.rss`);
@@ -360,7 +358,7 @@ describe('Motor1', () => {
   });
 });
 
-describe.skip('Forbes', () => {
+describe('Forbes', () => {
   let filePath: string = '';
   let outFilePath: string = '';
 
@@ -428,7 +426,7 @@ describe.skip('Forbes', () => {
   });
 
   test(`It should build large feed`, async () => {
-    filePath = path.join(`${process.env.FEEDS_PATH}`, `forbes-failed.rss`);
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `forbes-large.rss`);
     if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
       outFilePath = path.join(
         `${process.env.FEEDS_OUT_PATH}`,
