@@ -37,6 +37,7 @@ export default class RSSFeed {
     this.content = content;
     const parser = new XMLParser({
       ignoreAttributes: false,
+      processEntities: false,
     });
     this.data = parser.parse(content);
     if (params && isValidParams(params)) {
@@ -334,6 +335,9 @@ export default class RSSFeed {
       typeof item['content:encoded'] === 'string'
         ? item['content:encoded'].trim()
         : '';
+
+    const rawContent = `${contentEncoded}`;
+    contentEncoded = he.decode(rawContent);
     if (this._root && contentEncoded) {
       const rootElement = HTMLMapper.getRootElement(contentEncoded, this._root);
       if (rootElement) {
