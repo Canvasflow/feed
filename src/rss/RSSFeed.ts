@@ -66,18 +66,26 @@ export default class RSSFeed {
     let recipe: Recipe | null = null;
     const html = await this.getHtmlContent(url);
     const $ = cheerio.load(html);
-    const content = $('script[type=application/ld+json]').html();
-    if (content) {
-      // eslint-disable-next-line
-      const parseContent = JSON.parse(content) as any;
-      if (parseContent['@graph'] && parseContent['@graph'].length) {
-        for (const item of parseContent['@graph']) {
-          if (item['@type'] && item['@type'] === 'Recipe') {
-            recipe = item as Recipe;
+    $('script[type=application/ld+json]').each((_, element) => {
+      const content = $(element).html();
+      if (content) {
+        // eslint-disable-next-line
+        const parseContent = JSON.parse(content) as any;
+        if (parseContent['@type'] && parseContent['@type'] === 'Recipe') {
+          recipe = parseContent as Recipe;
+          return false;
+        }
+        if (parseContent['@graph'] && parseContent['@graph'].length) {
+          for (const item of parseContent['@graph']) {
+            if (item['@type'] && item['@type'] === 'Recipe') {
+              recipe = item as Recipe;
+              return false;
+            }
           }
         }
       }
-    }
+    });
+
     return recipe;
   }
 

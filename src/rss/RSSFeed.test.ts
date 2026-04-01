@@ -742,7 +742,12 @@ describe('The New World', () => {
 });
 
 describe.skip('Recipe', () => {
-  test.skip(`It return a recipe object, whenever a valid recipe is found`, async () => {
+  test(`It return a recipe object, from multiple types`, async () => {
+    const url = 'https://www.saga.co.uk/magazine/recipes/easter-simnel-cake';
+    const recipe = await RSSFeed.getRecipeFromUrl(url);
+    expect(recipe).toBeDefined();
+  });
+  test(`It return a recipe object, whenever a valid recipe is found`, async () => {
     const url =
       'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding';
     const result: Recipe = {
@@ -819,7 +824,7 @@ describe.skip('Recipe', () => {
     expect(recipe).toEqual(result);
   });
 
-  test.skip(`It should return null, because the recipe is not found`, async () => {
+  test(`It should return null, because the recipe is not found`, async () => {
     const url =
       'https://www.veganfoodandliving.com/news/wagamama-vegatsu-vegan-options-menu-cuts/';
     const recipe = await RSSFeed.getRecipeFromUrl(url);
