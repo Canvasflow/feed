@@ -130,7 +130,9 @@ export class HTMLMapper {
       content = splitParagraphImages(content, tag);
     }
 
-    const nodes: Array<Node> = parse(content).filter(
+    const parsedContent = parse(content).map(mapEmptyText);
+
+    const nodes: Array<Node> = parsedContent.filter(
       HTMLMapper.filterEmptyTextNode
     );
 
@@ -2077,4 +2079,24 @@ function isValidHref(href: string) {
 function removeBreaklines(value: string | undefined): string {
   if (!value) return '';
   return value.replace(/(\r\n|\n|\r)/gm, '');
+}
+
+function mapEmptyText(node: Node): Node {
+  if (node.type === 'element') {
+    if (node.children) {
+      node.children = node.children.map(mapEmptyText);
+    }
+    return node;
+  }
+
+  if (node.type !== 'text') return node;
+
+  const { content } = node;
+  if (!content.length) return node;
+
+  if (content.length >= 1 && /^\s+$/.test(content) && content.trim().length) {
+    node.content = content.replace(/ /g, '&nbsp;');
+  }
+
+  return node;
 }

@@ -152,6 +152,15 @@ describe('HTMLMapper', () => {
       expect(component.component).toBe('body');
     });
 
+    test('It should support space between html tags', () => {
+      const content = `<p><span class="hawk-deal-widget-title-retailer-price"> <span class="hawk-deal-widget-title-price">now $452</span> <span class="hawk-deal-widget-title-retailer">at Amazon</span></span></p>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as TextComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('body');
+    });
+
     test('It should create a body component from anchor that also has an image', () => {
       const content = `<a href="https://example.com">
         <div><p>Example</p><div>
