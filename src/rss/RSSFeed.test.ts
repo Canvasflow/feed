@@ -5,7 +5,11 @@ import { test, expect, describe, beforeEach } from 'vitest';
 import RSSFeed, { replaceErrors } from './RSSFeed';
 import type { ImageComponent } from '../component/Component';
 import type { Recipe } from '../component/Schema';
-
+import {
+  HTMLMapper,
+  type Mapping,
+  type ComponentMapping,
+} from '../component/HTMLMapper';
 describe('Invalid RSS', () => {
   test(`It should throw error because the rss is invalid`, async () => {
     const filePath = path.join(`${process.env.FEEDS_PATH}`, `invalid.rss`);
@@ -738,6 +742,162 @@ describe('The New World', () => {
     expect(lastMediaContent.description).toBe(
       'The falling birth rate is not the fault of women. Image: TNW/Getty'
     );
+  });
+});
+
+describe('The English Home', () => {
+  let filePath: string = '';
+  let outFilePath: string = '';
+  beforeEach(() => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `theenglishhome.rss`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(
+        `${process.env.FEEDS_OUT_PATH}`,
+        `theenglishhome.json`
+      );
+    }
+  });
+  test(`It should validate the item`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
+
+    expect(feed.errors.length).toBe(0);
+  });
+  test(`It should build the content`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
+    expect(feed.errors.length).toBe(0);
+    const rss = await feed.build();
+    const articleFilePath = path.join(
+      `${process.env.FEEDS_PATH}`,
+      `theenglishhome.html`
+    );
+
+    const root: Mapping = {
+      match: 'any',
+      filters: [
+        {
+          type: 'tag',
+          items: ['main'],
+        },
+      ],
+    };
+
+    const mappings: ComponentMapping[] = [];
+    const excludes: Mapping[] = [
+      {
+        match: 'all',
+        filters: [
+          {
+            type: 'tag',
+            items: ['script'],
+          },
+        ],
+      },
+      {
+        match: 'any',
+        filters: [
+          {
+            type: 'attribute',
+            key: 'id',
+            value: 'utility-bar',
+          },
+        ],
+      },
+      {
+        match: 'any',
+        filters: [
+          {
+            type: 'class',
+            match: 'any',
+            items: ['newsletter-inbodyContent-slice'],
+          },
+        ],
+      },
+      {
+        match: 'any',
+        filters: [
+          {
+            type: 'class',
+            match: 'any',
+            items: ['article-continues-below'],
+          },
+        ],
+      },
+      {
+        match: 'any',
+        filters: [
+          {
+            type: 'class',
+            match: 'any',
+            items: ['comment-widget-loaded'],
+          },
+        ],
+      },
+      {
+        match: 'any',
+        filters: [
+          {
+            type: 'class',
+            match: 'any',
+            items: ['comment-widget-loaded'],
+          },
+        ],
+      },
+    ];
+
+    for (const item of rss.channel.items) {
+      if (item.guid !== 'ef225b9a-8166-5453-8fe3-a7ccc6b2d1bf') continue;
+      if (!item.link) {
+        continue;
+      }
+      try {
+        let itemContent = readFileSync(articleFilePath, 'utf-8');
+        itemContent = `${HTMLMapper.getRootElement(itemContent, root)}`;
+
+        if (itemContent) {
+          item.components = HTMLMapper.toComponents(itemContent, {
+            mappings,
+            excludes,
+          });
+        }
+      } catch (e: unknown) {
+        const error = e as Error;
+        item.components = [];
+        item.errors.push(error.message);
+      }
+    }
+
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(rss, replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    expect(rss.channel?.title).toBe('https://www.theenglishhome.co.uk content');
+  });
+  test.skip(`It should test affiliate links`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
+    expect(feed.errors.length).toBe(0);
+    const rss = await feed.build();
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(rss, replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    expect(rss.channel?.title).toBe('Newsweek feed for VMG');
+    const item = rss.channel.items[0];
+    expect(item).toBeDefined();
+    expect(item['cf:hasAffiliateLinks']).toBe(true);
   });
 });
 

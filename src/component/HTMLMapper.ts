@@ -1645,7 +1645,7 @@ function getRootElement(
 ): ElementNode | null {
   const { match, filters } = mapping;
   for (const node of nodes) {
-    if (node.type === 'text') continue;
+    if (node.type !== 'element') continue;
     if (match === 'all') {
       if (filterAllMapping(node, filters)) {
         return node;
