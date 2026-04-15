@@ -118,7 +118,9 @@ export class HTMLMapper {
       []
     );
     const rootNode = getRootElement(nodes, rootMapping);
-    return rootNode ? stringify([rootNode]).replace(/'/g, '"') : null;
+    return rootNode
+      ? stringify([rootNode]).replace(/=('([^']*)')/g, '="$2"')
+      : null;
   }
 
   static toComponents(content: string, params?: Params): Component[] {
@@ -193,6 +195,10 @@ export class HTMLMapper {
     const classNames = attributes.get('class');
 
     if (tagName === 'script') return null;
+
+    if (attributes.get('id') === 'section-more-from-tom-s-guide') {
+      console.log(node);
+    }
 
     if (attributes.get('data-cf-ignore') !== undefined) {
       return null;
@@ -1991,7 +1997,7 @@ export function splitParagraphImages(html: string, tag: string): string {
     if (!parent) continue;
 
     const children = Array.from(p.childNodes);
-    let buffer: ChildNode[] = [];
+    let buffer: unknown[] = [];
 
     // Extract original attributes once
     const originalAttrs = Array.from(p.attributes).map((attr) => ({
