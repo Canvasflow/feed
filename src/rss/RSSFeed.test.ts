@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { test, expect, describe, beforeEach } from 'vitest';
 
 import RSSFeed, { replaceErrors } from './RSSFeed';
-import type { ImageComponent } from '../component/Component';
+import type { ImageComponent, TextComponent } from '../component/Component';
 import type { Recipe } from '../component/Schema';
 import {
   HTMLMapper,
@@ -30,6 +30,61 @@ describe('Invalid RSS', () => {
     await feed.validate();
 
     expect(feed.errors.length).toBeGreaterThan(0);
+  });
+});
+
+describe('Toms Guide', () => {
+  let filePath: string = '';
+  let outFilePath: string = '';
+  let htmlFilePath: string = '';
+
+  beforeEach(() => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `toms.rss`);
+    htmlFilePath = path.join(`${process.env.FEEDS_PATH}`, `toms.html`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `toms.json`);
+    }
+  });
+
+  test(`It should build the content`, async () => {
+    const expectedText =
+      '<a id="birkenstock" href="https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-8281606209856383572&amp;url=https://www.zappos.com/p/womens-birkenstock-papillio-by-birkenstock-florida-platform-nubuck-pure-sage/product/9985783/color/1097063" class="hawk-affiliate-link-container" rel="sponsored noopener" target="_blank" role="link"><span> <span>now $98</span> <span>at Zappos</span></span></a>';
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
+    expect(feed.errors.length).toBe(0);
+    const rss = await feed.build();
+    expect(rss.channel?.title).toBe(`Latest from Tom's Guide`);
+    const root: Mapping = {
+      match: 'any',
+      filters: [
+        {
+          type: 'tag',
+          items: ['article'],
+        },
+      ],
+    };
+    for (const item of rss.channel.items) {
+      if (item.guid !== 'j5SyyGGVH3SdnjMbrKiGfQ') continue;
+      if (!item.link) continue;
+      let itemContent = readFileSync(htmlFilePath, 'utf-8');
+      itemContent = `${HTMLMapper.getRootElement(itemContent, root)}`;
+      const components = HTMLMapper.toComponents(itemContent);
+      for (const component of components) {
+        if (component.id === 'birkenstock') {
+          const comp = component as TextComponent;
+          expect(comp.text).toBe(expectedText);
+        }
+      }
+    }
+
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(rss, replaceErrors, 2),
+        'utf-8'
+      );
+    }
   });
 });
 

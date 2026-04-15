@@ -171,6 +171,9 @@ export default class RSSFeed {
     }
 
     this.rss.channel.title = he.decode(title);
+    if (this.rss.channel.title) {
+      this.rss.channel.title = this.rss.channel.title.trim();
+    }
     this.rss.channel.link = link;
     this.rss.channel.description = description
       ? he.decode(description)
