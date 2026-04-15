@@ -166,6 +166,7 @@ export class HTMLMapper {
     node: Node,
     params?: Params
   ): Component | Array<Component> | null {
+    if (node.type === 'comment') return null;
     if (node.type === 'text') {
       if (isEmpty(node.content)) {
         return null;
@@ -190,6 +191,8 @@ export class HTMLMapper {
     const attributes = getAttributes(node.attributes);
     const role = attributes.get('role');
     const classNames = attributes.get('class');
+
+    if (tagName === 'script') return null;
 
     if (attributes.get('data-cf-ignore') !== undefined) {
       return null;
@@ -398,6 +401,7 @@ export class HTMLMapper {
         component = 'body';
       }
     }
+
     return {
       id,
       component,
@@ -741,7 +745,7 @@ export class HTMLMapper {
     const params: { id?: string; account?: string } = {};
 
     for (const child of node.children) {
-      if (child.type === 'text') continue;
+      if (child.type !== 'element') continue;
       if (child.tagName === 'a') {
         tweetNode = child;
         break;
@@ -1489,14 +1493,27 @@ export class HTMLMapper {
   }
 
   static reduceEmptyTextNode(nodes: Array<Node>, node: Node): Array<Node> {
+    if (node.type === 'comment') return nodes;
+
     if (node.type === 'text') {
+      let { content } = node;
+      if (content) {
+        content = content.replace(/\s\s+/g, ' ');
+        node.content = content;
+      }
+
+      if (content.length >= 1 && !content.trim().length) {
+        node.content = ' ';
+        nodes.push(node);
+        return nodes;
+      }
       if (!isEmpty(node.content)) {
         nodes.push(node);
       }
       return nodes;
     }
 
-    if (node.children) {
+    if (node.type === 'element' && node.children) {
       node.children = node.children.reduce(HTMLMapper.reduceEmptyTextNode, []);
     }
     nodes.push(node);
@@ -1558,7 +1575,7 @@ export class HTMLMapper {
   }
 }
 
-export type Node = TextNode | ElementNode;
+export type Node = TextNode | ElementNode | CommentNode;
 
 export interface TextNode {
   type: 'text';
@@ -1570,6 +1587,11 @@ export interface ElementNode {
   children: Array<Node>;
   tagName: string;
   attributes?: Array<Attribute>;
+}
+
+export interface CommentNode {
+  type: 'comment';
+  content: string;
 }
 
 interface Attribute {
