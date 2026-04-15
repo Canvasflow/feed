@@ -196,10 +196,6 @@ export class HTMLMapper {
 
     if (tagName === 'script') return null;
 
-    if (attributes.get('id') === 'section-more-from-tom-s-guide') {
-      console.log(node);
-    }
-
     if (attributes.get('data-cf-ignore') !== undefined) {
       return null;
     }
