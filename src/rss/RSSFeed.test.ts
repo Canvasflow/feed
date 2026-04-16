@@ -5,11 +5,8 @@ import { test, expect, describe, beforeEach } from 'vitest';
 import RSSFeed, { replaceErrors } from './RSSFeed';
 import type { ImageComponent, TextComponent } from '../component/Component';
 import type { Recipe } from '../component/Schema';
-import {
-  HTMLMapper,
-  type Mapping,
-  type ComponentMapping,
-} from '../component/HTMLMapper';
+import { HTMLMapper } from '../component/HTMLMapper';
+import type { ComponentMapping, Mapping } from '../component/Mapping';
 describe('Invalid RSS', () => {
   test(`It should throw error because the rss is invalid`, async () => {
     const filePath = path.join(`${process.env.FEEDS_PATH}`, `invalid.rss`);

@@ -1,12 +1,13 @@
 import { test, expect, describe } from 'vitest';
 
+import { HTMLMapper } from './HTMLMapper';
 import {
-  HTMLMapper,
   type ComponentMapping,
   isValidParams,
   type Mapping,
   isValidMapping,
-} from './HTMLMapper';
+  processTextLinks,
+} from './Mapping';
 import type {
   GalleryComponent,
   ImageComponent,
@@ -2376,7 +2377,7 @@ describe('HTMLMapper', () => {
       const href = '~/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
       const html = `<a href="${href}">this is a text</a>`;
       const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/~/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
-      const content = HTMLMapper.processTextLinks(html, link);
+      const content = processTextLinks(html, link);
       expect(content).toBeDefined();
       expect(content).toBe(result);
     });
@@ -2388,7 +2389,7 @@ describe('HTMLMapper', () => {
       const html = `<a href="${href}">this is a text</a>`;
       const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
       //www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&_z=z
-      const content = HTMLMapper.processTextLinks(html, link);
+      const content = processTextLinks(html, link);
       expect(content).toBeDefined();
       expect(content).toBe(result);
     });
@@ -2399,7 +2400,7 @@ describe('HTMLMapper', () => {
       const href = './link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
       const html = `<a href="${href}">this is a text</a>`;
       const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
-      const content = HTMLMapper.processTextLinks(html, link);
+      const content = processTextLinks(html, link);
       expect(content).toBeDefined();
       expect(content).toBe(result);
     });
@@ -2411,7 +2412,7 @@ describe('HTMLMapper', () => {
       const html = `<a href="${href}">this is a text</a>`;
       const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
 
-      const content = HTMLMapper.processTextLinks(html, link);
+      const content = processTextLinks(html, link);
       expect(content).toBeDefined();
       expect(content).toBe(result);
     });
@@ -2422,7 +2423,7 @@ describe('HTMLMapper', () => {
       const href = '//link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
       const html = `<a href="${href}">this is a text</a>`;
       const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
-      const content = HTMLMapper.processTextLinks(html, link);
+      const content = processTextLinks(html, link);
       expect(content).toBeDefined();
       expect(content).toBe(result);
     });
@@ -2431,14 +2432,14 @@ describe('HTMLMapper', () => {
       const href = 'https://javascript:null/';
       const html = `<a href="${href}">this is a text</a>`;
       const result = `<a href="/">this is a text</a>`;
-      const content = HTMLMapper.processTextLinks(html);
+      const content = processTextLinks(html);
       expect(content).toBeDefined();
       expect(content).toBe(result);
     });
     test('It should skip anchor tags that do not have attributes', () => {
       const html = `<a>this is a text</a>`;
       const result = `<a>this is a text</a>`;
-      const content = HTMLMapper.processTextLinks(html);
+      const content = processTextLinks(html);
       expect(content).toBeDefined();
       expect(content).toBe(result);
     });
