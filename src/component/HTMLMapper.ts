@@ -433,9 +433,7 @@ export class HTMLMapper {
         errors.push('Button text is required');
       }
     } else if (node.tagName === 'button') {
-      const anchorNodes = node.children.filter(
-        (n) => n.type === 'element' && n.tagName === 'a'
-      );
+      const anchorNodes = node.children.reduce(findDescendants('a'), []);
       if (anchorNodes.length > 0) {
         const aNode = anchorNodes[0] as ElementNode;
         const aAttributes = getAttributes(aNode.attributes);
@@ -487,9 +485,8 @@ export class HTMLMapper {
     const attributes = getAttributes(node.attributes);
     let text: string | undefined;
     const link: string | undefined = attributes.get('href');
-    const buttonsNode = node.children.filter(
-      (n) => n.type === 'element' && n.tagName === 'button'
-    );
+
+    const buttonsNode = node.children.reduce(findDescendants('button'), []);
 
     if (buttonsNode.length > 0) {
       const button = buttonsNode[0] as ElementNode;
@@ -1218,19 +1215,8 @@ export class HTMLMapper {
   }
 
   static hasImage(node: ElementNode): boolean {
-    let imageCount = 0;
-    const children = node.children.filter((n) => n.type === 'element');
-    for (const child of children) {
-      if (
-        child.type === 'element' &&
-        (child.tagName === 'img' ||
-          child.tagName === 'figure' ||
-          child.tagName === 'picture')
-      ) {
-        imageCount += 1;
-      }
-    }
-    return imageCount === 1 && children.length === imageCount;
+    const imageTagNames = ['img', 'figure', 'picture'];
+    return !!node.children.reduce(findDescendants(imageTagNames), []).length;
   }
 
   static fromFigure(
@@ -1393,9 +1379,7 @@ export class HTMLMapper {
     const warnings: string[] = [];
 
     // Handle image
-    const imageNodes = node.children.filter(
-      (n) => n.type === 'element' && n.tagName === 'img'
-    );
+    const imageNodes = node.children.reduce(findDescendants('img'), []);
     if (imageNodes.length > 1) {
       warnings.push('Only one img tag per picture tag is valid');
     }
@@ -1439,9 +1423,7 @@ export class HTMLMapper {
     let alt: string = '';
     if (node.children) {
       // Handle image
-      const imageNodes = node.children.filter(
-        (n) => n.type === 'element' && n.tagName === 'img'
-      );
+      const imageNodes = node.children.reduce(findDescendants('img'), []);
       if (imageNodes.length > 1) {
         warnings.push('Only one img tag per a tag is valid');
       }
@@ -2124,3 +2106,26 @@ function mapEmptyText(node: Node): Node {
 
   return node;
 }
+
+function findDescendants(findFn: string | Array<string> | NodeFilterFn) {
+  return (acc: Node[], node: Node): Node[] => {
+    if (node.type !== 'element') return acc;
+
+    if (typeof findFn === 'string' && node.tagName === findFn) {
+      acc.push(node);
+    }
+
+    if (Array.isArray(findFn)) {
+      if (new Set([...findFn]).has(node.tagName)) {
+        acc.push(node);
+      }
+    }
+
+    if (typeof findFn === 'function' && findFn(node)) {
+      acc.push(node);
+    }
+    return node.children.reduce(findDescendants(findFn), acc);
+  };
+}
+
+type NodeFilterFn = (n: Node) => boolean;
