@@ -1754,6 +1754,52 @@ describe('HTMLMapper', () => {
       expect(component.muted).toBe(true);
       expect(component.caption).toBe(caption);
     });
+    test('It should process an apple podcast episode', () => {
+      const src =
+        'https://embed.podcasts.apple.com/us/podcast/all-bark-no-bite-the-reality-behind-dog-the-bounty-hunter/id1849068807?i=1000761154684';
+      const content = `
+       <iframe 
+        allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" 
+        frameborder="0" 
+        height="450" 
+        style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;" 
+        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" 
+        src="${src}">
+       </iframe>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as AudioComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(false);
+      expect(component.autoplay).toBe(true);
+      expect(component.controls).toBe(false);
+      expect(component.muted).toBe(false);
+    });
+    test('It should process an apple podcast series', () => {
+      const src =
+        'https://embed.podcasts.apple.com/us/podcast/unheard-true-crime-in-their-own-words/id1849068807';
+      const content = `
+       <iframe 
+        allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" 
+        frameborder="0" 
+        height="450" 
+        style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;" 
+        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" 
+        src="${src}">
+       </iframe>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as AudioComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(false);
+      expect(component.autoplay).toBe(true);
+      expect(component.controls).toBe(false);
+      expect(component.muted).toBe(false);
+    });
   });
 
   describe('Custom components', () => {
