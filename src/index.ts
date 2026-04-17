@@ -40,10 +40,11 @@ export type {
   NutritionInformation,
   ListItem,
 } from './component/Schema';
-export { isValidParams, HTMLMapper } from './component/HTMLMapper';
-export type {
-  Params as HTMLParams,
-  ComponentMapping,
-  Mapping,
-  Filter as HTMLFilter,
-} from './component/HTMLMapper';
+export { HTMLMapper } from './component/HTMLMapper';
+export {
+  isValidParams,
+  type Params as HTMLParams,
+  type ComponentMapping,
+  type Mapping,
+  type Filter as HTMLFilter,
+} from './component/Mapping';
