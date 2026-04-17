@@ -14,14 +14,14 @@ import type {
 import { Tag } from './Tag';
 
 import * as Attributes from './Attributes';
+import { HTMLMapper } from '../component/HTMLMapper';
+import type { Recipe } from '../component/Schema';
 import {
-  HTMLMapper,
-  type Mapping,
-  type Params,
   isValidMapping,
   isValidParams,
-} from '../component/HTMLMapper';
-import type { Recipe } from '../component/Schema';
+  type Mapping,
+  type Params,
+} from '../component/Mapping';
 
 export default class RSSFeed {
   public content: string;
