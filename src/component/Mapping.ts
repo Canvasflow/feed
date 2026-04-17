@@ -599,6 +599,7 @@ function fromIframe(
   | VimeoComponent
   | TwitterComponent
   | CustomComponent
+  | AudioComponent
   | null {
   const attributes = getAttributes(node.attributes);
   const id = attributes.get('id');
@@ -625,6 +626,10 @@ function fromIframe(
       return builtComponent;
     case 'https://www.youtube.com':
       builtComponent = toYoutube(url);
+      builtComponent.id = id;
+      return builtComponent;
+    case 'https://embed.podcasts.apple.com':
+      builtComponent = toApplePodcast(node);
       builtComponent.id = id;
       return builtComponent;
   }
@@ -1284,6 +1289,39 @@ function toAudio(node: ElementNode): AudioComponent {
     autoplay,
     muted,
     loop,
+    errors,
+    warnings,
+  };
+}
+
+function toApplePodcast(node: ElementNode): AudioComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  let url = '';
+  const src = attributes.get('src');
+  const allow = attributes.get('allow');
+  if (src) {
+    url = src;
+  }
+
+  if (!url) {
+    errors.push('src is required');
+  }
+
+  let autoplay = false;
+  if (allow) {
+    const allowProps = new Set(allow.split(';').map((p) => p.trim()));
+    autoplay = allowProps.has('autoplay *');
+  }
+
+  return {
+    component: 'audio',
+    url,
+    controls: false,
+    autoplay,
+    muted: false,
+    loop: false,
     errors,
     warnings,
   };
