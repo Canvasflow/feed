@@ -20,6 +20,7 @@ export type {
   InstagramComponent,
   InfogramComponent,
   YoutubeComponent,
+  RecipeComponent,
   DailymotionComponent,
   VimeoComponent,
   TikTokComponent,
