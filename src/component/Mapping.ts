@@ -201,8 +201,7 @@ export function reduceComponents(
     }
 
     if (isLinkContainerComponent(component)) {
-      const linkContainerComponent = component as LinkContainerComponent;
-      appendLinkContainerComponents(acc, linkContainerComponent);
+      appendLinkContainerComponents(acc, component);
       return acc;
     }
 
@@ -1494,8 +1493,6 @@ function reduceLinkComponent(
       } else {
         component.text = `<a href="${link}">${component.text}</a>`;
       }
-
-      console.log(component);
     }
 
     if (isImageComponent(component)) {
