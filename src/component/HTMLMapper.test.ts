@@ -8,23 +8,25 @@ import {
   isValidMapping,
   processTextLinks,
 } from './Mapping';
-import type {
-  GalleryComponent,
-  ImageComponent,
-  TextComponent,
-  TwitterComponent,
-  InstagramComponent,
-  YoutubeComponent,
-  VideoComponent,
-  AudioComponent,
-  TikTokComponent,
-  ButtonComponent,
-  RecipeComponent,
-  HTMLTableComponent,
-  DailymotionComponent,
-  VimeoComponent,
-  ContainerComponent,
-  CustomComponent,
+import {
+  type GalleryComponent,
+  type ImageComponent,
+  type TextComponent,
+  type TwitterComponent,
+  type InstagramComponent,
+  type YoutubeComponent,
+  type VideoComponent,
+  type AudioComponent,
+  type TikTokComponent,
+  type ButtonComponent,
+  type RecipeComponent,
+  type HTMLTableComponent,
+  type DailymotionComponent,
+  type VimeoComponent,
+  type ContainerComponent,
+  type CustomComponent,
+  isTextComponent,
+  isImageComponent,
 } from './Component';
 
 describe('HTMLMapper', () => {
@@ -200,7 +202,7 @@ describe('HTMLMapper', () => {
 
     test('Anchors should be present', () => {
       const content =
-        '<a href="https://example.com" target="_blank" rel="nofollow noopener">Hello world</a>';
+        '<a href="https://example.com" target="_blank" rel="nofollow noopener"><p>Hello world</p></a>';
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
       const component = components.pop() as TextComponent;
@@ -1945,6 +1947,29 @@ describe('HTMLMapper', () => {
         return;
       }
       expect(containerComponent.components.length).toBe(0);
+    });
+  });
+
+  describe('Link container components', () => {
+    test('It should anchor tags to map container component', () => {
+      const mappings: Array<ComponentMapping> = [];
+      const link = 'https://example.org';
+      const content = `
+        <a href="${link}" target="_blank">
+          <div><h1>Test</h1></div>
+          <img src="https://example.com/image.jpg"/>
+        </a>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(2);
+      const textComponent = components[0] as TextComponent;
+      expect(isTextComponent(textComponent)).toBe(true);
+      expect(textComponent.text).toBe(
+        `<a href="${link}" target="_blank">Test</a>`
+      );
+      const imageComponent = components[1] as ImageComponent;
+      expect(isImageComponent(imageComponent)).toBe(true);
+      expect(imageComponent.link).toBe(link);
     });
   });
 
