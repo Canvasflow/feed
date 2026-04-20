@@ -43,6 +43,13 @@ export type {
 export { HTMLMapper } from './component/HTMLMapper';
 export {
   isValidParams,
+  isValidMapping,
+  isEmpty,
+  processTextLinks,
+  filterEmptyTextNode,
+  getRootElement,
+  reduceEmptyTextNode,
+  reduceComponents,
   type Params as HTMLParams,
   type ComponentMapping,
   type Mapping,
