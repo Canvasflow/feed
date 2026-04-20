@@ -7,6 +7,7 @@ export type {
   Enclosure,
   MediaGroup,
   MediaContent,
+  Thumbnail,
 } from './rss/RSS';
 export type {
   Component,
