@@ -994,6 +994,41 @@ describe('The English Home', () => {
   });
 });
 
+describe('Motor', () => {
+  let filePath: string = '';
+  beforeEach(() => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `motor.rss`);
+  });
+  test(`It should validate the item`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
+
+    expect(feed.errors.length).toBe(0);
+  });
+  test(`It should build the content`, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    await feed.validate();
+    expect(feed.errors.length).toBe(0);
+    const rss = await feed.build();
+    expect(rss).toBeDefined();
+    const { items } = rss.channel;
+    const item = items[0];
+    const { title } = item;
+    expect(title).toBe(
+      'F1 2026 car launch dates: schedule for team and livery reveals'
+    );
+    expect(item['dc:creator']).toBe('Pablo Elizalde');
+    expect(item['category']?.[0]).toBe('F1');
+    const mediaContentItem = item['mediaContent'][0];
+    expect(mediaContentItem.credit).toBe('Audi');
+    expect(mediaContentItem.description).toBe(
+      'Audi was first to reveal its 2026 F1 livery'
+    );
+  });
+});
+
 describe.skip('Recipe', () => {
   test(`It return a recipe object, from multiple types`, async () => {
     const url = 'https://www.saga.co.uk/magazine/recipes/easter-simnel-cake';
