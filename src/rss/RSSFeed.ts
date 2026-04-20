@@ -380,6 +380,7 @@ export default class RSSFeed {
         .map((c: string) => c.trim())
         .join(', ');
     }
+    const mediaContent = this.getMediaContent(item, this.origin);
 
     const response: Item = {
       guid,
@@ -387,15 +388,15 @@ export default class RSSFeed {
       category: category
         .filter((i) => !!i)
         .map((c) => {
-          if (typeof c === 'string') return c;
-          return c['#text'];
+          if (typeof c === 'string') return c.trim();
+          return c['#text'].trim();
         }),
       description: description ? he.decode(description) : description,
       link,
       pubDate: item.pubDate ? `${item.pubDate}` : undefined,
       enclosure: this.getEnclosure(item),
       mediaGroup: this.getMediaGroup(item, this.origin),
-      mediaContent: this.getMediaContent(item, this.origin),
+      mediaContent,
       components: [],
       warnings,
       errors,
@@ -577,13 +578,13 @@ export default class RSSFeed {
       return [];
     }
 
-    if (!Array.isArray(item['media:content'])) {
-      item['media:content'] = [item['media:content']];
-    }
+    const mediaContent: Array<Attributes.MediaContent> = Array.isArray(
+      item['media:content']
+    )
+      ? item['media:content']
+      : [item['media:content']];
 
-    return (item['media:content'] as Array<Attributes.MediaContent>).map(
-      mapMediaContent(origin)
-    );
+    return mediaContent.map(mapMediaContent(origin));
   }
 }
 
@@ -663,7 +664,13 @@ function mapMediaContent(
         tmpCredit = tmpCredit[0];
       }
 
-      credit = tmpCredit['#text'];
+      if (typeof tmpCredit === 'string') {
+        credit = tmpCredit;
+      }
+
+      if (tmpCredit['#text']) {
+        credit = tmpCredit['#text'];
+      }
     }
 
     let tmpThumbnail = mediaContent['media:thumbnail'];
@@ -708,10 +715,10 @@ function mapMediaContent(
       isDefault,
       errors,
       warnings,
-      credit,
+      credit: credit ? credit.trim() : credit,
       thumbnail,
-      title,
-      description,
+      title: title ? title.trim() : title,
+      description: description ? description.trim() : description,
     };
   };
 }
