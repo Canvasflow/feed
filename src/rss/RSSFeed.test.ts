@@ -8,26 +8,34 @@ import type { Recipe } from '../component/Schema';
 import { HTMLMapper } from '../component/HTMLMapper';
 import type { ComponentMapping, Mapping } from '../component/Mapping';
 describe('Invalid RSS', () => {
-  test(`It should throw error because the rss is invalid`, async () => {
-    const filePath = path.join(`${process.env.FEEDS_PATH}`, `invalid.rss`);
-    const content = readFileSync(filePath, 'utf-8');
-    const feed = new RSSFeed(content);
-    await feed.validate();
+  test(
+    `It should throw error because the rss is invalid`,
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const filePath = path.join(`${process.env.FEEDS_PATH}`, `invalid.rss`);
+      const content = readFileSync(filePath, 'utf-8');
+      const feed = new RSSFeed(content);
+      await feed.validate();
 
-    expect(feed.errors.length).toBeGreaterThan(0);
-  });
+      expect(feed.errors.length).toBeGreaterThan(0);
+    }
+  );
 
-  test(`It should throw error because channel is missing in rss`, async () => {
-    const filePath = path.join(
-      `${process.env.FEEDS_PATH}`,
-      `invalid-channel.rss`
-    );
-    const content = readFileSync(filePath, 'utf-8');
-    const feed = new RSSFeed(content);
-    await feed.validate();
+  test(
+    `It should throw error because channel is missing in rss`,
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const filePath = path.join(
+        `${process.env.FEEDS_PATH}`,
+        `invalid-channel.rss`
+      );
+      const content = readFileSync(filePath, 'utf-8');
+      const feed = new RSSFeed(content);
+      await feed.validate();
 
-    expect(feed.errors.length).toBeGreaterThan(0);
-  });
+      expect(feed.errors.length).toBeGreaterThan(0);
+    }
+  );
 });
 
 describe('Toms Guide', () => {
@@ -43,87 +51,98 @@ describe('Toms Guide', () => {
     }
   });
 
-  test(`It should build the content with space`, async () => {
-    const expectedText =
-      '<a id="birkenstock" href="https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-8281606209856383572&amp;url=https://www.zappos.com/p/womens-birkenstock-papillio-by-birkenstock-florida-platform-nubuck-pure-sage/product/9985783/color/1097063" class="hawk-affiliate-link-container" rel="sponsored noopener" target="_blank" role="link"><span> <span>now $98</span> <span>at Zappos</span></span></a>';
-    const content = readFileSync(filePath, 'utf-8');
-    const feed = new RSSFeed(content);
-    await feed.validate();
-    expect(feed.errors.length).toBe(0);
-    const rss = await feed.build();
-    expect(rss.channel?.title).toBe(`Latest from Tom's Guide`);
-    const root: Mapping = {
-      match: 'any',
-      filters: [
-        {
-          type: 'tag',
-          items: ['article'],
-        },
-      ],
-    };
-    for (const item of rss.channel.items) {
-      if (item.guid !== 'j5SyyGGVH3SdnjMbrKiGfQ') continue;
-      if (!item.link) continue;
-      let itemContent = readFileSync(htmlFilePath, 'utf-8');
-      itemContent = `${HTMLMapper.getRootElement(itemContent, root)}`;
-      const components = HTMLMapper.toComponents(itemContent);
-      for (const component of components) {
-        if (component.id === 'birkenstock') {
-          const comp = component as TextComponent;
-          expect(comp.text).toBe(expectedText);
+  test(
+    `It should build the content with space`,
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const expectedText =
+        '<a id="birkenstock" href="https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-8281606209856383572&amp;url=https://www.zappos.com/p/womens-birkenstock-papillio-by-birkenstock-florida-platform-nubuck-pure-sage/product/9985783/color/1097063" class="hawk-affiliate-link-container" rel="sponsored noopener" target="_blank" role="link"><span> <span>now $98</span> <span>at Zappos</span></span></a>';
+      const content = readFileSync(filePath, 'utf-8');
+      const feed = new RSSFeed(content);
+      await feed.validate();
+      expect(feed.errors.length).toBe(0);
+      const rss = await feed.build();
+      expect(rss.channel?.title).toBe(`Latest from Tom's Guide`);
+      const root: Mapping = {
+        match: 'any',
+        filters: [
+          {
+            type: 'tag',
+            items: ['article'],
+          },
+        ],
+      };
+      for (const item of rss.channel.items) {
+        if (item.guid !== 'j5SyyGGVH3SdnjMbrKiGfQ') continue;
+        if (!item.link) continue;
+        let itemContent = readFileSync(htmlFilePath, 'utf-8');
+        itemContent = `${HTMLMapper.getRootElement(itemContent, root)}`;
+        const components = HTMLMapper.toComponents(itemContent);
+        for (const component of components) {
+          if (component.id === 'birkenstock') {
+            const comp = component as TextComponent;
+            expect(comp.text).toBe(expectedText);
+          }
         }
       }
-    }
 
-    if (outFilePath) {
-      writeFileSync(
-        outFilePath,
-        JSON.stringify(rss, replaceErrors, 2),
-        'utf-8'
-      );
-    }
-  });
-
-  test(`It should build the content with quotes`, async () => {
-    const htmlFilePath = path.join(`${process.env.FEEDS_PATH}`, `toms-2.html`);
-    const expectedText = "<span>More from Tom's Guide</span>";
-    const content = readFileSync(filePath, 'utf-8');
-    const feed = new RSSFeed(content);
-    await feed.validate();
-    expect(feed.errors.length).toBe(0);
-    const rss = await feed.build();
-    expect(rss.channel?.title).toBe(`Latest from Tom's Guide`);
-    const root: Mapping = {
-      match: 'any',
-      filters: [
-        {
-          type: 'tag',
-          items: ['article'],
-        },
-      ],
-    };
-    for (const item of rss.channel.items) {
-      if (item.guid !== 'y7SnCDu95opznVMzRst9BJ') continue;
-      if (!item.link) continue;
-      let itemContent = readFileSync(htmlFilePath, 'utf-8');
-      itemContent = `${HTMLMapper.getRootElement(itemContent, root)}`;
-      const components = HTMLMapper.toComponents(itemContent);
-      for (const component of components) {
-        if (component.id === 'section-more-from-tom-s-guide') {
-          const comp = component as TextComponent;
-          expect(comp.text).toBe(expectedText);
-        }
+      if (outFilePath) {
+        writeFileSync(
+          outFilePath,
+          JSON.stringify(rss, replaceErrors, 2),
+          'utf-8'
+        );
       }
     }
+  );
 
-    if (outFilePath) {
-      writeFileSync(
-        outFilePath,
-        JSON.stringify(rss, replaceErrors, 2),
-        'utf-8'
+  test(
+    `It should build the content with quotes`,
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const htmlFilePath = path.join(
+        `${process.env.FEEDS_PATH}`,
+        `toms-2.html`
       );
+      const expectedText = "<span>More from Tom's Guide</span>";
+      const content = readFileSync(filePath, 'utf-8');
+      const feed = new RSSFeed(content);
+      await feed.validate();
+      expect(feed.errors.length).toBe(0);
+      const rss = await feed.build();
+      expect(rss.channel?.title).toBe(`Latest from Tom's Guide`);
+      const root: Mapping = {
+        match: 'any',
+        filters: [
+          {
+            type: 'tag',
+            items: ['article'],
+          },
+        ],
+      };
+      for (const item of rss.channel.items) {
+        if (item.guid !== 'y7SnCDu95opznVMzRst9BJ') continue;
+        if (!item.link) continue;
+        let itemContent = readFileSync(htmlFilePath, 'utf-8');
+        itemContent = `${HTMLMapper.getRootElement(itemContent, root)}`;
+        const components = HTMLMapper.toComponents(itemContent);
+        for (const component of components) {
+          if (component.id === 'section-more-from-tom-s-guide') {
+            const comp = component as TextComponent;
+            expect(comp.text).toBe(expectedText);
+          }
+        }
+      }
+
+      if (outFilePath) {
+        writeFileSync(
+          outFilePath,
+          JSON.stringify(rss, replaceErrors, 2),
+          'utf-8'
+        );
+      }
     }
-  });
+  );
 });
 
 describe('Newsweek', () => {
@@ -135,30 +154,14 @@ describe('Newsweek', () => {
       outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `newsweek.json`);
     }
   });
-  test(`It should validate the item`, async () => {
+  test(`It should validate the item`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     await feed.validate();
 
     expect(feed.errors.length).toBe(0);
   });
-  test(`It should build the content`, async () => {
-    const content = readFileSync(filePath, 'utf-8');
-    const feed = new RSSFeed(content);
-    await feed.validate();
-    expect(feed.errors.length).toBe(0);
-    const rss = await feed.build();
-    if (outFilePath) {
-      writeFileSync(
-        outFilePath,
-        JSON.stringify(rss, replaceErrors, 2),
-        'utf-8'
-      );
-    }
-
-    expect(rss.channel?.title).toBe('Newsweek feed for VMG');
-  });
-  test(`It should test affiliate links`, async () => {
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     await feed.validate();
@@ -173,75 +176,107 @@ describe('Newsweek', () => {
     }
 
     expect(rss.channel?.title).toBe('Newsweek feed for VMG');
-    const item = rss.channel.items[0];
-    expect(item).toBeDefined();
-    expect(item['cf:hasAffiliateLinks']).toBe(true);
   });
-  test(`It should test dc:language in item`, async () => {
-    const content = readFileSync(filePath, 'utf-8');
-    const feed = new RSSFeed(content);
-    await feed.validate();
-    expect(feed.errors.length).toBe(0);
-    const rss = await feed.build();
-    if (outFilePath) {
-      writeFileSync(
-        outFilePath,
-        JSON.stringify(rss, replaceErrors, 2),
-        'utf-8'
-      );
+  test(
+    `It should test affiliate links`,
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const content = readFileSync(filePath, 'utf-8');
+      const feed = new RSSFeed(content);
+      await feed.validate();
+      expect(feed.errors.length).toBe(0);
+      const rss = await feed.build();
+      if (outFilePath) {
+        writeFileSync(
+          outFilePath,
+          JSON.stringify(rss, replaceErrors, 2),
+          'utf-8'
+        );
+      }
+
+      expect(rss.channel?.title).toBe('Newsweek feed for VMG');
+      const item = rss.channel.items[0];
+      expect(item).toBeDefined();
+      expect(item['cf:hasAffiliateLinks']).toBe(true);
     }
+  );
+  test(
+    `It should test dc:language in item`,
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const content = readFileSync(filePath, 'utf-8');
+      const feed = new RSSFeed(content);
+      await feed.validate();
+      expect(feed.errors.length).toBe(0);
+      const rss = await feed.build();
+      if (outFilePath) {
+        writeFileSync(
+          outFilePath,
+          JSON.stringify(rss, replaceErrors, 2),
+          'utf-8'
+        );
+      }
 
-    const item = rss.channel.items[0];
-    expect(item).toBeDefined();
-    expect(item['dc:language']).toBe('en-GB');
-  });
-  test(`It should test isSponsored item`, async () => {
-    const content = readFileSync(filePath, 'utf-8');
-    const feed = new RSSFeed(content);
-    await feed.validate();
-    expect(feed.errors.length).toBe(0);
-    const rss = await feed.build();
-    if (outFilePath) {
-      writeFileSync(
-        outFilePath,
-        JSON.stringify(rss, replaceErrors, 2),
-        'utf-8'
-      );
+      const item = rss.channel.items[0];
+      expect(item).toBeDefined();
+      expect(item['dc:language']).toBe('en-GB');
     }
+  );
+  test(
+    `It should test isSponsored item`,
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const content = readFileSync(filePath, 'utf-8');
+      const feed = new RSSFeed(content);
+      await feed.validate();
+      expect(feed.errors.length).toBe(0);
+      const rss = await feed.build();
+      if (outFilePath) {
+        writeFileSync(
+          outFilePath,
+          JSON.stringify(rss, replaceErrors, 2),
+          'utf-8'
+        );
+      }
 
-    expect(rss.channel?.title).toBe('Newsweek feed for VMG');
-    const item = rss.channel.items[0];
-    expect(item).toBeDefined();
-    expect(item['cf:isSponsored']).toBe(true);
-    expect(item['cf:isPaid']).toBe(true);
-  });
-
-  test(`It should validate multiple dc:creator`, async () => {
-    const content = readFileSync(filePath, 'utf-8');
-    const feed = new RSSFeed(content);
-    await feed.validate();
-    expect(feed.errors.length).toBe(0);
-    const rss = await feed.build();
-    if (outFilePath) {
-      writeFileSync(
-        outFilePath,
-        JSON.stringify(rss, replaceErrors, 2),
-        'utf-8'
-      );
+      expect(rss.channel?.title).toBe('Newsweek feed for VMG');
+      const item = rss.channel.items[0];
+      expect(item).toBeDefined();
+      expect(item['cf:isSponsored']).toBe(true);
+      expect(item['cf:isPaid']).toBe(true);
     }
+  );
 
-    expect(rss.channel?.title).toBe('Newsweek feed for VMG');
-    let item = rss.channel.items[0];
-    expect(item).toBeDefined();
-    if (!item) return;
-    expect(item['dc:creator']).toBe('Drew VonScio');
-    item = rss.channel.items[1];
-    expect(item).toBeDefined();
-    if (!item) return;
-    expect(item['dc:creator']).toBe('Sonam Sheth, John Doe');
-  });
+  test(
+    `It should validate multiple dc:creator`,
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const content = readFileSync(filePath, 'utf-8');
+      const feed = new RSSFeed(content);
+      await feed.validate();
+      expect(feed.errors.length).toBe(0);
+      const rss = await feed.build();
+      if (outFilePath) {
+        writeFileSync(
+          outFilePath,
+          JSON.stringify(rss, replaceErrors, 2),
+          'utf-8'
+        );
+      }
 
-  test(`It should test cf:thumbnail`, async () => {
+      expect(rss.channel?.title).toBe('Newsweek feed for VMG');
+      let item = rss.channel.items[0];
+      expect(item).toBeDefined();
+      if (!item) return;
+      expect(item['dc:creator']).toBe('Drew VonScio');
+      item = rss.channel.items[1];
+      expect(item).toBeDefined();
+      if (!item) return;
+      expect(item['dc:creator']).toBe('Sonam Sheth, John Doe');
+    }
+  );
+
+  test(`It should test cf:thumbnail`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     await feed.validate();
@@ -273,34 +308,38 @@ describe('Newsweek', () => {
     expect(item['dc:creator']).toBe('Sonam Sheth, John Doe');
   });
 
-  test(`It should fail invalid mime-type cf:thumbnail`, async () => {
-    const content = readFileSync(filePath, 'utf-8');
-    const feed = new RSSFeed(content);
-    await feed.validate();
-    expect(feed.errors.length).toBe(0);
-    const rss = await feed.build();
-    if (outFilePath) {
-      writeFileSync(
-        outFilePath,
-        JSON.stringify(rss, replaceErrors, 2),
-        'utf-8'
-      );
-    }
+  test(
+    `It should fail invalid mime-type cf:thumbnail`,
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const content = readFileSync(filePath, 'utf-8');
+      const feed = new RSSFeed(content);
+      await feed.validate();
+      expect(feed.errors.length).toBe(0);
+      const rss = await feed.build();
+      if (outFilePath) {
+        writeFileSync(
+          outFilePath,
+          JSON.stringify(rss, replaceErrors, 2),
+          'utf-8'
+        );
+      }
 
-    expect(rss.channel?.title).toBe('Newsweek feed for VMG');
-    const item = rss.channel.items[1];
-    expect(item).toBeDefined();
-    if (!item) return;
-    expect(item['cf:thumbnail']).toEqual({
-      url: 'https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg',
-      width: 300,
-      height: 400,
-      type: undefined,
-      fileSize: 45900,
-    });
-    expect(item.warnings).toBeDefined();
-    expect(item.warnings.length).toBeGreaterThan(0);
-  });
+      expect(rss.channel?.title).toBe('Newsweek feed for VMG');
+      const item = rss.channel.items[1];
+      expect(item).toBeDefined();
+      if (!item) return;
+      expect(item['cf:thumbnail']).toEqual({
+        url: 'https://d.newsweek.com/en/full/2617265/baseball-mlb-2025-opening.jpg',
+        width: 300,
+        height: 400,
+        type: undefined,
+        fileSize: 45900,
+      });
+      expect(item.warnings).toBeDefined();
+      expect(item.warnings.length).toBeGreaterThan(0);
+    }
+  );
 });
 
 describe('Autocar', () => {
@@ -312,14 +351,18 @@ describe('Autocar', () => {
       outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `autocar.json`);
     }
   });
-  test(`It should validate the content`, async () => {
-    const content = readFileSync(filePath, 'utf-8');
-    const feed = new RSSFeed(content);
-    await feed.validate();
+  test(
+    `It should validate the content`,
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const content = readFileSync(filePath, 'utf-8');
+      const feed = new RSSFeed(content);
+      await feed.validate();
 
-    expect(feed.errors.length, 'This errors should be empty').toBe(0);
-  });
-  test(`It should build the content`, async () => {
+      expect(feed.errors.length, 'This errors should be empty').toBe(0);
+    }
+  );
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
@@ -347,7 +390,7 @@ describe('Motorsport', () => {
       );
     }
   });
-  test(`It should build the content`, async () => {
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
@@ -378,7 +421,7 @@ describe('Codrops', () => {
       outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `codrops.json`);
     }
   });
-  test(`It should build the content`, async () => {
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
@@ -438,7 +481,7 @@ describe('Motor1', () => {
       outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `motor1.json`);
     }
   });
-  test(`It should build the content`, async () => {
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
@@ -466,7 +509,7 @@ describe('Forbes', () => {
     }
   });
 
-  test(`It should build the content`, async () => {
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
@@ -496,33 +539,43 @@ describe('Forbes', () => {
     expect(item?.['atom:author']?.['atom:email']).toBe('yezen@forbes.com');
   });
 
-  test(`It should build content with single item`, async () => {
-    filePath = path.join(`${process.env.FEEDS_PATH}`, `single-item-forbes.rss`);
-    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
-      outFilePath = path.join(
-        `${process.env.FEEDS_OUT_PATH}`,
-        `single-item-forbes.json`
+  test(
+    `It should build content with single item`,
+    { tags: ['unit', 'rss'] },
+    async () => {
+      filePath = path.join(
+        `${process.env.FEEDS_PATH}`,
+        `single-item-forbes.rss`
       );
+      if (
+        process.env.FEEDS_OUT_PATH &&
+        existsSync(process.env.FEEDS_OUT_PATH)
+      ) {
+        outFilePath = path.join(
+          `${process.env.FEEDS_OUT_PATH}`,
+          `single-item-forbes.json`
+        );
+      }
+      const content = readFileSync(filePath, 'utf-8');
+      const feed = new RSSFeed(content);
+      const rss = await feed.build();
+
+      if (outFilePath) {
+        writeFileSync(
+          outFilePath,
+          JSON.stringify(RSSFeed.toJSON(rss), replaceErrors, 2),
+          'utf-8'
+        );
+      }
+
+      const { items } = rss.channel;
+      expect(items.length).toBeGreaterThan(0);
+      const item = items.shift();
+      expect(item).toBeDefined();
     }
-    const content = readFileSync(filePath, 'utf-8');
-    const feed = new RSSFeed(content);
-    const rss = await feed.build();
+  );
 
-    if (outFilePath) {
-      writeFileSync(
-        outFilePath,
-        JSON.stringify(RSSFeed.toJSON(rss), replaceErrors, 2),
-        'utf-8'
-      );
-    }
-
-    const { items } = rss.channel;
-    expect(items.length).toBeGreaterThan(0);
-    const item = items.shift();
-    expect(item).toBeDefined();
-  });
-
-  test(`It should build large feed`, async () => {
+  test(`It should build large feed`, { tags: ['unit', 'rss'] }, async () => {
     filePath = path.join(`${process.env.FEEDS_PATH}`, `forbes-large.rss`);
     if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
       outFilePath = path.join(
@@ -561,7 +614,7 @@ describe('Womens Running', () => {
       );
     }
   });
-  test(`It should build the content`, async () => {
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
@@ -590,7 +643,7 @@ describe('Vegan Food and Living', () => {
       );
     }
   });
-  test(`It should build the content`, async () => {
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
@@ -623,22 +676,26 @@ describe('VMG', () => {
       outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `vmg.json`);
     }
   });
-  test(`It should throw error when item is missing`, async () => {
-    const content = readFileSync(filePath, 'utf-8');
-    const feed = new RSSFeed(content);
-    const rss = await feed.build();
+  test(
+    `It should throw error when item is missing`,
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const content = readFileSync(filePath, 'utf-8');
+      const feed = new RSSFeed(content);
+      const rss = await feed.build();
 
-    if (outFilePath) {
-      writeFileSync(
-        outFilePath,
-        JSON.stringify(RSSFeed.toJSON(rss), replaceErrors, 2),
-        'utf-8'
-      );
+      if (outFilePath) {
+        writeFileSync(
+          outFilePath,
+          JSON.stringify(RSSFeed.toJSON(rss), replaceErrors, 2),
+          'utf-8'
+        );
+      }
+
+      expect(rss.channel?.title).toBe('VMG');
+      expect(rss.channel?.errors.length).toBeGreaterThan(0);
     }
-
-    expect(rss.channel?.title).toBe('VMG');
-    expect(rss.channel?.errors.length).toBeGreaterThan(0);
-  });
+  );
 });
 
 describe('PureNews', () => {
@@ -650,7 +707,7 @@ describe('PureNews', () => {
       outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `purenews.json`);
     }
   });
-  test(`It should build the content`, async () => {
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
@@ -682,7 +739,7 @@ describe('Wccftech', () => {
       outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `wccftech.json`);
     }
   });
-  test(`It should build the content`, async () => {
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
@@ -714,7 +771,7 @@ describe('Saga', () => {
       outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `saga.json`);
     }
   });
-  test(`It should build the content`, async () => {
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
@@ -759,7 +816,7 @@ describe('Cultured Magazine', () => {
       );
     }
   });
-  test(`It should build the content`, async () => {
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
@@ -804,7 +861,7 @@ describe('The New World', () => {
       );
     }
   });
-  test(`It should build the content`, async () => {
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     const rss = await feed.build();
@@ -850,14 +907,14 @@ describe('The English Home', () => {
       );
     }
   });
-  test(`It should validate the item`, async () => {
+  test(`It should validate the item`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     await feed.validate();
 
     expect(feed.errors.length).toBe(0);
   });
-  test(`It should build the content`, async () => {
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     await feed.validate();
@@ -973,25 +1030,31 @@ describe('The English Home', () => {
 
     expect(rss.channel?.title).toBe('https://www.theenglishhome.co.uk content');
   });
-  test.skip(`It should test affiliate links`, async () => {
-    const content = readFileSync(filePath, 'utf-8');
-    const feed = new RSSFeed(content);
-    await feed.validate();
-    expect(feed.errors.length).toBe(0);
-    const rss = await feed.build();
-    if (outFilePath) {
-      writeFileSync(
-        outFilePath,
-        JSON.stringify(rss, replaceErrors, 2),
-        'utf-8'
-      );
-    }
+  test(
+    `It should test affiliate links`,
+    { tags: ['unit', 'rss', 'broken'] },
+    async () => {
+      const content = readFileSync(filePath, 'utf-8');
+      const feed = new RSSFeed(content);
+      await feed.validate();
+      expect(feed.errors.length).toBe(0);
+      const rss = await feed.build();
+      if (outFilePath) {
+        writeFileSync(
+          outFilePath,
+          JSON.stringify(rss, replaceErrors, 2),
+          'utf-8'
+        );
+      }
 
-    expect(rss.channel?.title).toBe('Newsweek feed for VMG');
-    const item = rss.channel.items[0];
-    expect(item).toBeDefined();
-    expect(item['cf:hasAffiliateLinks']).toBe(true);
-  });
+      expect(rss.channel?.title).toBe(
+        'https://www.theenglishhome.co.uk content'
+      );
+      const item = rss.channel.items[0];
+      expect(item).toBeDefined();
+      expect(item['cf:hasAffiliateLinks']).toBe(false);
+    }
+  );
 });
 
 describe('Motor', () => {
@@ -999,14 +1062,14 @@ describe('Motor', () => {
   beforeEach(() => {
     filePath = path.join(`${process.env.FEEDS_PATH}`, `motor.rss`);
   });
-  test(`It should validate the item`, async () => {
+  test(`It should validate the item`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     await feed.validate();
 
     expect(feed.errors.length).toBe(0);
   });
-  test(`It should build the content`, async () => {
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
     await feed.validate();
@@ -1029,93 +1092,105 @@ describe('Motor', () => {
   });
 });
 
-describe.skip('Recipe', () => {
-  test(`It return a recipe object, from multiple types`, async () => {
-    const url = 'https://www.saga.co.uk/magazine/recipes/easter-simnel-cake';
-    const recipe = await RSSFeed.getRecipeFromUrl(url);
-    expect(recipe).toBeDefined();
-  });
-  test(`It return a recipe object, whenever a valid recipe is found`, async () => {
-    const url =
-      'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding';
-    const result: Recipe = {
-      '@type': 'Recipe',
-      name: 'Vegan Steamed Jam Suet Sponge Pudding',
-      author: {
-        '@id':
-          'https://www.veganfoodandliving.com/#/schema/person/62be92366f201f8fd50f286ece9fc0df',
-      },
-      description:
-        'This vegan steamed jam suet sponge pudding is a nostalgic trip down memory lane, offering a taste of a classic British dessert with a compassionate twist.',
-      datePublished: '2022-09-20T15:47:48+00:00',
-      image: [
-        'https://www.veganfoodandliving.com/wp-content/uploads/2022/09/Vegan-Steamed-Jam-Suet-Sponge-Pudding-close-up.jpg',
-        'https://www.veganfoodandliving.com/wp-content/uploads/2022/09/Vegan-Steamed-Jam-Suet-Sponge-Pudding-close-up-500x500.jpg',
-        'https://www.veganfoodandliving.com/wp-content/uploads/2022/09/Vegan-Steamed-Jam-Suet-Sponge-Pudding-close-up-500x375.jpg',
-        'https://www.veganfoodandliving.com/wp-content/uploads/2022/09/Vegan-Steamed-Jam-Suet-Sponge-Pudding-close-up-480x270.jpg',
-      ],
-      recipeYield: ['6'],
-      prepTime: 'PT10M',
-      cookTime: 'PT60M',
-      totalTime: 'PT70M',
-      recipeIngredient: [
-        '300 g self-raising flour',
-        '75 g caster sugar',
-        '1  lemon (zest only)',
-        '6 Tbsp jam',
-        '150 g vegetable suet',
-        'A pinch of cinnamon',
-        '240 ml soya milk',
-      ],
-      recipeInstructions: [
-        {
-          '@type': 'HowToStep',
-          text: 'Add the flour, suet, sugar, cinnamon, lemon zest and milk to a bowl and mix together to form a soft sticky dough.',
-          name: 'Add the flour, suet, sugar, cinnamon, lemon zest and milk to a bowl and mix together to form a soft sticky dough.',
-          url: 'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/#wprm-recipe-118147-step-0-0',
+describe('Recipe', () => {
+  test(
+    `It return a recipe object, from multiple types`,
+    { tags: ['integration', 'recipe'] },
+    async () => {
+      const url = 'https://www.saga.co.uk/magazine/recipes/easter-simnel-cake';
+      const recipe = await RSSFeed.getRecipeFromUrl(url);
+      expect(recipe).toBeDefined();
+    }
+  );
+  test(
+    `It return a recipe object, whenever a valid recipe is found`,
+    { tags: ['integration', 'recipe'] },
+    async () => {
+      const url =
+        'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding';
+      const result: Recipe = {
+        '@type': 'Recipe',
+        name: 'Vegan Steamed Jam Suet Sponge Pudding',
+        author: {
+          '@id':
+            'https://www.veganfoodandliving.com/#/schema/person/62be92366f201f8fd50f286ece9fc0df',
         },
-        {
-          '@type': 'HowToStep',
-          text: 'Put a tablespoon of jam into the bottom of each mould and spoon in a sixth of the pudding mixture, cover with tin foil. Steam for 50-60 minutes or until the pudding is cooked through. Serve warm.',
-          name: 'Put a tablespoon of jam into the bottom of each mould and spoon in a sixth of the pudding mixture, cover with tin foil. Steam for 50-60 minutes or until the pudding is cooked through. Serve warm.',
-          url: 'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/#wprm-recipe-118147-step-0-1',
+        description:
+          'This vegan steamed jam suet sponge pudding is a nostalgic trip down memory lane, offering a taste of a classic British dessert with a compassionate twist.',
+        datePublished: '2022-09-20T15:47:48+00:00',
+        image: [
+          'https://www.veganfoodandliving.com/wp-content/uploads/2022/09/Vegan-Steamed-Jam-Suet-Sponge-Pudding-close-up.jpg',
+          'https://www.veganfoodandliving.com/wp-content/uploads/2022/09/Vegan-Steamed-Jam-Suet-Sponge-Pudding-close-up-500x500.jpg',
+          'https://www.veganfoodandliving.com/wp-content/uploads/2022/09/Vegan-Steamed-Jam-Suet-Sponge-Pudding-close-up-500x375.jpg',
+          'https://www.veganfoodandliving.com/wp-content/uploads/2022/09/Vegan-Steamed-Jam-Suet-Sponge-Pudding-close-up-480x270.jpg',
+        ],
+        recipeYield: ['6'],
+        prepTime: 'PT10M',
+        cookTime: 'PT60M',
+        totalTime: 'PT70M',
+        recipeIngredient: [
+          '300 g self-raising flour',
+          '75 g caster sugar',
+          '1  lemon (zest only)',
+          '6 Tbsp jam',
+          '150 g vegetable suet',
+          'A pinch of cinnamon',
+          '240 ml soya milk',
+        ],
+        recipeInstructions: [
+          {
+            '@type': 'HowToStep',
+            text: 'Add the flour, suet, sugar, cinnamon, lemon zest and milk to a bowl and mix together to form a soft sticky dough.',
+            name: 'Add the flour, suet, sugar, cinnamon, lemon zest and milk to a bowl and mix together to form a soft sticky dough.',
+            url: 'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/#wprm-recipe-118147-step-0-0',
+          },
+          {
+            '@type': 'HowToStep',
+            text: 'Put a tablespoon of jam into the bottom of each mould and spoon in a sixth of the pudding mixture, cover with tin foil. Steam for 50-60 minutes or until the pudding is cooked through. Serve warm.',
+            name: 'Put a tablespoon of jam into the bottom of each mould and spoon in a sixth of the pudding mixture, cover with tin foil. Steam for 50-60 minutes or until the pudding is cooked through. Serve warm.',
+            url: 'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/#wprm-recipe-118147-step-0-1',
+          },
+        ],
+        recipeCategory: ['Dessert'],
+        recipeCuisine: ['British'],
+        keywords:
+          'dairy free dessert, egg free dessert, plant based dessert, vegan dessert',
+        nutrition: {
+          '@type': 'NutritionInformation',
+          servingSize: '152 g',
+          calories: '486 kcal',
+          carbohydrateContent: '68 g',
+          proteinContent: '7 g',
+          fatContent: '27 g',
+          saturatedFatContent: '6 g',
+          transFatContent: '3 g',
+          sodiumContent: '29 mg',
+          fiberContent: '2 g',
+          sugarContent: '23 g',
+          unsaturatedFatContent: '19 g',
         },
-      ],
-      recipeCategory: ['Dessert'],
-      recipeCuisine: ['British'],
-      keywords:
-        'dairy free dessert, egg free dessert, plant based dessert, vegan dessert',
-      nutrition: {
-        '@type': 'NutritionInformation',
-        servingSize: '152 g',
-        calories: '486 kcal',
-        carbohydrateContent: '68 g',
-        proteinContent: '7 g',
-        fatContent: '27 g',
-        saturatedFatContent: '6 g',
-        transFatContent: '3 g',
-        sodiumContent: '29 mg',
-        fiberContent: '2 g',
-        sugarContent: '23 g',
-        unsaturatedFatContent: '19 g',
-      },
-      '@id':
-        'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/#recipe',
-      isPartOf: {
         '@id':
-          'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/#article',
-      },
-      mainEntityOfPage:
-        'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/',
-    };
-    const recipe = await RSSFeed.getRecipeFromUrl(url);
-    expect(recipe).toEqual(result);
-  });
+          'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/#recipe',
+        isPartOf: {
+          '@id':
+            'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/#article',
+        },
+        mainEntityOfPage:
+          'https://www.veganfoodandliving.com/vegan-recipes/vegan-steamed-jam-suet-sponge-pudding/',
+      };
+      const recipe = await RSSFeed.getRecipeFromUrl(url);
+      expect(recipe).toEqual(result);
+    }
+  );
 
-  test(`It should return null, because the recipe is not found`, async () => {
-    const url =
-      'https://www.veganfoodandliving.com/news/wagamama-vegatsu-vegan-options-menu-cuts/';
-    const recipe = await RSSFeed.getRecipeFromUrl(url);
-    expect(recipe).toBe(null);
-  });
+  test(
+    `It should return null, because the recipe is not found`,
+    { tags: ['integration', 'recipe'] },
+    async () => {
+      const url =
+        'https://www.veganfoodandliving.com/news/wagamama-vegatsu-vegan-options-menu-cuts/';
+      const recipe = await RSSFeed.getRecipeFromUrl(url);
+      expect(recipe).toBe(null);
+    }
+  );
 });

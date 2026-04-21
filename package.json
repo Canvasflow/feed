@@ -1,7 +1,7 @@
 {
   "name": "@canvasflow/feed",
   "description": "This is canvasflow utility for processing feeds",
-  "version": "1.7.5",
+  "version": "1.8.0",
   "type": "module",
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
@@ -31,11 +31,13 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "npm run build && npm run --dry-run",
-    "test": "vitest",
+    "test": "vitest --ui",
     "test:debug": "vitest --test-timeout=0 --no-file-parallelism",
     "test:run": "vitest run",
-    "test:watch": "vitest watch",
     "test:ui": "vitest --ui",
+    "test:unit": "vitest --ui --tags-filter=unit",
+    "test:integration": "vitest --ui --tags-filter=integration", 
+    "test:broken": "vitest --ui --tags-filter=broken",
     "lint": "eslint . --ext .ts",
     "lint:watch": "watch-eslint",
     "coverage": "vitest --coverage",
@@ -78,7 +80,7 @@
     "typescript-eslint": "^8.56.0",
     "vite": "^8.0.0",
     "vite-plugin-dts": "^4.5.4",
-    "vitest": "^4.1.2",
+    "vitest": "^4.1.5",
     "watch-eslint": "^1.1.0"
   },
   "engines": {
