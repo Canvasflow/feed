@@ -242,7 +242,7 @@ function fromNode(
       component: 'body',
       errors: [],
       warnings: [],
-      text: `<p>${node.content}</p>`,
+      text: `<p>${node.content.trim()}</p>`,
     } as TextComponent;
   }
 
