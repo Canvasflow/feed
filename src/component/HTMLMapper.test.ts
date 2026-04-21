@@ -2005,12 +2005,12 @@ describe('HTMLMapper', () => {
         const src =
           'https://embed.podcasts.apple.com/us/podcast/all-bark-no-bite-the-reality-behind-dog-the-bounty-hunter/id1849068807?i=1000761154684';
         const content = `
-       <iframe 
-        allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" 
-        frameborder="0" 
-        height="450" 
-        style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;" 
-        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" 
+       <iframe
+        allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+        frameborder="0"
+        height="450"
+        style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;"
+        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
         src="${src}">
        </iframe>`;
         const components = HTMLMapper.toComponents(content);
@@ -2032,12 +2032,12 @@ describe('HTMLMapper', () => {
         const src =
           'https://embed.podcasts.apple.com/us/podcast/unheard-true-crime-in-their-own-words/id1849068807';
         const content = `
-       <iframe 
-        allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" 
-        frameborder="0" 
-        height="450" 
-        style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;" 
-        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" 
+       <iframe
+        allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+        frameborder="0"
+        height="450"
+        style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;"
+        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
         src="${src}">
        </iframe>`;
         const components = HTMLMapper.toComponents(content);
@@ -2222,7 +2222,7 @@ describe('HTMLMapper', () => {
 
   describe('Link container components', () => {
     test(
-      'It should anchor tags to map container component',
+      'It should use anchor tags to map container component',
       { tags: ['unit', 'html'] },
       () => {
         const mappings: Array<ComponentMapping> = [];
@@ -2260,12 +2260,12 @@ describe('HTMLMapper', () => {
         <a href="${link}" target="_blank">
           <div><h1>Test</h1></div>
           <img src="https://example.com/image.jpg"/>
-          <iframe 
-            allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" 
-            frameborder="0" 
-            height="450" 
-            style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;" 
-            sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" 
+          <iframe
+            allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+            frameborder="0"
+            height="450"
+            style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;"
+            sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
             src="${src}">
           </iframe>
         </a>
@@ -2327,6 +2327,72 @@ describe('HTMLMapper', () => {
         expect(textComponent.text).toBe(
           `<a href="${link}" target="_blank">Headline</a>`
         );
+      }
+    );
+  });
+
+  describe.skip('Figure container components', () => {
+    test(
+      'It should use figure tag to map figure container component',
+      { tags: ['unit', 'html', 'todo'] },
+      () => {
+        const mappings: Array<ComponentMapping> = [];
+        const caption = 'Example image';
+        const imagesUrls = [
+          'https://example.com/image-1.jpg',
+          'https://example.com/image-2.jpg',
+        ];
+        const content = `
+        <figure>
+          <img src="${imagesUrls[0]}"/>
+          <img src="${imagesUrls[0]}"/>
+          <figcaption>Example image</figcaption>
+        </figure>
+      `;
+        const components = HTMLMapper.toComponents(content, { mappings });
+        expect(components.length).toBe(2);
+
+        let imageComponent = components[0] as ImageComponent;
+        expect(isImageComponent(imageComponent)).toBe(true);
+        expect(imageComponent.imageurl).toBe(imagesUrls[0]);
+        expect(imageComponent.caption).toBe(caption);
+
+        imageComponent = components[1] as ImageComponent;
+        expect(isImageComponent(imageComponent)).toBe(true);
+        expect(imageComponent.imageurl).toBe(imagesUrls[1]);
+        expect(imageComponent.caption).toBe(caption);
+      }
+    );
+    test(
+      'It should use figure tag to map figure container component and ignore invalid components',
+      { tags: ['unit', 'html', 'todo'] },
+      () => {
+        const mappings: Array<ComponentMapping> = [];
+        const caption = 'Example image';
+        const imagesUrls = [
+          'https://example.com/image-1.jpg',
+          'https://example.com/image-2.jpg',
+        ];
+        const content = `
+        <figure>
+          <img src="${imagesUrls[0]}"/>
+          <img src="${imagesUrls[0]}"/>
+          <h1>Headline</h1>
+          <figcaption>Example image</figcaption>
+        </figure>
+      `;
+        const components = HTMLMapper.toComponents(content, { mappings });
+        expect(components.length).toBe(2);
+
+        let imageComponent = components[0] as ImageComponent;
+        expect(isImageComponent(imageComponent)).toBe(true);
+        expect(imageComponent.imageurl).toBe(imagesUrls[0]);
+        expect(imageComponent.caption).toBe(caption);
+
+        imageComponent = components[1] as ImageComponent;
+        expect(isImageComponent(imageComponent)).toBe(true);
+        expect(imageComponent.imageurl).toBe(imagesUrls[1]);
+        expect(imageComponent.caption).toBe(caption);
       }
     );
   });
