@@ -8,23 +8,25 @@ import {
   isValidMapping,
   processTextLinks,
 } from './Mapping';
-import type {
-  GalleryComponent,
-  ImageComponent,
-  TextComponent,
-  TwitterComponent,
-  InstagramComponent,
-  YoutubeComponent,
-  VideoComponent,
-  AudioComponent,
-  TikTokComponent,
-  ButtonComponent,
-  RecipeComponent,
-  HTMLTableComponent,
-  DailymotionComponent,
-  VimeoComponent,
-  ContainerComponent,
-  CustomComponent,
+import {
+  type GalleryComponent,
+  type ImageComponent,
+  type TextComponent,
+  type TwitterComponent,
+  type InstagramComponent,
+  type YoutubeComponent,
+  type VideoComponent,
+  type AudioComponent,
+  type TikTokComponent,
+  type ButtonComponent,
+  type RecipeComponent,
+  type HTMLTableComponent,
+  type DailymotionComponent,
+  type VimeoComponent,
+  type ContainerComponent,
+  type CustomComponent,
+  isTextComponent,
+  isImageComponent,
 } from './Component';
 
 describe('HTMLMapper', () => {
@@ -200,7 +202,7 @@ describe('HTMLMapper', () => {
 
     test('Anchors should be present', () => {
       const content =
-        '<a href="https://example.com" target="_blank" rel="nofollow noopener">Hello world</a>';
+        '<a href="https://example.com" target="_blank" rel="nofollow noopener"><p>Hello world</p></a>';
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(1);
       const component = components.pop() as TextComponent;
@@ -1945,6 +1947,103 @@ describe('HTMLMapper', () => {
         return;
       }
       expect(containerComponent.components.length).toBe(0);
+    });
+  });
+
+  describe('Link container components', () => {
+    test('It should anchor tags to map container component', () => {
+      const mappings: Array<ComponentMapping> = [];
+      const link = 'https://example.org';
+      const content = `
+        <a href="${link}" target="_blank">
+          <div><h1>Test</h1></div>
+          <img src="https://example.com/image.jpg"/>
+        </a>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(2);
+      const textComponent = components[0] as TextComponent;
+      expect(isTextComponent(textComponent)).toBe(true);
+      expect(textComponent.text).toBe(
+        `<a href="${link}" target="_blank">Test</a>`
+      );
+      const imageComponent = components[1] as ImageComponent;
+      expect(isImageComponent(imageComponent)).toBe(true);
+      expect(imageComponent.link).toBe(link);
+    });
+
+    test('It should keep audio component that do not use links', () => {
+      const mappings: Array<ComponentMapping> = [];
+      const src =
+        'https://embed.podcasts.apple.com/us/podcast/all-bark-no-bite-the-reality-behind-dog-the-bounty-hunter/id1849068807?i=1000761154684';
+      const link = 'https://example.org';
+      const content = `
+        <a href="${link}" target="_blank">
+          <div><h1>Test</h1></div>
+          <img src="https://example.com/image.jpg"/>
+          <iframe 
+            allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" 
+            frameborder="0" 
+            height="450" 
+            style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;" 
+            sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" 
+            src="${src}">
+          </iframe>
+        </a>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(3);
+
+      const textComponent = components[0] as TextComponent;
+      expect(isTextComponent(textComponent)).toBe(true);
+      expect(textComponent.text).toBe(
+        `<a href="${link}" target="_blank">Test</a>`
+      );
+
+      const imageComponent = components[1] as ImageComponent;
+      expect(isImageComponent(imageComponent)).toBe(true);
+      expect(imageComponent.link).toBe(link);
+
+      const audioComponent = components[2] as AudioComponent;
+      expect(audioComponent).toBeDefined();
+      expect(audioComponent.component).toBe('audio');
+      expect(audioComponent.url).toBe(src);
+      expect(audioComponent.loop).toBe(false);
+      expect(audioComponent.autoplay).toBe(true);
+      expect(audioComponent.controls).toBe(false);
+      expect(audioComponent.muted).toBe(false);
+    });
+
+    test('It should keep the text components wrapped in anchor tags', () => {
+      const mappings: Array<ComponentMapping> = [];
+      const link = 'https://example.org';
+      const content = `
+        <a href="${link}" target="_blank">
+          <p>Example</p>
+          Hello
+          <h1>Headline</h1>
+        </a>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(3);
+
+      let textComponent = components[0] as TextComponent;
+      expect(isTextComponent(textComponent)).toBe(true);
+      expect(textComponent.text).toBe(
+        `<a href="${link}" target="_blank"><p>Example</p></a>`
+      );
+
+      textComponent = components[1] as TextComponent;
+      expect(isTextComponent(textComponent)).toBe(true);
+      expect(textComponent.text).toBe(
+        `<a href="${link}" target="_blank"><p>Hello</p></a>`
+      );
+
+      textComponent = components[2] as TextComponent;
+      expect(isTextComponent(textComponent)).toBe(true);
+      expect(textComponent.text).toBe(
+        `<a href="${link}" target="_blank">Headline</a>`
+      );
     });
   });
 

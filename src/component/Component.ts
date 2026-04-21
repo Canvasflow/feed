@@ -73,6 +73,12 @@ export interface ContainerComponent extends Component {
   components: Array<Component>;
 }
 
+export interface LinkContainerComponent extends ContainerComponent {
+  type: 'link';
+  link?: string;
+  attributes?: Map<string, string>;
+}
+
 export interface ButtonComponent extends Component {
   component: 'button';
   text?: string;
@@ -196,6 +202,41 @@ for (let i = 1; i <= 60; i++) {
 
 export function isValidTextRole(role: string): boolean {
   return validRoleType.has(role);
+}
+
+export function isImageComponent(object: unknown): object is ImageComponent {
+  const potential = object as Record<string, unknown>;
+
+  return (
+    typeof object === 'object' &&
+    object !== null &&
+    typeof potential.imageurl === 'string' &&
+    potential.component === 'image'
+  );
+}
+
+export function isTextComponent(object: unknown): object is TextComponent {
+  const potential = object as Record<string, unknown>;
+
+  return (
+    typeof object === 'object' &&
+    object !== null &&
+    typeof potential.text === 'string' &&
+    typeof potential.component === 'string' &&
+    isValidTextRole(potential.component)
+  );
+}
+
+export function isLinkContainerComponent(
+  object: unknown
+): object is LinkContainerComponent {
+  const potential = object as Record<string, unknown>;
+  const isValid =
+    typeof object === 'object' &&
+    object !== null &&
+    potential.type === 'link' &&
+    potential.component === 'container';
+  return isValid;
 }
 
 export type TextRange = NumericRange<CreateArrayWithLengthX<1>, 61>;
