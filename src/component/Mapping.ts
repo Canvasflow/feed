@@ -5,6 +5,9 @@ import { z } from 'zod';
 import sanitizeHtml from 'sanitize-html';
 
 import {
+  isImageComponent,
+  isLinkContainerComponent,
+  isTextComponent,
   isValidTextRole,
   type AudioComponent,
   type ButtonComponent,
@@ -18,6 +21,7 @@ import {
   type ImageComponent,
   type InfogramComponent,
   type InstagramComponent,
+  type LinkContainerComponent,
   type RecipeComponent,
   type TextComponent,
   type TextType,
@@ -186,15 +190,39 @@ export function reduceComponents(
     if (Array.isArray(component)) {
       for (const c of component) {
         if (!c) continue;
+        if (isLinkContainerComponent(c)) {
+          appendLinkContainerComponents(acc, c);
+          continue;
+        }
 
         acc.push(c);
       }
       return acc;
     }
 
+    if (isLinkContainerComponent(component)) {
+      appendLinkContainerComponents(acc, component);
+      return acc;
+    }
+
     acc.push(component);
     return acc;
   };
+}
+
+function appendLinkContainerComponents(
+  acc: Component[],
+  linkContainer: LinkContainerComponent
+): void {
+  const link = linkContainer.link;
+  const attributes = linkContainer.attributes;
+  const components = linkContainer.components.reduce(
+    reduceLinkComponent(link, attributes),
+    []
+  );
+  for (const component of components) {
+    acc.push(component);
+  }
 }
 
 function fromNode(
@@ -206,7 +234,7 @@ function fromNode(
 
   // If the node is a text, it get's wrapped in a p tag
   if (node.type === 'text') {
-    if (isEmpty(node.content)) {
+    if (!node.content.trim().length) {
       return null;
     }
 
@@ -214,7 +242,7 @@ function fromNode(
       component: 'body',
       errors: [],
       warnings: [],
-      text: `<p>${node.content}</p>`,
+      text: `<p>${node.content.trim()}</p>`,
     } as TextComponent;
   }
 
@@ -302,11 +330,6 @@ function fromNode(
     return toTikTok(new URL(attributes.get('cite') || ''));
   }
 
-  // This process button component
-  if (tagName === 'button' || (tagName === 'a' && role === 'button')) {
-    return toButton(node);
-  }
-
   // This process twitter
   if (
     (tagName === 'blockquote' || tagName === 'a') &&
@@ -318,17 +341,17 @@ function fromNode(
     return toTwitter(node);
   }
 
+  // This process button component
+  if (tagName === 'button' || (tagName === 'a' && role === 'button')) {
+    return toButton(node);
+  }
+
   if (role === 'gallery' || role === 'mosaic') {
     return toGallery(node);
   }
 
   if (tagName === 'figure' && hasCaption(node)) {
     return fromFigure(node);
-  }
-
-  // Check if the tag belongs to an image tag
-  if (imageTags.has(tagName) || (tagName === 'a' && hasImage(node))) {
-    return toImage(node);
   }
 
   // This section validates the rest of the tags components
@@ -348,6 +371,20 @@ function fromNode(
     node,
     params?.mappings
   );
+
+  if (tagName === 'a') {
+    return toLinkContainer(node, params, properties);
+  }
+
+  if (tagName === 'img') {
+    return fromImg(node);
+  }
+
+  // Check if the tag belongs to an image tag
+  if (imageTags.has(tagName) || (tagName === 'a' && hasImage(node))) {
+    return toImage(node);
+  }
+
   if (mappedComponent) {
     if (mappedComponent === 'recipe' || mappedComponent === 'container') {
       return toContainer(mappedComponent, node, params, properties);
@@ -399,6 +436,45 @@ function fromFigcaption(node: ElementNode): FigcaptionResponse {
   return {
     caption: caption ? caption.trim() : caption,
     credit: credit ? credit.trim() : credit,
+  };
+}
+
+function fromImg(node: ElementNode): ImageComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  let width: number | undefined;
+  let height: number | undefined;
+  const attributes = getAttributes(node.attributes);
+  const src = attributes.get('src');
+  const widthAttr = attributes.get('width');
+  const heightAttr = attributes.get('height');
+
+  if (widthAttr) {
+    const w = parseInt(`${widthAttr}`, 10);
+    if (!Number.isNaN(w)) {
+      width = w;
+    }
+  }
+  if (heightAttr) {
+    const h = parseInt(heightAttr, 10);
+    if (!Number.isNaN(h)) {
+      height = h;
+    }
+  }
+
+  const alt = attributes.get('alt');
+  if (!src) {
+    errors.push('Image src attribute is missing');
+  }
+
+  return {
+    component: 'image',
+    imageurl: src || '',
+    alt,
+    width,
+    height,
+    errors,
+    warnings,
   };
 }
 
@@ -1361,6 +1437,70 @@ function toContainer(
     errors: [],
     warnings,
     properties,
+  };
+}
+
+function toLinkContainer(
+  node: ElementNode,
+  params?: Params,
+  properties?: Record<string, unknown>
+): LinkContainerComponent {
+  const warnings: string[] = [];
+  const errors: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  const id = attributes.get('id');
+
+  const link: string | undefined = attributes.get('href');
+
+  const components: Array<Component> = node.children.length
+    ? node.children.reduce(reduceComponents(params), [])
+    : [];
+
+  const component: LinkContainerComponent = {
+    id,
+    attributes,
+    component: 'container',
+    type: 'link',
+    link: link || '',
+    components,
+    errors,
+    warnings,
+    properties,
+  };
+
+  return component;
+}
+
+function reduceLinkComponent(
+  link?: string,
+  attributes?: Map<string, string>
+): (acc: Component[], item: Component) => Component[] {
+  return (acc: Component[], component: Component): Component[] => {
+    // You don't have a link so return as it is
+    if (!link) {
+      acc.push(component);
+      return acc;
+    }
+
+    if (isTextComponent(component)) {
+      if (attributes && attributes.size > 0) {
+        attributes.set('href', link);
+        const linkAttributes: string[] = [];
+        for (const [attr, value] of attributes) {
+          linkAttributes.push(`${attr}="${value}"`);
+        }
+        component.text = `<a ${linkAttributes.join(' ')}>${component.text}</a>`;
+      } else {
+        component.text = `<a href="${link}">${component.text}</a>`;
+      }
+    }
+
+    if (isImageComponent(component)) {
+      component.link = link;
+    }
+
+    acc.push(component);
+    return acc;
   };
 }
 

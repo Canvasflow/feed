@@ -32,8 +32,12 @@ export type {
   ContainerComponent,
   CustomComponent,
   TextType,
+  isImageComponent,
+  isTextComponent,
+  isLinkContainerComponent,
+  isValidTextRole,
 } from './component/Component';
-export { isValidTextRole } from './component/Component';
+
 export type {
   Recipe,
   Person,
