@@ -137,6 +137,8 @@ export function isTextComponent(object: unknown): object is TextComponent {
 export interface HTMLTableComponent extends Component {
   component: 'htmltable';
   html: string;
+  caption?: string;
+  credit?: string;
 }
 
 export function isHTMLTableComponent(

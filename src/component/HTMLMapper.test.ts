@@ -27,6 +27,7 @@ import {
   type CustomComponent,
   isTextComponent,
   isImageComponent,
+  isHTMLTableComponent,
 } from './Component';
 
 describe('Root Element', () => {
@@ -954,7 +955,7 @@ describe('Image component', () => {
       expect(component.component).toBe('image');
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.alt).toBe('My image');
-      expect(component?.caption).toBeUndefined();
+      expect(component?.caption).toBe('');
     }
   );
 
@@ -1055,7 +1056,7 @@ describe('Image component', () => {
       expect(component?.imageurl).toBe('cover.jpg');
       expect(component?.alt).toBe('My image');
       expect(component?.caption).toBe('This is a caption');
-      expect(component?.credit).toBe('This is a credit');
+      expect(component?.credit).toBe('<span>This is a credit</span>');
     }
   );
 
@@ -2324,12 +2325,13 @@ describe('Link container components', () => {
   );
 });
 
-describe.skip('Figure container component', () => {
+describe('Figure container component', () => {
   test(
     'It should use figure tag to map figure container component',
     { tags: ['unit', 'html', 'todo'] },
     () => {
       const caption = 'Example image';
+      const tableContent = '<table><thead></thead><tbody></tbody></table>';
       const imagesUrls = [
         'https://example.com/image-1.jpg',
         'https://example.com/image-2.jpg',
@@ -2337,12 +2339,13 @@ describe.skip('Figure container component', () => {
       const content = `
         <figure>
           <img src="${imagesUrls[0]}"/>
-          <img src="${imagesUrls[0]}"/>
-          <figcaption>Example image</figcaption>
+          <div><img src="${imagesUrls[1]}"/></div>
+          ${tableContent}
+          <figcaption>${caption}</figcaption>
         </figure>
       `;
       const components = HTMLMapper.toComponents(content);
-      expect(components.length).toBe(2);
+      expect(components.length).toBe(3);
 
       let imageComponent = components[0] as ImageComponent;
       expect(isImageComponent(imageComponent)).toBe(true);
@@ -2353,6 +2356,11 @@ describe.skip('Figure container component', () => {
       expect(isImageComponent(imageComponent)).toBe(true);
       expect(imageComponent.imageurl).toBe(imagesUrls[1]);
       expect(imageComponent.caption).toBe(caption);
+
+      const htmlTable = components[2] as HTMLTableComponent;
+      expect(isHTMLTableComponent(htmlTable)).toBe(true);
+      expect(htmlTable.html).toBe(tableContent);
+      expect(htmlTable.caption).toBe(caption);
     }
   );
   test(
@@ -2368,7 +2376,7 @@ describe.skip('Figure container component', () => {
       const content = `
         <figure>
           <img src="${imagesUrls[0]}"/>
-          <img src="${imagesUrls[0]}"/>
+          <img src="${imagesUrls[1]}"/>
           <h1>Headline</h1>
           <figcaption>Example image</figcaption>
         </figure>

@@ -5,16 +5,22 @@ import { z } from 'zod';
 import sanitizeHtml from 'sanitize-html';
 
 import {
+  isAudioComponent,
+  isFigureContainerComponent,
+  isHTMLTableComponent,
   isImageComponent,
   isLinkContainerComponent,
   isTextComponent,
   isValidTextRole,
+  isVideoComponent,
+  isYoutubeComponent,
   type AudioComponent,
   type ButtonComponent,
   type Component,
   type ContainerComponent,
   type CustomComponent,
   type DailymotionComponent,
+  type FigureContainerComponent,
   type GalleryComponent,
   type GalleryImage,
   type HTMLTableComponent,
@@ -37,6 +43,7 @@ import {
   SetUtils,
   type ElementNode,
   type Node,
+  type NodeFilterFn,
 } from './Node';
 
 const imageTags = new Set(['img', 'picture']);
@@ -195,6 +202,10 @@ export function reduceComponents(
           continue;
         }
 
+        if (isFigureContainerComponent(c)) {
+          appendFigureContainerComponents(acc, c);
+        }
+
         acc.push(c);
       }
       return acc;
@@ -202,6 +213,11 @@ export function reduceComponents(
 
     if (isLinkContainerComponent(component)) {
       appendLinkContainerComponents(acc, component);
+      return acc;
+    }
+
+    if (isFigureContainerComponent(component)) {
+      appendFigureContainerComponents(acc, component);
       return acc;
     }
 
@@ -217,10 +233,30 @@ function appendLinkContainerComponents(
   const link = linkContainer.link;
   const attributes = linkContainer.attributes;
   const components = linkContainer.components.reduce(
-    reduceLinkComponent(link, attributes),
+    reduceLinkContainerComponent(link, attributes),
     []
   );
   for (const component of components) {
+    acc.push(component);
+  }
+}
+
+function appendFigureContainerComponents(
+  acc: Component[],
+  figureContainer: FigureContainerComponent
+): void {
+  const { credit, caption, components } = figureContainer;
+
+  for (const component of components) {
+    if (
+      isAudioComponent(component) ||
+      isImageComponent(component) ||
+      isVideoComponent(component) ||
+      isHTMLTableComponent(component)
+    ) {
+      component.caption = caption;
+      component.credit = credit;
+    }
     acc.push(component);
   }
 }
@@ -267,7 +303,6 @@ function fromNode(
   }
 
   const role = attributes.get('role');
-  const classNames = attributes.get('class');
 
   const textTagMapping: Record<string, TextType> = {
     h1: 'headline',
@@ -290,7 +325,7 @@ function fromNode(
   }
 
   // This process instagram
-  if (tagName === 'blockquote' && attributes.get('data-instgrm-permalink')) {
+  if (isInstagramNode(node)) {
     return toInstagram(node);
   }
 
@@ -300,20 +335,16 @@ function fromNode(
   }
 
   // This process html table inside figure
-  if (tagName === 'figure' && hasTable(node)) {
+  /*if (tagName === 'figure' && hasTable(node)) {
     for (const child of node.children) {
       if (child.type === 'element' && child.tagName === 'table') {
         return toHTMLTable(child);
       }
     }
     return null;
-  }
+  }*/
 
-  if (
-    tagName === 'blockquote' &&
-    classNames &&
-    classNames.includes('tiktok-embed')
-  ) {
+  if (isTikTokNode(node)) {
     if (!attributes.get('cite')) {
       return {
         component: 'video',
@@ -326,23 +357,16 @@ function fromNode(
         errors: ['cite attribute is required'],
       } as TikTokComponent;
     }
-
     return toTikTok(new URL(attributes.get('cite') || ''));
   }
 
   // This process twitter
-  if (
-    (tagName === 'blockquote' || tagName === 'a') &&
-    classNames &&
-    classNames
-      .split(' ')
-      .some((v) => new Set(['twitter-tweet', 'twitter-timeline']).has(v))
-  ) {
+  if (isTwitterNode(node)) {
     return toTwitter(node);
   }
 
   // This process button component
-  if (tagName === 'button' || (tagName === 'a' && role === 'button')) {
+  if (isButtonNode(node)) {
     return toButton(node);
   }
 
@@ -350,9 +374,9 @@ function fromNode(
     return toGallery(node);
   }
 
-  if (tagName === 'figure' && hasCaption(node)) {
+  /*if (tagName === 'figure' && hasCaption(node)) {
     return fromFigure(node);
-  }
+  }*/
 
   // This section validates the rest of the tags components
   switch (tagName) {
@@ -372,12 +396,21 @@ function fromNode(
     params?.mappings
   );
 
+  // FIXME Remote this before commiting
+  if (tagName === 'figure') {
+    return toFigureContainer(node, params, properties);
+  }
+
   if (tagName === 'a') {
     return toLinkContainer(node, params, properties);
   }
 
   if (tagName === 'img') {
     return fromImg(node);
+  }
+
+  if (tagName === 'picture') {
+    return toImage(node);
   }
 
   // Check if the tag belongs to an image tag
@@ -421,9 +454,12 @@ function fromNode(
 function fromFigcaption(node: ElementNode): FigcaptionResponse {
   let caption: string | undefined;
   let credit: string | undefined;
-  const figcaptionNodes = node.children.filter(
-    (n) => n.type === 'element' && n.tagName === 'figcaption'
-  );
+  const figcaptionNodes =
+    node.tagName === 'figcaption'
+      ? [node]
+      : node.children.filter(
+          (n) => n.type === 'element' && n.tagName === 'figcaption'
+        );
   for (const n of figcaptionNodes) {
     credit = getCredit(n as ElementNode);
     const html = stringify([n]);
@@ -771,26 +807,6 @@ function hasButton(node: ElementNode): boolean {
       return true;
     }
   }
-  return false;
-}
-
-function hasTable(node: ElementNode): boolean {
-  for (const child of node.children) {
-    if (child.type === 'element' && child.tagName === 'table') {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function hasCaption(node: ElementNode): boolean {
-  for (const child of node.children) {
-    if (child.type === 'element' && child.tagName === 'figcaption') {
-      return true;
-    }
-  }
-
   return false;
 }
 
@@ -1471,7 +1487,141 @@ function toLinkContainer(
   return component;
 }
 
-function reduceLinkComponent(
+function toFigureContainer(
+  node: ElementNode,
+  params?: Params,
+  properties?: Record<string, unknown>
+): FigureContainerComponent {
+  const warnings: string[] = [];
+  const errors: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  const id = attributes.get('id');
+  let caption = '';
+  let credit = '';
+
+  // Get the figcaption section
+  const figcaptionNodes = node.children.reduce(
+    findDescendants('figcaption'),
+    []
+  );
+  if (figcaptionNodes.length) {
+    const figcaptionNode = figcaptionNodes.shift() as ElementNode;
+    const ficaptionResponse = fromFigcaption(figcaptionNode);
+    if (ficaptionResponse) {
+      caption = ficaptionResponse.caption || '';
+      credit = ficaptionResponse.credit || '';
+    }
+  }
+
+  const components = node.children
+    .reduce(findDescendants(filterFigureDescendants(params)), [])
+    .reduce(reduceComponents(params), []);
+
+  const component: FigureContainerComponent = {
+    id,
+    component: 'container',
+    type: 'figure',
+    components,
+    caption,
+    credit,
+    errors,
+    warnings,
+    properties,
+  };
+
+  return component;
+}
+
+function filterFigureDescendants(params?: Params): NodeFilterFn {
+  return (node: Node): boolean => {
+    const { type } = node;
+    if (type !== 'element') return false;
+    const { tagName } = node;
+    // Exclude the nodes that we need to ignore
+    if (params?.excludes?.length) {
+      const isNodeExcluded = excludeNode(node, params.excludes);
+      if (isNodeExcluded) {
+        return false;
+      }
+    }
+
+    const validFigureTags = new Set([
+      'audio',
+      'img',
+      'picture',
+      'table',
+      'video',
+    ]);
+
+    if (validFigureTags.has(tagName)) {
+      return true;
+    }
+    if (isTwitterNode(node)) {
+      return true;
+    }
+
+    if (isTikTokNode(node)) {
+      return true;
+    }
+
+    if (tagName === 'iframe') {
+      const iframeComponent = fromIframe(node);
+      return isYoutubeComponent(iframeComponent);
+    }
+
+    return false;
+  };
+}
+
+function isInstagramNode(node: ElementNode): boolean {
+  const { tagName } = node;
+  const attributes = getAttributes(node.attributes);
+  return (
+    tagName === 'blockquote' &&
+    attributes.get('data-instgrm-permalink') !== undefined
+  );
+}
+
+function isTwitterNode(node: ElementNode): boolean {
+  const { tagName } = node;
+  const attributes = getAttributes(node.attributes);
+  const classNames = attributes.get('class');
+
+  if (
+    (tagName === 'blockquote' || tagName === 'a') &&
+    classNames &&
+    classNames
+      .split(' ')
+      .some((v) => new Set(['twitter-tweet', 'twitter-timeline']).has(v))
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+function isButtonNode(node: ElementNode): boolean {
+  const { tagName } = node;
+  const attributes = getAttributes(node.attributes);
+  const role = attributes.get('role');
+  return tagName === 'button' || (tagName === 'a' && role === 'button');
+}
+
+function isTikTokNode(node: ElementNode): boolean {
+  const { tagName } = node;
+  const attributes = getAttributes(node.attributes);
+  const classNames = attributes.get('class');
+  if (
+    tagName === 'blockquote' &&
+    classNames &&
+    classNames.includes('tiktok-embed')
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function reduceLinkContainerComponent(
   link?: string,
   attributes?: Map<string, string>
 ): (acc: Component[], item: Component) => Component[] {
