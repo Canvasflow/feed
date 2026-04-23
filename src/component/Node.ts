@@ -14,6 +14,7 @@ export function findDescendants(findFn: string | Array<string> | NodeFilterFn) {
 
     if (typeof findFn === 'function' && findFn(node)) {
       acc.push(node);
+      return acc;
     }
     return node.children.reduce(findDescendants(findFn), acc);
   };
@@ -32,7 +33,7 @@ export function getAttributes(
   return response;
 }
 
-type NodeFilterFn = (n: Node) => boolean;
+export type NodeFilterFn = (n: Node) => boolean;
 
 export type Node = TextNode | ElementNode | CommentNode;
 

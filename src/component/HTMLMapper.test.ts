@@ -27,25 +27,25 @@ import {
   type CustomComponent,
   isTextComponent,
   isImageComponent,
+  isHTMLTableComponent,
 } from './Component';
 
-describe('HTMLMapper', () => {
-  describe('Root Element', () => {
-    test(
-      'It should return the root element with an all filter with tag',
-      { tags: ['unit', 'html'] },
-      () => {
-        const rootMapping: Mapping = {
-          match: 'all',
-          filters: [
-            {
-              type: 'tag',
-              items: ['main'],
-            },
-          ],
-        };
-        const rootElement = `<main><p class="text-md">This is the first content</p><h2>This is a title</h2></main>`;
-        const content = `
+describe('Root Element', () => {
+  test(
+    'It should return the root element with an all filter with tag',
+    { tags: ['unit', 'html'] },
+    () => {
+      const rootMapping: Mapping = {
+        match: 'all',
+        filters: [
+          {
+            type: 'tag',
+            items: ['main'],
+          },
+        ],
+      };
+      const rootElement = `<main><p class="text-md">This is the first content</p><h2>This is a title</h2></main>`;
+      const content = `
         <html>
           <div data-widget="header">
             <h1>Example</h1>
@@ -53,31 +53,31 @@ describe('HTMLMapper', () => {
           ${rootElement}
         </html>
       `;
-        const rootContent = HTMLMapper.getRootElement(content, rootMapping);
-        expect(rootContent).toBe(rootElement);
-      }
-    );
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(rootElement);
+    }
+  );
 
-    test(
-      'It should return the root element with any filter with tag or class',
-      { tags: ['unit', 'html'] },
-      () => {
-        const rootMapping: Mapping = {
-          match: 'any',
-          filters: [
-            {
-              type: 'tag',
-              items: ['main'],
-            },
-            {
-              type: 'class',
-              match: 'any',
-              items: ['main'],
-            },
-          ],
-        };
-        const rootElement = `<div class="main"><p>This is the first content</p><h2>This is a title</h2></div>`;
-        const content = `
+  test(
+    'It should return the root element with any filter with tag or class',
+    { tags: ['unit', 'html'] },
+    () => {
+      const rootMapping: Mapping = {
+        match: 'any',
+        filters: [
+          {
+            type: 'tag',
+            items: ['main'],
+          },
+          {
+            type: 'class',
+            match: 'any',
+            items: ['main'],
+          },
+        ],
+      };
+      const rootElement = `<div class="main"><p>This is the first content</p><h2>This is a title</h2></div>`;
+      const content = `
         <html>
           <div data-widget="header">
             <h1>Example</h1>
@@ -85,27 +85,27 @@ describe('HTMLMapper', () => {
           ${rootElement}
         </html>
       `;
-        const rootContent = HTMLMapper.getRootElement(content, rootMapping);
-        expect(rootContent).toBe(rootElement);
-      }
-    );
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(rootElement);
+    }
+  );
 
-    test(
-      'It should return the root element with any filter with an id',
-      { tags: ['unit', 'html'] },
-      () => {
-        const rootMapping: Mapping = {
-          match: 'all',
-          filters: [
-            {
-              type: 'attribute',
-              key: 'id',
-              value: 'main',
-            },
-          ],
-        };
-        const rootElement = `<div id="main"><p>This is the first content</p><h2>This is a title</h2></div>`;
-        const content = `
+  test(
+    'It should return the root element with any filter with an id',
+    { tags: ['unit', 'html'] },
+    () => {
+      const rootMapping: Mapping = {
+        match: 'all',
+        filters: [
+          {
+            type: 'attribute',
+            key: 'id',
+            value: 'main',
+          },
+        ],
+      };
+      const rootElement = `<div id="main"><p>This is the first content</p><h2>This is a title</h2></div>`;
+      const content = `
         <html>
           <div data-widget="header">
             <h1 data-component-on>Example</h1>
@@ -113,31 +113,31 @@ describe('HTMLMapper', () => {
           ${rootElement}
         </html>
       `;
-        const rootContent = HTMLMapper.getRootElement(content, rootMapping);
-        expect(rootContent).toBe(rootElement);
-      }
-    );
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(rootElement);
+    }
+  );
 
-    test(
-      'It should return empty because the root element do not match the all mapping',
-      { tags: ['unit', 'html'] },
-      () => {
-        const rootMapping: Mapping = {
-          match: 'all',
-          filters: [
-            {
-              type: 'tag',
-              items: ['main'],
-            },
-            {
-              type: 'class',
-              match: 'any',
-              items: ['main'],
-            },
-          ],
-        };
-        const rootElement = `<div class="main"><p>This is the first content</p><h2>This is a title</h2></div>`;
-        const content = `
+  test(
+    'It should return empty because the root element do not match the all mapping',
+    { tags: ['unit', 'html'] },
+    () => {
+      const rootMapping: Mapping = {
+        match: 'all',
+        filters: [
+          {
+            type: 'tag',
+            items: ['main'],
+          },
+          {
+            type: 'class',
+            match: 'any',
+            items: ['main'],
+          },
+        ],
+      };
+      const rootElement = `<div class="main"><p>This is the first content</p><h2>This is a title</h2></div>`;
+      const content = `
         <html>
           <div data-widget="header">
             <h1 data-component-on>Example</h1>
@@ -145,194 +145,194 @@ describe('HTMLMapper', () => {
           ${rootElement}
         </html>
       `;
-        const rootContent = HTMLMapper.getRootElement(content, rootMapping);
-        expect(rootContent).toBe(null);
-      }
-    );
-  });
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(null);
+    }
+  );
+});
 
-  describe('Text components', () => {
-    test(
-      'It should create a p component from plain text',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `Hello world`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as TextComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('body');
-        expect(component?.text).toBe(`<p>${content}</p>`);
-      }
-    );
+describe('Text components', () => {
+  test(
+    'It should create a p component from plain text',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `Hello world`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as TextComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('body');
+      expect(component?.text).toBe(`<p>${content}</p>`);
+    }
+  );
 
-    test(
-      'It should create a body component from anchor',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `<p>Sunshine-loving&nbsp;<a href="~/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z" target="_blank" title="View page">tomatoes</a> loathe the cold and deteriorate rapidly when chilled.</p>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as TextComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('body');
-      }
-    );
+  test(
+    'It should create a body component from anchor',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `<p>Sunshine-loving&nbsp;<a href="~/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z" target="_blank" title="View page">tomatoes</a> loathe the cold and deteriorate rapidly when chilled.</p>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as TextComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('body');
+    }
+  );
 
-    test(
-      'It should support space between html tags',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `<p><span class="hawk-deal-widget-title-retailer-price"> <span class="hawk-deal-widget-title-price">now $452</span> <span class="hawk-deal-widget-title-retailer">at Amazon</span></span></p>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as TextComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('body');
-      }
-    );
+  test(
+    'It should support space between html tags',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `<p><span class="hawk-deal-widget-title-retailer-price"> <span class="hawk-deal-widget-title-price">now $452</span> <span class="hawk-deal-widget-title-retailer">at Amazon</span></span></p>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as TextComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('body');
+    }
+  );
 
-    // TODO In this test both component should appear
-    test(
-      'It should create a body component from anchor that also has an image',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `<a href="https://example.com">
+  // TODO In this test both component should appear
+  test(
+    'It should create a body component from anchor that also has an image',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `<a href="https://example.com">
         <div><p>Example</p><div>
         <img src="https://example.com/image.jpg"/>
       </a>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(2);
-        const component = components.pop();
-        expect(component).toBeDefined();
-        if (!component) return;
-        expect(component.component).toBe('image');
-      }
-    );
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(2);
+      const component = components.pop();
+      expect(component).toBeDefined();
+      if (!component) return;
+      expect(component.component).toBe('image');
+    }
+  );
 
-    test(
-      'It should set a text45 component base on role',
-      { tags: ['unit', 'html'] },
-      () => {
-        const id = 'cf-123';
-        const textContent = `<p id="${id}" role="text45">Hello world</p>`;
-        const content = `${textContent}<style>body {color: red;}</style>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.shift() as TextComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('text45');
-        expect(component.id).toBe(id);
+  test(
+    'It should set a text45 component base on role',
+    { tags: ['unit', 'html'] },
+    () => {
+      const id = 'cf-123';
+      const textContent = `<p id="${id}" role="text45">Hello world</p>`;
+      const content = `${textContent}<style>body {color: red;}</style>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.shift() as TextComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
+      expect(component.component).toBe('text45');
+      expect(component.id).toBe(id);
+    }
+  );
 
-    test('It should ignore the component', { tags: ['unit', 'html'] }, () => {
-      const components = HTMLMapper.toComponents(`
+  test('It should ignore the component', { tags: ['unit', 'html'] }, () => {
+    const components = HTMLMapper.toComponents(`
         <p role="text45" data-cf-ignore>Hello world</p>
       `);
-      expect(components.length).toBe(0);
-    });
+    expect(components.length).toBe(0);
+  });
 
-    test('Anchors should be present', { tags: ['unit', 'html'] }, () => {
-      const content =
-        '<a href="https://example.com" target="_blank" rel="nofollow noopener"><p>Hello world</p></a>';
-      const components = HTMLMapper.toComponents(content);
+  test('Anchors should be present', { tags: ['unit', 'html'] }, () => {
+    const content =
+      '<a href="https://example.com" target="_blank" rel="nofollow noopener"><p>Hello world</p></a>';
+    const components = HTMLMapper.toComponents(content);
+    expect(components.length).toBe(1);
+    const component = components.pop() as TextComponent;
+    expect(component).toBeDefined();
+    if (!component) {
+      return;
+    }
+    expect(component.component).toBe('body');
+    expect(component.text).toBe(content);
+  });
+
+  test('Replace invalid links with #', { tags: ['unit', 'html'] }, () => {
+    const content = `<p><a href="https://hello world">Hello</a></p>`;
+    const expectedContent = `<p><a href="#">Hello</a></p>`;
+    const components = HTMLMapper.toComponents(content);
+    expect(components.length).toBe(1);
+    const component = components.pop() as TextComponent;
+    expect(component).toBeDefined();
+    if (!component) {
+      return;
+    }
+    expect(component.component).toBe('body');
+    expect(component.text).toBe(expectedContent);
+  });
+});
+
+describe('Instagram component', () => {
+  test(
+    'It should create an Instagram post component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"> <a href="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">  View this post on Instagram</a><p><a href="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">A post shared by Max Verstappen (@maxverstappen1)</a></p></blockquote>`
+      );
       expect(components.length).toBe(1);
-      const component = components.pop() as TextComponent;
+      const component = components.pop() as InstagramComponent;
       expect(component).toBeDefined();
       if (!component) {
         return;
       }
-      expect(component.component).toBe('body');
-      expect(component.text).toBe(content);
-    });
+      expect(component.component).toBe('instagram');
+      expect(component.type).toBe(`post`);
+      expect(component.id).toBe(`DKZFL6pIVwo`);
+    }
+  );
 
-    test('Replace invalid links with #', { tags: ['unit', 'html'] }, () => {
-      const content = `<p><a href="https://hello world">Hello</a></p>`;
-      const expectedContent = `<p><a href="#">Hello</a></p>`;
-      const components = HTMLMapper.toComponents(content);
+  test(
+    'It should create an Instagram reel component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/reel/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"> <a href="https://www.instagram.com/reel/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">  View this post on Instagram</a><p><a href="https://www.instagram.com/reel/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">A post shared by Jake Mourkas (@jakes__junk)</a></p></blockquote>`
+      );
       expect(components.length).toBe(1);
-      const component = components.pop() as TextComponent;
+      const component = components.pop() as InstagramComponent;
       expect(component).toBeDefined();
       if (!component) {
         return;
       }
-      expect(component.component).toBe('body');
-      expect(component.text).toBe(expectedContent);
-    });
-  });
+      expect(component.component).toBe('instagram');
+      expect(component.type).toBe(`reel`);
+      expect(component.id).toBe(`DLA3R_4SSKy`);
+    }
+  );
 
-  describe('Instagram component', () => {
-    test(
-      'It should create an Instagram post component',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"> <a href="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">  View this post on Instagram</a><p><a href="https://www.instagram.com/p/DKZFL6pIVwo/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">A post shared by Max Verstappen (@maxverstappen1)</a></p></blockquote>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as InstagramComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('instagram');
-        expect(component.type).toBe(`post`);
-        expect(component.id).toBe(`DKZFL6pIVwo`);
+  test(
+    'It should create an Instagram tv component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"> <a href="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">  View this post on Instagram</a><p><a href="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">A post shared by Jake Mourkas (@jakes__junk)</a></p></blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as InstagramComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
+      expect(component.component).toBe('instagram');
+      expect(component.type).toBe(`tv`);
+      expect(component.id).toBe(`DLA3R_4SSKy`);
+    }
+  );
+});
 
-    test(
-      'It should create an Instagram reel component',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/reel/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"> <a href="https://www.instagram.com/reel/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">  View this post on Instagram</a><p><a href="https://www.instagram.com/reel/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">A post shared by Jake Mourkas (@jakes__junk)</a></p></blockquote>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as InstagramComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('instagram');
-        expect(component.type).toBe(`reel`);
-        expect(component.id).toBe(`DLA3R_4SSKy`);
-      }
-    );
-
-    test(
-      'It should create an Instagram tv component',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14"> <a href="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">  View this post on Instagram</a><p><a href="https://www.instagram.com/tv/DLA3R_4SSKy/?utm_source=ig_embed&amp;utm_campaign=loading" target="_blank">A post shared by Jake Mourkas (@jakes__junk)</a></p></blockquote>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as InstagramComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('instagram');
-        expect(component.type).toBe(`tv`);
-        expect(component.id).toBe(`DLA3R_4SSKy`);
-      }
-    );
-  });
-
-  describe('Button component', () => {
-    test(
-      'It should create an button component from a tag',
-      { tags: ['unit', 'html'] },
-      () => {
-        const text = `Buy Now`;
-        const link = 'https://example.com';
-        const components = HTMLMapper.toComponents(
-          `<a
+describe('Button component', () => {
+  test(
+    'It should create an button component from a tag',
+    { tags: ['unit', 'html'] },
+    () => {
+      const text = `Buy Now`;
+      const link = 'https://example.com';
+      const components = HTMLMapper.toComponents(
+        `<a
           href="${link}"
           role="button"
           rel="nofollow noopener"
@@ -340,29 +340,29 @@ describe('HTMLMapper', () => {
           target="_blank">
             ${text}
         </a>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as ButtonComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('button');
-        expect(component.text).toBeDefined();
-        expect(component.text).toBe(text);
-        expect(component.link).toBeDefined();
-        expect(component.link).toBe(link);
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as ButtonComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
+      expect(component.component).toBe('button');
+      expect(component.text).toBeDefined();
+      expect(component.text).toBe(text);
+      expect(component.link).toBeDefined();
+      expect(component.link).toBe(link);
+    }
+  );
 
-    test(
-      'It should create an button component from button tag',
-      { tags: ['unit', 'html'] },
-      () => {
-        const text = `Buy Now`;
-        const link = 'https://example.com';
-        const components = HTMLMapper.toComponents(
-          `<button>
+  test(
+    'It should create an button component from button tag',
+    { tags: ['unit', 'html'] },
+    () => {
+      const text = `Buy Now`;
+      const link = 'https://example.com';
+      const components = HTMLMapper.toComponents(
+        `<button>
           <a
             href="${link}"
             rel="nofollow noopener"
@@ -371,29 +371,29 @@ describe('HTMLMapper', () => {
               ${text}
           </a>
         </button>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as ButtonComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('button');
-        expect(component.text).toBeDefined();
-        expect(component.text).toBe(text);
-        expect(component.link).toBeDefined();
-        expect(component.link).toBe(link);
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as ButtonComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
+      expect(component.component).toBe('button');
+      expect(component.text).toBeDefined();
+      expect(component.text).toBe(text);
+      expect(component.link).toBeDefined();
+      expect(component.link).toBe(link);
+    }
+  );
 
-    test(
-      'It should create an button component from a tag with button as children',
-      { tags: ['unit', 'html'] },
-      () => {
-        const text = `Buy Now`;
-        const link = 'https://example.com';
-        const components = HTMLMapper.toComponents(
-          `<a
+  test(
+    'It should create an button component from a tag with button as children',
+    { tags: ['unit', 'html'] },
+    () => {
+      const text = `Buy Now`;
+      const link = 'https://example.com';
+      const components = HTMLMapper.toComponents(
+        `<a
           href="${link}"
           rel="nofollow noopener"
           aria-label="${text}"
@@ -402,48 +402,48 @@ describe('HTMLMapper', () => {
           ${text}
         </button>
         </a>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as ButtonComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('button');
-        expect(component.text).toBeDefined();
-        expect(component.text).toBe(text);
-        expect(component.link).toBeDefined();
-        expect(component.link).toBe(link);
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as ButtonComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-  });
+      expect(component.component).toBe('button');
+      expect(component.text).toBeDefined();
+      expect(component.text).toBe(text);
+      expect(component.link).toBeDefined();
+      expect(component.link).toBe(link);
+    }
+  );
+});
 
-  describe('Twitter Component', () => {
-    test(
-      'It should create a twitter tweet component',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<blockquote class="twitter-tweet"><p lang="en" dir="ltr">"He did it!" Jimmie Johnson and Bobby Labonte put on a show in the 2005 Coca-Cola 600 at Charlotte Motor Speedway. <a href="https://t.co/t2j2mXmL3L">pic.twitter.com/t2j2mXmL3L</a></p>&mdash; FOX: NASCAR (@NASCARONFOX) <a href="https://twitter.com/NASCARONFOX/status/1397629106427101185?ref_src=twsrc%5Etfw">May 26, 2021</a></blockquote>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as TwitterComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('twitter');
-        expect(component.height).toBe(`350`);
-        expect(component.params.account).toBe(`NASCARONFOX`);
-        expect(component.params.id).toBe(`1397629106427101185`);
+describe('Twitter Component', () => {
+  test(
+    'It should create a twitter tweet component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="twitter-tweet"><p lang="en" dir="ltr">"He did it!" Jimmie Johnson and Bobby Labonte put on a show in the 2005 Coca-Cola 600 at Charlotte Motor Speedway. <a href="https://t.co/t2j2mXmL3L">pic.twitter.com/t2j2mXmL3L</a></p>&mdash; FOX: NASCAR (@NASCARONFOX) <a href="https://twitter.com/NASCARONFOX/status/1397629106427101185?ref_src=twsrc%5Etfw">May 26, 2021</a></blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TwitterComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-    test(
-      'It should create a twitter tweet component inside a figure',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<figure
+      expect(component.component).toBe('twitter');
+      expect(component.height).toBe(`350`);
+      expect(component.params.account).toBe(`NASCARONFOX`);
+      expect(component.params.id).toBe(`1397629106427101185`);
+    }
+  );
+  test(
+    'It should create a twitter tweet component inside a figure',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<figure
 	        class="wp-block-embed is-type-rich
             is-provider-twitter wp-block-embed-twitter"
         >
@@ -470,25 +470,25 @@ describe('HTMLMapper', () => {
 </figure>
 
 `
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as TwitterComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('twitter');
-        expect(component.height).toBe(`350`);
-        expect(component.params.account).toBe(`Borderlands`);
-        expect(component.params.id).toBe(`1970609156936868102`);
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TwitterComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-    test(
-      'It should create a twitter tweet inside a div',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<blockquote class="twitter-tweet hawk-ignore" data-lang="en">
+      expect(component.component).toBe('twitter');
+      expect(component.height).toBe(`350`);
+      expect(component.params.account).toBe(`Borderlands`);
+      expect(component.params.id).toBe(`1970609156936868102`);
+    }
+  );
+  test(
+    'It should create a twitter tweet inside a div',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="twitter-tweet hawk-ignore" data-lang="en">
     <p lang="en" dir="ltr">
         Samsung Galaxy S26 Series Timeline (South Korea)Unpacked Event:
         February 25Pre-order period: February 26 to March 4Pre-sale period:
@@ -496,88 +496,88 @@ describe('HTMLMapper', () => {
     </p>
     <a href="https://twitter.com/cantworkitout/status/2013951595541913988">January 21, 2026</a>
 </blockquote>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as TwitterComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('twitter');
-        expect(component.height).toBe(`350`);
-        expect(component.params.account).toBe(`cantworkitout`);
-        expect(component.params.id).toBe(`2013951595541913988`);
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TwitterComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-    test(
-      'It should create a x tweet from an iframe',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<iframe
+      expect(component.component).toBe('twitter');
+      expect(component.height).toBe(`350`);
+      expect(component.params.account).toBe(`cantworkitout`);
+      expect(component.params.id).toBe(`2013951595541913988`);
+    }
+  );
+  test(
+    'It should create a x tweet from an iframe',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe
           src="https://embedly.forbes.com/widgets/media.html?type=text%2Fhtml&amp;key=3ce26dc7e3454db5820ba084d28b4935&amp;schema=twitter&amp;url=https%3A//x.com/delayed3A/status/2018627889923826089&amp;image=">
         </iframe>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as TwitterComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('twitter');
-        expect(component.height).toBe(`350`);
-        expect(component.params.account).toBe(`delayed3A`);
-        expect(component.params.id).toBe(`2018627889923826089`);
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TwitterComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-    test(
-      'It should create a twitter tweet from an iframe',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<iframe
+      expect(component.component).toBe('twitter');
+      expect(component.height).toBe(`350`);
+      expect(component.params.account).toBe(`delayed3A`);
+      expect(component.params.id).toBe(`2018627889923826089`);
+    }
+  );
+  test(
+    'It should create a twitter tweet from an iframe',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe
           src="https://embedly.forbes.com/widgets/media.html?type=text%2Fhtml&amp;key=3ce26dc7e3454db5820ba084d28b4935&amp;schema=twitter&amp;url=https%3A//twitter.com/delayed3A/status/2018627889923826089&amp;image=">
         </iframe>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as TwitterComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('twitter');
-        expect(component.height).toBe(`350`);
-        expect(component.params.account).toBe(`delayed3A`);
-        expect(component.params.id).toBe(`2018627889923826089`);
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TwitterComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-  });
+      expect(component.component).toBe('twitter');
+      expect(component.height).toBe(`350`);
+      expect(component.params.account).toBe(`delayed3A`);
+      expect(component.params.id).toBe(`2018627889923826089`);
+    }
+  );
+});
 
-  describe('Youtube Component', () => {
-    test(
-      'It should create an Youtube embed component',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" frameborder="0" height="315" src="https://www.youtube.com/embed/ZrCs3HYxflk?si=8USctaxbSBPyMsBE" title="YouTube video player" width="560"></iframe>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as YoutubeComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('video');
-        expect(component.vidtype).toBe('youtube');
-        expect(component.params).toEqual({ id: 'ZrCs3HYxflk' });
+describe('Youtube Component', () => {
+  test(
+    'It should create an Youtube embed component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" frameborder="0" height="315" src="https://www.youtube.com/embed/ZrCs3HYxflk?si=8USctaxbSBPyMsBE" title="YouTube video player" width="560"></iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-    test(
-      'It should create an Youtube embed component from figure',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<figure>
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('youtube');
+      expect(component.params).toEqual({ id: 'ZrCs3HYxflk' });
+    }
+  );
+  test(
+    'It should create an Youtube embed component from figure',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<figure>
           <div>
             <iframe
               loading="lazy"
@@ -591,24 +591,24 @@ describe('HTMLMapper', () => {
             </iframe>
           </div>
         </figure>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as YoutubeComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('video');
-        expect(component.vidtype).toBe('youtube');
-        expect(component.params).toEqual({ id: 'XQ87p2Rhb_A' });
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-    test(
-      'It should create an Youtube embed component from figure with caption',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<figure>
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('youtube');
+      expect(component.params).toEqual({ id: 'XQ87p2Rhb_A' });
+    }
+  );
+  test(
+    'It should create an Youtube embed component from figure with caption',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<figure>
           <div>
             <iframe
               loading="lazy"
@@ -623,235 +623,235 @@ describe('HTMLMapper', () => {
           </div>
           <figcaption>This is a valid caption</figcaption>
         </figure>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as YoutubeComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('video');
-        expect(component.vidtype).toBe('youtube');
-        expect(component.params).toEqual({ id: 'XQ87p2Rhb_A' });
-        expect(component?.caption).toBe('This is a valid caption');
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-    test(
-      'It should create an Youtube embed component from embed.ly',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<iframe
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('youtube');
+      expect(component.params).toEqual({ id: 'XQ87p2Rhb_A' });
+      expect(component?.caption).toBe('This is a valid caption');
+    }
+  );
+  test(
+    'It should create an Youtube embed component from embed.ly',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe
             src="https://embedly.forbes.com/widgets/media.html?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DdQw4w9WgXcQ&amp;type=text%2Fhtml&amp;schema=youtu&amp;display_name=YouTube&amp;src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FdQw4w9WgXcQ">
         </iframe>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as YoutubeComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('video');
-        expect(component.vidtype).toBe('youtube');
-        expect(component.params).toEqual({ id: 'dQw4w9WgXcQ' });
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-    test(
-      'It should create an Youtube embed component from embed.ly with short url',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FF_Rf-ubc8zQ%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DF_Rf-ubc8zQ&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FF_Rf-ubc8zQ%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="500" height="281" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as YoutubeComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('video');
-        expect(component.vidtype).toBe('youtube');
-        expect(component.params).toEqual({ id: 'F_Rf-ubc8zQ' });
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('youtube');
+      expect(component.params).toEqual({ id: 'dQw4w9WgXcQ' });
+    }
+  );
+  test(
+    'It should create an Youtube embed component from embed.ly with short url',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FF_Rf-ubc8zQ%3Ffeature%3Doembed&display_name=YouTube&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DF_Rf-ubc8zQ&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FF_Rf-ubc8zQ%2Fhqdefault.jpg&type=text%2Fhtml&schema=youtube" width="500" height="281" scrolling="no" title="YouTube embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as YoutubeComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-  });
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('youtube');
+      expect(component.params).toEqual({ id: 'F_Rf-ubc8zQ' });
+    }
+  );
+});
 
-  describe('Dailymotion Component', () => {
-    test(
-      'It should create an Dailymotion embed component',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fgeo.dailymotion.com%2Fplayer.html%3Fvideo%3Dx9z6sty%26&display_name=Dailymotion&url=https%3A%2F%2Fwww.dailymotion.com%2Fvideo%2Fx9z6sty&image=https%3A%2F%2Fs1.dmcdn.net%2Fv%2FZzPvs1fWfaf6KsK8h%2Fx240&type=text%2Fhtml&schema=dailymotion" width="480" height="269" scrolling="no" title="Dailymotion embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as DailymotionComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('video');
-        expect(component.vidtype).toBe('dailymotion');
-        expect(component.params).toEqual({ id: 'x9z6sty' });
+describe('Dailymotion Component', () => {
+  test(
+    'It should create an Dailymotion embed component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fgeo.dailymotion.com%2Fplayer.html%3Fvideo%3Dx9z6sty%26&display_name=Dailymotion&url=https%3A%2F%2Fwww.dailymotion.com%2Fvideo%2Fx9z6sty&image=https%3A%2F%2Fs1.dmcdn.net%2Fv%2FZzPvs1fWfaf6KsK8h%2Fx240&type=text%2Fhtml&schema=dailymotion" width="480" height="269" scrolling="no" title="Dailymotion embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as DailymotionComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-  });
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('dailymotion');
+      expect(component.params).toEqual({ id: 'x9z6sty' });
+    }
+  );
+});
 
-  describe('Vimeo Component', () => {
-    test(
-      'It should create a Vimeo embed component',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fplayer.vimeo.com%2Fvideo%2F1138248349%3Fapp_id%3D122963&dntp=1&display_name=Vimeo&url=https%3A%2F%2Fvimeo.com%2F1138248349&image=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F2084551378-2d500d442b25ca58722aab3e62d9ca47a8c9ac2e57afe061995a01c8fd71ac92-d_1280%3Fregion%3Dus&type=text%2Fhtml&schema=vimeo" width="500" height="281" scrolling="no" title="Vimeo embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as VimeoComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('video');
-        expect(component.vidtype).toBe('vimeo');
-        expect(component.params).toEqual({ id: '1138248349' });
+describe('Vimeo Component', () => {
+  test(
+    'It should create a Vimeo embed component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe class="embedly-embed" src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fplayer.vimeo.com%2Fvideo%2F1138248349%3Fapp_id%3D122963&dntp=1&display_name=Vimeo&url=https%3A%2F%2Fvimeo.com%2F1138248349&image=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F2084551378-2d500d442b25ca58722aab3e62d9ca47a8c9ac2e57afe061995a01c8fd71ac92-d_1280%3Fregion%3Dus&type=text%2Fhtml&schema=vimeo" width="500" height="281" scrolling="no" title="Vimeo embed" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" allowfullscreen="true"></iframe>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as VimeoComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-  });
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('vimeo');
+      expect(component.params).toEqual({ id: '1138248349' });
+    }
+  );
+});
 
-  describe('TikTok Component', () => {
-    test(
-      'It should create a TikTok embed component',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<blockquote
+describe('TikTok Component', () => {
+  test(
+    'It should create a TikTok embed component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote
           class="tiktok-embed"
           cite="https://www.tiktok.com/@kingar4__/video/7388884417025985824">
         </blockquote> `
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as TikTokComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('video');
-        expect(component.vidtype).toBe('tiktok');
-        expect(component.params).toEqual({
-          id: '7388884417025985824',
-          username: '@kingar4__',
-        });
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TikTokComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-    test(
-      'It should create a TikTok embed component inside a figure',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('tiktok');
+      expect(component.params).toEqual({
+        id: '7388884417025985824',
+        username: '@kingar4__',
+      });
+    }
+  );
+  test(
+    'It should create a TikTok embed component inside a figure',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `
         <figure>
           <blockquote
             class="tiktok-embed"
             cite="https://www.tiktok.com/@kingar4__/video/7388884417025985824">
           </blockquote>
         </figure>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as TikTokComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('video');
-        expect(component.vidtype).toBe('tiktok');
-        expect(component.params).toEqual({
-          id: '7388884417025985824',
-          username: '@kingar4__',
-        });
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TikTokComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-    test(
-      'It should create a TikTok embed component inside a div',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('tiktok');
+      expect(component.params).toEqual({
+        id: '7388884417025985824',
+        username: '@kingar4__',
+      });
+    }
+  );
+  test(
+    'It should create a TikTok embed component inside a div',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `
         <div>
           <blockquote
             class="tiktok-embed"
             cite="https://www.tiktok.com/@kingar4__/video/7388884417025985824">
           </blockquote>
         </div>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as TikTokComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('video');
-        expect(component.vidtype).toBe('tiktok');
-        expect(component.params).toEqual({
-          id: '7388884417025985824',
-          username: '@kingar4__',
-        });
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TikTokComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-    test(
-      'It should return errors for an invalid TikTok URL',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<blockquote
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('tiktok');
+      expect(component.params).toEqual({
+        id: '7388884417025985824',
+        username: '@kingar4__',
+      });
+    }
+  );
+  test(
+    'It should return errors for an invalid TikTok URL',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote
         class="tiktok-embed"
         cite="https://www.tiktok.com/invalid-url-format">
       </blockquote>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as TikTokComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('video');
-        expect(component.vidtype).toBe('tiktok');
-        expect(component.params).toEqual({
-          id: '',
-          username: '',
-        });
-        expect(component.errors.length).toBeGreaterThan(0);
-        expect(component.errors[0]).toBe('Invalid TikTok video URL format.');
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TikTokComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-    test(
-      'It should return errors if TikTok cite attribute is missing',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<blockquote class="tiktok-embed"></blockquote>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as TikTokComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('video');
-        expect(component.vidtype).toBe('tiktok');
-        expect(component.params).toEqual({
-          id: '',
-          username: '',
-        });
-        expect(component.errors.length).toBeGreaterThan(0);
-        expect(component.errors[0]).toBe('cite attribute is required');
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('tiktok');
+      expect(component.params).toEqual({
+        id: '',
+        username: '',
+      });
+      expect(component.errors.length).toBeGreaterThan(0);
+      expect(component.errors[0]).toBe('Invalid TikTok video URL format.');
+    }
+  );
+  test(
+    'It should return errors if TikTok cite attribute is missing',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="tiktok-embed"></blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TikTokComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-    test(
-      'It should create a Tiktok component from embed.ly',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(
-          `<iframe
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('tiktok');
+      expect(component.params).toEqual({
+        id: '',
+        username: '',
+      });
+      expect(component.errors.length).toBeGreaterThan(0);
+      expect(component.errors[0]).toBe('cite attribute is required');
+    }
+  );
+  test(
+    'It should create a Tiktok component from embed.ly',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<iframe
           class="embedly-embed"
           src="//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.tiktok.com%2Fembed%2Fv2%2F7593022588272561430&display_name=tiktok&url=https%3A%2F%2Fwww.tiktok.com%2F%40rickastleyofficial%2Fvideo%2F7593022588272561430&image=https%3A%2F%2Fp19-common-sign.tiktokcdn-us.com%2Ftos-no1a-p-0037-no%2Fo0RBVFFlD1yfKtXxdpH6AykfhHQEQA40D91JEg%7Etplv-tiktokx-origin.image%3Fdr%3D9636%26x-expires%3D1770382800%26x-signature%3DSub%252FfFdUPmtmCszcGV3IaEFu9NI%253D%26t%3D4d5b0474%26ps%3D13740610%26shp%3D81f88b70%26shcp%3D43f4a2f9%26idc%3Duseast8&type=text%2Fhtml&schema=tiktok"
           width="340"
@@ -862,65 +862,65 @@ describe('HTMLMapper', () => {
           allow="autoplay; fullscreen; encrypted-media; picture-in-picture;"
           allowfullscreen="true">
         </iframe>`
-        );
-        expect(components.length).toBe(1);
-        const component = components.pop() as TikTokComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('video');
-        expect(component.vidtype).toBe('tiktok');
-        expect(component.params).toEqual({
-          id: '7593022588272561430',
-          username: '@rickastleyofficial',
-        });
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TikTokComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-  });
+      expect(component.component).toBe('video');
+      expect(component.vidtype).toBe('tiktok');
+      expect(component.params).toEqual({
+        id: '7593022588272561430',
+        username: '@rickastleyofficial',
+      });
+    }
+  );
+});
 
-  describe('Image component', () => {
-    test(
-      'It should process a simple image component',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `<img src="example.jpg" alt="Hello world"/>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as ImageComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('image');
-        expect(component?.imageurl).toBe('example.jpg');
-        expect(component?.alt).toBe('Hello world');
-        expect(component.caption).toBeUndefined();
-      }
-    );
+describe('Image component', () => {
+  test(
+    'It should process a simple image component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `<img src="example.jpg" alt="Hello world"/>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe('example.jpg');
+      expect(component?.alt).toBe('Hello world');
+      expect(component.caption).toBeUndefined();
+    }
+  );
 
-    test(
-      'It should process a simple picture element with invalid caption',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `<picture>
+  test(
+    'It should process a simple picture element with invalid caption',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `<picture>
         <source media="(min-width: 1024px)" srcset="full-size.jpg"/>
         <source media="(min-width: 700px)" srcset="medium-size.jpg"/>
         <img src="cover.jpg" alt="My image"/>
         <ficaption>This caption should be ignored</figcaption>
       </picture>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as ImageComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('image');
-        expect(component?.imageurl).toBe('cover.jpg');
-        expect(component?.alt).toBe('My image');
-      }
-    );
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe('cover.jpg');
+      expect(component?.alt).toBe('My image');
+    }
+  );
 
-    test(
-      'It should process a simple picture element with valid caption',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `
+  test(
+    'It should process a simple picture element with valid caption',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `
         <figure>
           <picture>
             <source media="(min-width: 1024px)" srcset="full-size.jpg">
@@ -929,61 +929,61 @@ describe('HTMLMapper', () => {
           </picture>
           <figcaption>This is a valid caption</figcaption>
         </figure>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as ImageComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('image');
-        expect(component?.imageurl).toBe('cover.jpg');
-        expect(component?.alt).toBe('My image');
-        expect(component?.caption).toBe('This is a valid caption');
-      }
-    );
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe('cover.jpg');
+      expect(component?.alt).toBe('My image');
+      expect(component?.caption).toBe('This is a valid caption');
+    }
+  );
 
-    test(
-      'It should process a figure component without caption',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `
+  test(
+    'It should process a figure component without caption',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `
         <figure>
           <img src="cover.jpg" alt="My image">
         </figure>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as ImageComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('image');
-        expect(component?.imageurl).toBe('cover.jpg');
-        expect(component?.alt).toBe('My image');
-        expect(component?.caption).toBeUndefined();
-      }
-    );
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe('cover.jpg');
+      expect(component?.alt).toBe('My image');
+      expect(component?.caption).toBe('');
+    }
+  );
 
-    test(
-      'It should process a figure component with caption',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `
+  test(
+    'It should process a figure component with caption',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `
         <figure>
           <img src="cover.jpg" alt="My image">
           <figcaption>This is a caption</figcaption>
         </figure>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as ImageComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('image');
-        expect(component?.imageurl).toBe('cover.jpg');
-        expect(component?.alt).toBe('My image');
-        expect(component?.caption).toBe('This is a caption');
-      }
-    );
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe('cover.jpg');
+      expect(component?.alt).toBe('My image');
+      expect(component?.caption).toBe('This is a caption');
+    }
+  );
 
-    test(
-      'It should process a figure component with caption and html',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `
+  test(
+    'It should process a figure component with caption and html',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `
         <figure>
           <img src="cover.jpg"
             alt="Aaron Moten in the second season of Fallout, image courtesy of Amazon Prime Video"
@@ -993,26 +993,26 @@ describe('HTMLMapper', () => {
             Aaron Moten in <em>Fallout</em>. All imagery courtesy of Amazon Prime Video.
           </figcaption>
         </figure>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as ImageComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('image');
-        expect(component?.imageurl).toBe('cover.jpg');
-        expect(component?.alt).toBe(
-          'Aaron Moten in the second season of Fallout, image courtesy of Amazon Prime Video'
-        );
-        expect(component?.caption).toBe(
-          'Aaron Moten in <em>Fallout</em>. All imagery courtesy of Amazon Prime Video.'
-        );
-      }
-    );
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe('cover.jpg');
+      expect(component?.alt).toBe(
+        'Aaron Moten in the second season of Fallout, image courtesy of Amazon Prime Video'
+      );
+      expect(component?.caption).toBe(
+        'Aaron Moten in <em>Fallout</em>. All imagery courtesy of Amazon Prime Video.'
+      );
+    }
+  );
 
-    test(
-      'It should process a figure component with caption and credit',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `
+  test(
+    'It should process a figure component with caption and credit',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `
         <figure>
           <img src="cover.jpg"
             alt="Memphis-xAI" />
@@ -1021,25 +1021,25 @@ describe('HTMLMapper', () => {
               <small>Copyright 2025 The Associated Press. All rights reserved</small>
             </figcaption>
         </figure>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as ImageComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('image');
-        expect(component.imageurl).toBe('cover.jpg');
-        expect(component?.alt).toBe('Memphis-xAI');
-        expect(component?.caption).toBe('FILE = The xAI data center is seen');
-        expect(component?.credit).toBe(
-          'Copyright 2025 The Associated Press. All rights reserved'
-        );
-      }
-    );
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component.imageurl).toBe('cover.jpg');
+      expect(component?.alt).toBe('Memphis-xAI');
+      expect(component?.caption).toBe('FILE = The xAI data center is seen');
+      expect(component?.credit).toBe(
+        'Copyright 2025 The Associated Press. All rights reserved'
+      );
+    }
+  );
 
-    test(
-      'It should process a figure component with caption and role credit',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `
+  test(
+    'It should process a figure component with caption and role credit',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `
         <figure>
           <img src="cover.jpg" alt="My image">
           <figcaption>
@@ -1048,56 +1048,53 @@ describe('HTMLMapper', () => {
             <span role="credit">This is a credit</span>
           </figcaption>
         </figure>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe('cover.jpg');
+      expect(component?.alt).toBe('My image');
+      expect(component?.caption).toBe('This is a caption');
+      expect(component?.credit).toBe('<span>This is a credit</span>');
+    }
+  );
+
+  test(
+    'It should process images inside p tags',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `<p>Hello <img src="a.jpg"> world <img src="b.jpg">!</p>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(5);
+      expect(components[0].component).toBe('body');
+      expect(components[1].component).toBe('image');
+      expect(components[2].component).toBe('body');
+      expect(components[3].component).toBe('image');
+      expect(components[4].component).toBe('body');
+    }
+  );
+
+  test(
+    'It should process images inside headers tags',
+    { tags: ['unit', 'html'] },
+    () => {
+      const headers = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+      for (const header of headers) {
+        const content = `<${header}><img decoding="async" class="alignnone size-full wp-image-1470895" src="https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-scaled.jpg" alt="Audi F1 2026 car livery with ring background" width="2560" height="1440" srcset="https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-scaled.jpg 2560w, https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-1024x576.jpg 1024w, https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-768x432.jpg 768w, https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-450x253.jpg 450w, https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-818x460.jpg 818w" sizes="(max-width: 2560px) 100vw, 2560px"></${header}>`;
         const components = HTMLMapper.toComponents(content);
         expect(components.length).toBe(1);
+        expect(components[0].component).toBe('image');
         const component = components.pop() as ImageComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('image');
-        expect(component?.imageurl).toBe('cover.jpg');
-        expect(component?.alt).toBe('My image');
-        expect(component?.caption).toBe('This is a caption');
-        expect(component?.credit).toBe('This is a credit');
+        expect(component.imageurl).toBe(
+          'https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-scaled.jpg'
+        );
       }
-    );
+    }
+  );
 
-    test(
-      'It should process images inside p tags',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `<p>Hello <img src="a.jpg"> world <img src="b.jpg">!</p>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(5);
-        expect(components[0].component).toBe('body');
-        expect(components[1].component).toBe('image');
-        expect(components[2].component).toBe('body');
-        expect(components[3].component).toBe('image');
-        expect(components[4].component).toBe('body');
-      }
-    );
-
-    test(
-      'It should process images inside headers tags',
-      { tags: ['unit', 'html'] },
-      () => {
-        const headers = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-        for (const header of headers) {
-          const content = `<${header}><img decoding="async" class="alignnone size-full wp-image-1470895" src="https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-scaled.jpg" alt="Audi F1 2026 car livery with ring background" width="2560" height="1440" srcset="https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-scaled.jpg 2560w, https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-1024x576.jpg 1024w, https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-768x432.jpg 768w, https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-450x253.jpg 450w, https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-818x460.jpg 818w" sizes="(max-width: 2560px) 100vw, 2560px"></${header}>`;
-          const components = HTMLMapper.toComponents(content);
-          expect(components.length).toBe(1);
-          expect(components[0].component).toBe('image');
-          const component = components.pop() as ImageComponent;
-          expect(component.imageurl).toBe(
-            'https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-scaled.jpg'
-          );
-        }
-      }
-    );
-
-    test(
-      'It should process images with link',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `
+  test('It should process images with link', { tags: ['unit', 'html'] }, () => {
+    const content = `
         <a
           href="https://wwww.example.com"
           rel="attachment wp-att-74859">
@@ -1111,22 +1108,21 @@ describe('HTMLMapper', () => {
             height="800">
         </a>
       `;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as ImageComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('image');
-        expect(component?.imageurl).toBe('https://wwww.example.com/image.jpg');
-        expect(component?.link).toBe('https://wwww.example.com');
-        expect(component?.alt).toBe('My image');
-      }
-    );
+    const components = HTMLMapper.toComponents(content);
+    expect(components.length).toBe(1);
+    const component = components.pop() as ImageComponent;
+    expect(component).toBeDefined();
+    expect(component.component).toBe('image');
+    expect(component?.imageurl).toBe('https://wwww.example.com/image.jpg');
+    expect(component?.link).toBe('https://wwww.example.com');
+    expect(component?.alt).toBe('My image');
+  });
 
-    test(
-      'It should process images with wrapper elements',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `
+  test(
+    'It should process images with wrapper elements',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `
         <div>
         <a
           href="https://wwww.example.com"
@@ -1142,22 +1138,22 @@ describe('HTMLMapper', () => {
         </a>
         </div>
       `;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as ImageComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('image');
-        expect(component?.imageurl).toBe('https://wwww.example.com/image.jpg');
-        expect(component?.link).toBe('https://wwww.example.com');
-        expect(component?.alt).toBe('My image');
-      }
-    );
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe('https://wwww.example.com/image.jpg');
+      expect(component?.link).toBe('https://wwww.example.com');
+      expect(component?.alt).toBe('My image');
+    }
+  );
 
-    test(
-      'It should process images with link inside a p tag',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `
+  test(
+    'It should process images with link inside a p tag',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `
       <p>
         <a
           href="https://wwww.example.com"
@@ -1172,24 +1168,24 @@ describe('HTMLMapper', () => {
             height="800">
         </a>
       </p>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as ImageComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('image');
-        expect(component?.imageurl).toBe('https://wwww.example.com/image.jpg');
-        expect(component?.link).toBe('https://wwww.example.com');
-        expect(component?.alt).toBe('My image');
-      }
-    );
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe('https://wwww.example.com/image.jpg');
+      expect(component?.link).toBe('https://wwww.example.com');
+      expect(component?.alt).toBe('My image');
+    }
+  );
 
-    test(
-      'It should process images with link inside header tags',
-      { tags: ['unit', 'html'] },
-      () => {
-        const headers = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-        for (const header of headers) {
-          const content = `
+  test(
+    'It should process images with link inside header tags',
+    { tags: ['unit', 'html'] },
+    () => {
+      const headers = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+      for (const header of headers) {
+        const content = `
   <${header}>
         <a
           href="https://wwww.example.com"
@@ -1204,27 +1200,25 @@ describe('HTMLMapper', () => {
             height="800">
         </a></${header}>
       `;
-          const components = HTMLMapper.toComponents(content);
-          expect(components.length).toBe(1);
-          const component = components.pop() as ImageComponent;
-          expect(component).toBeDefined();
-          expect(component.component).toBe('image');
-          expect(component?.imageurl).toBe(
-            'https://wwww.example.com/image.jpg'
-          );
-          expect(component?.link).toBe('https://wwww.example.com');
-          expect(component?.alt).toBe('My image');
-        }
+        const components = HTMLMapper.toComponents(content);
+        expect(components.length).toBe(1);
+        const component = components.pop() as ImageComponent;
+        expect(component).toBeDefined();
+        expect(component.component).toBe('image');
+        expect(component?.imageurl).toBe('https://wwww.example.com/image.jpg');
+        expect(component?.link).toBe('https://wwww.example.com');
+        expect(component?.alt).toBe('My image');
       }
-    );
-  });
+    }
+  );
+});
 
-  describe('Gallery components', () => {
-    test(
-      'It should create a simple gallery component',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(`
+describe('Gallery components', () => {
+  test(
+    'It should create a simple gallery component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(`
         <figure role="gallery">
             <figure>
               <img src="image1.jpg"/>
@@ -1249,38 +1243,38 @@ describe('HTMLMapper', () => {
             <figcaption>Gallery Caption</figcaption>
         </figure>
       `);
-        expect(components.length).toBe(1);
-        const component = components.pop() as GalleryComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.caption).toBe('Gallery Caption');
-        expect(component.images.length).toBe(4);
-        expect(component.images[0]).toEqual({
-          caption: 'Image 1 Caption',
-          imageurl: 'image1.jpg',
-          credit: 'Photographer 1',
-        });
-        expect(component.images[1]).toEqual({
-          caption: 'Image 2 Caption',
-          imageurl: 'image2.jpg',
-          credit: 'Photographer 2',
-        });
-        expect(component.images[2]).toEqual({
-          imageurl: 'image3.jpg',
-        });
-        expect(component.images[3]).toEqual({
-          alt: 'My image',
-          imageurl: 'image4.jpg',
-        });
+      expect(components.length).toBe(1);
+      const component = components.pop() as GalleryComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-    test(
-      'It should create a gallery component from wordpress',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(`
+      expect(component.caption).toBe('Gallery Caption');
+      expect(component.images.length).toBe(4);
+      expect(component.images[0]).toEqual({
+        caption: 'Image 1 Caption',
+        imageurl: 'image1.jpg',
+        credit: 'Photographer 1',
+      });
+      expect(component.images[1]).toEqual({
+        caption: 'Image 2 Caption',
+        imageurl: 'image2.jpg',
+        credit: 'Photographer 2',
+      });
+      expect(component.images[2]).toEqual({
+        imageurl: 'image3.jpg',
+      });
+      expect(component.images[3]).toEqual({
+        alt: 'My image',
+        imageurl: 'image4.jpg',
+      });
+    }
+  );
+  test(
+    'It should create a gallery component from wordpress',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(`
         <figure role="gallery"
           class="wp-block-gallery has-nested-images columns-default
           is-cropped wp-block-gallery-1 is-layout-flex
@@ -1327,49 +1321,49 @@ describe('HTMLMapper', () => {
             </figure>
         </figure>
       `);
-        expect(components.length).toBe(1);
-        const component = components.pop() as GalleryComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('gallery');
-        expect(component.direction).toBe('horizontal');
-        expect(component.errors).toHaveLength(0);
-        expect(component.warnings).toHaveLength(0);
-        expect(component.images.length).toBe(3);
-        expect(component.images[0]).toEqual({
-          link: 'https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-1TB-storage-upgrade-failure.jpg',
-          alt: 'iPhone Air modded storage upgrade failure',
-          imageurl:
-            'https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-1TB-storage-upgrade-failure-728x453.jpg',
-          height: 453,
-          width: 728,
-        });
-        expect(component.images[1]).toEqual({
-          alt: 'iPhone Air modded storage upgrade failure',
-          height: 446,
-          width: 728,
-          imageurl:
-            'https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-512GB-storage-upgrade-failure-728x446.jpg',
-        });
-        expect(component.images[2]).toEqual({
-          alt: 'iPhone Air modded storage upgrade failure',
-          imageurl:
-            'https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-256GB-storage-upgrade-failure-728x455.jpg',
-          height: 455,
-          width: 728,
-        });
+      expect(components.length).toBe(1);
+      const component = components.pop() as GalleryComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-  });
+      expect(component.component).toBe('gallery');
+      expect(component.direction).toBe('horizontal');
+      expect(component.errors).toHaveLength(0);
+      expect(component.warnings).toHaveLength(0);
+      expect(component.images.length).toBe(3);
+      expect(component.images[0]).toEqual({
+        link: 'https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-1TB-storage-upgrade-failure.jpg',
+        alt: 'iPhone Air modded storage upgrade failure',
+        imageurl:
+          'https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-1TB-storage-upgrade-failure-728x453.jpg',
+        height: 453,
+        width: 728,
+      });
+      expect(component.images[1]).toEqual({
+        alt: 'iPhone Air modded storage upgrade failure',
+        height: 446,
+        width: 728,
+        imageurl:
+          'https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-512GB-storage-upgrade-failure-728x446.jpg',
+      });
+      expect(component.images[2]).toEqual({
+        alt: 'iPhone Air modded storage upgrade failure',
+        imageurl:
+          'https://cdn.wccftech.com/wp-content/uploads/2025/09/iPhone-Air-256GB-storage-upgrade-failure-728x455.jpg',
+        height: 455,
+        width: 728,
+      });
+    }
+  );
+});
 
-  describe('HTMLTable components', () => {
-    test(
-      'It should create a simple htmltable component',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(`
+describe('HTMLTable components', () => {
+  test(
+    'It should create a simple htmltable component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(`
         <table
           id="tablepress-175"
           class="tablepress tablepress-id-175"
@@ -1589,23 +1583,23 @@ describe('HTMLMapper', () => {
         </table>
 
       `);
-        expect(components.length).toBe(1);
-        const component = components.pop() as HTMLTableComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('htmltable');
-        expect(component.id).toBe('tablepress-175');
-        expect(component.html).toBeDefined();
+      expect(components.length).toBe(1);
+      const component = components.pop() as HTMLTableComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
+      expect(component.component).toBe('htmltable');
+      expect(component.id).toBe('tablepress-175');
+      expect(component.html).toBeDefined();
+    }
+  );
 
-    test(
-      'It should create a simple htmltable component that is inside a figure',
-      { tags: ['unit', 'html'] },
-      () => {
-        const components = HTMLMapper.toComponents(`
+  test(
+    'It should create a simple htmltable component that is inside a figure',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(`
         <figure class="wp-block-table table-wrapper">
           <table class="has-fixed-layout tablepress">
             <thead>
@@ -1723,52 +1717,52 @@ describe('HTMLMapper', () => {
             </tbody>
           </table>
         </figure>`);
-        expect(components.length).toBe(1);
-        const component = components.pop() as HTMLTableComponent;
-        expect(component).toBeDefined();
-        if (!component) {
-          return;
-        }
-        expect(component.component).toBe('htmltable');
-        expect(component.html).toBeDefined();
+      expect(components.length).toBe(1);
+      const component = components.pop() as HTMLTableComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
       }
-    );
-  });
+      expect(component.component).toBe('htmltable');
+      expect(component.html).toBeDefined();
+    }
+  );
+});
 
-  describe('Video component', () => {
-    test(
-      'It should process a simple video element',
-      { tags: ['unit', 'html'] },
-      () => {
-        const src = 'movie.mp4';
-        const poster = 'poster.jpg';
-        const content = `
+describe('Video component', () => {
+  test(
+    'It should process a simple video element',
+    { tags: ['unit', 'html'] },
+    () => {
+      const src = 'movie.mp4';
+      const poster = 'poster.jpg';
+      const content = `
         <video
           src="${src}"
           poster="${poster}"
           controls
           loop
           muted/>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as VideoComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('video');
-        expect(component.url).toBe(src);
-        expect(component.poster).toBe(poster);
-        expect(component.loop).toBe(true);
-        expect(component.autoplay).toBe(false);
-        expect(component.controls).toBe(true);
-        expect(component.muted).toBe(true);
-      }
-    );
-    test(
-      'It should process a video element with multiple sources',
-      { tags: ['unit', 'html'] },
-      () => {
-        const src = 'movie.mp4';
-        const poster = 'poster.jpg';
-        const content = `
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as VideoComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('video');
+      expect(component.url).toBe(src);
+      expect(component.poster).toBe(poster);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+    }
+  );
+  test(
+    'It should process a video element with multiple sources',
+    { tags: ['unit', 'html'] },
+    () => {
+      const src = 'movie.mp4';
+      const poster = 'poster.jpg';
+      const content = `
         <video
           poster="${poster}"
           controls
@@ -1778,26 +1772,26 @@ describe('HTMLMapper', () => {
           <source src="movie.ogv" type="video/ogg">
           <source src="movie.webm" type="video/webm">
         </video>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as VideoComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('video');
-        expect(component.url).toBe(src);
-        expect(component.poster).toBe(poster);
-        expect(component.loop).toBe(true);
-        expect(component.autoplay).toBe(false);
-        expect(component.controls).toBe(true);
-        expect(component.muted).toBe(true);
-      }
-    );
-    test(
-      'It should use source instead of src attribute',
-      { tags: ['unit', 'html'] },
-      () => {
-        const src = 'movie.mp4';
-        const poster = 'poster.jpg';
-        const content = `
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as VideoComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('video');
+      expect(component.url).toBe(src);
+      expect(component.poster).toBe(poster);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+    }
+  );
+  test(
+    'It should use source instead of src attribute',
+    { tags: ['unit', 'html'] },
+    () => {
+      const src = 'movie.mp4';
+      const poster = 'poster.jpg';
+      const content = `
         <video
           poster="${poster}"
           controls
@@ -1808,27 +1802,27 @@ describe('HTMLMapper', () => {
           <source src="movie.ogv" type="video/ogg">
           <source src="movie.webm" type="video/webm">
         </video>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as VideoComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('video');
-        expect(component.url).toBe(src);
-        expect(component.poster).toBe(poster);
-        expect(component.loop).toBe(true);
-        expect(component.autoplay).toBe(false);
-        expect(component.controls).toBe(true);
-        expect(component.muted).toBe(true);
-      }
-    );
-    test(
-      'It should detect video component with caption',
-      { tags: ['unit', 'html'] },
-      () => {
-        const src = 'movie.mp4';
-        const poster = 'poster.jpg';
-        const caption = 'This is a caption';
-        const content = `
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as VideoComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('video');
+      expect(component.url).toBe(src);
+      expect(component.poster).toBe(poster);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+    }
+  );
+  test(
+    'It should detect video component with caption',
+    { tags: ['unit', 'html'] },
+    () => {
+      const src = 'movie.mp4';
+      const poster = 'poster.jpg';
+      const caption = 'This is a caption';
+      const content = `
         <figure>
           <video
             poster="${poster}"
@@ -1844,76 +1838,76 @@ describe('HTMLMapper', () => {
             ${caption}
           </figcaption>
         </figure>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as VideoComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('video');
-        expect(component.url).toBe(src);
-        expect(component.poster).toBe(poster);
-        expect(component.loop).toBe(true);
-        expect(component.autoplay).toBe(false);
-        expect(component.controls).toBe(true);
-        expect(component.muted).toBe(true);
-        expect(component.caption).toBe(caption);
-      }
-    );
-  });
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as VideoComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('video');
+      expect(component.url).toBe(src);
+      expect(component.poster).toBe(poster);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+      expect(component.caption).toBe(caption);
+    }
+  );
+});
 
-  describe('Audio component', () => {
-    test(
-      'It should process a simple audio element',
-      { tags: ['unit', 'html'] },
-      () => {
-        const src = 'audio.mp3';
-        const content = `
+describe('Audio component', () => {
+  test(
+    'It should process a simple audio element',
+    { tags: ['unit', 'html'] },
+    () => {
+      const src = 'audio.mp3';
+      const content = `
         <audio
           src="${src}"
           controls
           loop
           muted/>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as AudioComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('audio');
-        expect(component.url).toBe(src);
-        expect(component.loop).toBe(true);
-        expect(component.autoplay).toBe(false);
-        expect(component.controls).toBe(true);
-        expect(component.muted).toBe(true);
-      }
-    );
-    test(
-      'It should process a audio element with multiple sources',
-      { tags: ['unit', 'html'] },
-      () => {
-        const src = 'audio.ogg';
-        const content = `
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as AudioComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+    }
+  );
+  test(
+    'It should process a audio element with multiple sources',
+    { tags: ['unit', 'html'] },
+    () => {
+      const src = 'audio.ogg';
+      const content = `
         <audio
           loop
           muted>
           <source src="${src}" type="audio/ogg">
           <source src="audio.mp3" type="audio/mpeg">
         </audio>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as AudioComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('audio');
-        expect(component.url).toBe(src);
-        expect(component.loop).toBe(true);
-        expect(component.muted).toBe(true);
-        expect(component.autoplay).toBe(false);
-        expect(component.controls).toBe(false);
-      }
-    );
-    test(
-      'It should use source instead of src attribute',
-      { tags: ['unit', 'html'] },
-      () => {
-        const src = 'audio.mp3';
-        const content = `
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as AudioComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(true);
+      expect(component.muted).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(false);
+    }
+  );
+  test(
+    'It should use source instead of src attribute',
+    { tags: ['unit', 'html'] },
+    () => {
+      const src = 'audio.mp3';
+      const content = `
         <audio
           controls
           loop
@@ -1922,25 +1916,25 @@ describe('HTMLMapper', () => {
           <source src="${src}" type="audio/mpeg">
           <source src="audio.mp3" type="audio/ogg">
         </audio>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as AudioComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('audio');
-        expect(component.url).toBe(src);
-        expect(component.loop).toBe(true);
-        expect(component.autoplay).toBe(false);
-        expect(component.controls).toBe(true);
-        expect(component.muted).toBe(true);
-      }
-    );
-    test(
-      'It should process an audio using figure',
-      { tags: ['unit', 'html'] },
-      () => {
-        const src = 'audio.mp3';
-        const caption = 'Example audio';
-        const content = `
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as AudioComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+    }
+  );
+  test(
+    'It should process an audio using figure',
+    { tags: ['unit', 'html'] },
+    () => {
+      const src = 'audio.mp3';
+      const caption = 'Example audio';
+      const content = `
         <figure>
           <audio
             src="${src}"
@@ -1952,26 +1946,26 @@ describe('HTMLMapper', () => {
           </figcaption>
         </figure>
         `;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as AudioComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('audio');
-        expect(component.url).toBe(src);
-        expect(component.loop).toBe(true);
-        expect(component.autoplay).toBe(false);
-        expect(component.controls).toBe(true);
-        expect(component.muted).toBe(true);
-        expect(component.caption).toBe(caption);
-      }
-    );
-    test(
-      'It should process an audio using figure with div between the tag',
-      { tags: ['unit', 'html'] },
-      () => {
-        const src = 'audio.mp3';
-        const caption = 'Example audio';
-        const content = `
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as AudioComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+      expect(component.caption).toBe(caption);
+    }
+  );
+  test(
+    'It should process an audio using figure with div between the tag',
+    { tags: ['unit', 'html'] },
+    () => {
+      const src = 'audio.mp3';
+      const caption = 'Example audio';
+      const content = `
         <figure>
           <div>
             <audio
@@ -1985,114 +1979,114 @@ describe('HTMLMapper', () => {
           </figcaption>
         </figure>
         `;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as AudioComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('audio');
-        expect(component.url).toBe(src);
-        expect(component.loop).toBe(true);
-        expect(component.autoplay).toBe(false);
-        expect(component.controls).toBe(true);
-        expect(component.muted).toBe(true);
-        expect(component.caption).toBe(caption);
-      }
-    );
-    test(
-      'It should process an apple podcast episode',
-      { tags: ['unit', 'html'] },
-      () => {
-        const src =
-          'https://embed.podcasts.apple.com/us/podcast/all-bark-no-bite-the-reality-behind-dog-the-bounty-hunter/id1849068807?i=1000761154684';
-        const content = `
-       <iframe 
-        allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" 
-        frameborder="0" 
-        height="450" 
-        style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;" 
-        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" 
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as AudioComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(true);
+      expect(component.autoplay).toBe(false);
+      expect(component.controls).toBe(true);
+      expect(component.muted).toBe(true);
+      expect(component.caption).toBe(caption);
+    }
+  );
+  test(
+    'It should process an apple podcast episode',
+    { tags: ['unit', 'html'] },
+    () => {
+      const src =
+        'https://embed.podcasts.apple.com/us/podcast/all-bark-no-bite-the-reality-behind-dog-the-bounty-hunter/id1849068807?i=1000761154684';
+      const content = `
+       <iframe
+        allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+        frameborder="0"
+        height="450"
+        style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;"
+        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
         src="${src}">
        </iframe>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as AudioComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('audio');
-        expect(component.url).toBe(src);
-        expect(component.loop).toBe(false);
-        expect(component.autoplay).toBe(true);
-        expect(component.controls).toBe(false);
-        expect(component.muted).toBe(false);
-      }
-    );
-    test(
-      'It should process an apple podcast series',
-      { tags: ['unit', 'html'] },
-      () => {
-        const src =
-          'https://embed.podcasts.apple.com/us/podcast/unheard-true-crime-in-their-own-words/id1849068807';
-        const content = `
-       <iframe 
-        allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" 
-        frameborder="0" 
-        height="450" 
-        style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;" 
-        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" 
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as AudioComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(false);
+      expect(component.autoplay).toBe(true);
+      expect(component.controls).toBe(false);
+      expect(component.muted).toBe(false);
+    }
+  );
+  test(
+    'It should process an apple podcast series',
+    { tags: ['unit', 'html'] },
+    () => {
+      const src =
+        'https://embed.podcasts.apple.com/us/podcast/unheard-true-crime-in-their-own-words/id1849068807';
+      const content = `
+       <iframe
+        allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+        frameborder="0"
+        height="450"
+        style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;"
+        sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
         src="${src}">
        </iframe>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as AudioComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('audio');
-        expect(component.url).toBe(src);
-        expect(component.loop).toBe(false);
-        expect(component.autoplay).toBe(true);
-        expect(component.controls).toBe(false);
-        expect(component.muted).toBe(false);
-      }
-    );
-  });
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as AudioComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('audio');
+      expect(component.url).toBe(src);
+      expect(component.loop).toBe(false);
+      expect(component.autoplay).toBe(true);
+      expect(component.controls).toBe(false);
+      expect(component.muted).toBe(false);
+    }
+  );
+});
 
-  describe('Custom components', () => {
-    test(
-      'It should create a custom component from iframe',
-      { tags: ['unit', 'html'] },
-      () => {
-        const content = `<iframe src="https://embedly.forbes.com/widgets/media.html?src=https%3A%2F%2Fe.infogram.com%2F_%2FuUje4914RW8zjHHygco0%3Fsrc%3Dembed&amp;display_name=Infogram&amp;url=https%3A%2F%2Finfogram.com%2F1pmnnkvl01yrzki3700wv0e50rhz07ljp0e&amp;image=https%3A%2F%2Finfogram-thumbs-1024.s3-eu-west-1.amazonaws.com%2Fec5e8245-6cc0-4919-830c-aa3a9c2f10e9.jpg&amp;type=text%2Fhtml&amp;schema=infogram"></iframe>`;
-        const components = HTMLMapper.toComponents(content);
-        expect(components.length).toBe(1);
-        const component = components.pop() as CustomComponent;
-        expect(component).toBeDefined();
-        expect(component.component).toBe('custom');
-        expect(component?.content.length).toBeGreaterThan(0);
-      }
-    );
-  });
+describe('Custom components', () => {
+  test(
+    'It should create a custom component from iframe',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `<iframe src="https://embedly.forbes.com/widgets/media.html?src=https%3A%2F%2Fe.infogram.com%2F_%2FuUje4914RW8zjHHygco0%3Fsrc%3Dembed&amp;display_name=Infogram&amp;url=https%3A%2F%2Finfogram.com%2F1pmnnkvl01yrzki3700wv0e50rhz07ljp0e&amp;image=https%3A%2F%2Finfogram-thumbs-1024.s3-eu-west-1.amazonaws.com%2Fec5e8245-6cc0-4919-830c-aa3a9c2f10e9.jpg&amp;type=text%2Fhtml&amp;schema=infogram"></iframe>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as CustomComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('custom');
+      expect(component?.content.length).toBeGreaterThan(0);
+    }
+  );
+});
 
-  describe('Recipe components', () => {
-    test(
-      'It should map recipe component from class attribute',
-      { tags: ['unit', 'html'] },
-      () => {
-        const mappings: Array<ComponentMapping> = [
-          {
-            component: 'recipe',
-            match: 'all',
-            filters: [
-              {
-                type: 'tag',
-                items: ['div'],
-              },
-              {
-                type: 'class',
-                match: 'any',
-                items: ['recipe'],
-              },
-            ],
-          },
-        ];
-        const content = `
+describe('Recipe components', () => {
+  test(
+    'It should map recipe component from class attribute',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'recipe',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['recipe'],
+            },
+          ],
+        },
+      ];
+      const content = `
         <div class="recipe top">
             <h4 class="text-lg hidden-xs">
               This is a large text
@@ -2100,293 +2094,365 @@ describe('HTMLMapper', () => {
             <p>Subtitle</p>
         </div>
       `;
-        const components = HTMLMapper.toComponents(content, { mappings });
-        expect(components.length).toBe(1);
-        const recipeComponent = components.pop() as RecipeComponent;
-        expect(recipeComponent).toBeDefined();
-        if (!recipeComponent) {
-          return;
-        }
-        expect(recipeComponent.components[0].component).toBe('intro');
-        expect(recipeComponent.components[1].component).toBe('body');
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+      const recipeComponent = components.pop() as RecipeComponent;
+      expect(recipeComponent).toBeDefined();
+      if (!recipeComponent) {
+        return;
       }
-    );
-    test(
-      'It should map empty recipe component',
-      { tags: ['unit', 'html'] },
-      () => {
-        const mappings: Array<ComponentMapping> = [
-          {
-            component: 'recipe',
-            match: 'all',
-            filters: [
-              {
-                type: 'tag',
-                items: ['div'],
-              },
-              {
-                type: 'class',
-                match: 'any',
-                items: ['recipe'],
-              },
-            ],
-          },
-        ];
-        const content = `
+      expect(recipeComponent.components[0].component).toBe('intro');
+      expect(recipeComponent.components[1].component).toBe('body');
+    }
+  );
+  test(
+    'It should map empty recipe component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'recipe',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['recipe'],
+            },
+          ],
+        },
+      ];
+      const content = `
         <div class="recipe"></div>
       `;
-        const components = HTMLMapper.toComponents(content, { mappings });
-        expect(components.length).toBe(1);
-        const recipeComponent = components.pop() as RecipeComponent;
-        expect(recipeComponent).toBeDefined();
-        if (!recipeComponent) {
-          return;
-        }
-        expect(recipeComponent.components.length).toBe(0);
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+      const recipeComponent = components.pop() as RecipeComponent;
+      expect(recipeComponent).toBeDefined();
+      if (!recipeComponent) {
+        return;
       }
-    );
-  });
+      expect(recipeComponent.components.length).toBe(0);
+    }
+  );
+});
 
-  describe('Container components', () => {
-    test(
-      'It should map container component from class attribute',
-      { tags: ['unit', 'html'] },
-      () => {
-        const mappings: Array<ComponentMapping> = [
-          {
-            component: 'container',
-            match: 'all',
-            filters: [
-              {
-                type: 'tag',
-                items: ['div'],
-              },
-              {
-                type: 'class',
-                match: 'any',
-                items: ['cmc-container'],
-              },
-            ],
-          },
-        ];
-        const content = `
+describe('Container components', () => {
+  test(
+    'It should map container component from class attribute',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['cmc-container'],
+            },
+          ],
+        },
+      ];
+      const content = `
         <div class="cmc-container cmc-example">
             <h1>Test</h1>
         </div>
       `;
-        const components = HTMLMapper.toComponents(content, { mappings });
-        expect(components.length).toBe(1);
-        const containerComponent = components.pop() as ContainerComponent;
-        expect(containerComponent).toBeDefined();
-        if (!containerComponent) {
-          return;
-        }
-        expect(containerComponent.components.length).toBe(1);
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+      const containerComponent = components.pop() as ContainerComponent;
+      expect(containerComponent).toBeDefined();
+      if (!containerComponent) {
+        return;
       }
-    );
-    test(
-      'It should map empty recipe component',
-      { tags: ['unit', 'html'] },
-      () => {
-        const mappings: Array<ComponentMapping> = [
-          {
-            component: 'container',
-            match: 'all',
-            filters: [
-              {
-                type: 'tag',
-                items: ['div'],
-              },
-              {
-                type: 'class',
-                match: 'any',
-                items: ['cmc'],
-              },
-            ],
-          },
-        ];
-        const content = `
+      expect(containerComponent.components.length).toBe(1);
+    }
+  );
+  test(
+    'It should map empty recipe component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['cmc'],
+            },
+          ],
+        },
+      ];
+      const content = `
         <div class="cmc"></div>
       `;
-        const components = HTMLMapper.toComponents(content, { mappings });
-        expect(components.length).toBe(1);
-        const containerComponent = components.pop() as ContainerComponent;
-        expect(containerComponent).toBeDefined();
-        if (!containerComponent) {
-          return;
-        }
-        expect(containerComponent.components.length).toBe(0);
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+      const containerComponent = components.pop() as ContainerComponent;
+      expect(containerComponent).toBeDefined();
+      if (!containerComponent) {
+        return;
       }
-    );
-  });
+      expect(containerComponent.components.length).toBe(0);
+    }
+  );
+});
 
-  describe('Link container components', () => {
-    test(
-      'It should anchor tags to map container component',
-      { tags: ['unit', 'html'] },
-      () => {
-        const mappings: Array<ComponentMapping> = [];
-        const link = 'https://example.org';
-        const content = `
+describe('Link container components', () => {
+  test(
+    'It should use anchor tags to map container component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [];
+      const link = 'https://example.org';
+      const content = `
         <a href="${link}" target="_blank">
           <div><h1>Test</h1></div>
           <img src="https://example.com/image.jpg"/>
         </a>
       `;
-        const components = HTMLMapper.toComponents(content, { mappings });
-        expect(components.length).toBe(2);
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(2);
 
-        const textComponent = components[0] as TextComponent;
-        expect(isTextComponent(textComponent)).toBe(true);
-        expect(textComponent.text).toBe(
-          `<a href="${link}" target="_blank">Test</a>`
-        );
+      const textComponent = components[0] as TextComponent;
+      expect(isTextComponent(textComponent)).toBe(true);
+      expect(textComponent.text).toBe(
+        `<a href="${link}" target="_blank">Test</a>`
+      );
 
-        const imageComponent = components[1] as ImageComponent;
-        expect(isImageComponent(imageComponent)).toBe(true);
-        expect(imageComponent.link).toBe(link);
-      }
-    );
+      const imageComponent = components[1] as ImageComponent;
+      expect(isImageComponent(imageComponent)).toBe(true);
+      expect(imageComponent.link).toBe(link);
+    }
+  );
 
-    test(
-      'It should keep audio component that do not use links',
-      { tags: ['unit', 'html'] },
-      () => {
-        const mappings: Array<ComponentMapping> = [];
-        const src =
-          'https://embed.podcasts.apple.com/us/podcast/all-bark-no-bite-the-reality-behind-dog-the-bounty-hunter/id1849068807?i=1000761154684';
-        const link = 'https://example.org';
-        const content = `
+  test(
+    'It should keep audio component that do not use links',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [];
+      const src =
+        'https://embed.podcasts.apple.com/us/podcast/all-bark-no-bite-the-reality-behind-dog-the-bounty-hunter/id1849068807?i=1000761154684';
+      const link = 'https://example.org';
+      const content = `
         <a href="${link}" target="_blank">
           <div><h1>Test</h1></div>
           <img src="https://example.com/image.jpg"/>
-          <iframe 
-            allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" 
-            frameborder="0" 
-            height="450" 
-            style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;" 
-            sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" 
+          <iframe
+            allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+            frameborder="0"
+            height="450"
+            style="width:100%;max-width:660px;overflow:hidden;border-radius:10px;"
+            sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
             src="${src}">
           </iframe>
         </a>
       `;
-        const components = HTMLMapper.toComponents(content, { mappings });
-        expect(components.length).toBe(3);
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(3);
 
-        const textComponent = components[0] as TextComponent;
-        expect(isTextComponent(textComponent)).toBe(true);
-        expect(textComponent.text).toBe(
-          `<a href="${link}" target="_blank">Test</a>`
-        );
+      const textComponent = components[0] as TextComponent;
+      expect(isTextComponent(textComponent)).toBe(true);
+      expect(textComponent.text).toBe(
+        `<a href="${link}" target="_blank">Test</a>`
+      );
 
-        const imageComponent = components[1] as ImageComponent;
-        expect(isImageComponent(imageComponent)).toBe(true);
-        expect(imageComponent.link).toBe(link);
+      const imageComponent = components[1] as ImageComponent;
+      expect(isImageComponent(imageComponent)).toBe(true);
+      expect(imageComponent.link).toBe(link);
 
-        const audioComponent = components[2] as AudioComponent;
-        expect(audioComponent).toBeDefined();
-        expect(audioComponent.component).toBe('audio');
-        expect(audioComponent.url).toBe(src);
-        expect(audioComponent.loop).toBe(false);
-        expect(audioComponent.autoplay).toBe(true);
-        expect(audioComponent.controls).toBe(false);
-        expect(audioComponent.muted).toBe(false);
-      }
-    );
+      const audioComponent = components[2] as AudioComponent;
+      expect(audioComponent).toBeDefined();
+      expect(audioComponent.component).toBe('audio');
+      expect(audioComponent.url).toBe(src);
+      expect(audioComponent.loop).toBe(false);
+      expect(audioComponent.autoplay).toBe(true);
+      expect(audioComponent.controls).toBe(false);
+      expect(audioComponent.muted).toBe(false);
+    }
+  );
 
-    test(
-      'It should keep the text components wrapped in anchor tags',
-      { tags: ['unit', 'html'] },
-      () => {
-        const mappings: Array<ComponentMapping> = [];
-        const link = 'https://example.org';
-        const content = `
+  test(
+    'It should keep the text components wrapped in anchor tags',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [];
+      const link = 'https://example.org';
+      const content = `
         <a href="${link}" target="_blank">
           <p>Example</p>
           Hello
           <h1>Headline</h1>
         </a>
       `;
-        const components = HTMLMapper.toComponents(content, { mappings });
-        expect(components.length).toBe(3);
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(3);
 
-        let textComponent = components[0] as TextComponent;
-        expect(isTextComponent(textComponent)).toBe(true);
-        expect(textComponent.text).toBe(
-          `<a href="${link}" target="_blank"><p>Example</p></a>`
-        );
+      let textComponent = components[0] as TextComponent;
+      expect(isTextComponent(textComponent)).toBe(true);
+      expect(textComponent.text).toBe(
+        `<a href="${link}" target="_blank"><p>Example</p></a>`
+      );
 
-        textComponent = components[1] as TextComponent;
-        expect(isTextComponent(textComponent)).toBe(true);
-        expect(textComponent.text).toBe(
-          `<a href="${link}" target="_blank"><p>Hello</p></a>`
-        );
+      textComponent = components[1] as TextComponent;
+      expect(isTextComponent(textComponent)).toBe(true);
+      expect(textComponent.text).toBe(
+        `<a href="${link}" target="_blank"><p>Hello</p></a>`
+      );
 
-        textComponent = components[2] as TextComponent;
-        expect(isTextComponent(textComponent)).toBe(true);
-        expect(textComponent.text).toBe(
-          `<a href="${link}" target="_blank">Headline</a>`
-        );
-      }
-    );
-  });
+      textComponent = components[2] as TextComponent;
+      expect(isTextComponent(textComponent)).toBe(true);
+      expect(textComponent.text).toBe(
+        `<a href="${link}" target="_blank">Headline</a>`
+      );
+    }
+  );
+});
 
-  describe('Mapping', () => {
-    test(
-      'It should map components using match any with filters any',
-      { tags: ['unit', 'html'] },
-      () => {
-        const mappings: Array<ComponentMapping> = [
-          {
-            component: 'headline',
-            match: 'any',
-            filters: [
-              {
-                type: 'tag',
-                items: ['h2'],
-              },
-              {
-                type: 'class',
-                match: 'any',
-                items: ['text-md'],
-              },
-            ],
-          },
-          {
-            component: 'title',
-            match: 'all',
-            filters: [
-              {
-                type: 'attribute',
-                key: 'id',
-                value: 'title',
-              },
-            ],
-          },
-          {
-            component: 'text48',
-            match: 'any',
-            filters: [
-              {
-                type: 'class',
-                match: 'any',
-                items: ['text-lg'],
-              },
-            ],
-          },
-          {
-            component: 'subtitle',
-            match: 'any',
-            filters: [
-              {
-                type: 'class',
-                match: 'any',
-                items: ['sub-sm'],
-              },
-            ],
-          },
-        ];
-        const content = `
+describe('Figure container component', () => {
+  test(
+    'It should use figure tag to map figure container component',
+    { tags: ['unit', 'html', 'todo'] },
+    () => {
+      const caption = 'Example image';
+      const tableContent = '<table><thead></thead><tbody></tbody></table>';
+      const imagesUrls = [
+        'https://example.com/image-1.jpg',
+        'https://example.com/image-2.jpg',
+      ];
+      const content = `
+        <figure>
+          <img src="${imagesUrls[0]}"/>
+          <div><img src="${imagesUrls[1]}"/></div>
+          ${tableContent}
+          <figcaption>${caption}</figcaption>
+        </figure>
+      `;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(3);
+
+      let imageComponent = components[0] as ImageComponent;
+      expect(isImageComponent(imageComponent)).toBe(true);
+      expect(imageComponent.imageurl).toBe(imagesUrls[0]);
+      expect(imageComponent.caption).toBe(caption);
+
+      imageComponent = components[1] as ImageComponent;
+      expect(isImageComponent(imageComponent)).toBe(true);
+      expect(imageComponent.imageurl).toBe(imagesUrls[1]);
+      expect(imageComponent.caption).toBe(caption);
+
+      const htmlTable = components[2] as HTMLTableComponent;
+      expect(isHTMLTableComponent(htmlTable)).toBe(true);
+      expect(htmlTable.html).toBe(tableContent);
+      expect(htmlTable.caption).toBe(caption);
+    }
+  );
+  test(
+    'It should use figure tag to map figure container component and ignore invalid components',
+    { tags: ['unit', 'html', 'todo'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [];
+      const caption = 'Example image';
+      const imagesUrls = [
+        'https://example.com/image-1.jpg',
+        'https://example.com/image-2.jpg',
+      ];
+      const content = `
+        <figure>
+          <img src="${imagesUrls[0]}"/>
+          <img src="${imagesUrls[1]}"/>
+          <h1>Headline</h1>
+          <figcaption>Example image</figcaption>
+        </figure>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(2);
+
+      let imageComponent = components[0] as ImageComponent;
+      expect(isImageComponent(imageComponent)).toBe(true);
+      expect(imageComponent.imageurl).toBe(imagesUrls[0]);
+      expect(imageComponent.caption).toBe(caption);
+
+      imageComponent = components[1] as ImageComponent;
+      expect(isImageComponent(imageComponent)).toBe(true);
+      expect(imageComponent.imageurl).toBe(imagesUrls[1]);
+      expect(imageComponent.caption).toBe(caption);
+    }
+  );
+});
+
+describe('Mapping', () => {
+  test(
+    'It should map components using match any with filters any',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'headline',
+          match: 'any',
+          filters: [
+            {
+              type: 'tag',
+              items: ['h2'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['text-md'],
+            },
+          ],
+        },
+        {
+          component: 'title',
+          match: 'all',
+          filters: [
+            {
+              type: 'attribute',
+              key: 'id',
+              value: 'title',
+            },
+          ],
+        },
+        {
+          component: 'text48',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['text-lg'],
+            },
+          ],
+        },
+        {
+          component: 'subtitle',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['sub-sm'],
+            },
+          ],
+        },
+      ];
+      const content = `
         <h2>This is a headline</h2>
         <h4 class="text-lg hidden-xs">
           This is a large text
@@ -2395,116 +2461,116 @@ describe('HTMLMapper', () => {
         <p class="text-md">Headline</p>
         <h5 id="title">This is a title component</h5>
       `;
-        const components = HTMLMapper.toComponents(content, { mappings });
-        expect(components.length).toBe(5);
-        expect(components[0].component).toBe('headline');
-        expect(components[1].component).toBe('text48');
-        expect(components[2].component).toBe('subtitle');
-        expect(components[3].component).toBe('headline');
-        expect(components[4].component).toBe('title');
-      }
-    );
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(5);
+      expect(components[0].component).toBe('headline');
+      expect(components[1].component).toBe('text48');
+      expect(components[2].component).toBe('subtitle');
+      expect(components[3].component).toBe('headline');
+      expect(components[4].component).toBe('title');
+    }
+  );
 
-    test(
-      'It should map components using match any with filters all',
-      { tags: ['unit', 'html'] },
-      () => {
-        const mappings: Array<ComponentMapping> = [
-          {
-            component: 'text33',
-            match: 'any',
-            filters: [
-              {
-                type: 'class',
-                match: 'all',
-                items: ['top', 'head'],
-              },
-            ],
-          },
-          {
-            component: 'text35',
-            match: 'any',
-            filters: [
-              {
-                type: 'class',
-                match: 'all',
-                items: ['heading', 'story'],
-              },
-            ],
-          },
-        ];
-        const content = `
+  test(
+    'It should map components using match any with filters all',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'text33',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'all',
+              items: ['top', 'head'],
+            },
+          ],
+        },
+        {
+          component: 'text35',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'all',
+              items: ['heading', 'story'],
+            },
+          ],
+        },
+      ];
+      const content = `
         <p class="head top primary">Text example</p>
         <p class="heading primary">Text example</p>
       `;
-        const components = HTMLMapper.toComponents(content, { mappings });
-        expect(components.length).toBe(2);
-        expect(components[0].component).toBe('text33');
-        expect(components[1].component).toBe('body');
-      }
-    );
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(2);
+      expect(components[0].component).toBe('text33');
+      expect(components[1].component).toBe('body');
+    }
+  );
 
-    test(
-      'It should map components using match any with filters equal',
-      { tags: ['unit', 'html'] },
-      () => {
-        const mappings: Array<ComponentMapping> = [
-          {
-            component: 'text36',
-            match: 'any',
-            filters: [
-              {
-                type: 'class',
-                match: 'equal',
-                items: ['head', 'story'],
-              },
-            ],
-          },
-        ];
-        const content = `
+  test(
+    'It should map components using match any with filters equal',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'text36',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'equal',
+              items: ['head', 'story'],
+            },
+          ],
+        },
+      ];
+      const content = `
         <p class="story head">Text example</p>
         <p class="head story headline">Text example</p>
       `;
-        const components = HTMLMapper.toComponents(content, { mappings });
-        expect(components.length).toBe(2);
-        expect(components[0].component).toBe('text36');
-        expect(components[1].component).toBe('body');
-      }
-    );
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(2);
+      expect(components[0].component).toBe('text36');
+      expect(components[1].component).toBe('body');
+    }
+  );
 
-    test(
-      'It should map components using match all with filters any',
-      { tags: ['unit', 'html'] },
-      () => {
-        const mappings: Array<ComponentMapping> = [
-          {
-            component: 'text48',
-            match: 'all',
-            filters: [
-              {
-                type: 'tag',
-                items: ['h2'],
-              },
-              {
-                type: 'class',
-                match: 'all',
-                items: ['text-lg'],
-              },
-            ],
-          },
-          {
-            component: 'subtitle',
-            match: 'all',
-            filters: [
-              {
-                type: 'class',
-                match: 'any',
-                items: ['sub-sm'],
-              },
-            ],
-          },
-        ];
-        const content = `
+  test(
+    'It should map components using match all with filters any',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'text48',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['h2'],
+            },
+            {
+              type: 'class',
+              match: 'all',
+              items: ['text-lg'],
+            },
+          ],
+        },
+        {
+          component: 'subtitle',
+          match: 'all',
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['sub-sm'],
+            },
+          ],
+        },
+      ];
+      const content = `
         <h2 class="text-lg hidden-xs">
           This is a large text
         </h2>
@@ -2513,51 +2579,51 @@ describe('HTMLMapper', () => {
         </h2>
         <p class="sub-sm">Subtitle</p>
       `;
-        const components = HTMLMapper.toComponents(content, { mappings });
-        expect(components.length).toBe(3);
-        expect(components[0].component).toBe('text48');
-        expect(components[1].component).toBe('title');
-        expect(components[2].component).toBe('subtitle');
-      }
-    );
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(3);
+      expect(components[0].component).toBe('text48');
+      expect(components[1].component).toBe('title');
+      expect(components[2].component).toBe('subtitle');
+    }
+  );
 
-    test(
-      'It should map components using match all with filters all',
-      { tags: ['unit', 'html'] },
-      () => {
-        const mappings: Array<ComponentMapping> = [
-          {
-            component: 'text33',
-            match: 'all',
-            filters: [
-              {
-                type: 'tag',
-                items: ['h3', 'h2'],
-              },
-              {
-                type: 'class',
-                match: 'all',
-                items: ['top', 'head'],
-              },
-            ],
-          },
-          {
-            component: 'text35',
-            match: 'all',
-            filters: [
-              {
-                type: 'tag',
-                items: ['p', 'ol'],
-              },
-              {
-                type: 'class',
-                match: 'all',
-                items: ['heading', 'story'],
-              },
-            ],
-          },
-        ];
-        const content = `
+  test(
+    'It should map components using match all with filters all',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'text33',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['h3', 'h2'],
+            },
+            {
+              type: 'class',
+              match: 'all',
+              items: ['top', 'head'],
+            },
+          ],
+        },
+        {
+          component: 'text35',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['p', 'ol'],
+            },
+            {
+              type: 'class',
+              match: 'all',
+              items: ['heading', 'story'],
+            },
+          ],
+        },
+      ];
+      const content = `
         <h3 class="head top primary">Text example</h3>
         <h2 class="head top primary">Text example</h2>
         <h2>Text example</h2>
@@ -2567,117 +2633,117 @@ describe('HTMLMapper', () => {
           <li>Item 1</li>
         </ol>
       `;
-        const components = HTMLMapper.toComponents(content, { mappings });
-        expect(components.length).toBe(6);
-        expect(components[0].component).toBe('text33');
-        expect(components[1].component).toBe('text33');
-        expect(components[2].component).toBe('title');
-        expect(components[3].component).toBe('text35');
-        expect(components[4].component).toBe('body');
-        expect(components[5].component).toBe('text35');
-      }
-    );
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(6);
+      expect(components[0].component).toBe('text33');
+      expect(components[1].component).toBe('text33');
+      expect(components[2].component).toBe('title');
+      expect(components[3].component).toBe('text35');
+      expect(components[4].component).toBe('body');
+      expect(components[5].component).toBe('text35');
+    }
+  );
 
-    test(
-      'It should map components using match all with filters equal',
-      { tags: ['unit', 'html'] },
-      () => {
-        const mappings: Array<ComponentMapping> = [
-          {
-            component: 'text36',
-            match: 'all',
-            filters: [
-              {
-                type: 'tag',
-                items: ['p'],
-              },
-              {
-                type: 'class',
-                match: 'equal',
-                items: ['head', 'story'],
-              },
-            ],
-          },
-        ];
-        const content = `
+  test(
+    'It should map components using match all with filters equal',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'text36',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['p'],
+            },
+            {
+              type: 'class',
+              match: 'equal',
+              items: ['head', 'story'],
+            },
+          ],
+        },
+      ];
+      const content = `
         <p class="head story">Text example</p>
         <h1 class="head story headline">Text <span class="teasdsaasdasd">example</span></h1>
         <h3 class="head story">Text example</h3>
       `;
-        const components = HTMLMapper.toComponents(content, { mappings });
-        expect(components.length).toBe(3);
-        expect(components[0].component).toBe('text36');
-        expect(components[1].component).toBe('headline');
-        expect(components[2].component).toBe('subtitle');
-      }
-    );
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(3);
+      expect(components[0].component).toBe('text36');
+      expect(components[1].component).toBe('headline');
+      expect(components[2].component).toBe('subtitle');
+    }
+  );
 
-    test(
-      'It should map components with match all filters with properties',
-      { tags: ['unit', 'html'] },
-      () => {
-        const properties = {
-          styles: [1233, 1111],
-          targetElement: '1-col',
-        };
-        const mappings: Array<ComponentMapping> = [
-          {
-            component: 'container',
-            match: 'all',
-            filters: [
-              {
-                type: 'tag',
-                items: ['div'],
-              },
-              {
-                type: 'class',
-                match: 'any',
-                items: ['cmc'],
-              },
-            ],
-            properties,
-          },
-        ];
-        const content = `
+  test(
+    'It should map components with match all filters with properties',
+    { tags: ['unit', 'html'] },
+    () => {
+      const properties = {
+        styles: [1233, 1111],
+        targetElement: '1-col',
+      };
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['cmc'],
+            },
+          ],
+          properties,
+        },
+      ];
+      const content = `
         <div class="cmc"></div>
       `;
-        const components = HTMLMapper.toComponents(content, { mappings });
-        expect(components.length).toBe(1);
-        const containerComponent = components.pop() as ContainerComponent;
-        expect(containerComponent).toBeDefined();
-        if (!containerComponent) {
-          return;
-        }
-        expect(containerComponent.components.length).toBe(0);
-        expect(containerComponent.properties).toBe(properties);
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+      const containerComponent = components.pop() as ContainerComponent;
+      expect(containerComponent).toBeDefined();
+      if (!containerComponent) {
+        return;
       }
-    );
+      expect(containerComponent.components.length).toBe(0);
+      expect(containerComponent.properties).toBe(properties);
+    }
+  );
 
-    test(
-      'It should exclude components based on tags',
-      { tags: ['unit', 'html'] },
-      () => {
-        const excludes: Array<Mapping> = [
-          {
-            match: 'all',
-            filters: [
-              {
-                type: 'tag',
-                items: ['section'],
-              },
-            ],
-          },
-          {
-            match: 'all',
-            filters: [
-              {
-                type: 'tag',
-                items: ['script'],
-              },
-            ],
-          },
-        ];
-        const content = `
+  test(
+    'It should exclude components based on tags',
+    { tags: ['unit', 'html'] },
+    () => {
+      const excludes: Array<Mapping> = [
+        {
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['section'],
+            },
+          ],
+        },
+        {
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['script'],
+            },
+          ],
+        },
+      ];
+      const content = `
         <main>
           <script>console.log('hello world')</script>
           <section>
@@ -2691,49 +2757,49 @@ describe('HTMLMapper', () => {
           </footer>
         </main>
       `;
-        const components = HTMLMapper.toComponents(content, { excludes });
-        expect(components.length).toBe(2);
-        const textComponent = components.shift() as TextComponent;
-        expect(textComponent).toBeDefined();
-        expect(textComponent.component).toBe('body');
-      }
-    );
+      const components = HTMLMapper.toComponents(content, { excludes });
+      expect(components.length).toBe(2);
+      const textComponent = components.shift() as TextComponent;
+      expect(textComponent).toBeDefined();
+      expect(textComponent.component).toBe('body');
+    }
+  );
 
-    test(
-      'It should exclude components based on tags and class',
-      { tags: ['unit', 'html'] },
-      () => {
-        const excludes: Array<Mapping> = [
-          {
-            match: 'all',
-            filters: [
-              {
-                type: 'tag',
-                items: ['section'],
-              },
-            ],
-          },
-          {
-            match: 'all',
-            filters: [
-              {
-                type: 'tag',
-                items: ['script'],
-              },
-            ],
-          },
-          {
-            match: 'all',
-            filters: [
-              {
-                type: 'class',
-                match: 'all',
-                items: ['excluded'],
-              },
-            ],
-          },
-        ];
-        const content = `
+  test(
+    'It should exclude components based on tags and class',
+    { tags: ['unit', 'html'] },
+    () => {
+      const excludes: Array<Mapping> = [
+        {
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['section'],
+            },
+          ],
+        },
+        {
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['script'],
+            },
+          ],
+        },
+        {
+          match: 'all',
+          filters: [
+            {
+              type: 'class',
+              match: 'all',
+              items: ['excluded'],
+            },
+          ],
+        },
+      ];
+      const content = `
         <main>
           <script>console.log('hello world')</script>
           <section>
@@ -2747,214 +2813,205 @@ describe('HTMLMapper', () => {
           </footer>
         </main>
       `;
-        const components = HTMLMapper.toComponents(content, { excludes });
-        expect(components.length).toBe(1);
-        const textComponent = components.shift() as TextComponent;
-        expect(textComponent).toBeDefined();
-        expect(textComponent.component).toBe('footer');
-      }
-    );
+      const components = HTMLMapper.toComponents(content, { excludes });
+      expect(components.length).toBe(1);
+      const textComponent = components.shift() as TextComponent;
+      expect(textComponent).toBeDefined();
+      expect(textComponent.component).toBe('footer');
+    }
+  );
 
-    describe('Validation', { tags: ['unit', 'html'] }, () => {
-      test(
-        'It should return a valid mapping',
-        { tags: ['unit', 'html'] },
-        () => {
-          const mappings = [
+  describe('Validation', { tags: ['unit', 'html'] }, () => {
+    test('It should return a valid mapping', { tags: ['unit', 'html'] }, () => {
+      const mappings = [
+        {
+          component: 'text36',
+          match: 'all',
+          filters: [
             {
-              component: 'text36',
-              match: 'all',
-              filters: [
-                {
-                  type: 'tag',
-                  items: ['p'],
-                },
-                {
-                  type: 'class',
-                  match: 'equal',
-                  items: ['head', 'story'],
-                },
-              ],
+              type: 'tag',
+              items: ['p'],
             },
-          ];
-          const excludes = [
             {
-              match: 3,
-              filters: [
-                {
-                  type: 'tag',
-                  items: ['p'],
-                },
-                {
-                  type: 'class',
-                  match: 'equal',
-                  items: ['head', 'story'],
-                },
-              ],
+              type: 'class',
+              match: 'equal',
+              items: ['head', 'story'],
             },
-          ];
-          const isValid = isValidParams({
-            mappings,
-            excludes,
-          });
-          expect(isValid).toBe(true);
-        }
-      );
-
-      test(
-        'It should throw an invalid null mapping',
-        { tags: ['unit', 'html'] },
-        () => {
-          const mappings = [null];
-          const isValid = isValidParams({
-            mappings,
-          });
-          expect(isValid).toBe(false);
-        }
-      );
-
-      test(
-        'It should return that a root mapping is valid',
-        { tags: ['unit', 'html'] },
-        () => {
-          const mappings = {
-            match: 'all',
-            component: 'body',
-            filters: [
-              {
-                type: 'tag',
-                items: ['p'],
-              },
-              {
-                type: 'class',
-                match: 'equal',
-                items: ['head', 'story'],
-              },
-            ],
-          };
-          const isValid = isValidMapping(mappings);
-          expect(isValid).toBe(false);
-        }
-      );
-
-      test(
-        'It should throw an invalid null root mapping',
-        { tags: ['unit', 'html'] },
-        () => {
-          const mappings = [{ hello: 'world' }];
-          const isValid = isValidMapping({
-            mappings,
-          });
-          expect(isValid).toBe(false);
-        }
-      );
+          ],
+        },
+      ];
+      const excludes = [
+        {
+          match: 3,
+          filters: [
+            {
+              type: 'tag',
+              items: ['p'],
+            },
+            {
+              type: 'class',
+              match: 'equal',
+              items: ['head', 'story'],
+            },
+          ],
+        },
+      ];
+      const isValid = isValidParams({
+        mappings,
+        excludes,
+      });
+      expect(isValid).toBe(true);
     });
-  });
 
-  describe('Relative links', () => {
     test(
-      'It should apply relative links with ~ symbol',
+      'It should throw an invalid null mapping',
       { tags: ['unit', 'html'] },
       () => {
-        const link =
-          'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge';
-        const href =
-          '~/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
-        const html = `<a href="${href}">this is a text</a>`;
-        const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/~/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
-        const content = processTextLinks(html, link);
-        expect(content).toBeDefined();
-        expect(content).toBe(result);
+        const mappings = [null];
+        const isValid = isValidParams({
+          mappings,
+        });
+        expect(isValid).toBe(false);
       }
     );
 
     test(
-      'It should apply relative links without trailing slash',
+      'It should return that a root mapping is valid',
       { tags: ['unit', 'html'] },
       () => {
-        const link =
-          'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge';
-        const href = 'link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
-        const html = `<a href="${href}">this is a text</a>`;
-        const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
-        //www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&_z=z
-        const content = processTextLinks(html, link);
-        expect(content).toBeDefined();
-        expect(content).toBe(result);
+        const mappings = {
+          match: 'all',
+          component: 'body',
+          filters: [
+            {
+              type: 'tag',
+              items: ['p'],
+            },
+            {
+              type: 'class',
+              match: 'equal',
+              items: ['head', 'story'],
+            },
+          ],
+        };
+        const isValid = isValidMapping(mappings);
+        expect(isValid).toBe(false);
       }
     );
 
     test(
-      'It should apply relative links with local directory',
+      'It should throw an invalid null root mapping',
       { tags: ['unit', 'html'] },
       () => {
-        const link =
-          'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge';
-        const href =
-          './link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
-        const html = `<a href="${href}">this is a text</a>`;
-        const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
-        const content = processTextLinks(html, link);
-        expect(content).toBeDefined();
-        expect(content).toBe(result);
-      }
-    );
-
-    test(
-      'It should apply relative links with trailing url',
-      { tags: ['unit', 'html'] },
-      () => {
-        const link =
-          'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/';
-        const href =
-          './link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
-        const html = `<a href="${href}">this is a text</a>`;
-        const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
-
-        const content = processTextLinks(html, link);
-        expect(content).toBeDefined();
-        expect(content).toBe(result);
-      }
-    );
-
-    test(
-      'It should apply relative links with trailing url double slash',
-      { tags: ['unit', 'html'] },
-      () => {
-        const link =
-          'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/';
-        const href =
-          '//link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
-        const html = `<a href="${href}">this is a text</a>`;
-        const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
-        const content = processTextLinks(html, link);
-        expect(content).toBeDefined();
-        expect(content).toBe(result);
-      }
-    );
-
-    test(
-      'It should apply relative links invalid port',
-      { tags: ['unit', 'html'] },
-      () => {
-        const href = 'https://javascript:null/';
-        const html = `<a href="${href}">this is a text</a>`;
-        const result = `<a href="/">this is a text</a>`;
-        const content = processTextLinks(html);
-        expect(content).toBeDefined();
-        expect(content).toBe(result);
-      }
-    );
-    test(
-      'It should skip anchor tags that do not have attributes',
-      { tags: ['unit', 'html'] },
-      () => {
-        const html = `<a>this is a text</a>`;
-        const result = `<a>this is a text</a>`;
-        const content = processTextLinks(html);
-        expect(content).toBeDefined();
-        expect(content).toBe(result);
+        const mappings = [{ hello: 'world' }];
+        const isValid = isValidMapping({
+          mappings,
+        });
+        expect(isValid).toBe(false);
       }
     );
   });
+});
+
+describe('Relative links', () => {
+  test(
+    'It should apply relative links with ~ symbol',
+    { tags: ['unit', 'html'] },
+    () => {
+      const link =
+        'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge';
+      const href = '~/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
+      const html = `<a href="${href}">this is a text</a>`;
+      const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/~/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
+      const content = processTextLinks(html, link);
+      expect(content).toBeDefined();
+      expect(content).toBe(result);
+    }
+  );
+
+  test(
+    'It should apply relative links without trailing slash',
+    { tags: ['unit', 'html'] },
+    () => {
+      const link =
+        'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge';
+      const href = 'link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
+      const html = `<a href="${href}">this is a text</a>`;
+      const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
+      //www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&_z=z
+      const content = processTextLinks(html, link);
+      expect(content).toBeDefined();
+      expect(content).toBe(result);
+    }
+  );
+
+  test(
+    'It should apply relative links with local directory',
+    { tags: ['unit', 'html'] },
+    () => {
+      const link =
+        'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge';
+      const href = './link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
+      const html = `<a href="${href}">this is a text</a>`;
+      const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
+      const content = processTextLinks(html, link);
+      expect(content).toBeDefined();
+      expect(content).toBe(result);
+    }
+  );
+
+  test(
+    'It should apply relative links with trailing url',
+    { tags: ['unit', 'html'] },
+    () => {
+      const link =
+        'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/';
+      const href = './link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
+      const html = `<a href="${href}">this is a text</a>`;
+      const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
+
+      const content = processTextLinks(html, link);
+      expect(content).toBeDefined();
+      expect(content).toBe(result);
+    }
+  );
+
+  test(
+    'It should apply relative links with trailing url double slash',
+    { tags: ['unit', 'html'] },
+    () => {
+      const link =
+        'https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/';
+      const href = '//link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z';
+      const html = `<a href="${href}">this is a text</a>`;
+      const result = `<a href="https://www.saga.co.uk/magazine/homes/foods-you-should-not-store-in-the-fridge/link.aspx?_id=35AD2F39D521448B972FB6C074D8A817&amp;_z=z">this is a text</a>`;
+      const content = processTextLinks(html, link);
+      expect(content).toBeDefined();
+      expect(content).toBe(result);
+    }
+  );
+
+  test(
+    'It should apply relative links invalid port',
+    { tags: ['unit', 'html'] },
+    () => {
+      const href = 'https://javascript:null/';
+      const html = `<a href="${href}">this is a text</a>`;
+      const result = `<a href="/">this is a text</a>`;
+      const content = processTextLinks(html);
+      expect(content).toBeDefined();
+      expect(content).toBe(result);
+    }
+  );
+  test(
+    'It should skip anchor tags that do not have attributes',
+    { tags: ['unit', 'html'] },
+    () => {
+      const html = `<a>this is a text</a>`;
+      const result = `<a>this is a text</a>`;
+      const content = processTextLinks(html);
+      expect(content).toBeDefined();
+      expect(content).toBe(result);
+    }
+  );
 });
