@@ -127,8 +127,15 @@ const htmlTableAllowedTags = [
   'a',
 ];
 
+/**
+ * It gets the root node from a list of nodes
+ *
+ * @param {Node[]} nodes
+ * @param {Mapping} mapping
+ * @returns {ElementNode | null}
+ */
 export function getRootElement(
-  nodes: Array<Node>,
+  nodes: Node[],
   mapping: Mapping
 ): ElementNode | null {
   const { match, filters } = mapping;
@@ -156,6 +163,13 @@ export function getRootElement(
   return null;
 }
 
+/**
+ * It reduce a list of nodes and remove the comments and empty text elements
+ *
+ * @param {Node[]} nodes
+ * @param {Node} node
+ * @returns {Node[]}
+ */
 export function reduceEmptyTextNode(nodes: Node[], node: Node): Node[] {
   if (node.type === 'comment') return nodes;
 
@@ -184,9 +198,13 @@ export function reduceEmptyTextNode(nodes: Node[], node: Node): Node[] {
   return nodes;
 }
 
-export function reduceComponents(
-  params?: Params
-): (acc: Array<Component>, node: Node) => Array<Component> {
+/**
+ * It process the html node and returns a list of canvasflow components
+ *
+ * @param {Params | undefined} params
+ * @returns {ReduceComponentsFn}
+ */
+export function reduceComponents(params?: Params): ReduceComponentsFn {
   return (acc: Array<Component>, node: Node): Array<Component> => {
     const component = fromNode(node, params);
 
@@ -226,13 +244,25 @@ export function reduceComponents(
   };
 }
 
+type ReduceComponentsFn = (
+  acc: Array<Component>,
+  node: Node
+) => Array<Component>;
+
+/**
+ * It appends link container components into components
+ *
+ * @param {Component[]} acc
+ * @param {LinkContainerComponent} container
+ * @returns {void}
+ */
 function appendLinkContainerComponents(
   acc: Component[],
-  linkContainer: LinkContainerComponent
+  container: LinkContainerComponent
 ): void {
-  const link = linkContainer.link;
-  const attributes = linkContainer.attributes;
-  const components = linkContainer.components.reduce(
+  const link = container.link;
+  const attributes = container.attributes;
+  const components = container.components.reduce(
     reduceLinkContainerComponent(link, attributes),
     []
   );
@@ -241,11 +271,18 @@ function appendLinkContainerComponents(
   }
 }
 
+/**
+ * It appends fgure container components into components
+ *
+ * @param {Component[]} acc
+ * @param {FigureContainerComponent} container
+ * @returns {void}
+ */
 function appendFigureContainerComponents(
   acc: Component[],
-  figureContainer: FigureContainerComponent
+  container: FigureContainerComponent
 ): void {
-  const { credit, caption, components } = figureContainer;
+  const { credit, caption, components } = container;
 
   for (const component of components) {
     if (
@@ -261,6 +298,14 @@ function appendFigureContainerComponents(
   }
 }
 
+/**
+ * It process a node individually and transform it into a single canvasflow
+ * component
+ *
+ * @param {Node} node
+ * @param {Params | undefined} params
+ * @returns {Component | Array<Component> | null}
+ */
 function fromNode(
   node: Node,
   params?: Params
@@ -324,25 +369,13 @@ function fromNode(
     return toAnchorButton(node);
   }
 
-  // This process instagram
   if (isInstagramNode(node)) {
     return toInstagram(node);
   }
 
-  // This process html table
   if (tagName === 'table') {
     return toHTMLTable(node);
   }
-
-  // This process html table inside figure
-  /*if (tagName === 'figure' && hasTable(node)) {
-    for (const child of node.children) {
-      if (child.type === 'element' && child.tagName === 'table') {
-        return toHTMLTable(child);
-      }
-    }
-    return null;
-  }*/
 
   if (isTikTokNode(node)) {
     if (!attributes.get('cite')) {
@@ -360,12 +393,10 @@ function fromNode(
     return toTikTok(new URL(attributes.get('cite') || ''));
   }
 
-  // This process twitter
   if (isTwitterNode(node)) {
     return toTwitter(node);
   }
 
-  // This process button component
   if (isButtonNode(node)) {
     return toButton(node);
   }
@@ -373,10 +404,6 @@ function fromNode(
   if (role === 'gallery' || role === 'mosaic') {
     return toGallery(node);
   }
-
-  /*if (tagName === 'figure' && hasCaption(node)) {
-    return fromFigure(node);
-  }*/
 
   // This section validates the rest of the tags components
   switch (tagName) {
@@ -405,7 +432,7 @@ function fromNode(
   }
 
   if (tagName === 'img') {
-    return fromImg(node);
+    return toImg(node);
   }
 
   if (tagName === 'picture') {
@@ -450,31 +477,13 @@ function fromNode(
   return null;
 }
 
-function fromFigcaption(node: ElementNode): FigcaptionResponse {
-  let caption: string | undefined;
-  let credit: string | undefined;
-  const figcaptionNodes =
-    node.tagName === 'figcaption'
-      ? [node]
-      : node.children.filter(
-          (n) => n.type === 'element' && n.tagName === 'figcaption'
-        );
-  for (const n of figcaptionNodes) {
-    credit = getCredit(n as ElementNode);
-    const html = stringify([n]);
-    caption = sanitizeHtml(html, {
-      allowedTags: ['span', 'b', 'strong', 'em', 'i'],
-    });
-    break;
-  }
-
-  return {
-    caption: caption ? caption.trim() : caption,
-    credit: credit ? credit.trim() : credit,
-  };
-}
-
-function fromImg(node: ElementNode): ImageComponent {
+/**
+ * It process an `img` node into Canvasflow image component
+ *
+ * @param {ElementNode} node
+ * @returns {ImageComponent}
+ */
+function toImg(node: ElementNode): ImageComponent {
   const errors: string[] = [];
   const warnings: string[] = [];
   let width: number | undefined;
@@ -513,6 +522,980 @@ function fromImg(node: ElementNode): ImageComponent {
   };
 }
 
+/**
+ * Transform an html component to Canvasflow Instagram Component
+ *
+ * @param {ElementNode} node
+ * @returns {InstagramComponent}
+ */
+function toInstagram(node: ElementNode): InstagramComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  const attributes = getAttributes(node.attributes);
+  const IG = attributes.get('data-instgrm-permalink') || '';
+  const urlInfo = new URL(IG);
+  const splitUrl = urlInfo.pathname.split('/');
+  const type = splitUrl[1] ? splitUrl[1].toLowerCase() : 'post';
+
+  if (!splitUrl[1]) {
+    errors.push('URL does not contain a type.');
+  }
+
+  if (!splitUrl[2]) {
+    errors.push('URL does not contain an ID.');
+  }
+
+  const component: InstagramComponent = {
+    id: splitUrl[2],
+    component: 'instagram',
+    type: 'post',
+    errors,
+    warnings,
+  };
+
+  switch (type) {
+    case 'p':
+      component.type = 'post';
+      break;
+    case 'reel':
+    case 'tv':
+      component.type = type;
+      break;
+  }
+  return component;
+}
+
+/**
+ * Transform an html component to Canvasflow Button Component
+ *
+ * @param {ElementNode} node
+ * @returns {ButtonComponent}
+ */
+function toAnchorButton(node: ElementNode): ButtonComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  let text: string | undefined;
+  const link: string | undefined = attributes.get('href');
+
+  const buttonsNode = node.children.reduce(findDescendants('button'), []);
+
+  if (buttonsNode.length > 0) {
+    const button = buttonsNode[0] as ElementNode;
+
+    text = button.children
+      .filter((n) => n.type === 'text')
+      .map((n) => n.content)
+      .join(' ')
+      .trim();
+  }
+  if (!text) {
+    errors.push('Button text is required');
+  }
+
+  if (!link) {
+    errors.push('Button link is required');
+  }
+
+  return {
+    component: 'button',
+    text,
+    link,
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * Transform an html component to Canvasflow Button Component
+ *
+ * @param {ElementNode} node
+ * @returns {ButtonComponent}
+ */
+function toButton(node: ElementNode): ButtonComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  let text: string | undefined;
+  let link: string | undefined;
+
+  // Process from a tag with role button
+  if (node.tagName === 'a') {
+    link = attributes.get('href');
+    text = node.children
+      .filter((n) => n.type === 'text')
+      .map((n) => n.content)
+      .join(' ')
+      .trim();
+    if (!text) {
+      errors.push('Button text is required');
+    }
+  } else if (node.tagName === 'button') {
+    const anchorNodes = node.children.reduce(findDescendants('a'), []);
+    if (anchorNodes.length > 0) {
+      const aNode = anchorNodes[0] as ElementNode;
+      const aAttributes = getAttributes(aNode.attributes);
+      link = aAttributes.get('href');
+      if (!link) {
+        errors.push('href attribute is required in a button link');
+      }
+      text = aNode.children
+        .filter((n) => n.type === 'text')
+        .map((n) => n.content)
+        .join(' ')
+        .trim();
+      if (!text) {
+        errors.push('Button text is required');
+      }
+    } else {
+      text = node.children
+        .filter((n) => n.type === 'text')
+        .map((n) => n.content)
+        .join(' ')
+        .trim();
+      if (!text) {
+        errors.push('Button text is required');
+      }
+      warnings.push(
+        'button without a link is not clickable, consider using an a tag with role button'
+      );
+    }
+  } else {
+    errors.push('invalid button implementation');
+  }
+
+  if (!link) {
+    errors.push('Button link is required');
+  }
+
+  return {
+    component: 'button',
+    text,
+    link,
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * Transform an html table component to Canvasflow HTMLTable Component
+ *
+ * @param {ElementNode} node
+ * @returns {HTMLTableComponent}
+ */
+function toHTMLTable(node: ElementNode): HTMLTableComponent {
+  let html = stringify([node]);
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  const attributes = getAttributes(node.attributes);
+
+  const allowedTags = htmlTableAllowedTags;
+  const allowedAttributes = textAllowedAttributes;
+
+  html = sanitizeHtml(html, {
+    allowedTags,
+    allowedAttributes,
+  })
+    .replace(/[\r\n\t]/g, '')
+    .replace(/\s\s+/g, ' ')
+    .trim();
+
+  const id = attributes.get('id');
+
+  const component: HTMLTableComponent = {
+    id,
+    component: 'htmltable',
+    html,
+    errors,
+    warnings,
+  };
+
+  return component;
+}
+
+/**
+ * Transform an URL into a TikTokComponent
+ *
+ * @param {URL} url
+ * @returns {TikTokComponent}
+ */
+function toTikTok(url: URL): TikTokComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  const params = {
+    username: '',
+    id: '',
+  };
+
+  const match = url
+    .toString()
+    .match(
+      /^https:\/\/www\.tiktok\.com\/(@[\w.\-_]+)\/video\/(\d+)(?:[/?].*)?$/
+    );
+  if (match) {
+    params.username = match[1] || '';
+    params.id = match[2] || '';
+  } else {
+    errors.push('Invalid TikTok video URL format.');
+  }
+  const component: TikTokComponent = {
+    component: 'video',
+    vidtype: 'tiktok',
+    params,
+    errors,
+    warnings,
+  };
+  return component;
+}
+
+/**
+ * Transform an html component to Canvasflow Twitter Component
+ *
+ * @param {ElementNode | URL} node
+ * @returns {TwitterComponent}
+ */
+function toTwitter(node: ElementNode | URL): TwitterComponent {
+  if (node instanceof URL) {
+    return toTweetFromUrl(node);
+  }
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  let tweetNode: ElementNode | undefined;
+  const params: { id?: string; account?: string } = {};
+
+  for (const child of node.children) {
+    if (child.type !== 'element') continue;
+    if (child.tagName === 'a') {
+      tweetNode = child;
+      break;
+    }
+  }
+  if (tweetNode) {
+    const attributes = getAttributes(tweetNode.attributes);
+    const tweetUrl = attributes.get('href') || '';
+
+    const twitterRegex =
+      /^https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
+    const values: Array<string> = twitterRegex.exec(tweetUrl) || [];
+    params.id = values[3];
+    params.account = values[1];
+  }
+
+  //validamos si tiene los valores 1 y 3 para errors
+
+  return {
+    height: '350',
+    fixedheight: 'on',
+    bleed: 'on',
+    params,
+    component: 'twitter',
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * Transform an tweet URL to Canvasflow Twitter Component
+ *
+ * @param {URL} uri
+ * @returns {TwitterComponent}
+ */
+function toTweetFromUrl(uri: URL): TwitterComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const params: { id?: string; account?: string } = {};
+
+  const url = uri.toString();
+
+  if (
+    !url.startsWith('https://x.com') &&
+    !url.startsWith('https://twitter.com')
+  ) {
+    errors.push('Invalid Twitter video URL format.');
+    return {
+      height: '350',
+      fixedheight: 'on',
+      bleed: 'on',
+      params,
+      component: 'twitter',
+      errors,
+      warnings,
+    };
+  }
+
+  const tweetUrl = uri.pathname;
+
+  const twitterRegex = /\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
+
+  const values: Array<string> = twitterRegex.exec(tweetUrl) || [];
+  params.id = values[3];
+  params.account = values[1];
+
+  //validamos si tiene los valores 1 y 3 para errors
+
+  return {
+    height: '350',
+    fixedheight: 'on',
+    bleed: 'on',
+    params,
+    component: 'twitter',
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * Transform an html node into a Canvasflow Gallery Component
+ *
+ * @param {ElementNode} node
+ * @returns {GalleryComponent}
+ */
+function toGallery(node: ElementNode): GalleryComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  const role = attributes.get('role') === 'mosaic' ? 'mosaic' : 'default';
+  const direction =
+    attributes.get('data-direction') === 'vertical' ? 'vertical' : 'horizontal';
+
+  const galleryTags = new Set([...imageTags, 'figure']);
+  const images: Array<GalleryImage> = node.children
+    // Validate the only image tag are supported
+    .filter((n) => n.type === 'element' && galleryTags.has(n.tagName))
+    // Map the node to an image component
+    .map((n: Node): ImageComponent => {
+      return toImage(n as ElementNode);
+    })
+    // If some is invalid and return undefined we remove them
+    .filter((i) => !!i)
+    // Map Valid image components to gallery items
+    .map((imageComponent: ImageComponent): GalleryImage => {
+      const { link, alt, credit, width, height, imageurl, caption } =
+        imageComponent;
+      return {
+        imageurl,
+        caption,
+        link,
+        alt,
+        credit,
+        width,
+        height,
+      };
+    });
+
+  const { caption } = fromFigcaption(node);
+
+  return {
+    component: 'gallery',
+    role,
+    images,
+    direction,
+    errors,
+    warnings,
+    caption,
+  };
+}
+
+/**
+ * Transform an Image node into an ImageComponent
+ *
+ * @param {ElementNode} node
+ * @returns {ImageComponent}
+ */
+function toImage(node: ElementNode): ImageComponent {
+  let link: string | undefined;
+  if (node.tagName === 'a') {
+    const nodeResp = getLinkFromImageNode(node);
+    if (nodeResp.node) {
+      node = nodeResp.node;
+    }
+
+    link = nodeResp.link;
+  }
+
+  const { tagName } = node;
+  const attributes = getAttributes(node.attributes);
+  const id = attributes.get('id');
+
+  if (tagName === 'figure') {
+    const imageComponent: ImageComponent = fromFigure(node) as ImageComponent;
+    imageComponent.id = id;
+    if (link) {
+      imageComponent.link = link;
+    }
+
+    return imageComponent;
+  }
+
+  if (tagName === 'picture') {
+    const imageComponent: ImageComponent = fromPicture(node);
+    imageComponent.id = id;
+    if (link) {
+      imageComponent.link = link;
+    }
+    return imageComponent;
+  }
+
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  let imageurl = '';
+
+  if (!attributes) {
+    errors.push('No attributes found on image node');
+  }
+
+  const src = attributes.get('src');
+  if (src) {
+    imageurl = src;
+  }
+  const width: string | undefined = attributes.get('width');
+  const height: string | undefined = attributes.get('height');
+  const alt: string | undefined = attributes.get('alt');
+
+  return {
+    id,
+    component: 'image',
+    imageurl,
+    alt,
+    link,
+    width: width ? parseInt(`${width}`, 10) : undefined,
+    height: height ? parseInt(`${height}`, 10) : undefined,
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * Transform an infogram url into an Canvasflow Infogram Component
+ *
+ * @param {URL} url
+ * @returns {InfogramComponent}
+ */
+function toInfogram(url: URL): InfogramComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  return {
+    component: 'infogram',
+    params: {
+      id: url.pathname.replace('/', ''),
+      parentUrl: url.searchParams.get('parent_url') || '',
+      src: 'embed',
+    },
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * Transform an Dailymotion url into a Canvasflow DailyMotion Component
+ *
+ * @param {URL} url
+ * @returns {DailymotionComponent}
+ */
+function toDailymotion(url: URL): DailymotionComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  const regExp =
+    /(?:dailymotion\.com\/(?:video|hub)|dai\.ly)\/([0-9a-z]+)(?:[-_0-9a-zA-Z]+#video=([a-z0-9]+))?/;
+
+  if (!regExp.test(url.href)) {
+    errors.push('Invalid  Dailymotion video URL format.');
+  }
+
+  const id = url.pathname.split('/').pop() as string;
+
+  return {
+    component: 'video',
+    vidtype: 'dailymotion',
+    params: {
+      id,
+    },
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * Transform an youtube url into a Canvasflow Youtube Component
+ *
+ * @param {URL} url
+ * @returns {YoutubeComponent}
+ */
+function toYoutube(url: URL): YoutubeComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  const regExp =
+    /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+
+  if (!regExp.test(url.href)) {
+    errors.push('Invalid Youtube video URL format.');
+  }
+
+  const id = url.pathname.split('/').pop() as string;
+
+  if (!/^[a-zA-Z0-9_-]{11}$/.test(id)) {
+    errors.push('Invalid YouTube video ID.');
+  }
+
+  return {
+    component: 'video',
+    vidtype: 'youtube',
+    params: {
+      id,
+    },
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * Transform an vimeo url into a Canvasflow Vimeo Component
+ *
+ * @param {URL} url
+ * @returns {VimeoComponent}
+ */
+function toVimeo(url: URL): VimeoComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  if (!url.toString().startsWith('https://vimeo.com')) {
+    errors.push('Invalid  Dailymotion video URL format.');
+  }
+
+  const id = url.pathname.split('/').pop() as string;
+
+  return {
+    component: 'video',
+    vidtype: 'vimeo',
+    params: {
+      id,
+    },
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * Transform an video HTML node into a Canvasflow Video Component
+ *
+ * @param {ElementNode} node
+ * @returns {VideoComponent}
+ */
+function toVideo(node: ElementNode): VideoComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  let url = '';
+  const controls = attributes.has('controls');
+  const autoplay = attributes.has('autoplay');
+  const poster = attributes.get('poster');
+  const muted = attributes.has('muted');
+  const loop = attributes.has('loop');
+  const src = attributes.get('src');
+  if (src) {
+    url = src;
+  }
+
+  const sources = node.children
+    .filter((n) => n.type === 'element' && n.tagName === 'source')
+    .map((n: Node) => {
+      if (n.type !== 'element') return '';
+      const attr = getAttributes(n.attributes);
+      return attr.get('src') || '';
+    })
+    .filter((i) => !!i);
+
+  if (sources.length) {
+    url = sources.shift() as string;
+  }
+
+  if (!url) {
+    errors.push('Video source is required');
+  }
+
+  return {
+    component: 'video',
+    url,
+    controls,
+    autoplay,
+    muted,
+    loop,
+    poster,
+    movietype: 'hosted',
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * Transform an audio HTML node into a Canvasflow Audio Component
+ *
+ * @param {ElementNode} node
+ * @returns {AudioComponent}
+ */
+function toAudio(node: ElementNode): AudioComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  let url = '';
+  const controls = attributes.has('controls');
+  const autoplay = attributes.has('autoplay');
+  const muted = attributes.has('muted');
+  const loop = attributes.has('loop');
+  const src = attributes.get('src');
+  if (src) {
+    url = src;
+  }
+
+  const sources = node.children
+    .filter((n) => n.type === 'element' && n.tagName === 'source')
+    .map((n: Node) => {
+      if (n.type !== 'element') return '';
+      const attr = getAttributes(n.attributes);
+      return attr.get('src') || '';
+    })
+    .filter((i) => !!i);
+
+  if (sources.length) {
+    url = sources.shift() as string;
+  }
+
+  if (!url) {
+    errors.push('Audio source is required');
+  }
+
+  return {
+    component: 'audio',
+    url,
+    controls,
+    autoplay,
+    muted,
+    loop,
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * Transform an ifram HTML node with podcast url into a Canvasflow Audio Component
+ *
+ * @param {ElementNode} node
+ * @returns {AudioComponent}
+ */
+function toApplePodcast(node: ElementNode): AudioComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  let url = '';
+  const src = attributes.get('src');
+  const allow = attributes.get('allow');
+  if (src) {
+    url = src;
+  }
+
+  if (!url) {
+    errors.push('src is required');
+  }
+
+  let autoplay = false;
+  if (allow) {
+    const allowProps = new Set(allow.split(';').map((p) => p.trim()));
+    autoplay = allowProps.has('autoplay *');
+  }
+
+  return {
+    component: 'audio',
+    url,
+    controls: false,
+    autoplay,
+    muted: false,
+    loop: false,
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * Transform an html node into a Canvasflow Custom Component
+ *
+ * @param {ElementNode} node
+ * @returns {CustomComponent}
+ */
+function toCustom(node: ElementNode): CustomComponent {
+  const content = stringify([node]);
+  const attributes = getAttributes(node.attributes);
+  const id = attributes.get('id');
+  return {
+    id,
+    component: 'custom',
+    errors: [],
+    warnings: [],
+    content,
+  };
+}
+
+/**
+ * Transform a container element into a Canvasflow Container component
+ *
+ * @param {'container' | 'recipe'} component
+ * @param {ElementNode} node
+ * @param {Params | undefined} params
+ * @param {Record<string, unknown> | undefined} properties
+ * @returns {RecipeComponent | ContainerComponent}
+ */
+function toContainer(
+  component: 'container' | 'recipe',
+  node: ElementNode,
+  params?: Params,
+  properties?: Record<string, unknown>
+): RecipeComponent | ContainerComponent {
+  const warnings: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  const id = attributes.get('id');
+
+  const components: Array<Component> = node.children.length
+    ? node.children.reduce(reduceComponents(params), [])
+    : [];
+
+  return {
+    id,
+    component,
+    components,
+    errors: [],
+    warnings,
+    properties,
+  };
+}
+
+/**
+ * Transform an a tag into a Canvasflow LinkContainer Component
+ *
+ * @param {ElementNode} node
+ * @param {Params} [params]
+ * @param {Record<string, unknown>} [properties]
+ * @returns {LinkContainerComponent}
+ */
+function toLinkContainer(
+  node: ElementNode,
+  params?: Params,
+  properties?: Record<string, unknown>
+): LinkContainerComponent {
+  const warnings: string[] = [];
+  const errors: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  const id = attributes.get('id');
+
+  const link: string | undefined = attributes.get('href');
+
+  const components: Array<Component> = node.children.length
+    ? node.children.reduce(reduceComponents(params), [])
+    : [];
+
+  const component: LinkContainerComponent = {
+    id,
+    attributes,
+    component: 'container',
+    type: 'link',
+    link: link || '',
+    components,
+    errors,
+    warnings,
+    properties,
+  };
+
+  return component;
+}
+
+/**
+ * Transform an a Figure elemento into a Canvasflow FigureContainer Component
+ *
+ * @param {ElementNode} node
+ * @param {Params} [params]
+ * @param {Record<string, unknown>} [properties]
+ * @returns {FigureContainerComponent}
+ */
+function toFigureContainer(
+  node: ElementNode,
+  params?: Params,
+  properties?: Record<string, unknown>
+): FigureContainerComponent {
+  const warnings: string[] = [];
+  const errors: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  const id = attributes.get('id');
+  let caption = '';
+  let credit = '';
+
+  // Get the figcaption section
+  const figcaptionNodes = node.children.reduce(
+    findDescendants('figcaption'),
+    []
+  );
+  if (figcaptionNodes.length) {
+    const figcaptionNode = figcaptionNodes.shift() as ElementNode;
+    const ficaptionResponse = fromFigcaption(figcaptionNode);
+    if (ficaptionResponse) {
+      caption = ficaptionResponse.caption || '';
+      credit = ficaptionResponse.credit || '';
+    }
+  }
+
+  const components = node.children
+    .reduce(findDescendants(filterFigureDescendants(params)), [])
+    .reduce(reduceComponents(params), []);
+
+  const component: FigureContainerComponent = {
+    id,
+    component: 'container',
+    type: 'figure',
+    components,
+    caption,
+    credit,
+    errors,
+    warnings,
+    properties,
+  };
+
+  return component;
+}
+
+/**
+ * Transform an html node into Canvasflow Text Component
+ *
+ * @param {ElementNode} node
+ * @param {TextType} component
+ * @param {Record<string, unknown>} [properties] - Properties that
+ * applied to the component that matches
+ * @returns {TextComponent} Text Component
+ */
+function toText(
+  node: ElementNode,
+  component: TextType,
+  properties?: Record<string, unknown>
+): TextComponent {
+  const html = stringify([node]);
+  const warnings: string[] = [];
+  const attributes = getAttributes(node.attributes);
+
+  const allowedTags = textAllowedTags;
+  const allowedAttributes = textAllowedAttributes;
+
+  const text = sanitizeHtml(html, {
+    allowedTags,
+    allowedAttributes,
+  });
+  const id = attributes.get('id');
+  const role = attributes.get('role');
+  if (role) {
+    // If the role was set and is valid we apply it
+    if (isValidTextRole(role)) {
+      component = role as TextType;
+    } else {
+      // If the role was invalid we use body as fallback
+      warnings.push(`role '${role}' is invalid`);
+      component = 'body';
+    }
+  }
+
+  return {
+    id,
+    component,
+    errors: [],
+    warnings,
+    properties,
+    text: typeof text === 'string' ? text.trim() : text,
+  };
+}
+
+/**
+ * Filter the valid descendants for figures
+ *
+ * @param {Params} [params\
+ * @returns {NodeFilterFn}
+ */
+function filterFigureDescendants(params?: Params): NodeFilterFn {
+  return (node: Node): boolean => {
+    const { type } = node;
+    if (type !== 'element') return false;
+    const { tagName } = node;
+    // Exclude the nodes that we need to ignore
+    if (params?.excludes?.length) {
+      const isNodeExcluded = excludeNode(node, params.excludes);
+      if (isNodeExcluded) {
+        return false;
+      }
+    }
+
+    const validFigureTags = new Set([
+      'audio',
+      'img',
+      'picture',
+      'table',
+      'video',
+    ]);
+
+    if (validFigureTags.has(tagName)) {
+      return true;
+    }
+    if (isTwitterNode(node)) {
+      return true;
+    }
+
+    if (isTikTokNode(node)) {
+      return true;
+    }
+
+    if (tagName === 'iframe') {
+      const iframeComponent = fromIframe(node);
+      return isYoutubeComponent(iframeComponent);
+    }
+
+    return false;
+  };
+}
+
+/**
+ * It process a figcaption node and get the caption and credit
+ *
+ * @param {ElementNode} node
+ * @returns {FigcaptionResponse}
+ */
+function fromFigcaption(node: ElementNode): FigcaptionResponse {
+  let caption: string | undefined;
+  let credit: string | undefined;
+  const figcaptionNodes =
+    node.tagName === 'figcaption'
+      ? [node]
+      : node.children.filter(
+          (n) => n.type === 'element' && n.tagName === 'figcaption'
+        );
+  for (const n of figcaptionNodes) {
+    credit = getCredit(n as ElementNode);
+    const html = stringify([n]);
+    caption = sanitizeHtml(html, {
+      allowedTags: ['span', 'b', 'strong', 'em', 'i'],
+    });
+    break;
+  }
+
+  return {
+    caption: caption ? caption.trim() : caption,
+    credit: credit ? credit.trim() : credit,
+  };
+}
+
+/**
+ * It process a figure node and get back a Canvasflow component
+ *
+ * @param {ElementNode} node
+ * @returns {ImageComponent | VideoComponent | AudioComponent | YoutubeComponent | null}
+ */
 function fromFigure(
   node: ElementNode
 ): ImageComponent | VideoComponent | AudioComponent | YoutubeComponent | null {
@@ -661,6 +1644,12 @@ function fromFigure(
   };
 }
 
+/**
+ * It process a picture node and get back a Canvasflow Image component
+ *
+ * @param {ElementNode} node
+ * @returns {ImageComponent}
+ */
 function fromPicture(node: ElementNode): ImageComponent {
   let imageurl = '';
   let alt: string | undefined;
@@ -700,6 +1689,12 @@ function fromPicture(node: ElementNode): ImageComponent {
   };
 }
 
+/**
+ * It process an iframe node and returns a Canvasflow component
+ *
+ * @param {ElementNode} node
+ * @returns {YoutubeComponent | InfogramComponent | DailymotionComponent | TikTokComponent | VimeoComponent | TwitterComponent | CustomComponent | AudioComponent | null}
+ */
 function fromIframe(
   node: ElementNode
 ):
@@ -800,6 +1795,12 @@ function fromIframe(
   return toCustom(node);
 }
 
+/**
+ * It returns `true` if the node has a button as a children
+ *
+ * @param {ElementNode} node
+ * @returns {boolean}
+ */
 function hasButton(node: ElementNode): boolean {
   for (const child of node.children) {
     if (child.type === 'element' && child.tagName === 'button') {
@@ -809,769 +1810,24 @@ function hasButton(node: ElementNode): boolean {
   return false;
 }
 
+/**
+ * It returns `true`if the node has an `image`, `figure` or `picture` in their
+ * descendants
+ *
+ * @param {ElementNode} node
+ * @returns {boolean}
+ */
 function hasImage(node: ElementNode): boolean {
   const imageTagNames = ['img', 'figure', 'picture'];
-  return !!node.children.reduce(findDescendants(imageTagNames), []).length;
+  return node.children.reduce(findDescendants(imageTagNames), []).length > 0;
 }
 
-function toInstagram(node: ElementNode): InstagramComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  const attributes = getAttributes(node.attributes);
-  const IG = attributes.get('data-instgrm-permalink') || '';
-  const urlInfo = new URL(IG);
-  const splitUrl = urlInfo.pathname.split('/');
-  const type = splitUrl[1] ? splitUrl[1].toLowerCase() : 'post';
-
-  if (!splitUrl[1]) {
-    errors.push('URL does not contain a type.');
-  }
-
-  if (!splitUrl[2]) {
-    errors.push('URL does not contain an ID.');
-  }
-
-  const component: InstagramComponent = {
-    id: splitUrl[2],
-    component: 'instagram',
-    type: 'post',
-    errors,
-    warnings,
-  };
-
-  switch (type) {
-    case 'p':
-      component.type = 'post';
-      break;
-    case 'reel':
-    case 'tv':
-      component.type = type;
-      break;
-  }
-  return component;
-}
-
-function toAnchorButton(node: ElementNode): ButtonComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const attributes = getAttributes(node.attributes);
-  let text: string | undefined;
-  const link: string | undefined = attributes.get('href');
-
-  const buttonsNode = node.children.reduce(findDescendants('button'), []);
-
-  if (buttonsNode.length > 0) {
-    const button = buttonsNode[0] as ElementNode;
-
-    text = button.children
-      .filter((n) => n.type === 'text')
-      .map((n) => n.content)
-      .join(' ')
-      .trim();
-  }
-  if (!text) {
-    errors.push('Button text is required');
-  }
-
-  if (!link) {
-    errors.push('Button link is required');
-  }
-
-  return {
-    component: 'button',
-    text,
-    link,
-    errors,
-    warnings,
-  };
-}
-
-function toHTMLTable(node: ElementNode): HTMLTableComponent {
-  let html = stringify([node]);
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  const attributes = getAttributes(node.attributes);
-
-  const allowedTags = htmlTableAllowedTags;
-  const allowedAttributes = textAllowedAttributes;
-
-  html = sanitizeHtml(html, {
-    allowedTags,
-    allowedAttributes,
-  })
-    .replace(/[\r\n\t]/g, '')
-    .replace(/\s\s+/g, ' ')
-    .trim();
-
-  const id = attributes.get('id');
-
-  const component: HTMLTableComponent = {
-    id,
-    component: 'htmltable',
-    html,
-    errors,
-    warnings,
-  };
-
-  return component;
-}
-
-function toTikTok(url: URL): TikTokComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  const params = {
-    username: '',
-    id: '',
-  };
-
-  const match = url
-    .toString()
-    .match(
-      /^https:\/\/www\.tiktok\.com\/(@[\w.\-_]+)\/video\/(\d+)(?:[/?].*)?$/
-    );
-  if (match) {
-    params.username = match[1] || '';
-    params.id = match[2] || '';
-  } else {
-    errors.push('Invalid TikTok video URL format.');
-  }
-  const component: TikTokComponent = {
-    component: 'video',
-    vidtype: 'tiktok',
-    params,
-    errors,
-    warnings,
-  };
-  return component;
-}
-
-function toButton(node: ElementNode): ButtonComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const attributes = getAttributes(node.attributes);
-  let text: string | undefined;
-  let link: string | undefined;
-
-  // Process from a tag with role button
-  if (node.tagName === 'a') {
-    link = attributes.get('href');
-    text = node.children
-      .filter((n) => n.type === 'text')
-      .map((n) => n.content)
-      .join(' ')
-      .trim();
-    if (!text) {
-      errors.push('Button text is required');
-    }
-  } else if (node.tagName === 'button') {
-    const anchorNodes = node.children.reduce(findDescendants('a'), []);
-    if (anchorNodes.length > 0) {
-      const aNode = anchorNodes[0] as ElementNode;
-      const aAttributes = getAttributes(aNode.attributes);
-      link = aAttributes.get('href');
-      if (!link) {
-        errors.push('href attribute is required in a button link');
-      }
-      text = aNode.children
-        .filter((n) => n.type === 'text')
-        .map((n) => n.content)
-        .join(' ')
-        .trim();
-      if (!text) {
-        errors.push('Button text is required');
-      }
-    } else {
-      text = node.children
-        .filter((n) => n.type === 'text')
-        .map((n) => n.content)
-        .join(' ')
-        .trim();
-      if (!text) {
-        errors.push('Button text is required');
-      }
-      warnings.push(
-        'button without a link is not clickable, consider using an a tag with role button'
-      );
-    }
-  } else {
-    errors.push('invalid button implementation');
-  }
-
-  if (!link) {
-    errors.push('Button link is required');
-  }
-
-  return {
-    component: 'button',
-    text,
-    link,
-    errors,
-    warnings,
-  };
-}
-
-function toTwitter(node: ElementNode | URL): TwitterComponent {
-  if (node instanceof URL) {
-    return toTweetFromUrl(node);
-  }
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  let tweetNode: ElementNode | undefined;
-  const params: { id?: string; account?: string } = {};
-
-  for (const child of node.children) {
-    if (child.type !== 'element') continue;
-    if (child.tagName === 'a') {
-      tweetNode = child;
-      break;
-    }
-  }
-  if (tweetNode) {
-    const attributes = getAttributes(tweetNode.attributes);
-    const tweetUrl = attributes.get('href') || '';
-
-    const twitterRegex =
-      /^https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
-    const values: Array<string> = twitterRegex.exec(tweetUrl) || [];
-    params.id = values[3];
-    params.account = values[1];
-  }
-
-  //validamos si tiene los valores 1 y 3 para errors
-
-  return {
-    height: '350',
-    fixedheight: 'on',
-    bleed: 'on',
-    params,
-    component: 'twitter',
-    errors,
-    warnings,
-  };
-}
-
-function toTweetFromUrl(uri: URL): TwitterComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const params: { id?: string; account?: string } = {};
-
-  const url = uri.toString();
-
-  if (
-    !url.startsWith('https://x.com') &&
-    !url.startsWith('https://twitter.com')
-  ) {
-    errors.push('Invalid Twitter video URL format.');
-    return {
-      height: '350',
-      fixedheight: 'on',
-      bleed: 'on',
-      params,
-      component: 'twitter',
-      errors,
-      warnings,
-    };
-  }
-
-  const tweetUrl = uri.pathname;
-
-  const twitterRegex = /\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
-
-  const values: Array<string> = twitterRegex.exec(tweetUrl) || [];
-  params.id = values[3];
-  params.account = values[1];
-
-  //validamos si tiene los valores 1 y 3 para errors
-
-  return {
-    height: '350',
-    fixedheight: 'on',
-    bleed: 'on',
-    params,
-    component: 'twitter',
-    errors,
-    warnings,
-  };
-}
-
-function toGallery(node: ElementNode): GalleryComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const attributes = getAttributes(node.attributes);
-  const role = attributes.get('role') === 'mosaic' ? 'mosaic' : 'default';
-  const direction =
-    attributes.get('data-direction') === 'vertical' ? 'vertical' : 'horizontal';
-
-  const galleryTags = new Set([...imageTags, 'figure']);
-  const images: Array<GalleryImage> = node.children
-    // Validate the only image tag are supported
-    .filter((n) => n.type === 'element' && galleryTags.has(n.tagName))
-    // Map the node to an image component
-    .map((n: Node): ImageComponent => {
-      return toImage(n as ElementNode);
-    })
-    // If some is invalid and return undefined we remove them
-    .filter((i) => !!i)
-    // Map Valid image components to gallery items
-    .map((imageComponent: ImageComponent): GalleryImage => {
-      const { link, alt, credit, width, height, imageurl, caption } =
-        imageComponent;
-      return {
-        imageurl,
-        caption,
-        link,
-        alt,
-        credit,
-        width,
-        height,
-      };
-    });
-
-  const { caption } = fromFigcaption(node);
-
-  return {
-    component: 'gallery',
-    role,
-    images,
-    direction,
-    errors,
-    warnings,
-    caption,
-  };
-}
-
-// Aqui hay que procesar dos posibles casos, utilizando figure o img directo
-function toImage(node: ElementNode): ImageComponent {
-  let link: string | undefined;
-  if (node.tagName === 'a') {
-    const nodeResp = getLinkFromImageNode(node);
-    if (nodeResp.node) {
-      node = nodeResp.node;
-    }
-
-    link = nodeResp.link;
-  }
-
-  const { tagName } = node;
-  const attributes = getAttributes(node.attributes);
-  const id = attributes.get('id');
-
-  if (tagName === 'figure') {
-    const imageComponent: ImageComponent = fromFigure(node) as ImageComponent;
-    imageComponent.id = id;
-    if (link) {
-      imageComponent.link = link;
-    }
-
-    return imageComponent;
-  }
-
-  if (tagName === 'picture') {
-    const imageComponent: ImageComponent = fromPicture(node);
-    imageComponent.id = id;
-    if (link) {
-      imageComponent.link = link;
-    }
-    return imageComponent;
-  }
-
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  let imageurl = '';
-
-  if (!attributes) {
-    errors.push('No attributes found on image node');
-  }
-
-  const src = attributes.get('src');
-  if (src) {
-    imageurl = src;
-  }
-  const width: string | undefined = attributes.get('width');
-  const height: string | undefined = attributes.get('height');
-  const alt: string | undefined = attributes.get('alt');
-
-  return {
-    id,
-    component: 'image',
-    imageurl,
-    alt,
-    link,
-    width: width ? parseInt(`${width}`, 10) : undefined,
-    height: height ? parseInt(`${height}`, 10) : undefined,
-    errors,
-    warnings,
-  };
-}
-
-function toInfogram(url: URL): InfogramComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  return {
-    component: 'infogram',
-    params: {
-      id: url.pathname.replace('/', ''),
-      parentUrl: url.searchParams.get('parent_url') || '',
-      src: 'embed',
-    },
-    errors,
-    warnings,
-  };
-}
-
-function toYoutube(url: URL): YoutubeComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  const regExp =
-    /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-
-  if (!regExp.test(url.href)) {
-    errors.push('Invalid Youtube video URL format.');
-  }
-
-  const id = url.pathname.split('/').pop() as string;
-
-  if (!/^[a-zA-Z0-9_-]{11}$/.test(id)) {
-    errors.push('Invalid YouTube video ID.');
-  }
-
-  return {
-    component: 'video',
-    vidtype: 'youtube',
-    params: {
-      id,
-    },
-    errors,
-    warnings,
-  };
-}
-
-function toDailymotion(url: URL): DailymotionComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  const regExp =
-    /(?:dailymotion\.com\/(?:video|hub)|dai\.ly)\/([0-9a-z]+)(?:[-_0-9a-zA-Z]+#video=([a-z0-9]+))?/;
-
-  if (!regExp.test(url.href)) {
-    errors.push('Invalid  Dailymotion video URL format.');
-  }
-
-  const id = url.pathname.split('/').pop() as string;
-
-  return {
-    component: 'video',
-    vidtype: 'dailymotion',
-    params: {
-      id,
-    },
-    errors,
-    warnings,
-  };
-}
-
-function toVimeo(url: URL): VimeoComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  if (!url.toString().startsWith('https://vimeo.com')) {
-    errors.push('Invalid  Dailymotion video URL format.');
-  }
-
-  const id = url.pathname.split('/').pop() as string;
-
-  return {
-    component: 'video',
-    vidtype: 'vimeo',
-    params: {
-      id,
-    },
-    errors,
-    warnings,
-  };
-}
-
-function toVideo(node: ElementNode): VideoComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const attributes = getAttributes(node.attributes);
-  let url = '';
-  const controls = attributes.has('controls');
-  const autoplay = attributes.has('autoplay');
-  const poster = attributes.get('poster');
-  const muted = attributes.has('muted');
-  const loop = attributes.has('loop');
-  const src = attributes.get('src');
-  if (src) {
-    url = src;
-  }
-
-  const sources = node.children
-    .filter((n) => n.type === 'element' && n.tagName === 'source')
-    .map((n: Node) => {
-      if (n.type !== 'element') return '';
-      const attr = getAttributes(n.attributes);
-      return attr.get('src') || '';
-    })
-    .filter((i) => !!i);
-
-  if (sources.length) {
-    url = sources.shift() as string;
-  }
-
-  if (!url) {
-    errors.push('Video source is required');
-  }
-
-  return {
-    component: 'video',
-    url,
-    controls,
-    autoplay,
-    muted,
-    loop,
-    poster,
-    movietype: 'hosted',
-    errors,
-    warnings,
-  };
-}
-
-function toAudio(node: ElementNode): AudioComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const attributes = getAttributes(node.attributes);
-  let url = '';
-  const controls = attributes.has('controls');
-  const autoplay = attributes.has('autoplay');
-  const muted = attributes.has('muted');
-  const loop = attributes.has('loop');
-  const src = attributes.get('src');
-  if (src) {
-    url = src;
-  }
-
-  const sources = node.children
-    .filter((n) => n.type === 'element' && n.tagName === 'source')
-    .map((n: Node) => {
-      if (n.type !== 'element') return '';
-      const attr = getAttributes(n.attributes);
-      return attr.get('src') || '';
-    })
-    .filter((i) => !!i);
-
-  if (sources.length) {
-    url = sources.shift() as string;
-  }
-
-  if (!url) {
-    errors.push('Audio source is required');
-  }
-
-  return {
-    component: 'audio',
-    url,
-    controls,
-    autoplay,
-    muted,
-    loop,
-    errors,
-    warnings,
-  };
-}
-
-function toApplePodcast(node: ElementNode): AudioComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const attributes = getAttributes(node.attributes);
-  let url = '';
-  const src = attributes.get('src');
-  const allow = attributes.get('allow');
-  if (src) {
-    url = src;
-  }
-
-  if (!url) {
-    errors.push('src is required');
-  }
-
-  let autoplay = false;
-  if (allow) {
-    const allowProps = new Set(allow.split(';').map((p) => p.trim()));
-    autoplay = allowProps.has('autoplay *');
-  }
-
-  return {
-    component: 'audio',
-    url,
-    controls: false,
-    autoplay,
-    muted: false,
-    loop: false,
-    errors,
-    warnings,
-  };
-}
-
-function toCustom(node: ElementNode): CustomComponent {
-  const content = stringify([node]);
-  const attributes = getAttributes(node.attributes);
-  const id = attributes.get('id');
-  return {
-    id,
-    component: 'custom',
-    errors: [],
-    warnings: [],
-    content,
-  };
-}
-
-function toContainer(
-  component: 'container' | 'recipe',
-  node: ElementNode,
-  params?: Params,
-  properties?: Record<string, unknown>
-): RecipeComponent | ContainerComponent {
-  const warnings: string[] = [];
-  const attributes = getAttributes(node.attributes);
-  const id = attributes.get('id');
-
-  const components: Array<Component> = node.children.length
-    ? node.children.reduce(reduceComponents(params), [])
-    : [];
-
-  return {
-    id,
-    component,
-    components,
-    errors: [],
-    warnings,
-    properties,
-  };
-}
-
-function toLinkContainer(
-  node: ElementNode,
-  params?: Params,
-  properties?: Record<string, unknown>
-): LinkContainerComponent {
-  const warnings: string[] = [];
-  const errors: string[] = [];
-  const attributes = getAttributes(node.attributes);
-  const id = attributes.get('id');
-
-  const link: string | undefined = attributes.get('href');
-
-  const components: Array<Component> = node.children.length
-    ? node.children.reduce(reduceComponents(params), [])
-    : [];
-
-  const component: LinkContainerComponent = {
-    id,
-    attributes,
-    component: 'container',
-    type: 'link',
-    link: link || '',
-    components,
-    errors,
-    warnings,
-    properties,
-  };
-
-  return component;
-}
-
-function toFigureContainer(
-  node: ElementNode,
-  params?: Params,
-  properties?: Record<string, unknown>
-): FigureContainerComponent {
-  const warnings: string[] = [];
-  const errors: string[] = [];
-  const attributes = getAttributes(node.attributes);
-  const id = attributes.get('id');
-  let caption = '';
-  let credit = '';
-
-  // Get the figcaption section
-  const figcaptionNodes = node.children.reduce(
-    findDescendants('figcaption'),
-    []
-  );
-  if (figcaptionNodes.length) {
-    const figcaptionNode = figcaptionNodes.shift() as ElementNode;
-    const ficaptionResponse = fromFigcaption(figcaptionNode);
-    if (ficaptionResponse) {
-      caption = ficaptionResponse.caption || '';
-      credit = ficaptionResponse.credit || '';
-    }
-  }
-
-  const components = node.children
-    .reduce(findDescendants(filterFigureDescendants(params)), [])
-    .reduce(reduceComponents(params), []);
-
-  const component: FigureContainerComponent = {
-    id,
-    component: 'container',
-    type: 'figure',
-    components,
-    caption,
-    credit,
-    errors,
-    warnings,
-    properties,
-  };
-
-  return component;
-}
-
-function filterFigureDescendants(params?: Params): NodeFilterFn {
-  return (node: Node): boolean => {
-    const { type } = node;
-    if (type !== 'element') return false;
-    const { tagName } = node;
-    // Exclude the nodes that we need to ignore
-    if (params?.excludes?.length) {
-      const isNodeExcluded = excludeNode(node, params.excludes);
-      if (isNodeExcluded) {
-        return false;
-      }
-    }
-
-    const validFigureTags = new Set([
-      'audio',
-      'img',
-      'picture',
-      'table',
-      'video',
-    ]);
-
-    if (validFigureTags.has(tagName)) {
-      return true;
-    }
-    if (isTwitterNode(node)) {
-      return true;
-    }
-
-    if (isTikTokNode(node)) {
-      return true;
-    }
-
-    if (tagName === 'iframe') {
-      const iframeComponent = fromIframe(node);
-      return isYoutubeComponent(iframeComponent);
-    }
-
-    return false;
-  };
-}
-
+/**
+ * It checks if an html node is an valid Instragram Node
+ *
+ * @param {ElementNode} node
+ * @returns {boolean}
+ */
 function isInstagramNode(node: ElementNode): boolean {
   const { tagName } = node;
   const attributes = getAttributes(node.attributes);
@@ -1581,6 +1837,12 @@ function isInstagramNode(node: ElementNode): boolean {
   );
 }
 
+/**
+ * It checks if an html node is an valid Twitter Node
+ *
+ * @param {ElementNode} node
+ * @returns {boolean}
+ */
 function isTwitterNode(node: ElementNode): boolean {
   const { tagName } = node;
   const attributes = getAttributes(node.attributes);
@@ -1599,6 +1861,12 @@ function isTwitterNode(node: ElementNode): boolean {
   return false;
 }
 
+/**
+ * It checks if an html node is an valid Button Node
+ *
+ * @param {ElementNode} node
+ * @returns {boolean}
+ */
 function isButtonNode(node: ElementNode): boolean {
   const { tagName } = node;
   const attributes = getAttributes(node.attributes);
@@ -1606,6 +1874,12 @@ function isButtonNode(node: ElementNode): boolean {
   return tagName === 'button' || (tagName === 'a' && role === 'button');
 }
 
+/**
+ * It checks if an html node is an valid TikTok Node
+ *
+ * @param {ElementNode} node
+ * @returns {boolean}
+ */
 function isTikTokNode(node: ElementNode): boolean {
   const { tagName } = node;
   const attributes = getAttributes(node.attributes);
@@ -1650,45 +1924,6 @@ function reduceLinkContainerComponent(
 
     acc.push(component);
     return acc;
-  };
-}
-
-function toText(
-  node: ElementNode,
-  component: TextType,
-  properties?: Record<string, unknown>
-): TextComponent {
-  const html = stringify([node]);
-  const warnings: string[] = [];
-  const attributes = getAttributes(node.attributes);
-
-  const allowedTags = textAllowedTags;
-  const allowedAttributes = textAllowedAttributes;
-
-  const text = sanitizeHtml(html, {
-    allowedTags,
-    allowedAttributes,
-  });
-  const id = attributes.get('id');
-  const role = attributes.get('role');
-  if (role) {
-    // If the role was set and is valid we apply it
-    if (isValidTextRole(role)) {
-      component = role as TextType;
-    } else {
-      // If the role was invalid we use body as fallback
-      warnings.push(`role '${role}' is invalid`);
-      component = 'body';
-    }
-  }
-
-  return {
-    id,
-    component,
-    errors: [],
-    warnings,
-    properties,
-    text: typeof text === 'string' ? text.trim() : text,
   };
 }
 
@@ -1757,6 +1992,12 @@ function getCredit(node: ElementNode): string | undefined {
   return credit ? credit.trim() : credit;
 }
 
+/**
+ * It gets an image link from a node
+ *
+ * @param {ElementNode} node
+ * @returns {LinkResponse}
+ */
 function getImageLink(node: ElementNode): LinkResponse {
   const attributes = getAttributes(node.attributes);
   const link = attributes.get('href') || '';
@@ -1813,7 +2054,13 @@ function getImageLink(node: ElementNode): LinkResponse {
   };
 }
 
-// If at least one filter matches then is valid
+/**
+ * Filter is at least one filter matches
+ *
+ * @param {ElementNode} node
+ * @param {Filter[]} filters
+ * @returns {boolean}
+ */
 function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
   const { tagName } = node;
   const attributes = getAttributes(node.attributes);
@@ -1846,7 +2093,13 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
   return false;
 }
 
-// All the filters need to match to be considered valid
+/**
+ * All the filters need to match to be considered valid
+ *
+ * @param {ElementNode} node
+ * @param {Filter[]} filters
+ * @returns {boolean}
+ */
 function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
   const { tagName } = node;
   const attributes = getAttributes(node.attributes);
@@ -1892,6 +2145,12 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
   return true;
 }
 
+/**
+ * Check if a valid has the correct structure
+ *
+ * @param {unknown} mapping
+ * @returns {boolean}
+ */
 export function isValidMapping(mapping: unknown): boolean {
   if (!mapping) return false;
   // Zod Schema validation
@@ -1919,6 +2178,12 @@ export interface Params {
   excludes?: Mapping[];
 }
 
+/**
+ * Filter the nodes that has empty text node
+ *
+ * @param {Node} node
+ * @returns {boolean}
+ */
 export function filterEmptyTextNode(node: Node): boolean {
   if (node.type === 'comment') return false;
   if (node.type !== 'text') return true;
@@ -1929,6 +2194,13 @@ export function filterEmptyTextNode(node: Node): boolean {
   return !isEmpty(content);
 }
 
+/**
+ * Process the links in the text
+ *
+ * @param {string} html
+ * @param {string} [link='/']
+ * @returns {string}
+ */
 export function processTextLinks(html: string, link: string = '/'): string {
   if (link && !link.endsWith('/')) {
     link += '/';
@@ -1985,7 +2257,13 @@ export function processTextLinks(html: string, link: string = '/'): string {
   });
 }
 
-function getPortFromUrl(url: string) {
+/**
+ * Get port from url
+ *
+ * @param {string} url
+ * @returns {number | null}
+ */
+function getPortFromUrl(url: string): number | null {
   const regex = /:(\d+)/;
   const match = url.match(regex);
 
@@ -1995,7 +2273,13 @@ function getPortFromUrl(url: string) {
   return null;
 }
 
-function removeProtocol(url: string) {
+/**
+ * Remove the protocol from string
+ *
+ * @param {string} url
+ * @returns {string}
+ */
+function removeProtocol(url: string): string {
   if (url.startsWith('https:')) {
     url = url.slice(6);
   }
@@ -2005,6 +2289,12 @@ function removeProtocol(url: string) {
   return url;
 }
 
+/**
+ * Check if a param is valid
+ *
+ * @param {unknown} params
+ * @returns {boolean}
+ */
 export function isValidParams(params: unknown): boolean {
   if (!params) return false;
   // Zod Schema validation
@@ -2076,15 +2366,27 @@ interface FigcaptionResponse {
   credit?: string;
 }
 
-export function isEmpty(content: string) {
+/**
+ * Check if the string is empty
+ *
+ * @param {string} content
+ * @returns {boolean}
+ */
+export function isEmpty(content: string): boolean {
   return content.replace(/[\r\n\t]/g, '').trim().length === 0;
 }
 
+/**
+ * Get the mapping of the component
+ *
+ * @param {ElementNode} node
+ * @param {ComponentMapping[]} [mappings]
+ * @returns {MappingComponentResponse}
+ */
 function getMappingComponent(
   node: ElementNode,
-  mappings?: Array<ComponentMapping>
-): MappingComponentResponse /*TextType | undefined | 'recipe' | 'container'*/ {
-  //const { tagName } = node;
+  mappings?: ComponentMapping[]
+): MappingComponentResponse {
   if (!mappings || !mappings.length) {
     return {
       mappedComponent: undefined,
@@ -2124,6 +2426,13 @@ interface MappingComponentResponse {
   properties?: Record<string, unknown>;
 }
 
+/**
+ * Check if a node should be excluded
+ *
+ * @param {ElementNode} node
+ * @param {Mapping[]} [excludes]
+ * @returns {boolean}
+ */
 function excludeNode(node: ElementNode, excludes: Mapping[]): boolean {
   for (const mapping of excludes) {
     const { match, filters } = mapping;
