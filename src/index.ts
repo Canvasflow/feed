@@ -1,4 +1,5 @@
 export { default as RSSFeed } from './rss/RSSFeed';
+
 export type {
   RSS,
   Channel,
@@ -9,33 +10,37 @@ export type {
   MediaContent,
   Thumbnail,
 } from './rss/RSS';
-export type {
-  Component,
-  AudioComponent,
-  TextComponent,
-  GalleryComponent,
-  GalleryImage,
-  ImageComponent,
-  VideoComponent,
-  TwitterComponent,
-  InstagramComponent,
-  InfogramComponent,
-  YoutubeComponent,
-  RecipeComponent,
-  DailymotionComponent,
-  VimeoComponent,
-  TikTokComponent,
-  SpacerComponent,
-  ComponentType,
-  ButtonComponent,
-  HTMLTableComponent,
-  ContainerComponent,
-  CustomComponent,
-  TextType,
+
+export {
+  type Component,
+  type AudioComponent,
+  type TextComponent,
+  type GalleryComponent,
+  type GalleryImage,
+  type ImageComponent,
+  type VideoComponent,
+  type TwitterComponent,
+  type InstagramComponent,
+  type InfogramComponent,
+  type YoutubeComponent,
+  type RecipeComponent,
+  type DailymotionComponent,
+  type VimeoComponent,
+  type TikTokComponent,
+  type SpacerComponent,
+  type ButtonComponent,
+  type HTMLTableComponent,
+  type ContainerComponent,
+  type CustomComponent,
+  type ComponentType,
+  type TextType,
+  isAudioComponent,
+  isHTMLTableComponent,
   isImageComponent,
   isTextComponent,
-  isLinkContainerComponent,
   isValidTextRole,
+  isVideoComponent,
+  isYoutubeComponent,
 } from './component/Component';
 
 export type {
@@ -46,8 +51,13 @@ export type {
   NutritionInformation,
   ListItem,
 } from './component/Schema';
+
 export { HTMLMapper } from './component/HTMLMapper';
 export {
+  type Params as HTMLParams,
+  type ComponentMapping,
+  type Mapping,
+  type Filter as HTMLFilter,
   isValidParams,
   isValidMapping,
   isEmpty,
@@ -56,8 +66,4 @@ export {
   getRootElement,
   reduceEmptyTextNode,
   reduceComponents,
-  type Params as HTMLParams,
-  type ComponentMapping,
-  type Mapping,
-  type Filter as HTMLFilter,
 } from './component/Mapping';
