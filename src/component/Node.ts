@@ -1,4 +1,10 @@
-export function findDescendants(findFn: string | Array<string> | NodeFilterFn) {
+/**
+ * Find descendants base on tag, list of tags or a callback function
+ *
+ * @param {string | string[] | NodeFilterFn} findFn
+ * @returns {FindDescendantsReducer}
+ */
+export function findDescendants(findFn: FindFn): FindDescendantsReducer {
   return (acc: Node[], node: Node): Node[] => {
     if (node.type !== 'element') return acc;
 
@@ -14,14 +20,23 @@ export function findDescendants(findFn: string | Array<string> | NodeFilterFn) {
 
     if (typeof findFn === 'function' && findFn(node)) {
       acc.push(node);
+      return acc;
     }
     return node.children.reduce(findDescendants(findFn), acc);
   };
 }
 
-export function getAttributes(
-  attributes?: Array<Attribute>
-): Map<string, string> {
+export type FindFn = string | string[] | NodeFilterFn;
+export type NodeFilterFn = (n: Node) => boolean;
+export type FindDescendantsReducer = (acc: Node[], node: Node) => Node[];
+
+/**
+ * Transform an array of attribute to a map
+ *
+ * @param {Attribute[] | undefined} attributes
+ * @returns {Map<string, string>}
+ */
+export function getAttributes(attributes?: Attribute[]): Map<string, string> {
   const response: Map<string, string> = new Map();
   if (!attributes) {
     return response;
@@ -31,8 +46,6 @@ export function getAttributes(
   }
   return response;
 }
-
-type NodeFilterFn = (n: Node) => boolean;
 
 export type Node = TextNode | ElementNode | CommentNode;
 

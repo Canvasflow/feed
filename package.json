@@ -1,7 +1,7 @@
 {
   "name": "@canvasflow/feed",
   "description": "This is canvasflow utility for processing feeds",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "type": "module",
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
@@ -37,6 +37,7 @@
     "test:ui": "vitest --ui",
     "test:unit": "vitest --ui --tags-filter=unit",
     "test:integration": "vitest --ui --tags-filter=integration", 
+    "test:todo": "vitest --ui --tags-filter=todo",
     "test:broken": "vitest --ui --tags-filter=broken",
     "lint": "eslint . --ext .ts",
     "lint:watch": "watch-eslint",

@@ -3,37 +3,51 @@
 import { parse, stringify } from 'himalaya';
 import { parseHTML } from 'linkedom';
 
-import { type Component } from './Component';
+import type { Component } from './Component';
+import type { Node } from './Node';
 import {
-  filterEmptyTextNode,
-  reduceComponents,
   type Mapping,
   type Params,
+  filterEmptyTextNode,
+  reduceComponents,
   reduceEmptyTextNode,
   getRootElement,
 } from './Mapping';
-import { type Node } from './Node';
 
 export class HTMLMapper {
-  static getRootElement(content: string, rootMapping: Mapping): string | null {
-    content = content.replace(/(\r\n|\n|\r)/gm, '');
-    const nodes: Array<Node> = parse(content).reduce(reduceEmptyTextNode, []);
+  /**
+   * Get the root element inside the content
+   *
+   * @param {string} html
+   * @param {Mapping} rootMapping
+   * @returns {string | null}
+   */
+  static getRootElement(html: string, rootMapping: Mapping): string | null {
+    html = html.replace(/(\r\n|\n|\r)/gm, '');
+    const nodes: Array<Node> = parse(html).reduce(reduceEmptyTextNode, []);
     const rootNode = getRootElement(nodes, rootMapping);
     return rootNode
       ? stringify([rootNode]).replace(/=('([^']*)')/g, '="$2"')
       : null;
   }
 
-  static toComponents(content: string, params?: Params): Component[] {
-    content = removeBreaklines(content);
-    content = sanitizeInvalidAnchorHrefs(content);
-    content = extractAnchorsWithImages(content);
+  /**
+   * Convert html string to canvasflow components
+   *
+   * @param {string} html
+   * @param {Params | undefined} params
+   * @returns {Component[]}
+   */
+  static toComponents(html: string, params?: Params): Component[] {
+    html = removeBreaklines(html);
+    html = sanitizeInvalidAnchorHrefs(html);
+    html = extractAnchorsWithImages(html);
     const tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
     for (const tag of tags) {
-      content = splitParagraphImages(content, tag);
+      html = splitParagraphImages(html, tag);
     }
 
-    const parsedContent = parse(content).map(mapEmptyText);
+    const parsedContent = parse(html).map(mapEmptyText);
 
     const nodes: Array<Node> = parsedContent.filter(filterEmptyTextNode);
 
@@ -44,8 +58,11 @@ export class HTMLMapper {
 /**
  * Extract all <a> elements that contain <img> tags
  * and are wrapped inside p or heading tags.
+ *
+ * @param {string} html
+ * @returns {string}
  */
-export function extractAnchorsWithImages(html: string): string {
+function extractAnchorsWithImages(html: string): string {
   // Fast path: plain text
   if (!html.includes('<')) {
     return html;
@@ -86,6 +103,13 @@ export function extractAnchorsWithImages(html: string): string {
   return wrapper.innerHTML;
 }
 
+/**
+ * Split paragraphs that have image inside
+ *
+ * @param {string} html
+ * @param {string} tag
+ * @returns {string}
+ */
 export function splitParagraphImages(html: string, tag: string): string {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parsed = parseHTML(html) as any;
@@ -160,7 +184,7 @@ export function splitParagraphImages(html: string, tag: string): string {
  * @param {string} html
  * @returns {string}
  */
-export function sanitizeInvalidAnchorHrefs(html: string) {
+function sanitizeInvalidAnchorHrefs(html: string): string {
   const { document } = parseHTML(html);
 
   const anchors = document.querySelectorAll('a[href]');
@@ -186,8 +210,11 @@ export function sanitizeInvalidAnchorHrefs(html: string) {
  * - Allow relative URLs
  * - Allow hash and query links
  * - Validate absolute URLs via URL constructor
+ *
+ * @param {string} href
+ * @returns {boolean}
  */
-function isValidHref(href: string) {
+function isValidHref(href: string): boolean {
   if (!href) return false;
 
   const value = href.trim();
@@ -214,6 +241,12 @@ function isValidHref(href: string) {
   }
 }
 
+/**
+ * Remove the breaklines in the string
+ *
+ * @param {string | undefined} value
+ * @returns {string}
+ */
 function removeBreaklines(value: string | undefined): string {
   if (!value) return '';
   return value.replace(/(\r\n|\n|\r)/gm, '');

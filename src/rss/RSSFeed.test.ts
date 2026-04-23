@@ -1032,7 +1032,7 @@ describe('The English Home', () => {
   });
   test(
     `It should test affiliate links`,
-    { tags: ['unit', 'rss', 'broken'] },
+    { tags: ['unit', 'rss'] },
     async () => {
       const content = readFileSync(filePath, 'utf-8');
       const feed = new RSSFeed(content);
