@@ -3,16 +3,16 @@
 import { parse, stringify } from 'himalaya';
 import { parseHTML } from 'linkedom';
 
-import { type Component } from './Component';
+import type { Component } from './Component';
+import type { Node } from './Node';
 import {
-  filterEmptyTextNode,
-  reduceComponents,
   type Mapping,
   type Params,
+  filterEmptyTextNode,
+  reduceComponents,
   reduceEmptyTextNode,
   getRootElement,
 } from './Mapping';
-import { type Node } from './Node';
 
 export class HTMLMapper {
   static getRootElement(content: string, rootMapping: Mapping): string | null {
@@ -45,7 +45,7 @@ export class HTMLMapper {
  * Extract all <a> elements that contain <img> tags
  * and are wrapped inside p or heading tags.
  */
-export function extractAnchorsWithImages(html: string): string {
+function extractAnchorsWithImages(html: string): string {
   // Fast path: plain text
   if (!html.includes('<')) {
     return html;
@@ -160,7 +160,7 @@ export function splitParagraphImages(html: string, tag: string): string {
  * @param {string} html
  * @returns {string}
  */
-export function sanitizeInvalidAnchorHrefs(html: string) {
+function sanitizeInvalidAnchorHrefs(html: string): string {
   const { document } = parseHTML(html);
 
   const anchors = document.querySelectorAll('a[href]');
@@ -187,7 +187,7 @@ export function sanitizeInvalidAnchorHrefs(html: string) {
  * - Allow hash and query links
  * - Validate absolute URLs via URL constructor
  */
-function isValidHref(href: string) {
+function isValidHref(href: string): boolean {
   if (!href) return false;
 
   const value = href.trim();
@@ -214,6 +214,12 @@ function isValidHref(href: string) {
   }
 }
 
+/**
+ * Remove the breaklines in the string
+ *
+ * @param {string | undefined} value
+ * @returns {string}
+ */
 function removeBreaklines(value: string | undefined): string {
   if (!value) return '';
   return value.replace(/(\r\n|\n|\r)/gm, '');

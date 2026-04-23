@@ -5,15 +5,6 @@ import { z } from 'zod';
 import sanitizeHtml from 'sanitize-html';
 
 import {
-  isAudioComponent,
-  isFigureContainerComponent,
-  isHTMLTableComponent,
-  isImageComponent,
-  isLinkContainerComponent,
-  isTextComponent,
-  isValidTextRole,
-  isVideoComponent,
-  isYoutubeComponent,
   type AudioComponent,
   type ButtonComponent,
   type Component,
@@ -36,14 +27,23 @@ import {
   type VideoComponent,
   type VimeoComponent,
   type YoutubeComponent,
+  isAudioComponent,
+  isFigureContainerComponent,
+  isHTMLTableComponent,
+  isImageComponent,
+  isLinkContainerComponent,
+  isTextComponent,
+  isValidTextRole,
+  isVideoComponent,
+  isYoutubeComponent,
 } from './Component';
 import {
-  findDescendants,
-  getAttributes,
-  SetUtils,
   type ElementNode,
   type Node,
   type NodeFilterFn,
+  findDescendants,
+  getAttributes,
+  SetUtils,
 } from './Node';
 
 const imageTags = new Set(['img', 'picture']);
@@ -396,7 +396,6 @@ function fromNode(
     params?.mappings
   );
 
-  // FIXME Remote this before commiting
   if (tagName === 'figure') {
     return toFigureContainer(node, params, properties);
   }

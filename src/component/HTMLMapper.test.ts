@@ -2328,7 +2328,7 @@ describe('Link container components', () => {
 describe('Figure container component', () => {
   test(
     'It should use figure tag to map figure container component',
-    { tags: ['unit', 'html', 'todo'] },
+    { tags: ['unit', 'html'] },
     () => {
       const caption = 'Example image';
       const tableContent = '<table><thead></thead><tbody></tbody></table>';
@@ -2365,7 +2365,7 @@ describe('Figure container component', () => {
   );
   test(
     'It should use figure tag to map figure container component and ignore invalid components',
-    { tags: ['unit', 'html', 'todo'] },
+    { tags: ['unit', 'html'] },
     () => {
       const mappings: Array<ComponentMapping> = [];
       const caption = 'Example image';
