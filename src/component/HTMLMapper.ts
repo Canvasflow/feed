@@ -15,25 +15,39 @@ import {
 } from './Mapping';
 
 export class HTMLMapper {
-  static getRootElement(content: string, rootMapping: Mapping): string | null {
-    content = content.replace(/(\r\n|\n|\r)/gm, '');
-    const nodes: Array<Node> = parse(content).reduce(reduceEmptyTextNode, []);
+  /**
+   * Get the root element inside the content
+   *
+   * @param {string} html
+   * @param {Mapping} rootMapping
+   * @returns {string | null}
+   */
+  static getRootElement(html: string, rootMapping: Mapping): string | null {
+    html = html.replace(/(\r\n|\n|\r)/gm, '');
+    const nodes: Array<Node> = parse(html).reduce(reduceEmptyTextNode, []);
     const rootNode = getRootElement(nodes, rootMapping);
     return rootNode
       ? stringify([rootNode]).replace(/=('([^']*)')/g, '="$2"')
       : null;
   }
 
-  static toComponents(content: string, params?: Params): Component[] {
-    content = removeBreaklines(content);
-    content = sanitizeInvalidAnchorHrefs(content);
-    content = extractAnchorsWithImages(content);
+  /**
+   * Convert html string to canvasflow components
+   *
+   * @param {string} html
+   * @param {Params | undefined} params
+   * @returns {Component[]}
+   */
+  static toComponents(html: string, params?: Params): Component[] {
+    html = removeBreaklines(html);
+    html = sanitizeInvalidAnchorHrefs(html);
+    html = extractAnchorsWithImages(html);
     const tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
     for (const tag of tags) {
-      content = splitParagraphImages(content, tag);
+      html = splitParagraphImages(html, tag);
     }
 
-    const parsedContent = parse(content).map(mapEmptyText);
+    const parsedContent = parse(html).map(mapEmptyText);
 
     const nodes: Array<Node> = parsedContent.filter(filterEmptyTextNode);
 
@@ -44,6 +58,9 @@ export class HTMLMapper {
 /**
  * Extract all <a> elements that contain <img> tags
  * and are wrapped inside p or heading tags.
+ *
+ * @param {string} html
+ * @returns {string}
  */
 function extractAnchorsWithImages(html: string): string {
   // Fast path: plain text
@@ -86,6 +103,13 @@ function extractAnchorsWithImages(html: string): string {
   return wrapper.innerHTML;
 }
 
+/**
+ * Split paragraphs that have image inside
+ *
+ * @param {string} html
+ * @param {string} tag
+ * @returns {string}
+ */
 export function splitParagraphImages(html: string, tag: string): string {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const parsed = parseHTML(html) as any;
@@ -186,6 +210,9 @@ function sanitizeInvalidAnchorHrefs(html: string): string {
  * - Allow relative URLs
  * - Allow hash and query links
  * - Validate absolute URLs via URL constructor
+ *
+ * @param {string} href
+ * @returns {boolean}
  */
 function isValidHref(href: string): boolean {
   if (!href) return false;
