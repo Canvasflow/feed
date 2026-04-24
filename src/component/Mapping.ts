@@ -222,6 +222,7 @@ export function reduceComponents(params?: Params): ReduceComponentsFn {
 
         if (isFigureContainerComponent(c)) {
           appendFigureContainerComponents(acc, c);
+          continue;
         }
 
         acc.push(c);

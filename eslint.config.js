@@ -8,6 +8,7 @@ export default defineConfig([
     './dist/*',
     './coverage',
     './src/setupTests.ts',
+    './src/support/*',
     'vite.config.ts',
     '.commitlintrc.js',
   ]),
