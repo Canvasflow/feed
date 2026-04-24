@@ -1,4 +1,6 @@
-import { test, expect, describe } from 'vitest';
+import { join } from 'path';
+import { readFileSync } from 'fs';
+import { test, expect, describe, beforeEach } from 'vitest';
 
 import { HTMLMapper } from './HTMLMapper';
 import {
@@ -3012,6 +3014,143 @@ describe('Relative links', () => {
       const content = processTextLinks(html);
       expect(content).toBeDefined();
       expect(content).toBe(result);
+    }
+  );
+});
+
+describe('HTML Articles', () => {
+  let htmlDirPath: string = '';
+
+  beforeEach(() => {
+    htmlDirPath = join(`${process.env.SUPPORT_PATH}`, 'html');
+  });
+
+  test(
+    `New Apple Intelligence and Siri confirmed by... Google`,
+    { tags: ['html', 'unit'] },
+    async () => {
+      const htmlFilePath = join(
+        htmlDirPath,
+        `new-apple-intelligence-and-siri-confirmed-by-google.html`
+      );
+      const htmlContent = readFileSync(htmlFilePath, 'utf-8');
+      const rootMapping: Mapping = {
+        match: 'all',
+        filters: [
+          {
+            type: 'attribute',
+            key: 'id',
+            value: 'article-body',
+          },
+        ],
+      };
+
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['fancy-box', 'hawk-multi-model-review-container'],
+            },
+          ],
+          properties: {
+            is1Col: true,
+            styles: [29916],
+          },
+        },
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['1aside'],
+            },
+          ],
+          properties: {
+            is1Col: true,
+            styles: [29916],
+          },
+        },
+      ];
+
+      const excludes: Mapping[] = [
+        {
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['script'],
+            },
+          ],
+        },
+        {
+          match: 'any',
+          filters: [
+            {
+              type: 'attribute',
+              key: 'data-component-name',
+              value: 'Recirculation:ArticleRiver',
+            },
+            {
+              type: 'attribute',
+              key: 'data-component-name',
+              value: 'Viafoura:Comments',
+            },
+          ],
+        },
+        {
+          match: 'any',
+          filters: [
+            {
+              type: 'attribute',
+              key: 'id',
+              value: 'utility-bar',
+            },
+            {
+              type: 'attribute',
+              key: 'id',
+              value: 'articleTag',
+            },
+          ],
+        },
+        {
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: [
+                'newsletter-inbodyContent-slice',
+                'article-continues-below',
+                'comment-widget-loaded',
+              ],
+            },
+          ],
+        },
+      ];
+
+      const content = HTMLMapper.getRootElement(htmlContent, rootMapping);
+      expect(content).toBeTruthy();
+      if (!content) {
+        return;
+      }
+
+      // writeFileSync(rootedNodeFilePath, content, 'utf-8');
+
+      const components = HTMLMapper.toComponents(content, {
+        excludes,
+        mappings,
+      });
+
+      expect(components.length).toBe(117);
     }
   );
 });

@@ -1,10 +1,12 @@
 import path from 'path';
 import { beforeAll, beforeEach, afterAll, afterEach } from 'vitest';
 
-const feedPath = path.join(__dirname, 'support', 'feeds');
+const supportPath = path.join(__dirname, 'support');
+const feedPath = path.join(supportPath, 'feeds');
 
 beforeAll(() => {
   // Add your global beforeAll logics
+  process.env.SUPPORT_PATH = supportPath;
   process.env.FEEDS_PATH = feedPath;
 });
 
