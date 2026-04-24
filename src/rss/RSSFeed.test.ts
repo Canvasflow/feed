@@ -7,6 +7,7 @@ import type { ImageComponent, TextComponent } from '../component/Component';
 import type { Recipe } from '../component/Schema';
 import { HTMLMapper } from '../component/HTMLMapper';
 import type { ComponentMapping, Mapping } from '../component/Mapping';
+
 describe('Invalid RSS', () => {
   test(
     `It should throw error because the rss is invalid`,
