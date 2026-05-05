@@ -44,12 +44,18 @@ export {
 } from './component/Component';
 
 export type {
+  Thing,
+  CreativeWork,
   Recipe,
   Person,
   Organization,
   QuantitativeValue,
   NutritionInformation,
   ListItem,
+  ItemList,
+  PropertyValue,
+  ImageObject,
+  MediaObject,
 } from './component/Schema';
 
 export { HTMLMapper } from './component/HTMLMapper';
