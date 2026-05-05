@@ -1,16 +1,40 @@
-export interface Recipe {
+export interface Thing {
+  identifier?: string;
+  url?: string;
+  name?: string;
+  description?: string;
+}
+
+export interface CreativeWork extends Thing {
+  author?: Person | Organization | { '@id': string };
+  thumbnail?: ImageObject;
+  thumbnailUrl?: string;
+}
+
+export interface MediaObject extends CreativeWork {
+  bitrate?: string;
+  contentSize?: string;
+  contentUrl?: string;
+  embedUrl?: string;
+}
+
+export interface ImageObject extends MediaObject {
+  caption?: MediaObject | string;
+  embeddedTextCaption?: string;
+  exifData?: string | PropertyValue;
+  representativeOfPage?: boolean;
+}
+
+export interface Recipe extends CreativeWork {
   '@type': 'Recipe';
   '@id': string;
-  name?: string;
-  author?: Person | Organization | { '@id': string };
-  description?: string;
   datePublished?: string;
-  image?: string | string[];
+  image?: string | string[] | ImageObject;
   recipeYield?: string | string[] | QuantitativeValue;
   prepTime?: string;
   cookTime?: string;
   totalTime?: string;
-  recipeIngredient?: string[];
+  recipeIngredient?: Array<string | ItemList | PropertyValue>;
   recipeInstructions?: Array<ListItem>;
   recipeCategory?: string[] | string;
   recipeCuisine?: string[] | string;
@@ -62,7 +86,7 @@ export interface NutritionInformation {
   unsaturatedFatContent?: string;
 }
 
-export interface ListItem {
+export interface ListItem extends Thing {
   '@type':
     | 'HowToStep'
     | 'HowToSection'
@@ -72,7 +96,24 @@ export interface ListItem {
   position?: number;
   numberOfItems?: number;
   text?: string;
-  name?: string;
-  url?: string;
   itemListElement?: Array<ListItem>;
+}
+
+export interface ItemList extends Thing {
+  '@type': 'ItemList';
+  name: string;
+  itemListElement: Array<string | ListItem | PropertyValue>;
+  itemListOrder?: string;
+  numberOfItems?: number;
+}
+
+export interface PropertyValue extends Thing {
+  '@type': 'PropertyValue';
+  name: string;
+  value: string | number | boolean;
+  propertyID?: string;
+  maxValue?: number;
+  minValue?: number;
+  unitCode?: string;
+  unitText?: string;
 }
