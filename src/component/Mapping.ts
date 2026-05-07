@@ -532,38 +532,48 @@ function toImg(node: ElementNode): ImageComponent {
 function toInstagram(node: ElementNode): InstagramComponent {
   const errors: string[] = [];
   const warnings: string[] = [];
-
-  const attributes = getAttributes(node.attributes);
-  const IG = attributes.get('data-instgrm-permalink') || '';
-  const urlInfo = new URL(IG);
-  const splitUrl = urlInfo.pathname.split('/');
-  const type = splitUrl[1] ? splitUrl[1].toLowerCase() : 'post';
-
-  if (!splitUrl[1]) {
-    errors.push('URL does not contain a type.');
-  }
-
-  if (!splitUrl[2]) {
-    errors.push('URL does not contain an ID.');
-  }
-
   const component: InstagramComponent = {
-    id: splitUrl[2],
+    id: '',
     component: 'instagram',
     type: 'post',
     errors,
     warnings,
   };
 
-  switch (type) {
-    case 'p':
-      component.type = 'post';
-      break;
-    case 'reel':
-    case 'tv':
-      component.type = type;
-      break;
+  const attributes = getAttributes(node.attributes);
+  const IG = attributes.get('data-instgrm-permalink') || '';
+  try {
+    const urlInfo = new URL(IG);
+    const splitUrl = urlInfo.pathname.split('/');
+    const type = splitUrl[1] ? splitUrl[1].toLowerCase() : 'post';
+
+    if (!splitUrl[1]) {
+      errors.push('URL does not contain a type.');
+    }
+
+    if (!splitUrl[2]) {
+      errors.push('URL does not contain an ID.');
+    }
+
+    component.id = splitUrl[2];
+
+    switch (type) {
+      case 'p':
+        component.type = 'post';
+        break;
+      case 'reel':
+      case 'tv':
+        component.type = type;
+        break;
+    }
+  } catch (e: unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const err = e as any;
+    errors.push(`${err.message}: "${err.input}"`);
   }
+
+  component.errors = errors;
+
   return component;
 }
 
