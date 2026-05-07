@@ -1093,6 +1093,40 @@ describe('Motor', () => {
   });
 });
 
+describe('Discover Britain', () => {
+  let filePath: string = '';
+  let outFilePath: string = '';
+
+  beforeEach(() => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `discover-britain.rss`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `toms.json`);
+    }
+  });
+
+  test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
+    const content = readFileSync(filePath, 'utf-8');
+    const feed = new RSSFeed(content);
+    const rss = await feed.build();
+
+    if (outFilePath) {
+      writeFileSync(
+        outFilePath,
+        JSON.stringify(RSSFeed.toJSON(rss), replaceErrors, 2),
+        'utf-8'
+      );
+    }
+
+    const { items } = rss.channel;
+    expect(items.length).toBeGreaterThan(0);
+    if (!items.length) return;
+    const item = items.shift();
+    expect(item).toBeDefined();
+    if (!item) return;
+    expect(rss.channel?.title).toBe('https://www.discoverbritain.com content');
+  });
+});
+
 describe('Recipe', () => {
   test(
     `It return a recipe object, from multiple types`,
