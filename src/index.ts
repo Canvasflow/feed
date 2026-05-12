@@ -62,6 +62,9 @@ export { HTMLMapper } from './component/HTMLMapper';
 export {
   type Params as HTMLParams,
   type ComponentMapping,
+  type RecipeMapping,
+  type ContainerMapping,
+  type TextMapping,
   type Mapping,
   type Filter as HTMLFilter,
   isValidParams,

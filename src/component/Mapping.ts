@@ -2428,12 +2428,24 @@ export function isValidParams(params: unknown): boolean {
 export interface Mapping {
   match: MatchType;
   filters: Filter[];
+  properties?: Record<string, unknown>;
 }
 
-export interface ComponentMapping extends Mapping {
+export type ComponentMapping = RecipeMapping | ContainerMapping | TextMapping;
+
+export interface RecipeMapping extends Mapping {
   name?: string;
-  component: TextType | 'recipe' | 'container';
-  properties?: Record<string, unknown>;
+  component: 'recipe';
+}
+
+export interface ContainerMapping extends Mapping {
+  name?: string;
+  component: 'container';
+}
+
+export interface TextMapping extends Mapping {
+  name?: string;
+  component: TextType;
 }
 
 export type Filter = TagFilter | ClassFilter | AttributeFilter;

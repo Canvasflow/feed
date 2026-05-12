@@ -2216,6 +2216,79 @@ describe('Container components', () => {
   );
 });
 
+describe('Columns components', () => {
+  test(
+    'It should map columns component from class attribute',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['cmc-container'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <div class="cmc-container cmc-example">
+            <h1>Test</h1>
+        </div>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+      const containerComponent = components.pop() as ContainerComponent;
+      expect(containerComponent).toBeDefined();
+      if (!containerComponent) {
+        return;
+      }
+      expect(containerComponent.components.length).toBe(1);
+    }
+  );
+  test(
+    'It should map empty recipe component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['cmc'],
+            },
+          ],
+        },
+      ];
+      const content = `
+        <div class="cmc"></div>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+      const containerComponent = components.pop() as ContainerComponent;
+      expect(containerComponent).toBeDefined();
+      if (!containerComponent) {
+        return;
+      }
+      expect(containerComponent.components.length).toBe(0);
+    }
+  );
+});
+
 describe('Link container components', () => {
   test(
     'It should use anchor tags to map container component',
