@@ -538,9 +538,15 @@ function toInstagram(node: ElementNode): InstagramComponent {
     type: 'post',
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+    },
   };
 
   const attributes = getAttributes(node.attributes);
+  if (component.element && attributes) {
+    component.element.attributes = Object.fromEntries(attributes);
+  }
   const IG = attributes.get('data-instgrm-permalink') || '';
   try {
     const urlInfo = new URL(IG);
@@ -1740,13 +1746,25 @@ function fromIframe(
     case 'https://e.infogram.com':
       builtComponent = toInfogram(url);
       builtComponent.id = id;
+      builtComponent.element = {
+        tag: node.tagName,
+        attributes: Object.fromEntries(attributes),
+      };
       return builtComponent;
     case 'https://www.youtube.com':
       builtComponent = toYoutube(url);
+      builtComponent.element = {
+        tag: node.tagName,
+        attributes: Object.fromEntries(attributes),
+      };
       builtComponent.id = id;
       return builtComponent;
     case 'https://embed.podcasts.apple.com':
       builtComponent = toApplePodcast(node);
+      builtComponent.element = {
+        tag: node.tagName,
+        attributes: Object.fromEntries(attributes),
+      };
       builtComponent.id = id;
       return builtComponent;
   }
@@ -1762,6 +1780,10 @@ function fromIframe(
     searchParams.src.startsWith('https://www.youtube.com')
   ) {
     builtComponent = toYoutube(new URL(searchParams.src));
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
     builtComponent.id = id;
     return builtComponent;
   }
@@ -1772,6 +1794,10 @@ function fromIframe(
     searchParams.url.startsWith('https://www.tiktok.com')
   ) {
     builtComponent = toTikTok(new URL(searchParams.url));
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
     builtComponent.id = id;
     return builtComponent;
   }
@@ -1782,6 +1808,10 @@ function fromIframe(
     searchParams.url.startsWith('https://www.dailymotion.com')
   ) {
     builtComponent = toDailymotion(new URL(searchParams.url));
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
     builtComponent.id = id;
     return builtComponent;
   }
@@ -1789,6 +1819,10 @@ function fromIframe(
   // Check if Dailymotion is in the source url
   if (searchParams.url && searchParams.url.startsWith('https://vimeo.com')) {
     builtComponent = toVimeo(new URL(searchParams.url));
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
     builtComponent.id = id;
     return builtComponent;
   }
@@ -1799,6 +1833,10 @@ function fromIframe(
       searchParams.url.startsWith('https://x.com'))
   ) {
     builtComponent = toTwitter(new URL(searchParams.url));
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
     builtComponent.id = id;
     return builtComponent;
   }

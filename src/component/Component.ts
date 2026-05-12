@@ -58,6 +58,10 @@ export interface Component {
   properties?: Record<string, unknown>;
   errors: string[];
   warnings: string[];
+  element?: {
+    tag: string;
+    attributes?: Record<string, string>;
+  };
 }
 
 export interface GalleryComponent extends Component {
