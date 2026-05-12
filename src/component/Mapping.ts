@@ -391,7 +391,14 @@ function fromNode(
         errors: ['cite attribute is required'],
       } as TikTokComponent;
     }
-    return toTikTok(new URL(attributes.get('cite') || ''));
+    const tiktokComponent = toTikTok(new URL(attributes.get('cite') || ''));
+    if (tagName) {
+      tiktokComponent.element = {
+        tag: tagName,
+        attributes: Object.fromEntries(attributes),
+      };
+    }
+    return tiktokComponent;
   }
 
   if (isTwitterNode(node)) {
@@ -520,6 +527,10 @@ function toImg(node: ElementNode): ImageComponent {
     height,
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -538,9 +549,15 @@ function toInstagram(node: ElementNode): InstagramComponent {
     type: 'post',
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+    },
   };
 
   const attributes = getAttributes(node.attributes);
+  if (component.element && attributes) {
+    component.element.attributes = Object.fromEntries(attributes);
+  }
   const IG = attributes.get('data-instgrm-permalink') || '';
   try {
     const urlInfo = new URL(IG);
@@ -615,6 +632,10 @@ function toAnchorButton(node: ElementNode): ButtonComponent {
     link,
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -686,6 +707,10 @@ function toButton(node: ElementNode): ButtonComponent {
     link,
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -721,6 +746,10 @@ function toHTMLTable(node: ElementNode): HTMLTableComponent {
     html,
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 
   return component;
@@ -776,6 +805,7 @@ function toTwitter(node: ElementNode | URL): TwitterComponent {
   const warnings: string[] = [];
   let tweetNode: ElementNode | undefined;
   const params: { id?: string; account?: string } = {};
+  let attrs: Record<string, string> = {};
 
   for (const child of node.children) {
     if (child.type !== 'element') continue;
@@ -786,6 +816,7 @@ function toTwitter(node: ElementNode | URL): TwitterComponent {
   }
   if (tweetNode) {
     const attributes = getAttributes(tweetNode.attributes);
+    attrs = Object.fromEntries(attributes);
     const tweetUrl = attributes.get('href') || '';
 
     const twitterRegex =
@@ -805,6 +836,10 @@ function toTwitter(node: ElementNode | URL): TwitterComponent {
     component: 'twitter',
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+      attributes: attrs,
+    },
   };
 }
 
@@ -907,6 +942,10 @@ function toGallery(node: ElementNode): GalleryComponent {
     errors,
     warnings,
     caption,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -1141,6 +1180,10 @@ function toVideo(node: ElementNode): VideoComponent {
     movietype: 'hosted',
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -1190,6 +1233,10 @@ function toAudio(node: ElementNode): AudioComponent {
     loop,
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -1281,6 +1328,10 @@ function toContainer(
     errors: [],
     warnings,
     properties,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -1318,6 +1369,10 @@ function toLinkContainer(
     errors,
     warnings,
     properties,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 
   return component;
@@ -1371,6 +1426,10 @@ function toFigureContainer(
     errors,
     warnings,
     properties,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 
   return component;
@@ -1421,6 +1480,10 @@ function toText(
     warnings,
     properties,
     text: typeof text === 'string' ? text.trim() : text,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -1740,13 +1803,25 @@ function fromIframe(
     case 'https://e.infogram.com':
       builtComponent = toInfogram(url);
       builtComponent.id = id;
+      builtComponent.element = {
+        tag: node.tagName,
+        attributes: Object.fromEntries(attributes),
+      };
       return builtComponent;
     case 'https://www.youtube.com':
       builtComponent = toYoutube(url);
+      builtComponent.element = {
+        tag: node.tagName,
+        attributes: Object.fromEntries(attributes),
+      };
       builtComponent.id = id;
       return builtComponent;
     case 'https://embed.podcasts.apple.com':
       builtComponent = toApplePodcast(node);
+      builtComponent.element = {
+        tag: node.tagName,
+        attributes: Object.fromEntries(attributes),
+      };
       builtComponent.id = id;
       return builtComponent;
   }
@@ -1762,6 +1837,10 @@ function fromIframe(
     searchParams.src.startsWith('https://www.youtube.com')
   ) {
     builtComponent = toYoutube(new URL(searchParams.src));
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
     builtComponent.id = id;
     return builtComponent;
   }
@@ -1772,6 +1851,10 @@ function fromIframe(
     searchParams.url.startsWith('https://www.tiktok.com')
   ) {
     builtComponent = toTikTok(new URL(searchParams.url));
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
     builtComponent.id = id;
     return builtComponent;
   }
@@ -1782,6 +1865,10 @@ function fromIframe(
     searchParams.url.startsWith('https://www.dailymotion.com')
   ) {
     builtComponent = toDailymotion(new URL(searchParams.url));
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
     builtComponent.id = id;
     return builtComponent;
   }
@@ -1789,6 +1876,10 @@ function fromIframe(
   // Check if Dailymotion is in the source url
   if (searchParams.url && searchParams.url.startsWith('https://vimeo.com')) {
     builtComponent = toVimeo(new URL(searchParams.url));
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
     builtComponent.id = id;
     return builtComponent;
   }
@@ -1799,6 +1890,10 @@ function fromIframe(
       searchParams.url.startsWith('https://x.com'))
   ) {
     builtComponent = toTwitter(new URL(searchParams.url));
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
     builtComponent.id = id;
     return builtComponent;
   }
