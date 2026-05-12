@@ -391,7 +391,14 @@ function fromNode(
         errors: ['cite attribute is required'],
       } as TikTokComponent;
     }
-    return toTikTok(new URL(attributes.get('cite') || ''));
+    const tiktokComponent = toTikTok(new URL(attributes.get('cite') || ''));
+    if (tagName) {
+      tiktokComponent.element = {
+        tag: tagName,
+        attributes: Object.fromEntries(attributes),
+      };
+    }
+    return tiktokComponent;
   }
 
   if (isTwitterNode(node)) {
@@ -520,6 +527,10 @@ function toImg(node: ElementNode): ImageComponent {
     height,
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -621,6 +632,10 @@ function toAnchorButton(node: ElementNode): ButtonComponent {
     link,
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -692,6 +707,10 @@ function toButton(node: ElementNode): ButtonComponent {
     link,
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -727,6 +746,10 @@ function toHTMLTable(node: ElementNode): HTMLTableComponent {
     html,
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 
   return component;
@@ -782,6 +805,7 @@ function toTwitter(node: ElementNode | URL): TwitterComponent {
   const warnings: string[] = [];
   let tweetNode: ElementNode | undefined;
   const params: { id?: string; account?: string } = {};
+  let attrs: Record<string, string> = {};
 
   for (const child of node.children) {
     if (child.type !== 'element') continue;
@@ -792,6 +816,7 @@ function toTwitter(node: ElementNode | URL): TwitterComponent {
   }
   if (tweetNode) {
     const attributes = getAttributes(tweetNode.attributes);
+    attrs = Object.fromEntries(attributes);
     const tweetUrl = attributes.get('href') || '';
 
     const twitterRegex =
@@ -811,6 +836,10 @@ function toTwitter(node: ElementNode | URL): TwitterComponent {
     component: 'twitter',
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+      attributes: attrs,
+    },
   };
 }
 
@@ -913,6 +942,10 @@ function toGallery(node: ElementNode): GalleryComponent {
     errors,
     warnings,
     caption,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -1147,6 +1180,10 @@ function toVideo(node: ElementNode): VideoComponent {
     movietype: 'hosted',
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -1196,6 +1233,10 @@ function toAudio(node: ElementNode): AudioComponent {
     loop,
     errors,
     warnings,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -1287,6 +1328,10 @@ function toContainer(
     errors: [],
     warnings,
     properties,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -1324,6 +1369,10 @@ function toLinkContainer(
     errors,
     warnings,
     properties,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 
   return component;
@@ -1377,6 +1426,10 @@ function toFigureContainer(
     errors,
     warnings,
     properties,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 
   return component;
@@ -1427,6 +1480,10 @@ function toText(
     warnings,
     properties,
     text: typeof text === 'string' ? text.trim() : text,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
