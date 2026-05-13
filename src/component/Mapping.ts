@@ -7,6 +7,7 @@ import sanitizeHtml from 'sanitize-html';
 import {
   type AudioComponent,
   type ButtonComponent,
+  type ColumnsComponent,
   type Component,
   type ContainerComponent,
   type CustomComponent,
@@ -426,7 +427,7 @@ function fromNode(
   }
 
   // Handle mapping send by the user
-  const { mappedComponent, properties } = getMappingComponent(
+  const { mappedComponent, properties, mapping } = getMappingComponent(
     node,
     params?.mappings
   );
@@ -452,9 +453,12 @@ function fromNode(
     return toImage(node);
   }
 
-  if (mappedComponent) {
+  if (mappedComponent && mapping) {
     if (mappedComponent === 'recipe' || mappedComponent === 'container') {
       return toContainer(mappedComponent, node, params, properties);
+    }
+    if (mappedComponent === 'columns') {
+      return toColumns(node, mapping as ColumnsMapping, params, properties);
     }
     return toText(node, mappedComponent, properties);
   }
@@ -1332,6 +1336,100 @@ function toContainer(
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
     },
+  };
+}
+
+/**
+ * Transform a HTML element into a Canvasflow Columns component
+ *
+ * @param {ElementNode} node
+ * @param {Params | undefined} params
+ * @param {Record<string, unknown> | undefined} properties
+ * @returns {ColumnsComponent}
+ */
+function toColumns(
+  node: ElementNode,
+  mapping: ColumnsMapping,
+  params?: Params,
+  properties?: Record<string, unknown>
+): ColumnsComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  const id = attributes.get('id');
+
+  const columnNodes: ElementNode[] = node.children
+    ? node.children
+        .reduce(findDescendants(filterColumnsDescendants(mapping, params)), [])
+        .filter((node: Node) => node.type === 'element')
+    : [];
+
+  if (!columnNodes.length) {
+    errors.push('HTML node do not have children');
+  }
+
+  const columns: Component[][] = columnNodes.map((node) =>
+    node.children.reduce(reduceComponents(params), [])
+  );
+
+  for (let i = 0; i < columns.length; i++) {
+    const column = columns[i];
+    if (!column.length) {
+      warnings.push(`the column ${i} is empty`);
+    }
+  }
+
+  return {
+    id,
+    component: 'columns',
+    columns,
+    errors,
+    warnings,
+    properties,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
+  };
+}
+
+/**
+ * Filter the html nodes that match a column
+ *
+ * @param {ColumnsMapping} [mapping\
+ * @param {Params} [params\
+ * @returns {NodeFilterFn}
+ */
+function filterColumnsDescendants(
+  mapping: ColumnsMapping,
+  params?: Params
+): NodeFilterFn {
+  return (node: Node): boolean => {
+    const { type } = node;
+    if (type !== 'element') return false;
+    // Exclude the nodes that we need to ignore
+    if (params?.excludes?.length) {
+      const isNodeExcluded = excludeNode(node, params.excludes);
+      if (isNodeExcluded) {
+        return false;
+      }
+    }
+
+    const { column } = mapping;
+    const { match, filters } = column;
+
+    if (match === 'all') {
+      if (filterAllMapping(node, filters)) {
+        return true;
+      }
+    }
+    if (match === 'any') {
+      if (filterAnyMapping(node, filters)) {
+        return true;
+      }
+    }
+
+    return false;
   };
 }
 
@@ -2428,12 +2526,37 @@ export function isValidParams(params: unknown): boolean {
 export interface Mapping {
   match: MatchType;
   filters: Filter[];
+  properties?: Record<string, unknown>;
 }
 
-export interface ComponentMapping extends Mapping {
+export type ComponentMapping =
+  | ContainerMapping
+  | ColumnsMapping
+  | TextMapping
+  | RecipeMapping;
+
+export interface RecipeMapping extends Mapping {
   name?: string;
-  component: TextType | 'recipe' | 'container';
-  properties?: Record<string, unknown>;
+  component: 'recipe';
+}
+
+export interface ColumnsMapping extends Mapping {
+  name?: string;
+  component: 'columns';
+  column: {
+    match: MatchType;
+    filters: Filter[];
+  };
+}
+
+export interface ContainerMapping extends Mapping {
+  name?: string;
+  component: 'container';
+}
+
+export interface TextMapping extends Mapping {
+  name?: string;
+  component: TextType;
 }
 
 export type Filter = TagFilter | ClassFilter | AttributeFilter;
@@ -2497,6 +2620,7 @@ function getMappingComponent(
     return {
       mappedComponent: undefined,
       properties: undefined,
+      mapping: undefined,
     };
   }
   // if (!mappingTagsSet.has(tagName)) return;
@@ -2508,6 +2632,7 @@ function getMappingComponent(
         return {
           mappedComponent: component,
           properties,
+          mapping,
         };
       }
     }
@@ -2516,6 +2641,7 @@ function getMappingComponent(
         return {
           mappedComponent: component,
           properties,
+          mapping,
         };
       }
     }
@@ -2524,12 +2650,14 @@ function getMappingComponent(
   return {
     mappedComponent: undefined,
     properties: undefined,
+    mapping: undefined,
   };
 }
 
 interface MappingComponentResponse {
-  mappedComponent?: TextType | 'recipe' | 'container';
+  mappedComponent?: TextType | 'recipe' | 'container' | 'columns';
   properties?: Record<string, unknown>;
+  mapping?: ComponentMapping;
 }
 
 /**
