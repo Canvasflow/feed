@@ -30,6 +30,7 @@ import {
   isTextComponent,
   isImageComponent,
   isHTMLTableComponent,
+  type ColumnsComponent,
 } from './Component';
 
 describe('Root Element', () => {
@@ -2218,7 +2219,7 @@ describe('Container components', () => {
 
 describe('Columns components', () => {
   test(
-    'It should map columns component from class attribute',
+    'It should map columns component using classes',
     { tags: ['unit', 'html'] },
     () => {
       const mappings: Array<ComponentMapping> = [
@@ -2237,29 +2238,8 @@ describe('Columns components', () => {
             },
           ],
         },
-      ];
-      const content = `
-        <div class="cmc-container cmc-example">
-            <h1>Test</h1>
-        </div>
-      `;
-      const components = HTMLMapper.toComponents(content, { mappings });
-      expect(components.length).toBe(1);
-      const containerComponent = components.pop() as ContainerComponent;
-      expect(containerComponent).toBeDefined();
-      if (!containerComponent) {
-        return;
-      }
-      expect(containerComponent.components.length).toBe(1);
-    }
-  );
-  test(
-    'It should map empty recipe component',
-    { tags: ['unit', 'html'] },
-    () => {
-      const mappings: Array<ComponentMapping> = [
         {
-          component: 'container',
+          component: 'columns',
           match: 'all',
           filters: [
             {
@@ -2269,22 +2249,56 @@ describe('Columns components', () => {
             {
               type: 'class',
               match: 'any',
-              items: ['cmc'],
+              items: ['cmc-columns'],
             },
           ],
+          column: {
+            match: 'any',
+            filters: [
+              {
+                type: 'class',
+                match: 'any',
+                items: ['cmc-column'],
+              },
+            ],
+          },
         },
       ];
       const content = `
-        <div class="cmc"></div>
+        <article>
+            <div class="cmc-columns">
+                <div>
+                    <div class="cmc-column">
+                      <h1>Column 0</h1>
+                    </div>
+                </div>
+                <div class="cmc-column">
+                  Column 1
+                </div>
+                <div class="cmc-column">
+                  <h2>Column 2</h2>
+                </div>
+                <div class="cmc-column">
+                  <img src="example.jpg" alt="image in column 3"/>
+                </div>
+                <section>
+                    <div>
+                        <div class="cmc-column">
+                          <h3>Column 4</h3>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </article>
       `;
       const components = HTMLMapper.toComponents(content, { mappings });
       expect(components.length).toBe(1);
-      const containerComponent = components.pop() as ContainerComponent;
-      expect(containerComponent).toBeDefined();
-      if (!containerComponent) {
+      const columnsComponent = components[0] as ColumnsComponent;
+      expect(columnsComponent).toBeDefined();
+      if (!columnsComponent) {
         return;
       }
-      expect(containerComponent.components.length).toBe(0);
+      expect(columnsComponent.columns.length).toBe(5);
     }
   );
 });

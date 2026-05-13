@@ -265,7 +265,12 @@ export function isRecipeComponent(object: unknown): object is RecipeComponent {
 export interface ContainerComponent extends Component {
   type?: 'link' | 'figure';
   component: 'container';
-  components: Array<Component>;
+  components: Component[];
+}
+
+export interface ColumnsComponent extends Component {
+  component: 'columns';
+  columns: Component[][];
 }
 
 export function isContainerComponent(
