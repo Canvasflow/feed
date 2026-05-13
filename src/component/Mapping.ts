@@ -1358,22 +1358,19 @@ function toColumns(
   const attributes = getAttributes(node.attributes);
   const id = attributes.get('id');
 
-  const columnNode: ElementNode[] = node.children
+  const columnNodes: ElementNode[] = node.children
     ? node.children
         .reduce(findDescendants(filterColumnsDescendants(mapping, params)), [])
         .filter((node: Node) => node.type === 'element')
     : [];
 
-  if (!columnNode.length) {
+  if (!columnNodes.length) {
     errors.push('HTML node do not have children');
   }
-  const columns: Component[][] = columnNode.map((node) =>
+
+  const columns: Component[][] = columnNodes.map((node) =>
     node.children.reduce(reduceComponents(params), [])
   );
-
-  if (!columns.length) {
-    warnings.push('empty columns');
-  }
 
   for (let i = 0; i < columns.length; i++) {
     const column = columns[i];
@@ -1396,6 +1393,13 @@ function toColumns(
   };
 }
 
+/**
+ * Filter the html nodes that match a column
+ *
+ * @param {ColumnsMapping} [mapping\
+ * @param {Params} [params\
+ * @returns {NodeFilterFn}
+ */
 function filterColumnsDescendants(
   mapping: ColumnsMapping,
   params?: Params
