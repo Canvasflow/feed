@@ -32,6 +32,8 @@ export {
   type HTMLTableComponent,
   type ContainerComponent,
   type ColumnsComponent,
+  type LiveContainerComponent,
+  type LivePostComponent,
   type CustomComponent,
   type ComponentType,
   type TextType,
@@ -62,12 +64,13 @@ export type {
 export { HTMLMapper } from './component/HTMLMapper';
 export {
   type Params as HTMLParams,
-  type ComponentMapping,
   type RecipeMapping,
   type ContainerMapping,
   type TextMapping,
   type Mapping,
+  type LiveContainerMapping,
   type ColumnsMapping,
+  type ComponentMapping,
   type Filter as HTMLFilter,
   isValidParams,
   isValidMapping,

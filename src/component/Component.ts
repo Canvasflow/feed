@@ -17,6 +17,8 @@ export type ComponentType =
   | 'table'
   | 'tiktok'
   | 'columns'
+  | 'live_container'
+  | 'live_post'
   | 'container'
   | 'spacer'
   | 'divider'
@@ -271,6 +273,16 @@ export interface ContainerComponent extends Component {
 export interface ColumnsComponent extends Component {
   component: 'columns';
   columns: Component[][];
+}
+
+export interface LiveContainerComponent extends Component {
+  component: 'live_container';
+  posts: LivePostComponent[];
+}
+
+export interface LivePostComponent extends Component {
+  component: 'live_post';
+  components: Component[];
 }
 
 export function isContainerComponent(
