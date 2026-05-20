@@ -245,6 +245,7 @@ describe('Newsweek', () => {
       expect(item).toBeDefined();
       expect(item['cf:isSponsored']).toBe(true);
       expect(item['cf:isPaid']).toBe(true);
+      expect(item['cf:liveCoverageState']).toBe('live');
     }
   );
 

@@ -24,6 +24,7 @@ export const Tag = {
           'cf:hasAffiliateLinks',
           'cf:isSponsored',
           'cf:isPaid',
+          'cf:liveCoverageState',
           'cf:thumbnail',
           'dc:creator',
           'dc:date',

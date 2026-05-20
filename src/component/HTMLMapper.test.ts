@@ -31,6 +31,7 @@ import {
   isImageComponent,
   isHTMLTableComponent,
   type ColumnsComponent,
+  type LiveContainerComponent,
 } from './Component';
 
 describe('Root Element', () => {
@@ -2299,6 +2300,77 @@ describe('Columns components', () => {
         return;
       }
       expect(columnsComponent.columns.length).toBe(5);
+    }
+  );
+});
+
+describe('Live container components', () => {
+  test(
+    'It should map live container component using classes',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'live_container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['live-container'],
+            },
+          ],
+          post: {
+            match: 'any',
+            filters: [
+              {
+                type: 'class',
+                match: 'any',
+                items: ['cmc-post'],
+              },
+            ],
+          },
+        },
+      ];
+      const content = `
+        <article>
+            <div id="id-example-container" class="live-container">
+                <div>
+                    <div class="cmc-post">
+                      <h1>Column 0</h1>
+                    </div>
+                </div>
+                <div class="cmc-post">
+                  Column 1
+                </div>
+                <div class="cmc-post">
+                  <h2>Column 2</h2>
+                </div>
+                <div class="cmc-post">
+                  <img src="example.jpg" alt="image in column 3"/>
+                </div>
+                <section>
+                    <div>
+                        <div class="cmc-post">
+                          <h3>Column 4</h3>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </article>
+      `;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+      const columnsComponent = components[0] as LiveContainerComponent;
+      expect(columnsComponent).toBeDefined();
+      if (!columnsComponent) {
+        return;
+      }
+      expect(columnsComponent.posts.length).toBe(5);
     }
   );
 });
