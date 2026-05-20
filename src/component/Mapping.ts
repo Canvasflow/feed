@@ -8,6 +8,8 @@ import {
   type AudioComponent,
   type ButtonComponent,
   type ColumnsComponent,
+  type LiveContainerComponent,
+  type LivePostComponent,
   type Component,
   type ContainerComponent,
   type CustomComponent,
@@ -198,6 +200,41 @@ export function reduceEmptyTextNode(nodes: Node[], node: Node): Node[] {
   nodes.push(node);
   return nodes;
 }
+
+/**
+ * It maps
+ *
+ * @param {Params | undefined} params
+ * @returns {ReduceComponentsFn}
+ */
+
+export function mapLivePost(params?: Params): MapLivePostComponentsFn {
+  return (node: ElementNode): LivePostComponent => {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    const attributes = getAttributes(node.attributes);
+    const id = attributes.get('id');
+    const components: Array<Component> = node.children.length
+      ? node.children.reduce(reduceComponents(params), [])
+      : [];
+    if (!components.length) {
+      errors.push('post do not have components');
+    }
+    return {
+      id,
+      component: 'live_post',
+      components,
+      errors,
+      warnings,
+      element: {
+        tag: node.tagName,
+        attributes: Object.fromEntries(attributes),
+      },
+    };
+  };
+}
+
+type MapLivePostComponentsFn = (node: ElementNode) => LivePostComponent;
 
 /**
  * It process the html node and returns a list of canvasflow components
@@ -459,6 +496,14 @@ function fromNode(
     }
     if (mappedComponent === 'columns') {
       return toColumns(node, mapping as ColumnsMapping, params, properties);
+    }
+    if (mappedComponent === 'live_container') {
+      return toLiveContainer(
+        node,
+        mapping as LiveContainerMapping,
+        params,
+        properties
+      );
     }
     return toText(node, mappedComponent, properties);
   }
@@ -1417,6 +1462,90 @@ function filterColumnsDescendants(
 
     const { column } = mapping;
     const { match, filters } = column;
+
+    if (match === 'all') {
+      if (filterAllMapping(node, filters)) {
+        return true;
+      }
+    }
+    if (match === 'any') {
+      if (filterAnyMapping(node, filters)) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+}
+
+/**
+ * Transform a HTML element into a Canvasflow Live Container component
+ *
+ * @param {ElementNode} node
+ * @param {Params | undefined} params
+ * @param {Record<string, unknown> | undefined} properties
+ * @returns {LiveContainerComponent}
+ */
+function toLiveContainer(
+  node: ElementNode,
+  mapping: LiveContainerMapping,
+  params?: Params,
+  properties?: Record<string, unknown>
+): LiveContainerComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  const id = attributes.get('id');
+
+  const posts: LivePostComponent[] = node.children
+    ? node.children
+        .reduce(findDescendants(filterLivePostDescendants(mapping, params)), [])
+        .filter((node: Node) => node.type === 'element')
+        .map(mapLivePost(params))
+    : [];
+
+  if (!posts.length) {
+    errors.push('HTML node do not have children');
+  }
+
+  return {
+    id,
+    component: 'live_container',
+    posts,
+    errors,
+    warnings,
+    properties,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
+  };
+}
+
+/**
+ * Filter the html nodes that match a live container
+ *
+ * @param {LiveContainerMapping} [mapping\
+ * @param {Params} [params\
+ * @returns {NodeFilterFn}
+ */
+function filterLivePostDescendants(
+  mapping: LiveContainerMapping,
+  params?: Params
+): NodeFilterFn {
+  return (node: Node): boolean => {
+    const { type } = node;
+    if (type !== 'element') return false;
+    // Exclude the nodes that we need to ignore
+    if (params?.excludes?.length) {
+      const isNodeExcluded = excludeNode(node, params.excludes);
+      if (isNodeExcluded) {
+        return false;
+      }
+    }
+
+    const { post } = mapping;
+    const { match, filters } = post;
 
     if (match === 'all') {
       if (filterAllMapping(node, filters)) {
@@ -2532,6 +2661,7 @@ export interface Mapping {
 export type ComponentMapping =
   | ContainerMapping
   | ColumnsMapping
+  | LiveContainerMapping
   | TextMapping
   | RecipeMapping;
 
@@ -2544,6 +2674,15 @@ export interface ColumnsMapping extends Mapping {
   name?: string;
   component: 'columns';
   column: {
+    match: MatchType;
+    filters: Filter[];
+  };
+}
+
+export interface LiveContainerMapping extends Mapping {
+  name?: string;
+  component: 'live_container';
+  post: {
     match: MatchType;
     filters: Filter[];
   };
@@ -2655,7 +2794,12 @@ function getMappingComponent(
 }
 
 interface MappingComponentResponse {
-  mappedComponent?: TextType | 'recipe' | 'container' | 'columns';
+  mappedComponent?:
+    | TextType
+    | 'recipe'
+    | 'container'
+    | 'columns'
+    | 'live_container';
   properties?: Record<string, unknown>;
   mapping?: ComponentMapping;
 }

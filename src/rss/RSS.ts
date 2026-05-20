@@ -57,6 +57,7 @@ export interface Item {
   'cf:hasAffiliateLinks'?: boolean;
   'cf:isSponsored'?: boolean;
   'cf:isPaid'?: boolean;
+  'cf:liveCoverageState'?: null | 'live' | 'completed';
   'cf:thumbnail'?: Thumbnail;
   'dc:creator'?: string;
   'dc:date'?: string;
