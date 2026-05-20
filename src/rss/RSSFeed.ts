@@ -427,14 +427,14 @@ export default class RSSFeed {
 
     if (item['cf:liveCoverageState']) {
       const liveCoverageState = item['cf:liveCoverageState'] as {
-        '@_value'?: string;
+        '@_state'?: string;
       };
 
       if (
-        liveCoverageState['@_value'] === 'live' ||
-        liveCoverageState['@_value'] === 'completed'
+        liveCoverageState['@_state'] === 'live' ||
+        liveCoverageState['@_state'] === 'completed'
       ) {
-        response['cf:liveCoverageState'] = liveCoverageState['@_value'];
+        response['cf:liveCoverageState'] = liveCoverageState['@_state'];
       } else {
         response['cf:liveCoverageState'] = null;
       }
