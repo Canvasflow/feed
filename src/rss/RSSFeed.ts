@@ -403,6 +403,7 @@ export default class RSSFeed {
       'content:encoded': contentEncoded,
       'cf:hasAffiliateLinks': false,
       'cf:isSponsored': false,
+      'cf:liveCoverageState': undefined,
       'cf:isPaid': false,
       'dc:creator': item['dc:creator']
         ? `${item['dc:creator']}`.trim()
@@ -423,6 +424,21 @@ export default class RSSFeed {
     this.processCanvasflowBooleanTag(item, response, 'cf:hasAffiliateLinks');
     this.processCanvasflowBooleanTag(item, response, 'cf:isSponsored');
     this.processCanvasflowBooleanTag(item, response, 'cf:isPaid');
+
+    if (item['cf:liveCoverageState']) {
+      const liveCoverageState = item['cf:liveCoverageState'] as {
+        '@_value'?: string;
+      };
+
+      if (
+        liveCoverageState['@_value'] === 'live' ||
+        liveCoverageState['@_value'] === 'completed'
+      ) {
+        response['cf:liveCoverageState'] = liveCoverageState['@_value'];
+      } else {
+        response['cf:liveCoverageState'] = null;
+      }
+    }
 
     if (item['cf:thumbnail']) {
       const cfThumbnail = item['cf:thumbnail'] as {
