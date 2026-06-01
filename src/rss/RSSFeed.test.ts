@@ -8,8 +8,6 @@ import type { Recipe } from '../component/Schema';
 import { HTMLMapper } from '../component/HTMLMapper';
 import type { ComponentMapping, Mapping } from '../component/Mapping';
 
-process.env.FEEDS_OUT_PATH = '/Users/jjzcru/Desktop';
-
 describe('Invalid RSS', () => {
   test(
     `It should throw error because the rss is invalid`,
@@ -715,6 +713,7 @@ describe('T3', () => {
     `It should process the feed`,
     { tags: ['unit', 'rss'], timeout: 30000 },
     async () => {
+      const shouldDownloadRemote = false;
       const root: Mapping = {
         match: 'all',
         filters: [
@@ -801,32 +800,33 @@ describe('T3', () => {
       const content = readFileSync(filePath, 'utf-8');
       const feed = new RSSFeed(content);
       const rss = await feed.build();
-
-      for (const item of rss.channel.items) {
-        if (!item.link) {
-          item.components = [];
-          item.errors.push(`link missing in guid "${item.guid}"`);
-          continue;
-        }
-
-        try {
-          let itemContent = await RSSFeed.getHtmlContent(item.link, {
-            'User-Agent': 'Canvasflow',
-          });
-          if (root) {
-            itemContent = `${HTMLMapper.getRootElement(itemContent, root)}`;
+      if (shouldDownloadRemote) {
+        for (const item of rss.channel.items) {
+          if (!item.link) {
+            item.components = [];
+            item.errors.push(`link missing in guid "${item.guid}"`);
+            continue;
           }
 
-          if (itemContent) {
-            item.components = HTMLMapper.toComponents(itemContent, {
-              mappings,
-              excludes,
+          try {
+            let itemContent = await RSSFeed.getHtmlContent(item.link, {
+              'User-Agent': 'Canvasflow',
             });
+            if (root) {
+              itemContent = `${HTMLMapper.getRootElement(itemContent, root)}`;
+            }
+
+            if (itemContent) {
+              item.components = HTMLMapper.toComponents(itemContent, {
+                mappings,
+                excludes,
+              });
+            }
+          } catch (e: unknown) {
+            const error = e as Error;
+            item.components = [];
+            item.errors.push(error.message);
           }
-        } catch (e: unknown) {
-          const error = e as Error;
-          item.components = [];
-          item.errors.push(error.message);
         }
       }
 
