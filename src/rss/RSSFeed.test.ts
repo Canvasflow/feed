@@ -8,6 +8,8 @@ import type { Recipe } from '../component/Schema';
 import { HTMLMapper } from '../component/HTMLMapper';
 import type { ComponentMapping, Mapping } from '../component/Mapping';
 
+process.env.FEEDS_OUT_PATH = '/Users/jjzcru/Desktop';
+
 describe('Invalid RSS', () => {
   test(
     `It should throw error because the rss is invalid`,
@@ -696,6 +698,148 @@ describe('VMG', () => {
 
       expect(rss.channel?.title).toBe('VMG');
       expect(rss.channel?.errors.length).toBeGreaterThan(0);
+    }
+  );
+});
+
+describe('T3', () => {
+  let filePath: string = '';
+  let outFilePath: string = '';
+  beforeEach(() => {
+    filePath = path.join(`${process.env.FEEDS_PATH}`, `t3.rss`);
+    if (process.env.FEEDS_OUT_PATH && existsSync(process.env.FEEDS_OUT_PATH)) {
+      outFilePath = path.join(`${process.env.FEEDS_OUT_PATH}`, `t3.json`);
+    }
+  });
+  test(
+    `It should process the feed`,
+    { tags: ['unit', 'rss'], timeout: 30000 },
+    async () => {
+      const root: Mapping = {
+        match: 'all',
+        filters: [
+          {
+            type: 'class',
+            match: 'equal',
+            items: ['article-wrapper'],
+          },
+        ],
+      };
+      const mappings: ComponentMapping[] = [
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['fancy-box', 'hawk-multi-model-review-container'],
+            },
+          ],
+          properties: {
+            is1Col: true,
+            styles: [29916],
+          },
+        },
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['1aside'],
+            },
+          ],
+          properties: {
+            is1Col: true,
+            styles: [29916],
+          },
+        },
+        {
+          component: 'columns',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['author__header'],
+            },
+          ],
+          column: {
+            match: 'any',
+            filters: [
+              {
+                type: 'class',
+                match: 'any',
+                items: ['author__avatar-block', 'author__heading'],
+              },
+            ],
+          },
+        },
+      ];
+      const excludes: Mapping[] = [
+        {
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['button-social-group'],
+            },
+          ],
+        },
+      ];
+
+      const content = readFileSync(filePath, 'utf-8');
+      const feed = new RSSFeed(content);
+      const rss = await feed.build();
+
+      for (const item of rss.channel.items) {
+        if (!item.link) {
+          item.components = [];
+          item.errors.push(`link missing in guid "${item.guid}"`);
+          continue;
+        }
+
+        try {
+          let itemContent = await RSSFeed.getHtmlContent(item.link, {
+            'User-Agent': 'Canvasflow',
+          });
+          if (root) {
+            itemContent = `${HTMLMapper.getRootElement(itemContent, root)}`;
+          }
+
+          if (itemContent) {
+            item.components = HTMLMapper.toComponents(itemContent, {
+              mappings,
+              excludes,
+            });
+          }
+        } catch (e: unknown) {
+          const error = e as Error;
+          item.components = [];
+          item.errors.push(error.message);
+        }
+      }
+
+      if (outFilePath) {
+        writeFileSync(
+          outFilePath,
+          JSON.stringify(RSSFeed.toJSON(rss), replaceErrors, 2),
+          'utf-8'
+        );
+      }
+
+      expect(rss.channel?.title).toBe('T3 VMG');
+      expect(rss.channel?.errors.length).toBe(0);
     }
   );
 });

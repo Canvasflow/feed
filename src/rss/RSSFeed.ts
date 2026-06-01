@@ -89,9 +89,9 @@ export default class RSSFeed {
     return recipe;
   }
 
-  static async getHtmlContent(url: string) {
+  static async getHtmlContent(url: string, headers?: HeadersInit) {
     try {
-      const response = await fetch(url, { method: 'GET' });
+      const response = await fetch(url, { method: 'GET', headers });
       const data = await response.text();
       return data;
     } catch (err) {
