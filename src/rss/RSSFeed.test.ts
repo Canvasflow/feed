@@ -6,7 +6,9 @@ import RSSFeed, { replaceErrors } from './RSSFeed';
 import type { ImageComponent, TextComponent } from '../component/Component';
 import type { Recipe } from '../component/Schema';
 import { HTMLMapper } from '../component/HTMLMapper';
-import type { ComponentMapping, Mapping } from '../component/Mapping';
+import type { ComponentMapping, Mapping, Params } from '../component/Mapping';
+
+process.env.FEEDS_OUT_PATH = '/Users/jjzcru/Desktop/feed';
 
 describe('Invalid RSS', () => {
   test(
@@ -784,7 +786,65 @@ describe('T3', () => {
           },
         },
       ];
-      const excludes: Mapping[] = [
+      const excludes: Array<Mapping> = [
+        {
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['script'],
+            },
+          ],
+        },
+        {
+          match: 'any',
+          filters: [
+            {
+              type: 'attribute',
+              key: 'data-component-name',
+              value: 'X-Recirculation:ArticleRiver',
+            },
+            {
+              type: 'attribute',
+              key: 'data-component-name',
+              value: 'Viafoura:Comments',
+            },
+            {
+              type: 'attribute',
+              key: 'data-component-name',
+              value: 'JwPlayer:Carousel',
+            },
+          ],
+        },
+        {
+          match: 'any',
+          filters: [
+            {
+              type: 'attribute',
+              key: 'id',
+              value: 'utility-bar',
+            },
+            {
+              type: 'attribute',
+              key: 'id',
+              value: 'articleTag',
+            },
+          ],
+        },
+        {
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: [
+                'newsletter-inbodyContent-slice',
+                'article-continues-below',
+                'comment-widget-loaded',
+              ],
+            },
+          ],
+        },
         {
           match: 'any',
           filters: [
@@ -795,10 +855,25 @@ describe('T3', () => {
             },
           ],
         },
+        {
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['vid-present'],
+            },
+          ],
+        },
       ];
 
       const content = readFileSync(filePath, 'utf-8');
-      const feed = new RSSFeed(content);
+      const params: Params = {
+        mappings,
+        excludes,
+      };
+      const feed = new RSSFeed(content, params);
+      feed.root = root;
       const rss = await feed.build();
       if (shouldDownloadRemote) {
         for (const item of rss.channel.items) {
