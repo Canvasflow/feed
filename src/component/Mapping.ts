@@ -366,6 +366,13 @@ function fromNode(
     } as TextComponent;
   }
 
+  const { tagName } = node;
+
+  // If the element is a script or a style it will get ignored
+  if (tagName === 'script' || tagName === 'style') return null;
+
+  const attributes = getAttributes(node.attributes);
+
   // We exclude first and then we process
   if (params?.excludes?.length) {
     const isNodeExcluded = excludeNode(node, params.excludes);
@@ -373,13 +380,6 @@ function fromNode(
       return null;
     }
   }
-
-  const { tagName } = node;
-
-  // If the element is a script or a style it will get ignored
-  if (tagName === 'script' || tagName === 'style') return null;
-
-  const attributes = getAttributes(node.attributes);
 
   // If the element is specifically ignored
   if (attributes.get('data-cf-ignore') !== undefined) {
@@ -2397,15 +2397,21 @@ function getImageLink(node: ElementNode): LinkResponse {
 function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
   const { tagName } = node;
   const attributes = getAttributes(node.attributes);
+
   for (const filter of filters) {
     if (filter.type === 'tag') {
       if (new Set([...filter.items]).has(tagName)) return true;
+      continue;
     }
+
     if (filter.type === 'attribute') {
       const attributeValue = attributes.get(filter.key);
-      if (attributeValue === undefined) return false;
-      return attributeValue === filter.value;
+      if (attributeValue === filter.value) {
+        return true;
+      }
+      continue;
     }
+
     if (filter.type === 'class') {
       const classNames = attributes.get('class');
 
@@ -2415,12 +2421,21 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
       const classesNamesSet: Set<string> = new Set([...classNames.split(' ')]);
       switch (filter.match) {
         case 'equal':
-          return SetUtils.equal(classesNamesSet, itemsSet);
+          if (SetUtils.equal(classesNamesSet, itemsSet)) {
+            return true;
+          }
+          continue;
         case 'all':
-          return SetUtils.subset(classesNamesSet, itemsSet);
+          if (SetUtils.subset(classesNamesSet, itemsSet)) {
+            return true;
+          }
+          continue;
       }
       // Use match any as the default case
-      return SetUtils.intersect(classesNamesSet, itemsSet).size > 0;
+      if (SetUtils.intersect(classesNamesSet, itemsSet).size > 0) {
+        return true;
+      }
+      continue;
     }
   }
   return false;
@@ -2445,8 +2460,8 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
     }
     if (filter.type === 'attribute') {
       const attributeValue = attributes.get(filter.key);
-      if (attributeValue === undefined) return false;
-      return attributeValue === filter.value;
+      if (attributeValue !== filter.value) return false;
+      continue;
     }
     if (filter.type === 'class') {
       const classNames = attributes.get('class');
@@ -2473,6 +2488,7 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
       if (SetUtils.intersect(classesNamesSet, itemsSet).size === 0) {
         return false;
       }
+      continue;
     }
   }
   return true;
