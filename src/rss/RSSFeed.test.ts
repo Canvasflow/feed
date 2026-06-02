@@ -8,8 +8,6 @@ import type { Recipe } from '../component/Schema';
 import { HTMLMapper } from '../component/HTMLMapper';
 import type { ComponentMapping, Mapping, Params } from '../component/Mapping';
 
-process.env.FEEDS_OUT_PATH = '/Users/jjzcru/Desktop/feed';
-
 describe('Invalid RSS', () => {
   test(
     `It should throw error because the rss is invalid`,
@@ -715,7 +713,7 @@ describe('T3', () => {
     `It should process the feed`,
     { tags: ['unit', 'rss'], timeout: 30000 },
     async () => {
-      const shouldDownloadRemote = false;
+      const shouldDownloadRemote = true;
       const root: Mapping = {
         match: 'all',
         filters: [
@@ -892,6 +890,7 @@ describe('T3', () => {
             }
 
             if (itemContent) {
+              item['content:encoded'] = itemContent;
               item.components = HTMLMapper.toComponents(itemContent, {
                 mappings,
                 excludes,
