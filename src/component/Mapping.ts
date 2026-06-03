@@ -403,6 +403,10 @@ function fromNode(
     a: 'body',
   };
 
+  if (tagName === 'a' && isYoutubeUrl(attributes.get('href') || '')) {
+    return toYoutubeFromAnchor(node);
+  }
+
   // This is a hack for forbes
   if (tagName === 'a' && hasButton(node)) {
     return toAnchorButton(node);
@@ -504,6 +508,9 @@ function fromNode(
         params,
         properties
       );
+    }
+    if (mappedComponent === 'custom') {
+      return toCustom(node);
     }
     return toText(node, mappedComponent, properties);
   }
@@ -607,9 +614,17 @@ function toInstagram(node: ElementNode): InstagramComponent {
   if (component.element && attributes) {
     component.element.attributes = Object.fromEntries(attributes);
   }
-  const IG = attributes.get('data-instgrm-permalink') || '';
+  const url =
+    attributes.get('data-instgrm-permalink') || getLegacyInstagramUrl(node);
+
+  if (!url) {
+    errors.push('URL not found on node');
+    component.errors = errors;
+    return component;
+  }
+
   try {
-    const urlInfo = new URL(IG);
+    const urlInfo = new URL(url);
     const splitUrl = urlInfo.pathname.split('/');
     const type = splitUrl[1] ? splitUrl[1].toLowerCase() : 'post';
 
@@ -641,6 +656,42 @@ function toInstagram(node: ElementNode): InstagramComponent {
   component.errors = errors;
 
   return component;
+}
+
+/**
+ * Uses Instagram legacy embed API to detect the url
+ *
+ * @param {ElementNode} node
+ * @returns {string}
+ */
+function getLegacyInstagramUrl(node: ElementNode): string {
+  const anchorNodes: Node[] = node.children
+    .reduce(findDescendants('a'), [])
+    .filter(filterInstagramAnchor);
+
+  if (!anchorNodes.length) return '';
+
+  const anchorNode = anchorNodes.shift() as ElementNode;
+  const anchorNodeAttributes = getAttributes(anchorNode.attributes);
+
+  return anchorNodeAttributes.get('href') || '';
+}
+
+/**
+ * Filters if anchor tag nodes have a valid instagram url
+ *
+ * @param {ElementNode} node
+ * @returns {boolean}
+ */
+function filterInstagramAnchor(node: Node): boolean {
+  if (node.type !== 'element') return false;
+  if (!node.attributes) return false;
+  const attributes = getAttributes(node.attributes);
+  const href = attributes.get('href');
+  if (!href) return false;
+  return /(?:https?:\/\/)?(?:www\.)?instagram\.com\/(?:p|reel|tv)\/([A-Za-z0-9_-]+)/.test(
+    href
+  );
 }
 
 /**
@@ -1120,6 +1171,24 @@ function toDailymotion(url: URL): DailymotionComponent {
 }
 
 /**
+ * Creates a Youtube Component from an anchor element
+ *
+ * @param {ElementNode} node
+ * @returns {YoutubeComponent}
+ */
+function toYoutubeFromAnchor(node: ElementNode): YoutubeComponent {
+  const attributes = getAttributes(node.attributes);
+  const url = attributes.get('href') || '';
+  const component = toYoutube(new URL(url));
+  component.element = {
+    tag: node.tagName,
+    attributes: Object.fromEntries(attributes),
+  };
+  component.id = attributes.get('id');
+  return component;
+}
+
+/**
  * Transform an youtube url into a Canvasflow Youtube Component
  *
  * @param {URL} url
@@ -1129,10 +1198,7 @@ function toYoutube(url: URL): YoutubeComponent {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  const regExp =
-    /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-
-  if (!regExp.test(url.href)) {
+  if (!isYoutubeUrl(url.href)) {
     errors.push('Invalid Youtube video URL format.');
   }
 
@@ -1151,6 +1217,19 @@ function toYoutube(url: URL): YoutubeComponent {
     errors,
     warnings,
   };
+}
+
+/**
+ * Check if url is a valid Youtube url
+ *
+ * @param {string} url
+ * @returns {boolean}
+ */
+function isYoutubeUrl(url: string): boolean {
+  const regExp =
+    /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+
+  return regExp.test(url);
 }
 
 /**
@@ -1344,6 +1423,7 @@ function toCustom(node: ElementNode): CustomComponent {
     errors: [],
     warnings: [],
     content,
+    node,
   };
 }
 
@@ -2166,7 +2246,8 @@ function isInstagramNode(node: ElementNode): boolean {
   const attributes = getAttributes(node.attributes);
   return (
     tagName === 'blockquote' &&
-    attributes.get('data-instgrm-permalink') !== undefined
+    (attributes.get('data-instgrm-version') === '6' ||
+      attributes.get('data-instgrm-permalink') !== undefined)
   );
 }
 
@@ -2679,7 +2760,8 @@ export type ComponentMapping =
   | ColumnsMapping
   | LiveContainerMapping
   | TextMapping
-  | RecipeMapping;
+  | RecipeMapping
+  | CustomMapping;
 
 export interface RecipeMapping extends Mapping {
   name?: string;
@@ -2707,6 +2789,11 @@ export interface LiveContainerMapping extends Mapping {
 export interface ContainerMapping extends Mapping {
   name?: string;
   component: 'container';
+}
+
+export interface CustomMapping extends Mapping {
+  name?: string;
+  component: 'custom';
 }
 
 export interface TextMapping extends Mapping {
@@ -2815,7 +2902,8 @@ interface MappingComponentResponse {
     | 'recipe'
     | 'container'
     | 'columns'
-    | 'live_container';
+    | 'live_container'
+    | 'custom';
   properties?: Record<string, unknown>;
   mapping?: ComponentMapping;
 }
