@@ -509,6 +509,9 @@ function fromNode(
         properties
       );
     }
+    if (mappedComponent === 'custom') {
+      return toCustom(node);
+    }
     return toText(node, mappedComponent, properties);
   }
 
@@ -1420,6 +1423,7 @@ function toCustom(node: ElementNode): CustomComponent {
     errors: [],
     warnings: [],
     content,
+    node,
   };
 }
 
@@ -2756,7 +2760,8 @@ export type ComponentMapping =
   | ColumnsMapping
   | LiveContainerMapping
   | TextMapping
-  | RecipeMapping;
+  | RecipeMapping
+  | CustomMapping;
 
 export interface RecipeMapping extends Mapping {
   name?: string;
@@ -2784,6 +2789,11 @@ export interface LiveContainerMapping extends Mapping {
 export interface ContainerMapping extends Mapping {
   name?: string;
   component: 'container';
+}
+
+export interface CustomMapping extends Mapping {
+  name?: string;
+  component: 'custom';
 }
 
 export interface TextMapping extends Mapping {
@@ -2892,7 +2902,8 @@ interface MappingComponentResponse {
     | 'recipe'
     | 'container'
     | 'columns'
-    | 'live_container';
+    | 'live_container'
+    | 'custom';
   properties?: Record<string, unknown>;
   mapping?: ComponentMapping;
 }

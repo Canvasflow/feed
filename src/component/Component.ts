@@ -1,3 +1,4 @@
+import type { ElementNode } from './Node';
 import type { Recipe } from './Schema';
 
 export type ComponentType =
@@ -446,6 +447,7 @@ export function isSpacerComponent(object: unknown): object is SpacerComponent {
 export interface CustomComponent extends Component {
   component: 'custom';
   content: string;
+  node: ElementNode;
 }
 
 export function isCustomComponent(object: unknown): object is CustomComponent {
