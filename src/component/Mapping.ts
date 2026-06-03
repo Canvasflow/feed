@@ -403,6 +403,10 @@ function fromNode(
     a: 'body',
   };
 
+  if (tagName === 'a' && isYoutubeUrl(attributes.get('href') || '')) {
+    return toYoutubeFromAnchor(node);
+  }
+
   // This is a hack for forbes
   if (tagName === 'a' && hasButton(node)) {
     return toAnchorButton(node);
@@ -1164,6 +1168,24 @@ function toDailymotion(url: URL): DailymotionComponent {
 }
 
 /**
+ * Creates a Youtube Component from an anchor element
+ *
+ * @param {ElementNode} node
+ * @returns {YoutubeComponent}
+ */
+function toYoutubeFromAnchor(node: ElementNode): YoutubeComponent {
+  const attributes = getAttributes(node.attributes);
+  const url = attributes.get('href') || '';
+  const component = toYoutube(new URL(url));
+  component.element = {
+    tag: node.tagName,
+    attributes: Object.fromEntries(attributes),
+  };
+  component.id = attributes.get('id');
+  return component;
+}
+
+/**
  * Transform an youtube url into a Canvasflow Youtube Component
  *
  * @param {URL} url
@@ -1173,10 +1195,7 @@ function toYoutube(url: URL): YoutubeComponent {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  const regExp =
-    /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-
-  if (!regExp.test(url.href)) {
+  if (!isYoutubeUrl(url.href)) {
     errors.push('Invalid Youtube video URL format.');
   }
 
@@ -1195,6 +1214,19 @@ function toYoutube(url: URL): YoutubeComponent {
     errors,
     warnings,
   };
+}
+
+/**
+ * Check if url is a valid Youtube url
+ *
+ * @param {string} url
+ * @returns {boolean}
+ */
+function isYoutubeUrl(url: string): boolean {
+  const regExp =
+    /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+
+  return regExp.test(url);
 }
 
 /**
