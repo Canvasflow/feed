@@ -196,7 +196,6 @@ describe('Text components', () => {
     }
   );
 
-  // TODO In this test both component should appear
   test(
     'It should create a body component from anchor that also has an image',
     { tags: ['unit', 'html'] },
@@ -2448,37 +2447,33 @@ describe('Columns components', () => {
 });
 
 describe('Custom component', () => {
-  test(
-    'It should map custom component',
-    { tags: ['unit', 'html'] },
-    () => {
-      const mappings: Array<ComponentMapping> = [
-        {
-          component: 'custom',
-          match: 'all',
-          filters: [
-            {
-              type: 'tag',
-              items: ['aside'],
-            },
-          ],
-        },
-      ];
-      const content = `
+  test('It should map custom component', { tags: ['unit', 'html'] }, () => {
+    const mappings: Array<ComponentMapping> = [
+      {
+        component: 'custom',
+        match: 'all',
+        filters: [
+          {
+            type: 'tag',
+            items: ['aside'],
+          },
+        ],
+      },
+    ];
+    const content = `
         <aside>
             <nav>Navigation Bar</nav>
         </aside>
       `;
-      const components = HTMLMapper.toComponents(content, { mappings });
-      expect(components.length).toBe(1);
-      const customComponent = components.pop() as CustomComponent;
-      expect(customComponent).toBeDefined();
-      if (!customComponent) {
-        return;
-      }
-      expect(customComponent.component).toBe('custom');
+    const components = HTMLMapper.toComponents(content, { mappings });
+    expect(components.length).toBe(1);
+    const customComponent = components.pop() as CustomComponent;
+    expect(customComponent).toBeDefined();
+    if (!customComponent) {
+      return;
     }
-  );
+    expect(customComponent.component).toBe('custom');
+  });
 });
 
 describe('Live container components', () => {
