@@ -713,7 +713,7 @@ describe('T3', () => {
     `It should process the feed`,
     { tags: ['unit', 'rss'], timeout: 30000 },
     async () => {
-      const shouldDownloadRemote = true;
+      const shouldDownloadRemote = false;
       const root: Mapping = {
         match: 'all',
         filters: [
