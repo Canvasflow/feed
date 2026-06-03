@@ -326,6 +326,84 @@ describe('Instagram component', () => {
       expect(component.id).toBe(`DLA3R_4SSKy`);
     }
   );
+
+  test(
+    'It should create an Instagram post component with legacy embed API',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="instagram-media" data-instgrm-captioned="" data-instgrm-version="6"
+          style="width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);">
+            <p><a href="https://www.instagram.com/p/DYiEPOqC9_d/" target="_blank"
+              data-url="https://www.instagram.com/p/DYiEPOqC9_d/" referrerpolicy="no-referrer-when-downgrade"
+              data-hl-processed="none">A post shared by Thesis Training
+                (@thesistraining)</a></p>
+            <p>A photo posted by on </p>
+      </blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as InstagramComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('instagram');
+      expect(component.type).toBe(`post`);
+      expect(component.id).toBe(`DYiEPOqC9_d`);
+    }
+  );
+
+  test(
+    'It should create an Instagram tv component with legacy embed API',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="instagram-media" data-instgrm-captioned="" data-instgrm-version="6"
+          style="width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);">
+            <p><a href="https://www.instagram.com/tv/DYiEPOqC9_d/" target="_blank"
+              data-url="https://www.instagram.com/tv/DYiEPOqC9_d/" referrerpolicy="no-referrer-when-downgrade"
+              data-hl-processed="none">A post shared by Thesis Training
+                (@thesistraining)</a></p>
+            <p>A photo posted by on </p>
+      </blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as InstagramComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('instagram');
+      expect(component.type).toBe('tv');
+      expect(component.id).toBe(`DYiEPOqC9_d`);
+    }
+  );
+
+  test(
+    'It should create an Instagram reel component with legacy embed API',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="instagram-media" data-instgrm-captioned="" data-instgrm-version="6"
+          style="width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);">
+            <p><a href="https://www.instagram.com/reel/DYiEPOqC9_d/" target="_blank"
+              data-url="https://www.instagram.com/reel/DYiEPOqC9_d/" referrerpolicy="no-referrer-when-downgrade"
+              data-hl-processed="none">A post shared by Thesis Training
+                (@thesistraining)</a></p>
+            <p>A photo posted by on </p>
+      </blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as InstagramComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('instagram');
+      expect(component.type).toBe('reel');
+      expect(component.id).toBe(`DYiEPOqC9_d`);
+    }
+  );
 });
 
 describe('Button component', () => {

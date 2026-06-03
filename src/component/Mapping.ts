@@ -607,9 +607,17 @@ function toInstagram(node: ElementNode): InstagramComponent {
   if (component.element && attributes) {
     component.element.attributes = Object.fromEntries(attributes);
   }
-  const IG = attributes.get('data-instgrm-permalink') || '';
+  const url =
+    attributes.get('data-instgrm-permalink') || getLegacyInstagramUrl(node);
+
+  if (!url) {
+    errors.push('URL not found on node');
+    component.errors = errors;
+    return component;
+  }
+
   try {
-    const urlInfo = new URL(IG);
+    const urlInfo = new URL(url);
     const splitUrl = urlInfo.pathname.split('/');
     const type = splitUrl[1] ? splitUrl[1].toLowerCase() : 'post';
 
@@ -641,6 +649,42 @@ function toInstagram(node: ElementNode): InstagramComponent {
   component.errors = errors;
 
   return component;
+}
+
+/**
+ * Uses Instagram legacy embed API to detect the url
+ *
+ * @param {ElementNode} node
+ * @returns {string}
+ */
+function getLegacyInstagramUrl(node: ElementNode): string {
+  const anchorNodes: Node[] = node.children
+    .reduce(findDescendants('a'), [])
+    .filter(filterInstagramAnchor);
+
+  if (!anchorNodes.length) return '';
+
+  const anchorNode = anchorNodes.shift() as ElementNode;
+  const anchorNodeAttributes = getAttributes(anchorNode.attributes);
+
+  return anchorNodeAttributes.get('href') || '';
+}
+
+/**
+ * Filters if anchor tag nodes have a valid instagram url
+ *
+ * @param {ElementNode} node
+ * @returns {boolean}
+ */
+function filterInstagramAnchor(node: Node): boolean {
+  if (node.type !== 'element') return false;
+  if (!node.attributes) return false;
+  const attributes = getAttributes(node.attributes);
+  const href = attributes.get('href');
+  if (!href) return false;
+  return /(?:https?:\/\/)?(?:www\.)?instagram\.com\/(?:p|reel|tv)\/([A-Za-z0-9_-]+)/.test(
+    href
+  );
 }
 
 /**
@@ -2166,7 +2210,8 @@ function isInstagramNode(node: ElementNode): boolean {
   const attributes = getAttributes(node.attributes);
   return (
     tagName === 'blockquote' &&
-    attributes.get('data-instgrm-permalink') !== undefined
+    (attributes.get('data-instgrm-version') === '6' ||
+      attributes.get('data-instgrm-permalink') !== undefined)
   );
 }
 
