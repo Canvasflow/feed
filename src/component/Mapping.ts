@@ -302,7 +302,7 @@ function appendLinkContainerComponents(
   const link = container.link;
   const attributes = container.attributes;
   const components = container.components.reduce(
-    reduceLinkContainerComponent(link, attributes),
+    reduceLinkContainerComponent(link, attributes, container.element),
     []
   );
   for (const component of components) {
@@ -358,11 +358,15 @@ function fromNode(
       return null;
     }
 
+    const text = params?.ignoreParagraphWrap
+      ? node.content.trim()
+      : `<p>${node.content.trim()}</p>`;
+
     return {
       component: 'body',
       errors: [],
       warnings: [],
-      text: `<p>${node.content.trim()}</p>`,
+      text,
     } as TextComponent;
   }
 
@@ -510,7 +514,7 @@ function fromNode(
       );
     }
     if (mappedComponent === 'custom') {
-      return toCustom(node);
+      return toCustom(node, properties);
     }
     return toText(node, mappedComponent, properties);
   }
@@ -1411,9 +1415,13 @@ function toApplePodcast(node: ElementNode): AudioComponent {
  * Transform an html node into a Canvasflow Custom Component
  *
  * @param {ElementNode} node
+ * @param {Record<string, unknown> | undefined} properties
  * @returns {CustomComponent}
  */
-function toCustom(node: ElementNode): CustomComponent {
+function toCustom(
+  node: ElementNode,
+  properties?: Record<string, unknown>
+): CustomComponent {
   const content = stringify([node]);
   const attributes = getAttributes(node.attributes);
   const id = attributes.get('id');
@@ -1424,6 +1432,11 @@ function toCustom(node: ElementNode): CustomComponent {
     warnings: [],
     content,
     node,
+    properties,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
   };
 }
 
@@ -1662,8 +1675,15 @@ function toLinkContainer(
 
   const link: string | undefined = attributes.get('href');
 
+  const containerParams: Params = params
+    ? structuredClone({
+        ...params,
+        ignoreParagraphWrap: true,
+      })
+    : { ignoreParagraphWrap: true };
+
   const components: Array<Component> = node.children.length
-    ? node.children.reduce(reduceComponents(params), [])
+    ? node.children.reduce(reduceComponents(containerParams), [])
     : [];
 
   const component: LinkContainerComponent = {
@@ -2310,7 +2330,11 @@ function isTikTokNode(node: ElementNode): boolean {
 
 function reduceLinkContainerComponent(
   link?: string,
-  attributes?: Map<string, string>
+  attributes?: Map<string, string>,
+  element?: {
+    tag: string;
+    attributes?: Record<string, string>;
+  }
 ): (acc: Component[], item: Component) => Component[] {
   return (acc: Component[], component: Component): Component[] => {
     // You don't have a link so return as it is
@@ -2329,6 +2353,10 @@ function reduceLinkContainerComponent(
         component.text = `<a ${linkAttributes.join(' ')}>${component.text}</a>`;
       } else {
         component.text = `<a href="${link}">${component.text}</a>`;
+      }
+
+      if (element) {
+        component.element = element;
       }
     }
 
@@ -2606,6 +2634,7 @@ export function isValidMapping(mapping: unknown): boolean {
 export interface Params {
   mappings?: ComponentMapping[];
   excludes?: Mapping[];
+  ignoreParagraphWrap?: boolean;
 }
 
 /**

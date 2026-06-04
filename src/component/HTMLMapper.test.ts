@@ -266,6 +266,61 @@ describe('Text components', () => {
     expect(component.component).toBe('body');
     expect(component.text).toBe(expectedContent);
   });
+
+  test(
+    'Should pass across the properties of the link container',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `<a data-google-interstitial="false" aria-label="View Bowers &amp; Wilkins 805 D4 on Amazon"
+        href="https://target.georiot.com/Proxy.ashx?tsid=8434&amp;GR_URL=https%3A%2F%2Fwww.amazon.co.uk%2Fs%2Fref%3Dnb_sb_noss%3Fa%3Db%26field-keywords%3DBowers%2B%26Wilkins_805_D4%3D%26tag%3Dftr-t3-ie-21%26ascsubtag%3Dt3-ie-8123647751342797649-21"
+        referrerpolicy="no-referrer-when-downgrade" class="hawk-affiliate-link-button"
+        data-product-key="20036-583204787"
+        data-url="https://target.georiot.com/Proxy.ashx?tsid=8434&amp;GR_URL=https%3A%2F%2Fwww.amazon.co.uk%2Fs%2Fref%3Dnb_sb_noss%3Fa%3Db%26field-keywords%3DBowers%2B%26Wilkins_805_D4%3D%26tag%3Dftr-t3-ie-21%26ascsubtag%3Dt3-ie-8123647751342797649-21"
+        data-model-id="1" data-match-id="108853847" data-product-type="200" data-link-merchant="Amazon"
+        data-merchant-id="1027" data-merchant-name="Amazon" data-merchant-url="https://www.amazon.co.uk/"
+        data-merchant-network="Amazonuk" rel="sponsored noopener" target="_blank" role="link" tabindex="0"
+        data-mrf-recirculation="[T3] Affiliation - Affiliate Container"
+        data-mrf-link="https://target.georiot.com/Proxy.ashx?tsid=8434&amp;GR_URL=https%3A%2F%2Fwww.amazon.co.uk%2Fs%2Fref%3Dnb_sb_noss%3Fa%3Db%26field-keywords%3DBowers%2B%26Wilkins_805_D4%3D%26tag%3Dftr-t3-ie-21%26ascsubtag%3Dt3-ie-8123647751342797649-21"
+        cmp-ltrk="[T3] Affiliation - Affiliate Container" cmp-ltrk-idx="4"
+        mrfobservableid="cd5ee766-2f9b-49a8-bb55-3234e14c2593">Check Amazon</a>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBeGreaterThan(0);
+      const component = components.pop() as TextComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('body');
+    }
+  );
+
+  test(
+    'Should keep the span in the content',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `<a data-google-interstitial="false" aria-label="View Philips Hue Dimmer Switch on Conrad Electronic"
+    href="https://www.awin1.com/pclick.php?clickref=t3-ie-1080240011994533165&amp;p=28526326903&amp;a=103504&amp;m=5769"
+    referrerpolicy="no-referrer-when-downgrade" class="hawk-affiliate-link-container"
+    data-product-key="132856-28526326903"
+    data-url="https://www.awin1.com/pclick.php?clickref=t3-ie-1080240011994533165&amp;p=28526326903&amp;a=103504&amp;m=5769"
+    data-model-id="688615" data-match-id="3838417" data-product-type="1000" data-link-merchant="Conrad Electronic"
+    data-merchant-id="8288" data-merchant-name="Conrad Electronic"
+    data-merchant-url="http://www.conrad-electronic.co.uk/ce/" data-merchant-network="AW" rel="sponsored noopener"
+    target="_blank" role="link" tabindex="0" data-mrf-recirculation="[T3] Affiliation - Affiliate Container"
+    data-mrf-link="https://www.awin1.com/pclick.php?clickref=t3-ie-1080240011994533165&amp;p=28526326903&amp;a=103504&amp;m=5769"
+    cmp-ltrk="[T3] Affiliation - Affiliate Container" cmp-ltrk-idx="3"
+    mrfobservableid="8efec8ff-c17b-4a99-a719-981e4580409b"><span class="hawk-display-price-container"
+        data-type="retail"> <span class="hawk-display-price-price">€25.99</span></span></a>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBeGreaterThan(0);
+      const component = components.pop() as TextComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('body');
+    }
+  );
 });
 
 describe('Instagram component', () => {
@@ -2448,6 +2503,9 @@ describe('Columns components', () => {
 
 describe('Custom component', () => {
   test('It should map custom component', { tags: ['unit', 'html'] }, () => {
+    const properties = {
+      success: true,
+    };
     const mappings: Array<ComponentMapping> = [
       {
         component: 'custom',
@@ -2458,6 +2516,7 @@ describe('Custom component', () => {
             items: ['aside'],
           },
         ],
+        properties,
       },
     ];
     const content = `
@@ -2473,6 +2532,7 @@ describe('Custom component', () => {
       return;
     }
     expect(customComponent.component).toBe('custom');
+    expect(customComponent.properties).toBe(properties);
   });
 });
 
@@ -2552,7 +2612,22 @@ describe('Link container components', () => {
     'It should use anchor tags to map container component',
     { tags: ['unit', 'html'] },
     () => {
-      const mappings: Array<ComponentMapping> = [];
+      const properties = {
+        isText: true,
+      };
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'text41',
+          match: 'any',
+          filters: [
+            {
+              type: 'tag',
+              items: ['h1'],
+            },
+          ],
+          properties,
+        },
+      ];
       const link = 'https://example.org';
       const content = `
         <a href="${link}" target="_blank">
@@ -2565,6 +2640,8 @@ describe('Link container components', () => {
 
       const textComponent = components[0] as TextComponent;
       expect(isTextComponent(textComponent)).toBe(true);
+      expect(textComponent.component).toBe(mappings[0].component);
+      expect(textComponent.properties).toEqual(mappings[0].properties);
       expect(textComponent.text).toBe(
         `<a href="${link}" target="_blank">Test</a>`
       );
@@ -2646,7 +2723,7 @@ describe('Link container components', () => {
       textComponent = components[1] as TextComponent;
       expect(isTextComponent(textComponent)).toBe(true);
       expect(textComponent.text).toBe(
-        `<a href="${link}" target="_blank"><p>Hello</p></a>`
+        `<a href="${link}" target="_blank">Hello</a>`
       );
 
       textComponent = components[2] as TextComponent;
