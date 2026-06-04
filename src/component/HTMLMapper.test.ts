@@ -2448,6 +2448,9 @@ describe('Columns components', () => {
 
 describe('Custom component', () => {
   test('It should map custom component', { tags: ['unit', 'html'] }, () => {
+    const properties = {
+      success: true,
+    };
     const mappings: Array<ComponentMapping> = [
       {
         component: 'custom',
@@ -2458,6 +2461,7 @@ describe('Custom component', () => {
             items: ['aside'],
           },
         ],
+        properties,
       },
     ];
     const content = `
@@ -2473,6 +2477,7 @@ describe('Custom component', () => {
       return;
     }
     expect(customComponent.component).toBe('custom');
+    expect(customComponent.properties).toBe(properties);
   });
 });
 
