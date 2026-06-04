@@ -302,7 +302,7 @@ function appendLinkContainerComponents(
   const link = container.link;
   const attributes = container.attributes;
   const components = container.components.reduce(
-    reduceLinkContainerComponent(link, attributes),
+    reduceLinkContainerComponent(link, attributes, container.element),
     []
   );
   for (const component of components) {
@@ -358,11 +358,15 @@ function fromNode(
       return null;
     }
 
+    const text = params?.ignoreParagraphWrap
+      ? node.content.trim()
+      : `<p>${node.content.trim()}</p>`;
+
     return {
       component: 'body',
       errors: [],
       warnings: [],
-      text: `<p>${node.content.trim()}</p>`,
+      text,
     } as TextComponent;
   }
 
@@ -1671,8 +1675,15 @@ function toLinkContainer(
 
   const link: string | undefined = attributes.get('href');
 
+  const containerParams: Params = params
+    ? structuredClone({
+        ...params,
+        ignoreParagraphWrap: true,
+      })
+    : { ignoreParagraphWrap: true };
+
   const components: Array<Component> = node.children.length
-    ? node.children.reduce(reduceComponents(params), [])
+    ? node.children.reduce(reduceComponents(containerParams), [])
     : [];
 
   const component: LinkContainerComponent = {
@@ -2319,7 +2330,11 @@ function isTikTokNode(node: ElementNode): boolean {
 
 function reduceLinkContainerComponent(
   link?: string,
-  attributes?: Map<string, string>
+  attributes?: Map<string, string>,
+  element?: {
+    tag: string;
+    attributes?: Record<string, string>;
+  }
 ): (acc: Component[], item: Component) => Component[] {
   return (acc: Component[], component: Component): Component[] => {
     // You don't have a link so return as it is
@@ -2338,6 +2353,10 @@ function reduceLinkContainerComponent(
         component.text = `<a ${linkAttributes.join(' ')}>${component.text}</a>`;
       } else {
         component.text = `<a href="${link}">${component.text}</a>`;
+      }
+
+      if (element) {
+        component.element = element;
       }
     }
 
@@ -2615,6 +2634,7 @@ export function isValidMapping(mapping: unknown): boolean {
 export interface Params {
   mappings?: ComponentMapping[];
   excludes?: Mapping[];
+  ignoreParagraphWrap?: boolean;
 }
 
 /**
