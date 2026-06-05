@@ -59,6 +59,7 @@ export interface Component {
   id?: string;
   component: ComponentType;
   properties?: Record<string, unknown>;
+  html?: string;
   errors: string[];
   warnings: string[];
   element?: {
