@@ -711,9 +711,9 @@ describe('T3', () => {
   });
   test(
     `It should process the feed`,
-    { tags: ['unit', 'rss'], timeout: 30000 },
+    { tags: ['unit', 'rss'], timeout: 0 },
     async () => {
-      const shouldDownloadRemote = false;
+      const shouldDownloadRemote = true;
       const root: Mapping = {
         match: 'all',
         filters: [
@@ -736,7 +736,7 @@ describe('T3', () => {
             {
               type: 'class',
               match: 'any',
-              items: ['fancy-box', 'hawk-multi-model-review-container'],
+              items: ['fancy-box'],
             },
           ],
           properties: {
@@ -750,12 +750,55 @@ describe('T3', () => {
           filters: [
             {
               type: 'tag',
-              items: ['1aside'],
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['hawk-multi-model-review-container'],
             },
           ],
           properties: {
             is1Col: true,
-            styles: [29916],
+            styles: [31755],
+          },
+        },
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['hawk-main-editorial-container'],
+            },
+          ],
+          properties: {
+            is1Col: true,
+            styles: [31755],
+          },
+        },
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['aside'],
+            },
+            {
+              type: 'attribute',
+              key: 'data-mrf-recirculation',
+              value: 'Trending Bar',
+            },
+          ],
+          properties: {
+            is1Col: true,
+            styles: [31756],
           },
         },
         {
@@ -783,6 +826,61 @@ describe('T3', () => {
             ],
           },
         },
+        {
+          component: 'columns',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['hawk-deal-offer-card-content'],
+            },
+          ],
+          column: {
+            match: 'any',
+            filters: [
+              {
+                type: 'class',
+                match: 'any',
+                items: [
+                  'hawk-deal-offer-card-offer-model-name',
+                  'hawk-deal-offer-card-offer-image',
+                  'hawk-deal-offer-card-offer-merchant',
+                  'hawk-deal-offer-card-deal-offer-prices-cta',
+                ],
+              },
+            ],
+          },
+        },
+        {
+          component: 'columns',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'any',
+              items: ['hawk-grid-item-main-container'],
+            },
+          ],
+          column: {
+            match: 'any',
+            filters: [
+              {
+                type: 'class',
+                match: 'any',
+                items: ['hawk-grid-item-block-container'],
+              },
+            ],
+          },
+        },
       ];
       const excludes: Array<Mapping> = [
         {
@@ -791,6 +889,26 @@ describe('T3', () => {
             {
               type: 'tag',
               items: ['script'],
+            },
+          ],
+        },
+        {
+          match: 'any',
+          filters: [
+            {
+              type: 'attribute',
+              key: 'data-result',
+              value: 'missing',
+            },
+          ],
+        },
+        {
+          match: 'any',
+          filters: [
+            {
+              type: 'attribute',
+              key: 'data-component-name',
+              value: 'PostArticleLinks',
             },
           ],
         },
@@ -811,6 +929,21 @@ describe('T3', () => {
               type: 'attribute',
               key: 'data-component-name',
               value: 'JwPlayer:Carousel',
+            },
+            {
+              type: 'attribute',
+              key: 'data-component-name',
+              value: 'PostArticleLinks',
+            },
+            {
+              type: 'attribute',
+              key: 'data-component-name',
+              value: 'Article:JumpTo',
+            },
+            {
+              type: 'attribute',
+              key: 'data-result',
+              value: 'missing',
             },
           ],
         },
@@ -839,6 +972,11 @@ describe('T3', () => {
                 'newsletter-inbodyContent-slice',
                 'article-continues-below',
                 'comment-widget-loaded',
+                'hawk-star-rating-container',
+                'hawk-lazy-image-roundup',
+                'video-aspect-box',
+                'hawk-load-more-more-deals-container',
+                'hawk-promos-review-merchantlink',
               ],
             },
           ],

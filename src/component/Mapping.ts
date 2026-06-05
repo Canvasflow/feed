@@ -86,6 +86,10 @@ for (const tag of textTags) {
   textAllowedAttributes[tag] = attributes;
 }
 
+const allowedTags = sanitizeHtml.defaults.allowedTags.filter(
+  (tag) => tag !== 'script' && tag !== 'style'
+);
+
 const textAllowedTags = [
   ...new Set([
     'strong',
@@ -223,6 +227,10 @@ export function mapLivePost(params?: Params): MapLivePostComponentsFn {
     return {
       id,
       component: 'live_post',
+      html: sanitizeHtml(stringify([node]), {
+        allowedTags,
+        allowedAttributes: false,
+      }),
       components,
       errors,
       warnings,
@@ -1189,6 +1197,10 @@ function toYoutubeFromAnchor(node: ElementNode): YoutubeComponent {
     attributes: Object.fromEntries(attributes),
   };
   component.id = attributes.get('id');
+  component.html = sanitizeHtml(stringify([node]), {
+    allowedTags,
+    allowedAttributes: false,
+  });
   return component;
 }
 
@@ -1312,6 +1324,10 @@ function toVideo(node: ElementNode): VideoComponent {
     movietype: 'hosted',
     errors,
     warnings,
+    html: sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    }),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -1365,6 +1381,10 @@ function toAudio(node: ElementNode): AudioComponent {
     loop,
     errors,
     warnings,
+    html: sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    }),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -1408,6 +1428,10 @@ function toApplePodcast(node: ElementNode): AudioComponent {
     loop: false,
     errors,
     warnings,
+    html: sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    }),
   };
 }
 
@@ -1433,6 +1457,10 @@ function toCustom(
     content,
     node,
     properties,
+    html: sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    }),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -1470,6 +1498,10 @@ function toContainer(
     errors: [],
     warnings,
     properties,
+    html: sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    }),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -1520,6 +1552,10 @@ function toColumns(
   return {
     id,
     component: 'columns',
+    html: sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    }),
     columns,
     errors,
     warnings,
@@ -1604,6 +1640,10 @@ function toLiveContainer(
   return {
     id,
     component: 'live_container',
+    html: sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    }),
     posts,
     errors,
     warnings,
@@ -1803,10 +1843,10 @@ function toText(
   return {
     id,
     component,
-    errors: [],
-    warnings,
     properties,
     text: typeof text === 'string' ? text.trim() : text,
+    errors: [],
+    warnings,
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -2025,6 +2065,10 @@ function fromFigure(
 
   return {
     component: 'image',
+    html: sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    }),
     imageurl,
     alt,
     link,
@@ -2084,6 +2128,10 @@ function fromPicture(node: ElementNode): ImageComponent {
   return {
     component: 'image',
     imageurl,
+    html: sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    }),
     alt,
     errors,
     warnings,
@@ -2134,6 +2182,10 @@ function fromIframe(
         tag: node.tagName,
         attributes: Object.fromEntries(attributes),
       };
+      builtComponent.html = sanitizeHtml(stringify([node]), {
+        allowedTags,
+        allowedAttributes: false,
+      });
       return builtComponent;
     case 'https://www.youtube.com':
       builtComponent = toYoutube(url);
@@ -2141,6 +2193,10 @@ function fromIframe(
         tag: node.tagName,
         attributes: Object.fromEntries(attributes),
       };
+      builtComponent.html = sanitizeHtml(stringify([node]), {
+        allowedTags,
+        allowedAttributes: false,
+      });
       builtComponent.id = id;
       return builtComponent;
     case 'https://embed.podcasts.apple.com':
@@ -2164,6 +2220,10 @@ function fromIframe(
     searchParams.src.startsWith('https://www.youtube.com')
   ) {
     builtComponent = toYoutube(new URL(searchParams.src));
+    builtComponent.html = sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    });
     builtComponent.element = {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -2178,6 +2238,10 @@ function fromIframe(
     searchParams.url.startsWith('https://www.tiktok.com')
   ) {
     builtComponent = toTikTok(new URL(searchParams.url));
+    builtComponent.html = sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    });
     builtComponent.element = {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -2196,6 +2260,10 @@ function fromIframe(
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
     };
+    builtComponent.html = sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    });
     builtComponent.id = id;
     return builtComponent;
   }
@@ -2207,6 +2275,10 @@ function fromIframe(
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
     };
+    builtComponent.html = sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    });
     builtComponent.id = id;
     return builtComponent;
   }
@@ -2217,6 +2289,10 @@ function fromIframe(
       searchParams.url.startsWith('https://x.com'))
   ) {
     builtComponent = toTwitter(new URL(searchParams.url));
+    builtComponent.html = sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    });
     builtComponent.element = {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
