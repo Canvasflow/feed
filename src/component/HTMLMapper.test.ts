@@ -1262,6 +1262,31 @@ describe('Image component', () => {
   );
 
   test(
+    'It should process a figure component with caption and credit with class',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `
+        <figure>
+          <img src="cover.jpg" alt="My image">
+          <figcaption>
+            This is
+            a caption
+          </figcaption>
+          <span class="credit">This <b>is</b> a credit</span>
+        </figure>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe('cover.jpg');
+      expect(component?.alt).toBe('My image');
+      expect(component?.caption).toBe('This is a caption');
+      expect(component?.credit).toBe('This is a credit');
+    }
+  );
+
+  test(
     'It should process images inside p tags',
     { tags: ['unit', 'html'] },
     () => {

@@ -1607,6 +1607,25 @@ function filterColumnsDescendants(
   };
 }
 
+function filterClassNameDescendants(className: string): NodeFilterFn {
+  return (node: Node): boolean => {
+    const { type } = node;
+    if (type !== 'element') return false;
+
+    const attributes = getAttributes(node.attributes);
+    const classNames = attributes.get('class');
+    if (!classNames) return false;
+    if (typeof classNames !== 'string') return false;
+    for (const name of classNames.split(' ')) {
+      if (name === className) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+}
+
 /**
  * Transform a HTML element into a Canvasflow Live Container component
  *
@@ -1777,6 +1796,19 @@ function toFigureContainer(
       caption = ficaptionResponse.caption || '';
       credit = ficaptionResponse.credit || '';
     }
+  }
+
+  const creditNodes = node.children.reduce(
+    findDescendants(filterClassNameDescendants('credit')),
+    []
+  );
+
+  if (creditNodes.length) {
+    const creditNode = creditNodes.shift() as ElementNode;
+    credit = sanitizeHtml(stringify([creditNode]), {
+      allowedTags: [],
+      allowedAttributes: {},
+    });
   }
 
   const components = node.children
