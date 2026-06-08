@@ -68,6 +68,6 @@ export default defineConfig({
   pack: {
     entry: ['src/index.ts'],
     dts: true,
-    format: ['esm', 'cjs'],
+    format: ['esm'],
   },
 });
