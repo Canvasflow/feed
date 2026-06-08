@@ -1,0 +1,87 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Commands
+
+```bash
+npm run build          # tsc + vite build → dist/
+npm run test:run       # run all tests once (no UI)
+npm run test           # vitest with UI (interactive)
+npm run lint           # eslint on .ts files
+npm run format         # prettier --write .
+npm run coverage       # vitest coverage report
+```
+
+Run a single test file:
+
+```bash
+npx vitest run src/rss/RSSFeed.test.ts
+```
+
+Run tests by tag:
+
+```bash
+npx vitest run --reporter=verbose -- --tags-filter=unit
+npx vitest run --reporter=verbose -- --tags-filter=rss
+npx vitest run --reporter=verbose -- --tags-filter=html
+```
+
+## Architecture
+
+This is a TypeScript library (`@canvasflow/feed`) that processes RSS/Atom feeds and transforms HTML content into Canvasflow components. It is published to GitHub Packages as both ESM and CJS.
+
+### Entry point
+
+`src/index.ts` re-exports the two public surfaces: `RSSFeed` and `HTMLMapper` (plus their associated types).
+
+### RSSFeed (`src/rss/`)
+
+`RSSFeed` wraps `fast-xml-parser` to parse XML. The two main methods are:
+
+- `validate()` — checks required tags against `Tag.ts` allow-lists; populates `errors`/`warnings` arrays on the RSS, channel, and item objects.
+- `build()` — constructs a typed `RSS` object. Items have their `content:encoded` HTML field automatically converted to a `components` array via `HTMLMapper.toComponents()`.
+
+XML attributes from the parser use the `@_` prefix convention (e.g., `@_url`, `@_type`). Canvasflow-specific RSS extensions use the `cf:` namespace (`cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`).
+
+An optional `Params` (from `Mapping.ts`) can be passed to `RSSFeed` to configure how HTML is converted. An optional `root` setter accepts a `Mapping` to scope content extraction to a sub-element before conversion.
+
+### HTMLMapper (`src/component/`)
+
+`HTMLMapper.toComponents(html, params?)` is the core HTML→component pipeline:
+
+1. Pre-processes the HTML string (removes breaklines, sanitizes invalid hrefs, extracts `<a>` wrappers around images, splits `<p>` tags containing `<img>` elements).
+2. Parses with `himalaya` into a `Node[]` AST.
+3. Reduces the node tree via `reduceComponents(params)` from `Mapping.ts` into `Component[]`.
+
+### Mapping (`src/component/Mapping.ts`)
+
+Contains the `reduceComponents` reducer and all element-matching logic. The default HTML→Canvasflow component mapping is:
+
+| HTML         | Component type |
+| ------------ | -------------- |
+| `h1`         | `headline`     |
+| `h2`         | `title`        |
+| `h3`         | `subtitle`     |
+| `h4`         | `intro`        |
+| `p`          | `body`         |
+| `blockquote` | `blockquote`   |
+| `footer`     | `footer`       |
+
+Any text element's `role` attribute overrides the default mapping (e.g., `<p role="crosshead">` → `crosshead`). Styles and classes are stripped; only `href`/`target`/`rel` survive on `<a>` elements.
+
+### Component types (`src/component/Component.ts`)
+
+Defines all `ComponentType` variants (image, gallery, video, audio, twitter, instagram, youtube, tiktok, dailymotion, vimeo, infogram, recipe, htmltable, columns, container, live_container, live_post, etc.) and their interfaces. Use the `is*` type-guard functions to narrow components.
+
+### Test fixtures
+
+Real RSS feeds and HTML snippets live in `src/support/feeds/` and `src/support/html/`. `setupTests.ts` exposes `process.env.SUPPORT_PATH` and `process.env.FEEDS_PATH` so tests can read fixtures without hardcoded paths.
+
+### Test tags
+
+Tests are tagged via `{ tags: [...] }` in vitest options. `integration` and `recipe` tags are **skipped by default** in `vite.config.ts` (they make network requests). Tag new tests appropriately: `unit` for isolated logic, `rss` for feed parsing, `html` for component conversion.
+
+## Commit convention
+
+Commits must follow Conventional Commits. Use `npm run commit` (commitizen) or write messages manually as `type(scope): subject`.

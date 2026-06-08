@@ -1,6 +1,6 @@
 import path from 'path';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { test, expect, describe, beforeEach } from 'vitest';
+import { test, expect, describe, beforeEach } from 'vite-plus/test';
 
 import RSSFeed, { replaceErrors } from './RSSFeed';
 import type { ImageComponent, TextComponent } from '../component/Component';

@@ -1,5 +1,5 @@
 import path from 'path';
-import { beforeAll, beforeEach, afterAll, afterEach } from 'vitest';
+import { beforeAll, beforeEach, afterAll, afterEach } from 'vite-plus/test';
 
 const supportPath = path.join(__dirname, 'support');
 const feedPath = path.join(supportPath, 'feeds');
