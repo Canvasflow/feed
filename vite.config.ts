@@ -1,43 +1,56 @@
-import { resolve } from 'path';
-import { defineConfig } from 'vitest/config';
-import dts from 'vite-plugin-dts';
+import { defineConfig } from 'vite-plus';
 
 export default defineConfig({
+  staged: {
+    'src/**/*.{js,jsx,ts,tsx}': ['vp fmt'],
+  },
+  fmt: {
+    semi: true,
+    singleQuote: true,
+    trailingComma: 'es5',
+    printWidth: 80,
+    sortPackageJson: false,
+    ignorePatterns: [],
+  },
   test: {
     setupFiles: ['src/setupTests.ts'],
     tags: [
       {
         name: 'integration',
-        description: 'Tests that verify the interaction between multiple modules or systems.',
+        description:
+          'Tests that verify the interaction between multiple modules or systems.',
         timeout: 10000,
-        skip: true
+        skip: true,
       },
       {
         name: 'unit',
-        description: 'Isolated tests for individual functions or components'
+        description: 'Isolated tests for individual functions or components',
       },
       {
         name: 'rss',
-        description: 'Tests that validates the RSS feed structure, XML integrity, and channel metadata.'
+        description:
+          'Tests that validates the RSS feed structure, XML integrity, and channel metadata.',
       },
       {
         name: 'html',
-        description: 'Verification of DOM structure, element attributes, and document markup to transform them into canvasflow Components'
+        description:
+          'Verification of DOM structure, element attributes, and document markup to transform them into canvasflow Components',
       },
       {
         name: 'recipe',
-        description: 'Ensures correct extraction of ingredients, instructions, and cooking times from JSON-LD blocks.',
+        description:
+          'Ensures correct extraction of ingredients, instructions, and cooking times from JSON-LD blocks.',
         timeout: 10000,
-        skip: true
+        skip: true,
       },
       {
         name: 'todo',
-        description: 'Incomplete tests or features currently under development'
+        description: 'Incomplete tests or features currently under development',
       },
       {
         name: 'broken',
-        description: 'Tests known to be failing that require immediate fixing.'
-      }
+        description: 'Tests known to be failing that require immediate fixing.',
+      },
     ],
     coverage: {
       provider: 'v8',
@@ -52,12 +65,9 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
     },
   },
-  build: {
-    lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      name: 'index',
-      fileName: 'index',
-    },
+  pack: {
+    entry: ['src/index.ts'],
+    dts: true,
+    format: ['esm'],
   },
-  plugins: [dts()],
 });

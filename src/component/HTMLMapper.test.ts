@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { readFileSync } from 'fs';
-import { test, expect, describe, beforeEach } from 'vitest';
+import { test, expect, describe, beforeEach } from 'vite-plus/test';
 
 import { HTMLMapper } from './HTMLMapper';
 import {
