@@ -48,7 +48,7 @@ import {
   getAttributes,
   SetUtils,
 } from './Node';
-import type {
+import {
   AttributeFilterSchema,
   ClassFilterSchema,
   ColumnsMappingSchema,
