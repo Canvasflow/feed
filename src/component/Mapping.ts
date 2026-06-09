@@ -39,6 +39,7 @@ import {
   isValidTextRole,
   isVideoComponent,
   isYoutubeComponent,
+  isButtonComponent,
 } from './Component';
 import {
   type ElementNode,
@@ -2484,6 +2485,13 @@ function reduceLinkContainerComponent(
 
     if (isImageComponent(component)) {
       component.link = link;
+    }
+
+    if (isButtonComponent(component)) {
+      if (!component.link) {
+        component.link = link;
+        component.errors = [];
+      }
     }
 
     acc.push(component);
