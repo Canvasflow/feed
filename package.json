@@ -38,10 +38,10 @@
     "test:todo": "VP_VERSION=4.1.8 vp test --ui --tags-filter=todo",
     "test:broken": "VP_VERSION=4.1.8 vp test --ui --tags-filter=broken",
     "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
     "coverage": "vp test --coverage",
     "coverage:ui": "VP_VERSION=4.1.8 vp test --coverage --ui",
     "commit": "cz",
-    "prepare": "vp config",
     "format": "vp fmt ."
   },
   "config": {

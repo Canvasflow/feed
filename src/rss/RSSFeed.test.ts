@@ -2,7 +2,7 @@ import path from 'path';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { test, expect, describe, beforeEach } from 'vite-plus/test';
 
-import RSSFeed, { replaceErrors } from './RSSFeed';
+import { replaceErrors, RSSFeed } from './RSSFeed';
 import type { ImageComponent, TextComponent } from '../component/Component';
 import type { Recipe } from '../component/Schema';
 import { HTMLMapper } from '../component/HTMLMapper';

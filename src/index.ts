@@ -1,83 +1,8 @@
-export { default as RSSFeed } from './rss/RSSFeed';
+export * from './rss/RSSFeed';
+export * from './rss/RSS';
+export * from './component/Component';
 
-export type {
-  RSS,
-  Channel,
-  Item,
-  ChannelImage,
-  Enclosure,
-  MediaGroup,
-  MediaContent,
-  Thumbnail,
-} from './rss/RSS';
+export * from './component/Schema';
 
-export {
-  type Component,
-  type AudioComponent,
-  type TextComponent,
-  type GalleryComponent,
-  type GalleryImage,
-  type ImageComponent,
-  type VideoComponent,
-  type TwitterComponent,
-  type InstagramComponent,
-  type InfogramComponent,
-  type YoutubeComponent,
-  type RecipeComponent,
-  type DailymotionComponent,
-  type VimeoComponent,
-  type TikTokComponent,
-  type SpacerComponent,
-  type ButtonComponent,
-  type HTMLTableComponent,
-  type ContainerComponent,
-  type ColumnsComponent,
-  type LiveContainerComponent,
-  type LivePostComponent,
-  type CustomComponent,
-  type ComponentType,
-  type TextType,
-  isAudioComponent,
-  isHTMLTableComponent,
-  isImageComponent,
-  isTextComponent,
-  isValidTextRole,
-  isVideoComponent,
-  isYoutubeComponent,
-} from './component/Component';
-
-export type {
-  Thing,
-  CreativeWork,
-  Recipe,
-  Person,
-  Organization,
-  QuantitativeValue,
-  NutritionInformation,
-  ListItem,
-  ItemList,
-  PropertyValue,
-  ImageObject,
-  MediaObject,
-} from './component/Schema';
-
-export { HTMLMapper } from './component/HTMLMapper';
-export {
-  type Params as HTMLParams,
-  type RecipeMapping,
-  type ContainerMapping,
-  type TextMapping,
-  type Mapping,
-  type LiveContainerMapping,
-  type ColumnsMapping,
-  type ComponentMapping,
-  type Filter as HTMLFilter,
-  isValidParams,
-  isValidMapping,
-  isEmpty,
-  processTextLinks,
-  filterEmptyTextNode,
-  getRootElement,
-  reduceEmptyTextNode,
-  reduceComponents,
-} from './component/Mapping';
+export * from './component/HTMLMapper';
+export * from './component/Mapping';

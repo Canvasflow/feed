@@ -23,7 +23,7 @@ import {
   type Params,
 } from '../component/Mapping';
 
-export default class RSSFeed {
+export class RSSFeed {
   public content: string;
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   public data: any;
@@ -234,7 +234,7 @@ export default class RSSFeed {
   private validateRSS() {
     const { rss } = this.data;
     // Validate first required tags
-    const requiredTags = new Set([...Tag.rss.requiredTags]);
+    const requiredTags = new Set(Tag.rss.requiredTags);
     for (const key in rss) {
       if (requiredTags.has(key)) {
         requiredTags.delete(key);
@@ -242,7 +242,7 @@ export default class RSSFeed {
     }
 
     if (requiredTags.size) {
-      for (const key of [...requiredTags]) {
+      for (const key of requiredTags) {
         const error = `Missing required property '${key}'`;
         this.errors.push(error);
         this.rss.errors.push(error);
@@ -262,7 +262,7 @@ export default class RSSFeed {
   private validateChannel() {
     const { channel } = this.data.rss;
     // Validate first required tags
-    const requiredTags = new Set([...Tag.rss.channel.requiredTags]);
+    const requiredTags = new Set(Tag.rss.channel.requiredTags);
     for (const key in channel) {
       if (requiredTags.has(key)) {
         requiredTags.delete(key);
@@ -270,7 +270,7 @@ export default class RSSFeed {
     }
 
     if (requiredTags.size) {
-      for (const key of [...requiredTags]) {
+      for (const key of requiredTags) {
         this.errors.push(`Required property "${key}" is missing`);
         this.rss.channel.errors.push(`Required property "${key}" is missing`);
       }
@@ -297,7 +297,7 @@ export default class RSSFeed {
 
   private validateItem(item: Record<string, unknown>) {
     // Validate first required tags
-    const requiredTags = new Set([...Tag.rss.channel.item.requiredTags]);
+    const requiredTags = new Set(Tag.rss.channel.item.requiredTags);
     for (const key in item) {
       if (requiredTags.has(key)) {
         requiredTags.delete(key);
@@ -306,7 +306,7 @@ export default class RSSFeed {
 
     const errors: string[] = [];
     if (requiredTags.size) {
-      for (const key of [...requiredTags]) {
+      for (const key of requiredTags) {
         const error = `Required property "${key}" is missing`;
         errors.push(error);
         this.errors.push(error);
