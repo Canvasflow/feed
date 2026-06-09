@@ -13,7 +13,7 @@ export function findDescendants(findFn: FindFn): FindDescendantsReducer {
     }
 
     if (Array.isArray(findFn)) {
-      if (new Set([...findFn]).has(node.tagName)) {
+      if (new Set(findFn).has(node.tagName)) {
         acc.push(node);
       }
     }
@@ -77,7 +77,7 @@ export class SetUtils {
   }
 
   static subset<T>(a: Set<T>, b: Set<T>): boolean {
-    for (const i of [...b]) {
+    for (const i of b) {
       if (!a.has(i)) {
         return false;
       }

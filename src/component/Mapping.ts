@@ -39,6 +39,7 @@ import {
   isValidTextRole,
   isVideoComponent,
   isYoutubeComponent,
+  isButtonComponent,
 } from './Component';
 import {
   type ElementNode,
@@ -48,6 +49,20 @@ import {
   getAttributes,
   SetUtils,
 } from './Node';
+import {
+  AttributeFilterSchema,
+  ClassFilterSchema,
+  ColumnsMappingSchema,
+  ContainerMappingSchema,
+  CustomMappingSchema,
+  FilterSchema,
+  LiveContainerMappingSchema,
+  MappingSchema,
+  MatchTypeSchema,
+  RecipeMappingSchema,
+  TagFilterSchema,
+  TextMappingSchema,
+} from './Mapping.schema';
 
 const imageTags = new Set(['img', 'picture']);
 
@@ -66,7 +81,7 @@ export const textTags = [
   'a',
 ];
 
-export const textTagsSet = new Set([...textTags]);
+export const textTagsSet = new Set(textTags);
 export const mappingTagsSet: Set<string> = new Set([
   ...textTags,
   'recipe',
@@ -2472,6 +2487,13 @@ function reduceLinkContainerComponent(
       component.link = link;
     }
 
+    if (isButtonComponent(component)) {
+      if (!component.link) {
+        component.link = link;
+        component.errors = [];
+      }
+    }
+
     acc.push(component);
     return acc;
   };
@@ -2617,7 +2639,7 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
 
   for (const filter of filters) {
     if (filter.type === 'tag') {
-      if (new Set([...filter.items]).has(tagName)) return true;
+      if (new Set(filter.items).has(tagName)) return true;
       continue;
     }
 
@@ -2634,8 +2656,8 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
 
       // It doesn't have a class in the element so is going to ignore it
       if (!classNames) continue;
-      const itemsSet = new Set([...filter.items]);
-      const classesNamesSet: Set<string> = new Set([...classNames.split(' ')]);
+      const itemsSet = new Set(filter.items);
+      const classesNamesSet: Set<string> = new Set(classNames.split(' '));
       switch (filter.match) {
         case 'equal':
           if (SetUtils.equal(classesNamesSet, itemsSet)) {
@@ -2673,7 +2695,7 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
 
   for (const filter of filters) {
     if (filter.type === 'tag') {
-      if (!new Set([...filter.items]).has(tagName)) return false;
+      if (!new Set(filter.items).has(tagName)) return false;
     }
     if (filter.type === 'attribute') {
       const attributeValue = attributes.get(filter.key);
@@ -2687,8 +2709,8 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
       // is invalid
       if (!classNames) return false;
 
-      const itemsSet = new Set([...filter.items]);
-      const classesNamesSet: Set<string> = new Set([...classNames.split(' ')]);
+      const itemsSet = new Set(filter.items);
+      const classesNamesSet: Set<string> = new Set(classNames.split(' '));
       switch (filter.match) {
         case 'equal':
           if (!SetUtils.equal(classesNamesSet, itemsSet)) {
@@ -2886,11 +2908,34 @@ export function isValidParams(params: unknown): boolean {
   return true;
 }
 
-export interface Mapping {
+export function validateParams(params: unknown): Params {
+  const ParamsSchema = z.object({
+    mappings: z
+      .object({
+        name: z.string().optional(),
+        match: z.custom<MatchType>(),
+        component: z.custom<TextType>(),
+        filters: z.custom<Filter>().array(),
+      })
+      .array()
+      .optional(),
+    excludes: z.custom<Mapping>().array().optional(),
+    ignoreParagraphWrap: z.boolean().optional(),
+  });
+  const result = ParamsSchema.safeParse(params);
+  if (!result.success) {
+    throw new Error(result.error.message);
+  }
+  return result.data as Params;
+}
+
+export type Mapping = z.infer<typeof MappingSchema>;
+
+/*export interface Mapping {
   match: MatchType;
   filters: Filter[];
   properties?: Record<string, unknown>;
-}
+}*/
 
 export type ComponentMapping =
   | ContainerMapping
@@ -2900,62 +2945,28 @@ export type ComponentMapping =
   | RecipeMapping
   | CustomMapping;
 
-export interface RecipeMapping extends Mapping {
-  name?: string;
-  component: 'recipe';
-}
+export type RecipeMapping = z.infer<typeof RecipeMappingSchema>;
+export type ColumnsMapping = z.infer<typeof ColumnsMappingSchema>;
+export type LiveContainerMapping = z.infer<typeof LiveContainerMappingSchema>;
+export type ContainerMapping = z.infer<typeof ContainerMappingSchema>;
+export type CustomMapping = z.infer<typeof CustomMappingSchema>;
+export type TextMapping = z.infer<typeof TextMappingSchema>;
+export type Filter = z.infer<typeof FilterSchema>;
+export type TagFilter = z.infer<typeof TagFilterSchema>;
+export type ClassFilter = z.infer<typeof ClassFilterSchema>;
+export type AttributeFilter = z.infer<typeof AttributeFilterSchema>;
 
-export interface ColumnsMapping extends Mapping {
-  name?: string;
-  component: 'columns';
-  column: {
-    match: MatchType;
-    filters: Filter[];
-  };
-}
-
-export interface LiveContainerMapping extends Mapping {
-  name?: string;
-  component: 'live_container';
-  post: {
-    match: MatchType;
-    filters: Filter[];
-  };
-}
-
-export interface ContainerMapping extends Mapping {
-  name?: string;
-  component: 'container';
-}
-
-export interface CustomMapping extends Mapping {
-  name?: string;
-  component: 'custom';
-}
-
-export interface TextMapping extends Mapping {
-  name?: string;
-  component: TextType;
-}
-
-export type Filter = TagFilter | ClassFilter | AttributeFilter;
-
-interface TagFilter {
-  type: 'tag';
-  items: string[];
-}
-
-interface ClassFilter {
-  type: 'class';
-  match: MatchType | 'equal';
+/*interface ClassFilter {
+  type: "class";
+  match: MatchType | "equal";
   items: string[];
 }
 
 interface AttributeFilter {
-  type: 'attribute';
+  type: "attribute";
   key: string;
   value: string | null;
-}
+}*/
 
 export interface LinkResponse {
   link: string;
@@ -2967,7 +2978,7 @@ export interface LinkResponse {
   height: number | undefined;
 }
 
-export type MatchType = 'any' | 'all';
+export type MatchType = z.infer<typeof MatchTypeSchema>;
 
 interface FigcaptionResponse {
   caption?: string;

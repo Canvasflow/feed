@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { readFileSync } from 'fs';
-import { test, expect, describe, beforeEach } from 'vitest';
+import { test, expect, describe, beforeEach } from 'vite-plus/test';
 
 import { HTMLMapper } from './HTMLMapper';
 import {
@@ -32,6 +32,7 @@ import {
   isTextComponent,
   isImageComponent,
   isHTMLTableComponent,
+  isButtonComponent,
 } from './Component';
 
 describe('Root Element', () => {
@@ -2288,6 +2289,39 @@ describe('Custom components', () => {
       expect(component?.content.length).toBeGreaterThan(0);
     }
   );
+
+  test('It should map custom component', { tags: ['unit', 'html'] }, () => {
+    const properties = {
+      success: true,
+    };
+    const mappings: Array<ComponentMapping> = [
+      {
+        component: 'custom',
+        match: 'all',
+        filters: [
+          {
+            type: 'tag',
+            items: ['aside'],
+          },
+        ],
+        properties,
+      },
+    ];
+    const content = `
+        <aside>
+            <nav>Navigation Bar</nav>
+        </aside>
+      `;
+    const components = HTMLMapper.toComponents(content, { mappings });
+    expect(components.length).toBe(1);
+    const customComponent = components.pop() as CustomComponent;
+    expect(customComponent).toBeDefined();
+    if (!customComponent) {
+      return;
+    }
+    expect(customComponent.component).toBe('custom');
+    expect(customComponent.properties).toBe(properties);
+  });
 });
 
 describe('Recipe components', () => {
@@ -2526,41 +2560,6 @@ describe('Columns components', () => {
   );
 });
 
-describe('Custom component', () => {
-  test('It should map custom component', { tags: ['unit', 'html'] }, () => {
-    const properties = {
-      success: true,
-    };
-    const mappings: Array<ComponentMapping> = [
-      {
-        component: 'custom',
-        match: 'all',
-        filters: [
-          {
-            type: 'tag',
-            items: ['aside'],
-          },
-        ],
-        properties,
-      },
-    ];
-    const content = `
-        <aside>
-            <nav>Navigation Bar</nav>
-        </aside>
-      `;
-    const components = HTMLMapper.toComponents(content, { mappings });
-    expect(components.length).toBe(1);
-    const customComponent = components.pop() as CustomComponent;
-    expect(customComponent).toBeDefined();
-    if (!customComponent) {
-      return;
-    }
-    expect(customComponent.component).toBe('custom');
-    expect(customComponent.properties).toBe(properties);
-  });
-});
-
 describe('Live container components', () => {
   test(
     'It should map live container component using classes',
@@ -2756,6 +2755,25 @@ describe('Link container components', () => {
       expect(textComponent.text).toBe(
         `<a href="${link}" target="_blank">Headline</a>`
       );
+    }
+  );
+
+  test(
+    'It should keep the button component wrapped in anchor tags',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [];
+      const link = 'https://example.org';
+      const content = `
+        <a href="${link}" target="_blank">
+          <button>View</button>
+        </a>`;
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+
+      let buttonComponent = components[0] as ButtonComponent;
+      expect(isButtonComponent(buttonComponent)).toBe(true);
+      expect(buttonComponent.link).toBe(link);
     }
   );
 });

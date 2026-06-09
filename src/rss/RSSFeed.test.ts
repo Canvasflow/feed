@@ -1,8 +1,8 @@
 import path from 'path';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { test, expect, describe, beforeEach } from 'vitest';
+import { test, expect, describe, beforeEach } from 'vite-plus/test';
 
-import RSSFeed, { replaceErrors } from './RSSFeed';
+import { replaceErrors, RSSFeed } from './RSSFeed';
 import type { ImageComponent, TextComponent } from '../component/Component';
 import type { Recipe } from '../component/Schema';
 import { HTMLMapper } from '../component/HTMLMapper';
@@ -450,7 +450,7 @@ describe('Codrops', () => {
     // expect(channel.pubDate).toBe('2025-06-20T08:21:04.000-05:00');
     expect(channel.docs).toBe('https://tympanus.net/codrops/docs');
     if (channel.category) {
-      expect(new Set([...channel.category])).toEqual(new Set(['CSS', 'HTML']));
+      expect(new Set(channel.category)).toEqual(new Set(['CSS', 'HTML']));
     }
 
     expect(channel['atom:link']).toEqual({
