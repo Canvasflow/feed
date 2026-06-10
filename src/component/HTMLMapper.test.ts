@@ -647,6 +647,31 @@ describe('Twitter Component', () => {
     }
   );
   test(
+    'It should create a twitter from an anchor tag in the children',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="twitter-tweet hawk-ignore" data-lang="en">
+    <p lang="en" dir="ltr">ICYMI: You can now use touch controls on your Mac
+        display with Sidecar on iPad! &#128064; pic.twitter.com/KOErLtoZCA<a
+            href="https://twitter.com/cantworkitout/status/2064234331434852632"
+            data-url="https://twitter.com/cantworkitout/status/2064234331434852632" target="_blank"
+            referrerpolicy="no-referrer-when-downgrade" data-hl-processed="none">June 9, 2026</a></p>
+</blockquote>`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TwitterComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('twitter');
+      expect(component.height).toBe(`350`);
+      expect(component.params.account).toBe(`cantworkitout`);
+      expect(component.params.id).toBe(`2064234331434852632`);
+    }
+  );
+  test(
     'It should create a x tweet from an iframe',
     { tags: ['unit', 'html'] },
     () => {
