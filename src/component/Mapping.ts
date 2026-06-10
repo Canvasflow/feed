@@ -62,6 +62,7 @@ import {
   RecipeMappingSchema,
   TagFilterSchema,
   TextMappingSchema,
+  ParamsSchema,
 } from './Mapping.schema';
 
 const imageTags = new Set(['img', 'picture']);
@@ -2761,11 +2762,7 @@ export function isValidMapping(mapping: unknown): boolean {
   return true;
 }
 
-export interface Params {
-  mappings?: ComponentMapping[];
-  excludes?: Mapping[];
-  ignoreParagraphWrap?: boolean;
-}
+export type Params = z.infer<typeof ParamsSchema>;
 
 /**
  * Filter the nodes that has empty text node
