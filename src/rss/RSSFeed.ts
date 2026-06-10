@@ -126,28 +126,28 @@ export class RSSFeed {
 
   static validateParams(params?: Params, root?: Mapping): Array<unknown> {
     const errors: Array<unknown> = [];
-    if (root) {
+    if (params) {
       try {
-        const result = MappingSchema.safeParse(params);
+        const result = ParamsSchema.safeParse(params);
 
         if (!result.success) {
-          const rootError = {
-            root: result.error.format(),
-          };
-          errors.push(rootError);
+          const paramsError = { params: result.error.issues };
+          errors.push(paramsError);
         }
       } catch (e) {
         errors.push(e);
       }
     }
 
-    if (params) {
+    if (root) {
       try {
-        const result = ParamsSchema.safeParse(params);
+        const result = MappingSchema.safeParse(root);
 
         if (!result.success) {
-          const paramsError = { params: result.error.format() };
-          errors.push(paramsError);
+          const rootError = {
+            root: result.error.issues,
+          };
+          errors.push(rootError);
         }
       } catch (e) {
         errors.push(e);
