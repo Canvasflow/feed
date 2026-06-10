@@ -3,7 +3,7 @@ import type { Component } from '../component/Component';
 export interface RSS {
   modules?: string[];
   channel: Channel;
-  errors: string[];
+  errors: Array<unknown>;
   warnings: string[];
 }
 

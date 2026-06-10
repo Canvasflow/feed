@@ -74,7 +74,7 @@ export const TextMappingSchema = MappingSchema.extend({
   component: TextTypeSchema,
 });
 
-export const ComponentMappingSchema = z.discriminatedUnion('component', [
+export const ComponentMappingSchema = z.union([
   ContainerMappingSchema,
   ColumnsMappingSchema,
   LiveContainerMappingSchema,

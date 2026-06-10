@@ -16,19 +16,15 @@ import { Tag } from './Tag';
 import * as Attributes from './Attributes';
 import { HTMLMapper } from '../component/HTMLMapper';
 import type { Recipe } from '../component/Schema';
-import {
-  isValidMapping,
-  isValidParams,
-  type Mapping,
-  type Params,
-} from '../component/Mapping';
+import { isValidParams, type Mapping, type Params } from '../component/Mapping';
+import { MappingSchema, ParamsSchema } from '../component/Mapping.schema';
 
 export class RSSFeed {
   public content: string;
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   public data: any;
   public rss: RSS;
-  public errors: string[] = [];
+  public errors: Array<unknown> = [];
   private params: Params | undefined;
   private origin: string | undefined;
   private _root: Mapping | undefined;
@@ -56,9 +52,6 @@ export class RSSFeed {
   }
 
   set root(rootMapping: Mapping | undefined) {
-    if (!isValidMapping(rootMapping)) {
-      return;
-    }
     this._root = rootMapping;
   }
 
@@ -103,6 +96,7 @@ export class RSSFeed {
   async validate(): Promise<void> {
     const { data } = this;
     this.errors = [];
+
     if (!data.rss) {
       const error = 'Required property "rss" is missing at the root level';
       this.errors.push(error);
@@ -130,6 +124,39 @@ export class RSSFeed {
     }
   }
 
+  static validateParams(params?: Params, root?: Mapping): Array<unknown> {
+    const errors: Array<unknown> = [];
+    if (params) {
+      try {
+        const result = ParamsSchema.safeParse(params);
+
+        if (!result.success) {
+          const paramsError = { params: result.error.issues };
+          errors.push(paramsError);
+        }
+      } catch (e) {
+        errors.push(e);
+      }
+    }
+
+    if (root) {
+      try {
+        const result = MappingSchema.safeParse(root);
+
+        if (!result.success) {
+          const rootError = {
+            root: result.error.issues,
+          };
+          errors.push(rootError);
+        }
+      } catch (e) {
+        errors.push(e);
+      }
+    }
+
+    return errors;
+  }
+
   async build(): Promise<RSS> {
     const { data } = this;
     const { rss } = data;
@@ -146,6 +173,12 @@ export class RSSFeed {
       category,
       ttl,
     } = channel;
+
+    const paramsErrors = RSSFeed.validateParams(this.params, this._root);
+    if (paramsErrors.length) {
+      this.rss.errors = [...this.rss.errors, ...paramsErrors];
+      return this.rss;
+    }
 
     if (link) {
       const url = new URL(link);

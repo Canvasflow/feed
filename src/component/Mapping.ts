@@ -62,6 +62,7 @@ import {
   RecipeMappingSchema,
   TagFilterSchema,
   TextMappingSchema,
+  ParamsSchema,
 } from './Mapping.schema';
 
 const imageTags = new Set(['img', 'picture']);
@@ -924,23 +925,24 @@ function toTikTok(url: URL): TikTokComponent {
  * @param {ElementNode | URL} node
  * @returns {TwitterComponent}
  */
-function toTwitter(node: ElementNode | URL): TwitterComponent {
+function toTwitter(node: ElementNode | URL): TwitterComponent | null {
   if (node instanceof URL) {
     return toTweetFromUrl(node);
   }
   const errors: string[] = [];
   const warnings: string[] = [];
-  let tweetNode: ElementNode | undefined;
   const params: { id?: string; account?: string } = {};
   let attrs: Record<string, string> = {};
 
-  for (const child of node.children) {
-    if (child.type !== 'element') continue;
-    if (child.tagName === 'a') {
-      tweetNode = child;
-      break;
-    }
-  }
+  const anchorNodes = node.children.reduce(
+    findDescendants('a'),
+    []
+  ) as ElementNode[];
+
+  if (!anchorNodes.length) return null;
+
+  const tweetNode = anchorNodes.pop();
+
   if (tweetNode) {
     const attributes = getAttributes(tweetNode.attributes);
     attrs = Object.fromEntries(attributes);
@@ -2336,6 +2338,8 @@ function fromIframe(
       searchParams.url.startsWith('https://x.com'))
   ) {
     builtComponent = toTwitter(new URL(searchParams.url));
+    if (!builtComponent) return builtComponent;
+
     builtComponent.html = sanitizeHtml(stringify([node]), {
       allowedTags,
       allowedAttributes: false,
@@ -2761,11 +2765,7 @@ export function isValidMapping(mapping: unknown): boolean {
   return true;
 }
 
-export interface Params {
-  mappings?: ComponentMapping[];
-  excludes?: Mapping[];
-  ignoreParagraphWrap?: boolean;
-}
+export type Params = z.infer<typeof ParamsSchema>;
 
 /**
  * Filter the nodes that has empty text node

@@ -39,6 +39,95 @@ describe('Invalid RSS', () => {
   );
 });
 
+describe('Validate Params', () => {
+  test(
+    `It should have errors because of the wrong roo but correct paramst`,
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const root: any = {
+        match: 'all',
+        filters: [
+          {
+            type: 'id',
+            match: 'equal',
+            items: ['content-wrapper'],
+          },
+        ],
+      };
+      const params: Params = {
+        mappings: [
+          {
+            component: 'container',
+            match: 'all',
+            filters: [
+              {
+                type: 'tag',
+                items: ['div'],
+              },
+              {
+                type: 'class',
+                match: 'any',
+                items: ['fancy-box'],
+              },
+            ],
+            properties: {
+              is1Col: true,
+              styles: [29916],
+            },
+          },
+        ],
+      };
+      const errors = RSSFeed.validateParams(params, root);
+      expect(errors.length).toBe(1);
+      const error = errors.pop() as any;
+      expect(error.root).toBeDefined();
+    }
+  );
+  test(
+    `It should have errors because of the wrong params but correct root`,
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const root: any = {
+        match: 'all',
+        filters: [
+          {
+            type: 'class',
+            match: 'equal',
+            items: ['content-wrapper'],
+          },
+        ],
+      };
+      const params: any = {
+        mappings: [
+          {
+            component: 'contain',
+            match: 'all',
+            filters: [
+              {
+                type: 'tag',
+                items: ['div'],
+              },
+              {
+                type: 'attribute',
+                match: 'any',
+                items: ['fancy-box'],
+              },
+            ],
+            properties: {
+              is1Col: true,
+              styles: [29916],
+            },
+          },
+        ],
+      };
+      const errors = RSSFeed.validateParams(params, root);
+      expect(errors.length).toBe(1);
+      const error = errors.pop() as any;
+      expect(error.params).toBeDefined();
+    }
+  );
+});
+
 describe('Toms Guide', () => {
   let filePath: string = '';
   let outFilePath: string = '';
