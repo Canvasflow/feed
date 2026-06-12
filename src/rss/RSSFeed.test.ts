@@ -1575,6 +1575,9 @@ describe('Discover Britain', () => {
     const item = items.shift();
     expect(item).toBeDefined();
     if (!item) return;
+    expect(item.description).toBe(
+      'The brand new walking trail stretches the entirety of England’s coast and has been named in honour of King Charles III, who opened it back in March'
+    );
     expect(rss.channel?.title).toBe('https://www.discoverbritain.com content');
   });
 });
