@@ -1,4 +1,4 @@
-import { join } from 'path';
+import path, { join } from 'path';
 import { readFileSync } from 'fs';
 import { test, expect, describe, beforeEach } from 'vite-plus/test';
 
@@ -33,6 +33,8 @@ import {
   isImageComponent,
   isHTMLTableComponent,
   isButtonComponent,
+  isGalleryComponent,
+  isGalleryImage,
 } from './Component';
 
 describe('Root Element', () => {
@@ -1466,6 +1468,11 @@ describe('Image component', () => {
 });
 
 describe('Gallery components', () => {
+  let htmlDirPath: string = '';
+
+  beforeEach(() => {
+    htmlDirPath = join(`${process.env.SUPPORT_PATH}`, 'html');
+  });
   test(
     'It should create a simple gallery component',
     { tags: ['unit', 'html'] },
@@ -1606,6 +1613,60 @@ describe('Gallery components', () => {
         height: 455,
         width: 728,
       });
+    }
+  );
+  test(
+    'It should create a gallery component from mapping',
+    { tags: ['unit', 'html'] },
+    () => {
+      const properties = {
+        success: true,
+      };
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'gallery',
+          match: 'any',
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['inline-gallery__items'],
+            },
+          ],
+          properties,
+          slide: {
+            match: 'all',
+            filters: [
+              {
+                type: 'tag',
+                items: ['div'],
+              },
+              {
+                type: 'class',
+                match: 'any',
+                items: ['items__item'],
+              },
+            ],
+          },
+        },
+      ];
+      const content = readFileSync(
+        path.join(htmlDirPath, 'custom-mapping-gallery.html'),
+        'utf-8'
+      );
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+      const component = components.pop() as GalleryComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(isGalleryComponent(component)).toBe(true);
+      const { images } = component;
+      expect(images.length).toBe(4);
+      for (const image of images) {
+        expect(isGalleryImage(image)).toBe(true);
+      }
     }
   );
 });

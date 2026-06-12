@@ -41,6 +41,7 @@ import {
   isYoutubeComponent,
   isButtonComponent,
 } from './Component';
+
 import {
   type ElementNode,
   type Node,
@@ -49,6 +50,7 @@ import {
   getAttributes,
   SetUtils,
 } from './Node';
+
 import {
   AttributeFilterSchema,
   ClassFilterSchema,
@@ -65,24 +67,26 @@ import {
   ParamsSchema,
   ComponentMappingSchema,
   LinkResponseSchema,
+  GalleryMappingSchema,
 } from './Mapping.schema';
 
+export type Filter = z.infer<typeof FilterSchema>;
+export type TagFilter = z.infer<typeof TagFilterSchema>;
+export type ClassFilter = z.infer<typeof ClassFilterSchema>;
+export type AttributeFilter = z.infer<typeof AttributeFilterSchema>;
+
 export type Mapping = z.infer<typeof MappingSchema>;
-
+export type LinkResponse = z.infer<typeof LinkResponseSchema>;
 export type ComponentMapping = z.infer<typeof ComponentMappingSchema>;
-
 export type MatchType = z.infer<typeof MatchTypeSchema>;
+
 export type RecipeMapping = z.infer<typeof RecipeMappingSchema>;
 export type ColumnsMapping = z.infer<typeof ColumnsMappingSchema>;
 export type LiveContainerMapping = z.infer<typeof LiveContainerMappingSchema>;
 export type ContainerMapping = z.infer<typeof ContainerMappingSchema>;
 export type CustomMapping = z.infer<typeof CustomMappingSchema>;
 export type TextMapping = z.infer<typeof TextMappingSchema>;
-export type Filter = z.infer<typeof FilterSchema>;
-export type TagFilter = z.infer<typeof TagFilterSchema>;
-export type ClassFilter = z.infer<typeof ClassFilterSchema>;
-export type AttributeFilter = z.infer<typeof AttributeFilterSchema>;
-export type LinkResponse = z.infer<typeof LinkResponseSchema>;
+export type GalleryMapping = z.infer<typeof GalleryMappingSchema>;
 
 interface FigcaptionResponse {
   caption?: string;
@@ -560,9 +564,18 @@ function fromNode(
         properties
       );
     }
+    if (mappedComponent === 'gallery') {
+      return toGalleryFromMapping(
+        node,
+        mapping as GalleryMapping,
+        params,
+        properties
+      );
+    }
     if (mappedComponent === 'custom') {
       return toCustom(node, properties);
     }
+
     return toText(node, mappedComponent, properties);
   }
 
@@ -1094,6 +1107,111 @@ function toGallery(node: ElementNode): GalleryComponent {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
     },
+  };
+}
+
+/**
+ * Transform a HTML element into a Canvasflow Live Container component
+ *
+ * @param {ElementNode} node
+ * @param {Params | undefined} params
+ * @param {Record<string, unknown> | undefined} properties
+ * @returns {GalleryComponent}
+ */
+function toGalleryFromMapping(
+  node: ElementNode,
+  mapping: GalleryMapping,
+  params?: Params,
+  properties?: Record<string, unknown>
+): GalleryComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  const id = attributes.get('id');
+
+  const slidesNodes: ElementNode[] = node.children
+    ? node.children
+        .reduce(
+          findDescendants(filterGallerySlideDescendants(mapping, params)),
+          []
+        )
+        .filter((node: Node) => node.type === 'element')
+    : [];
+
+  const images: GalleryImage[] = slidesNodes
+    .reduce(reduceComponents(params), [])
+    .filter((component: Component) => isImageComponent(component))
+    .map(mapImageToGalleryImage);
+
+  if (!images.length) {
+    errors.push('slides not found in the gallery');
+  }
+
+  return {
+    id,
+    component: 'gallery',
+    role: 'default',
+    images,
+    properties,
+    html: sanitizeHtml(stringify([node]), {
+      allowedTags,
+      allowedAttributes: false,
+    }),
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * Filter the html nodes that match a live container
+ *
+ * @param {LiveContainerMapping} [mapping\
+ * @param {Params} [params\
+ * @returns {NodeFilterFn}
+ */
+function filterGallerySlideDescendants(
+  mapping: GalleryMapping,
+  params?: Params
+): NodeFilterFn {
+  return (node: Node): boolean => {
+    const { type } = node;
+    if (type !== 'element') return false;
+    // Exclude the nodes that we need to ignore
+    if (params?.excludes?.length) {
+      const isNodeExcluded = excludeNode(node, params.excludes);
+      if (isNodeExcluded) {
+        return false;
+      }
+    }
+
+    const { slide } = mapping;
+    const { match, filters } = slide;
+
+    if (match === 'all') {
+      if (filterAllMapping(node, filters)) {
+        return true;
+      }
+    }
+    if (match === 'any') {
+      if (filterAnyMapping(node, filters)) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+}
+
+function mapImageToGalleryImage(component: ImageComponent): GalleryImage {
+  const { imageurl, caption, link, alt, credit, width, height } = component;
+  return {
+    imageurl,
+    caption,
+    link,
+    alt,
+    credit,
+    width,
+    height,
   };
 }
 
@@ -3014,6 +3132,7 @@ interface MappingComponentResponse {
     | 'container'
     | 'columns'
     | 'live_container'
+    | 'gallery'
     | 'custom';
   properties?: Record<string, unknown>;
   mapping?: ComponentMapping;

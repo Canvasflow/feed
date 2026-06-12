@@ -476,6 +476,11 @@ export function isGalleryComponent(
   );
 }
 
+export function isGalleryImage(object: unknown): object is GalleryComponent {
+  const result = GalleryImageSchema.safeParse(object);
+  return result.success;
+}
+
 export function isImageComponent(object: unknown): object is ImageComponent {
   const potential = object as Record<string, unknown>;
 
