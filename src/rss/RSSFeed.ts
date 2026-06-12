@@ -210,10 +210,7 @@ export class RSSFeed {
     }
     this.rss.channel.link = link;
     this.rss.channel.description = description
-      ? sanitizeHtml(he.decode(description), {
-          allowedTags: [], // Strips all HTML tags
-          allowedAttributes: {}, // Strips all attributes
-        }).trim()
+      ? removeHTMLTags(description)
       : `${description}`.trim();
     this.rss.channel.language = language;
     this.rss.channel.lastBuildDate = lastBuildDate;
@@ -376,7 +373,7 @@ export class RSSFeed {
       typeof item.title === 'string' ? item.title.trim() : undefined;
     const description =
       typeof item.description === 'string'
-        ? item.description.trim()
+        ? removeHTMLTags(item.description)
         : undefined;
     const link = typeof item.link === 'string' ? item.link.trim() : undefined;
     let contentEncoded =
@@ -805,6 +802,18 @@ function isIterable(input: unknown): boolean {
     typeof (input as { [Symbol.iterator]: unknown })[Symbol.iterator] ===
     'function'
   );
+}
+
+/**
+ * Remove the HTML content from the string
+ *
+ * @returns {string}
+ */
+function removeHTMLTags(content: string): string {
+  return `${sanitizeHtml(he.decode(content), {
+    allowedTags: [], // Strips all HTML tags
+    allowedAttributes: {}, // Strips all attributes
+  })}`.trim();
 }
 
 type CanvasflowBooleanTag =
