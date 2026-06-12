@@ -107,3 +107,13 @@ export type Mapping = z.infer<typeof MappingSchema>;
 export type ComponentMapping = z.infer<typeof ComponentMappingSchema>;
 export type Filter = z.infer<typeof FilterSchema>;
 export type LinkResponse = z.infer<typeof LinkResponseSchema>;
+
+export type RecipeMapping = z.infer<typeof RecipeMappingSchema>;
+export type ColumnsMapping = z.infer<typeof ColumnsMappingSchema>;
+export type LiveContainerMapping = z.infer<typeof LiveContainerMappingSchema>;
+export type ContainerMapping = z.infer<typeof ContainerMappingSchema>;
+export type CustomMapping = z.infer<typeof CustomMappingSchema>;
+export type TextMapping = z.infer<typeof TextMappingSchema>;
+export type TagFilter = z.infer<typeof TagFilterSchema>;
+export type ClassFilter = z.infer<typeof ClassFilterSchema>;
+export type AttributeFilter = z.infer<typeof AttributeFilterSchema>;

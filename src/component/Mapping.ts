@@ -63,7 +63,31 @@ import {
   TagFilterSchema,
   TextMappingSchema,
   ParamsSchema,
+  ComponentMappingSchema,
+  LinkResponseSchema,
 } from './Mapping.schema';
+
+export type Mapping = z.infer<typeof MappingSchema>;
+
+export type ComponentMapping = z.infer<typeof ComponentMappingSchema>;
+
+export type MatchType = z.infer<typeof MatchTypeSchema>;
+export type RecipeMapping = z.infer<typeof RecipeMappingSchema>;
+export type ColumnsMapping = z.infer<typeof ColumnsMappingSchema>;
+export type LiveContainerMapping = z.infer<typeof LiveContainerMappingSchema>;
+export type ContainerMapping = z.infer<typeof ContainerMappingSchema>;
+export type CustomMapping = z.infer<typeof CustomMappingSchema>;
+export type TextMapping = z.infer<typeof TextMappingSchema>;
+export type Filter = z.infer<typeof FilterSchema>;
+export type TagFilter = z.infer<typeof TagFilterSchema>;
+export type ClassFilter = z.infer<typeof ClassFilterSchema>;
+export type AttributeFilter = z.infer<typeof AttributeFilterSchema>;
+export type LinkResponse = z.infer<typeof LinkResponseSchema>;
+
+interface FigcaptionResponse {
+  caption?: string;
+  credit?: string;
+}
 
 const imageTags = new Set(['img', 'picture']);
 
@@ -222,12 +246,11 @@ export function reduceEmptyTextNode(nodes: Node[], node: Node): Node[] {
 }
 
 /**
- * It maps
+ * It maps the live post inside a Live Container Component
  *
  * @param {Params | undefined} params
  * @returns {ReduceComponentsFn}
  */
-
 export function mapLivePost(params?: Params): MapLivePostComponentsFn {
   return (node: ElementNode): LivePostComponent => {
     const errors: string[] = [];
@@ -955,8 +978,6 @@ function toTwitter(node: ElementNode | URL): TwitterComponent | null {
     params.account = values[1];
   }
 
-  //validamos si tiene los valores 1 y 3 para errors
-
   return {
     height: '350',
     fixedheight: 'on',
@@ -1008,8 +1029,6 @@ function toTweetFromUrl(uri: URL): TwitterComponent {
   const values: Array<string> = twitterRegex.exec(tweetUrl) || [];
   params.id = values[3];
   params.account = values[1];
-
-  //validamos si tiene los valores 1 y 3 para errors
 
   return {
     height: '350',
@@ -2927,62 +2946,6 @@ export function validateParams(params: unknown): Params {
     throw new Error(result.error.message);
   }
   return result.data as Params;
-}
-
-export type Mapping = z.infer<typeof MappingSchema>;
-
-/*export interface Mapping {
-  match: MatchType;
-  filters: Filter[];
-  properties?: Record<string, unknown>;
-}*/
-
-export type ComponentMapping =
-  | ContainerMapping
-  | ColumnsMapping
-  | LiveContainerMapping
-  | TextMapping
-  | RecipeMapping
-  | CustomMapping;
-
-export type RecipeMapping = z.infer<typeof RecipeMappingSchema>;
-export type ColumnsMapping = z.infer<typeof ColumnsMappingSchema>;
-export type LiveContainerMapping = z.infer<typeof LiveContainerMappingSchema>;
-export type ContainerMapping = z.infer<typeof ContainerMappingSchema>;
-export type CustomMapping = z.infer<typeof CustomMappingSchema>;
-export type TextMapping = z.infer<typeof TextMappingSchema>;
-export type Filter = z.infer<typeof FilterSchema>;
-export type TagFilter = z.infer<typeof TagFilterSchema>;
-export type ClassFilter = z.infer<typeof ClassFilterSchema>;
-export type AttributeFilter = z.infer<typeof AttributeFilterSchema>;
-
-/*interface ClassFilter {
-  type: "class";
-  match: MatchType | "equal";
-  items: string[];
-}
-
-interface AttributeFilter {
-  type: "attribute";
-  key: string;
-  value: string | null;
-}*/
-
-export interface LinkResponse {
-  link: string;
-  imageurl: string;
-  alt: string;
-  warnings: string[];
-  errors: string[];
-  width: number | undefined;
-  height: number | undefined;
-}
-
-export type MatchType = z.infer<typeof MatchTypeSchema>;
-
-interface FigcaptionResponse {
-  caption?: string;
-  credit?: string;
 }
 
 /**
