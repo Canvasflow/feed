@@ -74,6 +74,15 @@ export const TextMappingSchema = MappingSchema.extend({
   component: TextTypeSchema,
 });
 
+export const GalleryMappingSchema = MappingSchema.extend({
+  name: z.string().optional(),
+  component: z.literal('gallery'),
+  slide: z.object({
+    match: MatchTypeSchema,
+    filters: z.array(FilterSchema),
+  }),
+});
+
 export const ComponentMappingSchema = z.union([
   ContainerMappingSchema,
   ColumnsMappingSchema,
@@ -81,6 +90,7 @@ export const ComponentMappingSchema = z.union([
   RecipeMappingSchema,
   CustomMappingSchema,
   TextMappingSchema,
+  GalleryMappingSchema,
 ]);
 
 // Params
@@ -100,20 +110,3 @@ export const LinkResponseSchema = z.object({
   width: z.number().optional(),
   height: z.number().optional(),
 });
-
-// Inferred types (optional, but useful for type safety)
-export type Params = z.infer<typeof ParamsSchema>;
-export type Mapping = z.infer<typeof MappingSchema>;
-export type ComponentMapping = z.infer<typeof ComponentMappingSchema>;
-export type Filter = z.infer<typeof FilterSchema>;
-export type LinkResponse = z.infer<typeof LinkResponseSchema>;
-
-export type RecipeMapping = z.infer<typeof RecipeMappingSchema>;
-export type ColumnsMapping = z.infer<typeof ColumnsMappingSchema>;
-export type LiveContainerMapping = z.infer<typeof LiveContainerMappingSchema>;
-export type ContainerMapping = z.infer<typeof ContainerMappingSchema>;
-export type CustomMapping = z.infer<typeof CustomMappingSchema>;
-export type TextMapping = z.infer<typeof TextMappingSchema>;
-export type TagFilter = z.infer<typeof TagFilterSchema>;
-export type ClassFilter = z.infer<typeof ClassFilterSchema>;
-export type AttributeFilter = z.infer<typeof AttributeFilterSchema>;
