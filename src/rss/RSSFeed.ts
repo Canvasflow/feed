@@ -425,7 +425,9 @@ export class RSSFeed {
           if (typeof c === 'string') return c.trim();
           return c['#text'].trim();
         }),
-      description: description ? he.decode(description) : description,
+      description: description
+        ? removeHTMLTags(he.decode(description))
+        : description,
       link,
       pubDate: item.pubDate ? `${item.pubDate}` : undefined,
       enclosure: this.getEnclosure(item),
