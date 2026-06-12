@@ -152,7 +152,13 @@ describe('Toms Guide', () => {
       await feed.validate();
       expect(feed.errors.length).toBe(0);
       const rss = await feed.build();
-      expect(rss.channel?.title).toBe(`Latest from Tom's Guide`);
+      const { channel } = rss;
+      expect(channel).toBeDefined();
+      if (!channel) return;
+      expect(channel.title).toBe(`Latest from Tom's Guide`);
+      expect(channel.description).toBe(
+        `All the latest content from the Tom's Guide team`
+      );
       const root: Mapping = {
         match: 'any',
         filters: [

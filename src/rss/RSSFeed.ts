@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon';
 import he from 'he';
+import sanitizeHtml from 'sanitize-html';
 import { XMLParser } from 'fast-xml-parser';
 import * as cheerio from 'cheerio';
 
@@ -209,8 +210,11 @@ export class RSSFeed {
     }
     this.rss.channel.link = link;
     this.rss.channel.description = description
-      ? he.decode(description)
-      : description;
+      ? sanitizeHtml(he.decode(description), {
+          allowedTags: [], // Strips all HTML tags
+          allowedAttributes: {}, // Strips all attributes
+        }).trim()
+      : `${description}`.trim();
     this.rss.channel.language = language;
     this.rss.channel.lastBuildDate = lastBuildDate;
     this.rss.channel.docs = docs;
