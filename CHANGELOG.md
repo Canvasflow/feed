@@ -1,5 +1,33 @@
 # CHANGELOG
 
+## 🏷️ 1.15.2
+
+_June 17, 2026_
+
+✨ Features
+
+- Support viewing coverage in the vitest ui ([`b9bb3c6`](https://github.com/Canvasflow/feed/commit/b9bb3c6c953b7990154de0acd7c904b5d0d54fc7))
+
+🐳 Build & CI
+
+- Report coverage in publish workflow summary ([`d51ac16`](https://github.com/Canvasflow/feed/commit/d51ac160ec6017892cb5205a50366e1fdba02b03))
+
+📝 Docs
+
+- Align docs with typings and link them from the README ([`986a48c`](https://github.com/Canvasflow/feed/commit/986a48c886fffab8c01b46b3c045ea42b56bea75))
+- Revise HTML guide and add Mappings and RSS docs ([`d7dcce7`](https://github.com/Canvasflow/feed/commit/d7dcce7fb24b69e7a9d6b40c2831344c2db836dd))
+- Add README with usage and scripts reference ([`f21941e`](https://github.com/Canvasflow/feed/commit/f21941e7d6d6c17a35db32439bd17ce76d96252d))
+
+🎨 Style
+
+- Group imports by node, third-party, then project ([`e3a289b`](https://github.com/Canvasflow/feed/commit/e3a289b187d22457ad7cb5e49562b23376c1ae2c))
+
+🧹 Chores
+
+- Upgrade typescript to 6.0.3 ([`f52f4d8`](https://github.com/Canvasflow/feed/commit/f52f4d8257081f899c57b81ec0c67100fc8e416d))
+- Remove unused eslint.config.js ([`e1d2665`](https://github.com/Canvasflow/feed/commit/e1d2665f2bb0ed6c6a777e14898be8573488b284))
+- Approve fsevents install script and bump to 1.15.2 ([`f0c36da`](https://github.com/Canvasflow/feed/commit/f0c36da65052d73753c736adc592457cad3bac70))
+
 ## 🏷️ 1.15.1
 
 _June 17, 2026_
