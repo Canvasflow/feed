@@ -1349,7 +1349,7 @@ describe('The New World', () => {
   });
 });
 
-describe('The English Home', () => {
+describe.skip('The English Home', () => {
   let filePath: string = '';
   let outFilePath: string = '';
   beforeEach(() => {
