@@ -79,20 +79,22 @@ Example:
 
 Although XML is an extensible specification, Canvasflow does not support all elements and attributes that may be present in an RSS feed. At the `channel` level, Canvasflow supports only the following elements: [^2]
 
-| Element | Requirement | Description |
-| :-------------- | :---------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | |
-| `title` | `required` | Displays the title of your RSS feed |
-| `link` | `required` | Displays the URL of your RSS feed. |
-| `description` | `required` | Displays the description of your RSS feed. |
-| `item` | `required` | Each [item](#item) element defines an article or "story" in the RSS feed. |
-| `language` | `optional` | This specifies the language of your channel |
-| `generator` | `optional` | A string indicating the program used to generate the channel |
-| `docs` | `optional` | A URL that points to the documentation for the format used in the RSS file. It's probably a pointer to this page. It's for people who might stumble across an RSS file on a Web server 25 years from now and wonder what it is. |
-| `pubDate` | `optional` | The publication date for the content in the channel. |
-| `lastBuildDate` | `optional` | The last time the content of the channel changed. |
-| `category` | `optional` | Specify one or more categories that the channel belongs to. |
-| `image` | `optional` | Specifies a GIF, JPEG or PNG image that can be displayed with the channel. More info [here](https://cyber.harvard.edu/rss/rss.html#ltimagegtSubelementOfLtchannelgt) |
-| `ttl` | `optional` | `ttl` stands for time to live. It is the number of minutes that indicates how long a channel can be cached before refreshing from the source. |
+| Element         | Requirement | Description                                                                                                                                                  |
+| :-------------- | :---------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`         | `required`  | The title of the RSS feed.                                                                                                                                   |
+| `item`          | `required`  | Each [item](#item) element defines an article or "story" in the feed. At least one is required.                                                              |
+| `link`          | `optional`  | The URL of the website associated with the feed.                                                                                                             |
+| `description`   | `optional`  | A short description of the feed.                                                                                                                             |
+| `language`      | `optional`  | The language of the channel (e.g. `en-GB`).                                                                                                                  |
+| `generator`     | `optional`  | A string indicating the program used to generate the channel.                                                                                                |
+| `docs`          | `optional`  | A URL pointing to the documentation for the format used in the RSS file.                                                                                     |
+| `pubDate`       | `optional`  | The publication date for the content in the channel.                                                                                                         |
+| `lastBuildDate` | `optional`  | The last time the content of the channel changed.                                                                                                            |
+| `category`      | `optional`  | One or more categories that the channel belongs to.                                                                                                          |
+| `image`         | `optional`  | A GIF, JPEG, or PNG image that can be displayed with the channel. More info [here](https://cyber.harvard.edu/rss/rss.html#ltimagegtSubelementOfLtchannelgt). |
+| `ttl`           | `optional`  | Time to live — the number of minutes a channel can be cached before refreshing from the source.                                                              |
+
+> Only `title` and `item` are mandatory; a feed missing either reports an error during validation.
 
 ### Item
 
@@ -104,32 +106,32 @@ A `channel` element may contain any number of `<item>` elements. Each `item` can
 
 Alternatively, an `item` may be self-contained. In this case, the `description` element includes the complete content (entity-encoded HTML is permitted). [^3]
 
-| Element | Requirement | Description |
-| :------------ | :---------- | :----------------------------------------------- | |
-| `guid` | `required` | Element defines a unique identifier for the item |
-| `title` | `required` | Defines the title of the item |
-| `link` | `required` | Defines the hyperlink to the item. |
-| `description` | `required` | Describes the item. |
-| `pubDate` | `required` | Defines the last-publication date for the item. |
-| `enclosure` | `optional` | Allows a media-file to be included with an item |
+| Element           | Requirement | Description                                                                                  |
+| :---------------- | :---------- | :------------------------------------------------------------------------------------------- |
+| `title`           | `required`  | The title of the item.                                                                       |
+| `guid`            | `required`  | A unique identifier for the item.                                                            |
+| `pubDate`         | `required`  | The publication date for the item.                                                           |
+| `link`            | `optional`  | The hyperlink to the item.                                                                   |
+| `description`     | `optional`  | A description or synopsis of the item.                                                       |
+| `category`        | `optional`  | One or more categories the item belongs to.                                                  |
+| `author`          | `optional`  | The author of the item.                                                                      |
+| `enclosure`       | `optional`  | Attaches a media file to the item.                                                           |
+| `content:encoded` | `optional`  | The full HTML body of the item. See [Content](#content). This is the source of `components`. |
+
+> Only `title`, `guid`, and `pubDate` are mandatory; an item missing any of them reports an error during validation. Items also accept the [Media RSS](#media-rss), [Dublin Core](#dublin-core), [Atom](#atom), and [Canvasflow](#canvasflow) namespaced elements described below.
 
 ## Namespaces
 
-Canvasflow only support the following `namespaces`:
+Canvasflow supports the following namespaces:
 
-- [RSS](#rss)
-  - [Structure](#structure)
-    - [RSS](#rss-1)
-    - [Channel](#channel)
-    - [Item](#item)
-  - [Namespaces](#namespaces)
-    - [Atom](#atom)
-    - [Dublin Core](#dublin-core)
-    - [Syndication](#syndication)
-    - [Content](#content)
-    - [Media RSS](#media-rss)
+- [Atom](#atom)
+- [Dublin Core](#dublin-core)
+- [Syndication](#syndication)
+- [Content](#content)
+- [Media RSS](#media-rss)
+- [Canvasflow](#canvasflow)
 
-> Canvasflow do not support all the elements that a namespace support, if an element is not listed, is not supported and will be ignored
+> Canvasflow does not support every element a namespace defines. Any element not listed below is unsupported and will be ignored.
 
 ### Atom
 
@@ -141,9 +143,11 @@ The [Atom](https://datatracker.ietf.org/doc/html/rfc4287) namespace (`http://www
 
 By enabling the inclusion of Atom-specific elements within an RSS document, the Atom namespace improves semantic clarity and facilitates the standardization of feed metadata.
 
-| Element     | Ancestor  | Requirement | Description                                                                                                                                                  |
-| :---------- | :-------- | :---------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `atom:link` | `channel` | `optional`  | Specify the URL of the feed itself—a self-reference—so that feed readers, aggregators, and crawlers can correctly identify the canonical source of the feed. |
+| Element        | Ancestor  | Requirement | Description                                                                                                                                            |
+| :------------- | :-------- | :---------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `atom:link`    | `channel` | `optional`  | Specifies the URL of the feed itself — a self-reference — so that feed readers, aggregators, and crawlers can correctly identify the canonical source. |
+| `atom:author`  | `item`    | `optional`  | The author of the item. Canvasflow reads the nested `atom:name`, `atom:uri`, and `atom:email` elements.                                                |
+| `atom:updated` | `item`    | `optional`  | An [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) datetime indicating when the item was last updated.                                              |
 
 ### Dublin Core
 
@@ -160,11 +164,12 @@ RSS 2.0 provides a relatively limited set of built-in metadata fields. By levera
 - Language and coverage
 - Content categorization
 
-| Element       | Ancestor | Requirement | Description                                                                                                  |
-| :------------ | :------- | :---------- | :----------------------------------------------------------------------------------------------------------- |
-| `dc:creator`  | `item`   | `optional`  | Specifies the author of the item.                                                                            |
-| `dc:date`     | `item`   | `optional`  | An [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) - formatted publication date (`YYYY-MM-DDThh:mm:ssZ`). |
-| `dc:language` | `item`   | `optional`  | Language of the feed or item (e.g., en, fr, de).                                                             |
+| Element            | Ancestor | Requirement | Description                                                                                                                               |
+| :----------------- | :------- | :---------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
+| `dc:creator`       | `item`   | `optional`  | Specifies the author of the item.                                                                                                         |
+| `dc:date`          | `item`   | `optional`  | An [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)-formatted publication date (`YYYY-MM-DDThh:mm:ssZ`).                                |
+| `dc:language`      | `item`   | `optional`  | Language of the feed or item (e.g. `en`, `fr`, `de`).                                                                                     |
+| `dcterms:modified` | `item`   | `optional`  | An [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) datetime from the DCMI Terms vocabulary indicating when the item was last modified. |
 
 ### Syndication
 
@@ -223,11 +228,27 @@ Media RSS enhances the capabilities of RSS 2.0 by allowing you to:
 | Element             | Ancestor                | Requirement | Description                                                                                                                                                                                                                                                                            |
 | :------------------ | :---------------------- | :---------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `media:group`       | `item`                  | `optional`  | It allows grouping of `<media:content>` elements that are effectively the same content, yet different representations. <br/><br/> For instance: the same song recorded in both the WAV and MP3 format. </br></br>**It's an optional element that must only be used for this purpose.** |
-| `media:content`     | `item` or `media:group` | `optional`  | Main element to describe the media file. Includes attributes like `url`, `type`, `duration`, `height`, `width`, etc.                                                                                                                                                                   |
+| `media:content`     | `item` or `media:group` | `optional`  | The main element describing a media file. Canvasflow reads the `url` (required), `type`, `fileSize`, `medium` (`image`, `audio`, `video`, `document`, or `executable`), and `isDefault` attributes.                                                                                    |
 | `media:title`       | `media:content`         | `optional`  | Title of the media object.                                                                                                                                                                                                                                                             |
 | `media:description` | `media:content`         | `optional`  | Full description of the media content.                                                                                                                                                                                                                                                 |
 | `media:thumbnail`   | `media:content`         | `optional`  | One or more preview images.                                                                                                                                                                                                                                                            |
 | `media:credit`      | `media:content`         | `optional`  | Credits or creators of the media (e.g., photographer, author).                                                                                                                                                                                                                         |
+
+### Canvasflow
+
+| Prefix | URI                            | Namespace Declaration                                         |
+| :----- | :----------------------------- | :------------------------------------------------------------ |
+| `cf`   | `https://www.canvasflow.io/cf` | `<rss version="2.0" xmlns:cf="https://www.canvasflow.io/cf">` |
+
+The Canvasflow (`cf`) namespace provides extension elements specific to Canvasflow, used to flag editorial attributes of an item and to supply a thumbnail. These elements have no equivalent in standard RSS and are ignored by other feed consumers.
+
+| Element                | Ancestor | Requirement | Description                                                                                                   |
+| :--------------------- | :------- | :---------- | :------------------------------------------------------------------------------------------------------------ |
+| `cf:hasAffiliateLinks` | `item`   | `optional`  | A boolean indicating whether the item contains affiliate links.                                               |
+| `cf:isSponsored`       | `item`   | `optional`  | A boolean indicating whether the item is sponsored content.                                                   |
+| `cf:isPaid`            | `item`   | `optional`  | A boolean indicating whether the item is paid (premium) content.                                              |
+| `cf:liveCoverageState` | `item`   | `optional`  | The live-coverage state of the item. One of `live`, `completed`, or empty.                                    |
+| `cf:thumbnail`         | `item`   | `optional`  | A thumbnail image for the item, with a required `url` and optional `width`, `height`, `type`, and `fileSize`. |
 
 [^1]: Wittenbrink, H. (2005). Semantics: The RSS Model. _RSS and Atom_ (pp. 14-15).
 

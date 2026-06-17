@@ -487,6 +487,66 @@ This is an example of a valid YouTube video component:
 
 The `id` for this example is `ZrCs3HYxflk`
 
+### Vimeo
+
+Like YouTube, Vimeo videos are represented as `video` components and are detected from an `<iframe>`. Canvasflow resolves the embed URL and, when it points to `https://vimeo.com`, extracts the video `id` from the URL path.
+
+```html
+<iframe
+  src="https://player.vimeo.com/video/76979871"
+  width="640"
+  height="360"
+  frameborder="0"
+  allow="autoplay; fullscreen; picture-in-picture"
+  allowfullscreen
+></iframe>
+```
+
+### Dailymotion
+
+Dailymotion videos are also represented as `video` components detected from an `<iframe>`. The embed URL must match the Dailymotion format, and the `id` is taken from the last segment of the URL path.
+
+```
+(?:dailymotion\.com\/(?:video|hub)|dai\.ly)\/([0-9a-z]+)(?:[-_0-9a-zA-Z]+#video=([a-z0-9]+))?
+```
+
+```html
+<iframe
+  frameborder="0"
+  width="480"
+  height="270"
+  src="https://www.dailymotion.com/embed/video/x8abcde"
+  allowfullscreen
+></iframe>
+```
+
+### Infogram
+
+Infogram embeds are represented as `infogram` components. Canvasflow detects them from an `<iframe>` whose source originates from `https://e.infogram.com`. The `id` is taken from the URL path and the `parentUrl` from the `parent_url` query parameter.
+
+```html
+<iframe
+  src="https://e.infogram.com/_/abc123XYZ?parent_url=https%3A%2F%2Fexample.com"
+  title="Infogram"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+```
+
+### Apple Podcasts
+
+Apple Podcasts embeds are detected from an `<iframe>` whose source originates from `https://embed.podcasts.apple.com` and are represented as an `audio` component.
+
+```html
+<iframe
+  allow="autoplay *; encrypted-media *;"
+  frameborder="0"
+  height="175"
+  src="https://embed.podcasts.apple.com/us/podcast/example/id123456789"
+></iframe>
+```
+
 ## HTML Table Elements
 
 In Canvasflow, we translate HTML `<table>` element into a Canvasflow HTML Table Component. To achieve this we take all the html content that lives inside the `<table>` element.

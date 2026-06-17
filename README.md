@@ -91,6 +91,17 @@ Any text element's `role` attribute overrides the default mapping
 (e.g. `<p role="crosshead">` → `crosshead`). Styles and classes are stripped;
 only `href`/`target`/`rel` survive on `<a>` elements.
 
+## Documentation
+
+In-depth references for each part of the pipeline live in the [`docs/`](./docs)
+directory:
+
+| Document                       | Description                                                                                                                                       |
+| :----------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [HTML](./docs/HTML.md)         | How HTML elements are matched to Canvasflow components — text, images, galleries, video, audio, buttons, social embeds, tables, and containers.   |
+| [Mappings](./docs/Mappings.md) | The `Params`/`Mapping` configuration model: filters, match modes, excludes, and every component mapping (container, columns, gallery, and so on). |
+| [RSS](./docs/RSS.md)           | The supported RSS structure and namespaces (Atom, Dublin Core, Syndication, Content, Media RSS, and the Canvasflow `cf:` extensions).             |
+
 ## Scripts
 
 This project uses [`vite-plus`](https://www.npmjs.com/package/vite-plus) (`vp`)

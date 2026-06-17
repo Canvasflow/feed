@@ -43,12 +43,12 @@ Mappings are provided to Canvasflow through a `Params` object, which has the fol
 
 Every mapping is built on the same foundational properties:
 
-| Property     | Required | Description                                                                                                                                      |
-| :----------- | :------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `match`      | Yes      | How many filters must match: [`any` or `all`](#match).                                                                                           |
-| `filters`    | Yes      | The list of [Filters](#filters) used to identify the HTML element.                                                                               |
-| `properties` | No       | An arbitrary object of key/value pairs. When the mapping matches, this object is attached as-is to the resulting component's `properties` field. |
-| `name`       | No       | An optional label for the mapping. It has no effect on matching; it exists for identification purposes.                                          |
+| Property     | Required | Description                                                                                                                                                                             |
+| :----------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `match`      | Yes      | How many filters must match: [`any` or `all`](#match).                                                                                                                                  |
+| `filters`    | Yes      | The list of [Filters](#filters) used to identify the HTML element.                                                                                                                      |
+| `properties` | No       | An arbitrary object of key/value pairs. When the mapping matches, this object is attached as-is to the resulting component's `properties` field.                                        |
+| `name`       | No       | An optional label for the mapping. It has no effect on matching; it exists for identification purposes. Available on [Component Mappings](#component-mappings) only, not on `excludes`. |
 
 ### Filters
 
