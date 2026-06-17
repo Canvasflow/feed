@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { type Recipe, RecipeSchema } from './Schema';
 
 export const MAX_TEXT = 60;
