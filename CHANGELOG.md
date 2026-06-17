@@ -8,9 +8,18 @@ _June 17, 2026_
 
 - (html) Match twitter status URLs across hosts and bump to 1.15.1 ([`6efd476`](https://github.com/Canvasflow/feed/commit/6efd4763ade1830670cde5394476d8a8381b6df4))
 
+🐳 Build & CI
+
+- Use npm ci for reproducible installs in publish workflow ([`fc484b3`](https://github.com/Canvasflow/feed/commit/fc484b31652045bcb0e377699378a46d27dbf969))
+
+📝 Docs
+
+- Add CHANGELOG with per-version commit links ([`e07e059`](https://github.com/Canvasflow/feed/commit/e07e059c28f658beac3f56dbe33716ca6bbf8f97))
+
 🎨 Style
 
 - (html) Use double quotes in HTMLMapper tests ([`a76f283`](https://github.com/Canvasflow/feed/commit/a76f283d19085a579ac37a5d3016a3f039bf0448))
+- (docs) Normalize CHANGELOG list markers via prettier ([`f19791e`](https://github.com/Canvasflow/feed/commit/f19791e06321235e69a7b12b83c9caa9366cd23f))
 
 ## 🏷️ 1.15.0
 
