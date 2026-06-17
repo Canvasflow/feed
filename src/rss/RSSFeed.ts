@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import he from 'he';
 import sanitizeHtml from 'sanitize-html';
 import { XMLParser } from 'fast-xml-parser';
-import * as cheerio from 'cheerio';
+import { parseHTML } from 'linkedom';
 
 import type {
   RSS,
@@ -58,26 +58,33 @@ export class RSSFeed {
   static async getRecipeFromUrl(url: string): Promise<Recipe | null> {
     let recipe: Recipe | null = null;
     const html = await this.getHtmlContent(url);
-    const $ = cheerio.load(html);
-    $('script[type=application/ld+json]').each((_, element) => {
-      const content = $(element).html();
-      if (content) {
-        // eslint-disable-next-line
-        const parseContent = JSON.parse(content) as any;
-        if (parseContent['@type'] && parseContent['@type'] === 'Recipe') {
-          recipe = parseContent as Recipe;
-          return false;
-        }
-        if (parseContent['@graph'] && parseContent['@graph'].length) {
-          for (const item of parseContent['@graph']) {
-            if (item['@type'] && item['@type'] === 'Recipe') {
-              recipe = item as Recipe;
-              return false;
-            }
+    const { document } = parseHTML(html);
+    const scripts = document.querySelectorAll(
+      'script[type="application/ld+json"]'
+    );
+    for (const element of scripts) {
+      const content = element.textContent;
+      if (!content) {
+        continue;
+      }
+      // eslint-disable-next-line
+      const parseContent = JSON.parse(content) as any;
+      if (parseContent['@type'] && parseContent['@type'] === 'Recipe') {
+        recipe = parseContent as Recipe;
+        break;
+      }
+      if (parseContent['@graph'] && parseContent['@graph'].length) {
+        for (const item of parseContent['@graph']) {
+          if (item['@type'] && item['@type'] === 'Recipe') {
+            recipe = item as Recipe;
+            break;
           }
         }
+        if (recipe) {
+          break;
+        }
       }
-    });
+    }
 
     return recipe;
   }
