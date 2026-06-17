@@ -1,0 +1,30 @@
+# Auto-record a hotfix/release in CHANGELOG.md when it lands on main.
+#
+# Runs after a merge commit is created. When the current branch is main, the
+# merge has two parents, and the merge changed the project version, we generate
+# the new version's changelog section from the incoming commits (HEAD^1..HEAD^2)
+# and fold it into the merge commit. Keyed on the version bump so it only fires
+# for hotfix/release merges, not regular ones.
+
+branch=$(git symbolic-ref --short -q HEAD)
+[ "$branch" = "main" ] || exit 0
+
+# Must be a real merge commit (two parents); otherwise nothing to record.
+git rev-parse -q --verify HEAD^2 >/dev/null 2>&1 || exit 0
+
+pkgver() { node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(JSON.parse(s).version||"")}catch{}})'; }
+old=$(git show HEAD^1:package.json 2>/dev/null | pkgver)
+new=$(git show HEAD:package.json 2>/dev/null | pkgver)
+[ -n "$new" ] && [ "$old" != "$new" ] || exit 0
+
+node scripts/update-changelog.mjs --base HEAD^1 --tip HEAD^2 --version "$new" || exit 0
+
+git add CHANGELOG.md
+git diff --cached --quiet -- CHANGELOG.md && exit 0   # no change, leave merge as-is
+
+# post-merge runs before git clears the merge state, which blocks --amend. The
+# merge commit already exists (and amend preserves its parents), so clear the
+# leftover state and fold CHANGELOG.md into the merge commit.
+gd=$(git rev-parse --git-dir)
+rm -f "$gd/MERGE_HEAD" "$gd/MERGE_MSG" "$gd/MERGE_MODE"
+git commit --amend --no-edit --no-verify

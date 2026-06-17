@@ -1,7 +1,7 @@
 {
   "name": "@canvasflow/feed",
   "description": "This is canvasflow utility for processing feeds",
-  "version": "1.15.0",
+  "version": "1.15.1",
   "type": "module",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
@@ -42,7 +42,8 @@
     "coverage": "vp test --coverage",
     "coverage:ui": "VP_VERSION=4.1.8 vp test --coverage --ui",
     "commit": "cz",
-    "format": "vp fmt ."
+    "format": "vp fmt .",
+    "changelog": "node scripts/update-changelog.mjs"
   },
   "config": {
     "commitizen": {

@@ -607,7 +607,6 @@ describe('Twitter Component', () => {
 		></script>
 	</div>
 </figure>
-
 `
       );
       expect(components.length).toBe(1);
@@ -620,6 +619,38 @@ describe('Twitter Component', () => {
       expect(component.height).toBe(`350`);
       expect(component.params.account).toBe(`Borderlands`);
       expect(component.params.id).toBe(`1970609156936868102`);
+    }
+  );
+  test(
+    'It should create a twitter tweet component with image',
+    { tags: ['unit', 'html'] },
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="twitter-tweet">
+            <p dir="ltr" lang="en">
+                Randy Arozarena's MRI showed mild inflammation -- more than expected.
+                With Luke Raley dealing with back issues and Josh Naylor out with a
+                wrist injury, the Mariners are placing Arozarena on the injured list.
+                They are selecting outfielder Curtis Washington from High-A Everett --…
+            </p>
+            — Ryan Divish (@RyanDivish)
+            <a
+                target="_blank"
+                href="https://x.com/RyanDivish/status/2067043835797209515?ref_src=twsrc%5Etfw"
+                >June 17, 2026</a
+            >
+        </blockquote>
+`
+      );
+      expect(components.length).toBe(1);
+      const component = components.pop() as TwitterComponent;
+      expect(component).toBeDefined();
+      if (!component) {
+        return;
+      }
+      expect(component.component).toBe('twitter');
+      expect(component.params.account).toBe(`RyanDivish`);
+      expect(component.params.id).toBe(`2067043835797209515`);
     }
   );
   test(

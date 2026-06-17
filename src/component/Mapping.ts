@@ -965,6 +965,7 @@ function toTwitter(node: ElementNode | URL): TwitterComponent | null {
   if (node instanceof URL) {
     return toTweetFromUrl(node);
   }
+  const twitterRegex = /\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
   const errors: string[] = [];
   const warnings: string[] = [];
   const params: { id?: string; account?: string } = {};
@@ -974,19 +975,26 @@ function toTwitter(node: ElementNode | URL): TwitterComponent | null {
     findDescendants('a'),
     []
   ) as ElementNode[];
+  const validAnchorNodes = anchorNodes.filter((node: ElementNode) => {
+    const attributes = getAttributes(node.attributes);
+    attrs = Object.fromEntries(attributes);
+    const url = attributes.get('href') || '';
+    if (!url) return false;
+    if (twitterRegex.test(url)) return true;
+    return false;
+  });
 
-  if (!anchorNodes.length) return null;
+  if (!validAnchorNodes.length) return null;
 
-  const tweetNode = anchorNodes.pop();
+  const tweetNode = validAnchorNodes.pop();
 
   if (tweetNode) {
     const attributes = getAttributes(tweetNode.attributes);
     attrs = Object.fromEntries(attributes);
     const tweetUrl = attributes.get('href') || '';
 
-    const twitterRegex =
-      /^https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
-    const values: Array<string> = twitterRegex.exec(tweetUrl) || [];
+    let values: Array<string> = [];
+    values = twitterRegex.exec(tweetUrl) || [];
     params.id = values[3];
     params.account = values[1];
   }
