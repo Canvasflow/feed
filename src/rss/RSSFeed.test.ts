@@ -1,5 +1,6 @@
 import path from 'path';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
+
 import { test, expect, describe, beforeEach } from 'vite-plus/test';
 
 import { replaceErrors, RSSFeed } from './RSSFeed';

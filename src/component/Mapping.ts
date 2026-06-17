@@ -41,7 +41,6 @@ import {
   isYoutubeComponent,
   isButtonComponent,
 } from './Component';
-
 import {
   type ElementNode,
   type Node,
@@ -50,7 +49,6 @@ import {
   getAttributes,
   SetUtils,
 } from './Node';
-
 import {
   AttributeFilterSchema,
   ClassFilterSchema,

@@ -27,6 +27,16 @@ jobs:
         id: test_code
         run: npm run test
 
+      - name: 📊 Coverage
+        id: coverage
+        run: |
+          {
+            echo '### 📊 Coverage'
+            echo '```'
+            npm run coverage 2>&1 | sed -r 's/\x1b\[[0-9;]*m//g'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
   release:
     name: 🚀 Publish
     runs-on: ubuntu-latest

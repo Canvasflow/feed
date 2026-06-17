@@ -1,4 +1,5 @@
 import path from 'path';
+
 import { beforeAll, beforeEach, afterAll, afterEach } from 'vite-plus/test';
 
 const supportPath = path.join(__dirname, 'support');
