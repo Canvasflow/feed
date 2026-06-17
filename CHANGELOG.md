@@ -4,6 +4,10 @@
 
 _June 17, 2026_
 
+✨ Features
+
+- (changelog) Split CI and Build into separate categories ([`3471370`](https://github.com/Canvasflow/feed/commit/34713709e637e3b7d18cacfd3266f9a726f946f1))
+
 🐳 CI
 
 - Render coverage as a formatted summary report ([`c4a7add`](https://github.com/Canvasflow/feed/commit/c4a7add5b58eccd220d1b62ebb0adf703b9bd15b))
