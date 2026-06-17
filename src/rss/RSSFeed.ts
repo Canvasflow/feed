@@ -13,7 +13,6 @@ import type {
   Thumbnail,
 } from './RSS';
 import { Tag } from './Tag';
-
 import * as Attributes from './Attributes';
 import { HTMLMapper } from '../component/HTMLMapper';
 import type { Recipe } from '../component/Schema';
