@@ -3,18 +3,17 @@
  * Prepends (or refreshes) the CHANGELOG.md section for the version currently in
  * package.json, built from the commits that are about to land on `main`.
  *
- * Two modes, auto-detected:
- *   - Merge mode:   run from a `pre-merge-commit` hook while merging a
- *                   hotfix/release branch into main. Uses the incoming commits
- *                   (HEAD..MERGE_HEAD).
- *   - Standalone:   run by hand on a hotfix/release branch before merging.
- *                   Uses the commits not yet on main (<base>..HEAD).
+ * Two ways it runs:
+ *   - From the `post-merge` hook when a hotfix/release lands on main: the hook
+ *     passes the incoming commit range explicitly via --base HEAD^1 --tip HEAD^2.
+ *   - Standalone (`npm run changelog`) on a hotfix/release branch before merging:
+ *     falls back to the commits not yet on main (<main>..HEAD).
  *
  * Idempotent: if the top section already targets the same version it is
  * replaced, so re-running never duplicates an entry.
  *
  * Usage:
- *   node scripts/update-changelog.mjs [--base <ref>] [--version <x.y.z>]
+ *   node scripts/update-changelog.mjs [--base <ref>] [--tip <ref>] [--version <x.y.z>]
  */
 import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -25,7 +24,11 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CHANGELOG = join(ROOT, 'CHANGELOG.md');
 
 const sh = (cmd) =>
-  execSync(cmd, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+  execSync(cmd, {
+    cwd: ROOT,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'ignore'],
+  }).trim();
 const shSafe = (cmd) => {
   try {
     return sh(cmd);
@@ -86,20 +89,29 @@ const tip = arg('tip') || 'HEAD';
 
 let base = arg('base');
 if (!base) {
-  base =
-    shSafe('git rev-parse --verify --quiet main') ? 'main'
-    : shSafe('git rev-parse --verify --quiet origin/main') ? 'origin/main'
-    : '';
+  base = shSafe('git rev-parse --verify --quiet main')
+    ? 'main'
+    : shSafe('git rev-parse --verify --quiet origin/main')
+      ? 'origin/main'
+      : '';
 }
 if (!base) {
-  console.error('changelog: could not determine a base branch to diff against; skipping.');
+  console.error(
+    'changelog: could not determine a base branch to diff against; skipping.'
+  );
   process.exit(0);
 }
 
-const version = arg('version') || JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).version;
-const date = shSafe(`git log -1 --pretty=%cs ${tip}`) || new Date().toISOString().slice(0, 10);
+const version =
+  arg('version') ||
+  JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).version;
+const date =
+  shSafe(`git log -1 --pretty=%cs ${tip}`) ||
+  new Date().toISOString().slice(0, 10);
 
-const log = shSafe(`git log ${base}..${tip} --no-merges --pretty=format:%H%x09%s`);
+const log = shSafe(
+  `git log ${base}..${tip} --no-merges --pretty=format:%H%x09%s`
+);
 if (!log) {
   console.error(`changelog: no new commits in ${base}..${tip}; nothing to do.`);
   process.exit(0);
@@ -126,7 +138,9 @@ for (const line of log.split('\n')) {
   seen.add(p.text);
   if (!groups.has(p.head)) groups.set(p.head, { order: p.order, items: [] });
   const short = hash.slice(0, 7);
-  const link = URL ? ` ([\`${short}\`](${URL}/commit/${hash}))` : ` (\`${short}\`)`;
+  const link = URL
+    ? ` ([\`${short}\`](${URL}/commit/${hash}))`
+    : ` (\`${short}\`)`;
   groups.get(p.head).items.push(`- ${p.text}${link}`);
 }
 if (groups.size === 0) {
@@ -134,23 +148,46 @@ if (groups.size === 0) {
   process.exit(0);
 }
 
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
 const [y, mo, d] = date.split('-').map(Number);
 let section = `## 🏷️ ${version}\n\n_${MONTHS[mo - 1]} ${d}, ${y}_\n`;
-for (const [head, g] of [...groups.entries()].sort((a, b) => a[1].order - b[1].order)) {
+for (const [head, g] of [...groups.entries()].sort(
+  (a, b) => a[1].order - b[1].order
+)) {
   section += `\n${head}\n\n${g.items.join('\n')}\n`;
 }
 
 // --- splice into CHANGELOG.md -----------------------------------------------
 const HEADER = '# CHANGELOG';
-let body = existsSync(CHANGELOG) ? readFileSync(CHANGELOG, 'utf8') : `${HEADER}\n`;
+let body = existsSync(CHANGELOG)
+  ? readFileSync(CHANGELOG, 'utf8')
+  : `${HEADER}\n`;
 if (!body.startsWith(HEADER)) body = `${HEADER}\n\n${body}`;
 
 const after = body.slice(HEADER.length).replace(/^\n+/, '');
 // Drop an existing leading section for the same version so re-runs are idempotent.
-const sameVersion = new RegExp(`^## 🏷️ ${version.replace(/\./g, '\\.')}\\b[\\s\\S]*?(?=\\n## |$)`);
+const sameVersion = new RegExp(
+  `^## 🏷️ ${version.replace(/\./g, '\\.')}\\b[\\s\\S]*?(?=\\n## |$)`
+);
 const rest = after.replace(sameVersion, '').replace(/^\n+/, '');
 
-const out = `${HEADER}\n\n${section}\n${rest}`.replace(/\n{3,}/g, '\n\n').replace(/\s*$/, '\n');
+const out = `${HEADER}\n\n${section}\n${rest}`
+  .replace(/\n{3,}/g, '\n\n')
+  .replace(/\s*$/, '\n');
 writeFileSync(CHANGELOG, out);
-console.error(`changelog: wrote section for ${version} (${seen.size} entries from ${base}..${tip}).`);
+console.error(
+  `changelog: wrote section for ${version} (${seen.size} entries from ${base}..${tip}).`
+);
