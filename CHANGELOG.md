@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 🏷️ 1.15.4
+
+_June 17, 2026_
+
+🧪 Tests
+
+- (rss) Skip "The English Home" suite and bump to 1.15.4 ([`65c4782`](https://github.com/Canvasflow/feed/commit/65c47822c5eab548d8e15a556310e638146ed9f5))
+
 ## 🏷️ 1.15.3
 
 _June 17, 2026_
