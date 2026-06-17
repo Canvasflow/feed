@@ -56,11 +56,11 @@ const CAT = {
   perf: { head: '⚡️ Performance', order: 3 },
   refactor: { head: '♻️ Refactor', order: 4 },
   test: { head: '🧪 Tests', order: 5 },
-  ci: { head: '🐳 Build & CI', order: 6 },
-  build: { head: '🐳 Build & CI', order: 6 },
-  docs: { head: '📝 Docs', order: 7 },
-  style: { head: '🎨 Style', order: 8 },
-  chore: { head: '🧹 Chores', order: 9 },
+  ci: { head: '🐳 CI', order: 6 },
+  build: { head: '🚜 Build', order: 7 },
+  docs: { head: '📝 Docs', order: 8 },
+  style: { head: '🎨 Style', order: 9 },
+  chore: { head: '🧹 Chores', order: 10 },
 };
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 

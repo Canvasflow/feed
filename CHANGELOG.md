@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 🏷️ 1.15.3
+
+_June 17, 2026_
+
+✨ Features
+
+- (changelog) Split CI and Build into separate categories ([`3471370`](https://github.com/Canvasflow/feed/commit/34713709e637e3b7d18cacfd3266f9a726f946f1))
+
+🐳 CI
+
+- Render coverage as a formatted summary report ([`c4a7add`](https://github.com/Canvasflow/feed/commit/c4a7add5b58eccd220d1b62ebb0adf703b9bd15b))
+
 ## 🏷️ 1.15.2
 
 _June 17, 2026_
@@ -8,7 +20,7 @@ _June 17, 2026_
 
 - Support viewing coverage in the vitest ui ([`b9bb3c6`](https://github.com/Canvasflow/feed/commit/b9bb3c6c953b7990154de0acd7c904b5d0d54fc7))
 
-🐳 Build & CI
+🚜 Build & CI
 
 - Report coverage in publish workflow summary ([`d51ac16`](https://github.com/Canvasflow/feed/commit/d51ac160ec6017892cb5205a50366e1fdba02b03))
 
@@ -40,7 +52,7 @@ _June 17, 2026_
 
 - (html) Match twitter status URLs across hosts and bump to 1.15.1 ([`6efd476`](https://github.com/Canvasflow/feed/commit/6efd4763ade1830670cde5394476d8a8381b6df4))
 
-🐳 Build & CI
+🚜 Build & CI
 
 - Use npm ci for reproducible installs in publish workflow ([`fc484b3`](https://github.com/Canvasflow/feed/commit/fc484b31652045bcb0e377699378a46d27dbf969))
 
@@ -85,7 +97,7 @@ _June 12, 2026_
 
 - (rss) Sanitize HTML tags from channel description ([`7de7c3b`](https://github.com/Canvasflow/feed/commit/7de7c3b470be55911a720919e37fb79aa6754ad5))
 
-🐳 Build & CI
+🚜 Build & CI
 
 - Upgrade actions/checkout and actions/setup-node to v6 ([`b905b55`](https://github.com/Canvasflow/feed/commit/b905b55bc6ddc2f683fb939a786550b3980458e1))
 - Upgrade actions/checkout and actions/setup-node to v5 ([`0b521c3`](https://github.com/Canvasflow/feed/commit/0b521c3bc80e0bb641fd934d72331ac3d7d9403d))
@@ -94,7 +106,7 @@ _June 12, 2026_
 
 _June 10, 2026_
 
-🐳 Build & CI
+🚜 Build & CI
 
 - Upgrade actions/checkout and actions/setup-node to v6 and bump version to 1.13.1 ([`661006b`](https://github.com/Canvasflow/feed/commit/661006be5bc424037a4a822625652f5fdd184edd))
 
@@ -108,7 +120,7 @@ _June 10, 2026_
 - (rss) Correct validateParams logic and improve test coverage ([`50b314e`](https://github.com/Canvasflow/feed/commit/50b314ed477dd6361708eb35dd209cde5c68ce0f))
 - (schema) Replace discriminatedUnion with union for ComponentMappingSchema ([`3a4ea3c`](https://github.com/Canvasflow/feed/commit/3a4ea3c861ccc925705c302dc866c6d94d5890d8))
 
-🐳 Build & CI
+🚜 Build & CI
 
 - Upgrade actions/setup-node to v4 in test job ([`f861ded`](https://github.com/Canvasflow/feed/commit/f861ded61da057b149aaf55174e05e883cd5ef34))
 
@@ -1211,7 +1223,7 @@ _June 12, 2025_
 - (rss) Add support for UI in coverage ([`0db34e8`](https://github.com/Canvasflow/feed/commit/0db34e84cf8a386c074ab437ec6ac60df31d3fbf))
 - Add support for test coverage ([`5636936`](https://github.com/Canvasflow/feed/commit/563693625f6f08670311ef8536a1000e01caa055))
 
-🐳 Build & CI
+🚜 Build & CI
 
 - Replace commit-emoji ([`45050a4`](https://github.com/Canvasflow/feed/commit/45050a42df3a6c550a85e66c2fa12d5a375e3b3d))
 
@@ -1234,7 +1246,7 @@ _May 27, 2025_
 - (rss) Add support for autocar ([`51c1ede`](https://github.com/Canvasflow/feed/commit/51c1ede02ad4d2046fdb539fcc03e4e9b1b738fe))
 - (rss) Add rss tests ([`586d644`](https://github.com/Canvasflow/feed/commit/586d644ef6d0eb7697cfce2aeb461181d7e7989d))
 
-🐳 Build & CI
+🚜 Build & CI
 
 - Improve ci build steps ([`71e7855`](https://github.com/Canvasflow/feed/commit/71e78550689c89b13a60ba4c40a40cb32325a12f))
 

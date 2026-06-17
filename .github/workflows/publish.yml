@@ -30,12 +30,8 @@ jobs:
       - name: 📊 Coverage
         id: coverage
         run: |
-          {
-            echo '### 📊 Coverage'
-            echo '```'
-            npm run coverage 2>&1 | sed -r 's/\x1b\[[0-9;]*m//g'
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+          npm run coverage
+          node scripts/coverage-summary.mjs >> "$GITHUB_STEP_SUMMARY"
 
   release:
     name: 🚀 Publish
