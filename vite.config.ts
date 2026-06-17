@@ -62,7 +62,7 @@ export default defineConfig({
         'src/index.ts',
         '.commitlintrc.js',
       ],
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'json', 'json-summary', 'html'],
     },
   },
   pack: {
