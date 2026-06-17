@@ -1,7 +1,7 @@
 {
   "name": "@canvasflow/feed",
   "description": "This is canvasflow utility for processing feeds",
-  "version": "1.15.3",
+  "version": "1.15.4",
   "type": "module",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
@@ -39,7 +39,7 @@
     "test:broken": "VP_VERSION=4.1.8 vp test --ui --tags-filter=broken",
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",
-    "coverage": "vp test --coverage",
+    "coverage": "VP_VERSION=4.1.8 vp test --coverage",
     "coverage:ui": "VP_VERSION=4.1.8 vp test watch --coverage --ui --open",
     "commit": "cz",
     "format": "vp fmt .",
