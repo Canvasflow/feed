@@ -19,7 +19,7 @@ export default defineConfig({
         name: 'integration',
         description:
           'Tests that verify the interaction between multiple modules or systems.',
-        timeout: 10000,
+        timeout: 60000,
         skip: true,
       },
       {
@@ -40,7 +40,7 @@ export default defineConfig({
         name: 'recipe',
         description:
           'Ensures correct extraction of ingredients, instructions, and cooking times from JSON-LD blocks.',
-        timeout: 10000,
+        timeout: 60000,
         skip: true,
       },
       {

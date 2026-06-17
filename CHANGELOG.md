@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 🏷️ 1.15.6
+
+_June 17, 2026_
+
+🧪 Tests
+
+- Raise integration and recipe tag timeouts to 60s ([`c1665d1`](https://github.com/Canvasflow/feed/commit/c1665d12eb71ad5d9d78ba10912731669c15cd78))
+
+🧹 Chores
+
+- (deps) Remove redundant dependencies and slim runtime deps ([`0b5f2b3`](https://github.com/Canvasflow/feed/commit/0b5f2b3b709d19d527deec8cda4aa50ea48e2652))
+
 ## 🏷️ 1.15.5
 
 _June 17, 2026_
