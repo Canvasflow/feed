@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 🏷️ 1.15.5
+
+_June 17, 2026_
+
+🐳 CI
+
+- Drop redundant test step since coverage runs the suite, bump to 1.15.5 ([`d57b217`](https://github.com/Canvasflow/feed/commit/d57b217b3373ca6208df4f52fef6cab4966a01c7))
+
 ## 🏷️ 1.15.4
 
 _June 17, 2026_
