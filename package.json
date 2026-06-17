@@ -40,7 +40,7 @@
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",
     "coverage": "vp test --coverage",
-    "coverage:ui": "VP_VERSION=4.1.8 vp test --coverage --ui",
+    "coverage:ui": "VP_VERSION=4.1.8 vp test watch --coverage --ui --open",
     "commit": "cz",
     "format": "vp fmt .",
     "changelog": "node scripts/update-changelog.mjs"
@@ -61,6 +61,7 @@
     "@types/luxon": "^3.6.2",
     "@types/node": "^25.4.0",
     "@types/sanitize-html": "^2.16.0",
+    "@vitest/coverage-v8": "^4.1.8",
     "@vitest/ui": "^4.1.8",
     "cz-conventional-changelog": "^3.3.0",
     "cz-git": "^1.11.1",
