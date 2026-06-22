@@ -4,7 +4,24 @@ export const Tag = {
     validTags: new Set(['channel']),
     channel: {
       requiredTags: new Set(['title', 'item']),
-      validTags: new Set(['title', 'item', 'link', 'description', 'language']),
+      validTags: new Set([
+        'title',
+        'item',
+        'link',
+        'description',
+        'language',
+        'generator',
+        'docs',
+        'category',
+        'image',
+        'ttl',
+        'pubDate',
+        'lastBuildDate',
+        'atom:link',
+        'sy:updatePeriod',
+        'sy:updateFrequency',
+        'sy:updateBase',
+      ]),
       item: {
         requiredTags: new Set(['title', 'guid', 'pubDate']),
         validTags: new Set([
@@ -30,7 +47,6 @@ export const Tag = {
           'dc:date',
           'dc:language',
           'dcterms:modified',
-          'atom:updated',
         ]),
       },
     },
