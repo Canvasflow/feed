@@ -11,23 +11,36 @@ env:
 
 jobs:
   test:
-    name: 🧪 Test
+    name: 🧪 Test (Node ${{ matrix.node }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22, 24]
     steps:
       - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          registry-url: 'https://registry.npmjs.org'
+          node-version: ${{ matrix.node }}
+          registry-url: ${{ env.REGISTRY }}
+          scope: '@canvasflow'
 
       - run: npm ci
 
+      - name: 🧹 Lint
+        run: npm run lint
+
+      - name: 🚜 Build
+        run: npm run build
+
       - name: 📊 Coverage
         id: coverage
-        run: |
-          npm run coverage
-          node scripts/coverage-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+        run: npm run coverage
+
+      - name: 📝 Coverage summary
+        if: matrix.node == 24
+        run: node scripts/coverage-summary.mjs >> "$GITHUB_STEP_SUMMARY"
 
   release:
     name: 🚀 Publish
