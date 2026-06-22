@@ -22,13 +22,13 @@ src/
 
 ## Running tests
 
-| Command | What it does |
-| --- | --- |
-| `npm test` | Run the full suite once (`vp test`). |
-| `npm run test:debug` | No timeout, no file parallelism (for debugging/breakpoints). |
-| `npm run test:ui` | Watch mode + interactive Vitest UI. |
-| `npm run coverage` | Run the suite with a v8 coverage report. |
-| `npm run coverage:ui` | Coverage in watch mode + UI. |
+| Command               | What it does                                                 |
+| --------------------- | ------------------------------------------------------------ |
+| `npm test`            | Run the full suite once (`vp test`).                         |
+| `npm run test:debug`  | No timeout, no file parallelism (for debugging/breakpoints). |
+| `npm run test:ui`     | Watch mode + interactive Vitest UI.                          |
+| `npm run coverage`    | Run the suite with a v8 coverage report.                     |
+| `npm run coverage:ui` | Coverage in watch mode + UI.                                 |
 
 Run a single file:
 
@@ -40,15 +40,15 @@ npx vitest run src/rss/RSSFeed.test.ts
 
 Tests are tagged via `{ tags: [...] }` in their Vitest options. The configured tags are:
 
-| Tag | Meaning |
-| --- | --- |
-| `unit` | Isolated logic. |
-| `rss` | Feed structure / XML / channel metadata. |
-| `html` | DOM → component conversion. |
-| `integration` | Cross-module / network tests — **skipped by default**. |
-| `recipe` | JSON-LD recipe extraction (network) — **skipped by default**. |
-| `todo` | Incomplete / under development. |
-| `broken` | Known-failing, needs fixing. |
+| Tag           | Meaning                                                       |
+| ------------- | ------------------------------------------------------------- |
+| `unit`        | Isolated logic.                                               |
+| `rss`         | Feed structure / XML / channel metadata.                      |
+| `html`        | DOM → component conversion.                                   |
+| `integration` | Cross-module / network tests — **skipped by default**.        |
+| `recipe`      | JSON-LD recipe extraction (network) — **skipped by default**. |
+| `todo`        | Incomplete / under development.                               |
+| `broken`      | Known-failing, needs fixing.                                  |
 
 The UI scripts filter on a tag, e.g. `npm run test:unit`, `npm run test:integration`, `npm run test:todo`, `npm run test:broken`.
 
@@ -58,12 +58,12 @@ The UI scripts filter on a tag, e.g. `npm run test:unit`, `npm run test:integrat
 
 Coverage uses the **v8** provider and is gated by thresholds in `vite.config.ts`; `npm run coverage` fails if any drops below:
 
-| Metric | Minimum |
-| --- | --- |
-| Statements | 95% |
-| Branches | 88% |
-| Functions | 99% |
-| Lines | 97% |
+| Metric     | Minimum |
+| ---------- | ------- |
+| Statements | 95%     |
+| Branches   | 88%     |
+| Functions  | 99%     |
+| Lines      | 97%     |
 
 `src/index.ts`, config files, and `*.d.ts` are excluded from coverage.
 

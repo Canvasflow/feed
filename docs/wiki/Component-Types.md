@@ -34,18 +34,18 @@ type Component = {
 
 Each kind has a typed interface extending `Component`, e.g.:
 
-| Interface | `component` value |
-| --- | --- |
-| `TextComponent` | any `TextType` |
-| `ImageComponent` | `image` |
-| `GalleryComponent` | `gallery` |
-| `VideoComponent` / `YoutubeComponent` / `VimeoComponent` / `DailymotionComponent` / `TikTokComponent` | `video` (with a `vidtype`) |
-| `AudioComponent` | `audio` |
-| `TwitterComponent` / `InstagramComponent` / `InfogramComponent` | `twitter` / `instagram` / `infogram` |
-| `HTMLTableComponent` | `htmltable` |
-| `ButtonComponent` | `button` |
-| `ContainerComponent` / `ColumnsComponent` / `LiveContainerComponent` / `LivePostComponent` / `RecipeComponent` / `CustomComponent` / `FigureContainerComponent` / `LinkContainerComponent` | structural kinds |
-| `SpacerComponent` | `spacer` |
+| Interface                                                                                                                                                                                  | `component` value                    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
+| `TextComponent`                                                                                                                                                                            | any `TextType`                       |
+| `ImageComponent`                                                                                                                                                                           | `image`                              |
+| `GalleryComponent`                                                                                                                                                                         | `gallery`                            |
+| `VideoComponent` / `YoutubeComponent` / `VimeoComponent` / `DailymotionComponent` / `TikTokComponent`                                                                                      | `video` (with a `vidtype`)           |
+| `AudioComponent`                                                                                                                                                                           | `audio`                              |
+| `TwitterComponent` / `InstagramComponent` / `InfogramComponent`                                                                                                                            | `twitter` / `instagram` / `infogram` |
+| `HTMLTableComponent`                                                                                                                                                                       | `htmltable`                          |
+| `ButtonComponent`                                                                                                                                                                          | `button`                             |
+| `ContainerComponent` / `ColumnsComponent` / `LiveContainerComponent` / `LivePostComponent` / `RecipeComponent` / `CustomComponent` / `FigureContainerComponent` / `LinkContainerComponent` | structural kinds                     |
+| `SpacerComponent`                                                                                                                                                                          | `spacer`                             |
 
 ## Type guards
 

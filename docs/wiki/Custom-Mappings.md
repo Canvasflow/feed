@@ -6,11 +6,11 @@ Mappings tell Canvasflow how to recognise an HTML element as a specific componen
 
 ## Params
 
-| Property | Required | Description |
-| --- | --- | --- |
-| `mappings` | No | Component mappings — how to detect components from HTML. |
-| `excludes` | No | Base mappings (`match` + `filters` only); matches are removed with all children. |
-| `ignoreParagraphWrap` | No | When `true`, extracted text is not wrapped in paragraph tags. |
+| Property              | Required | Description                                                                      |
+| --------------------- | -------- | -------------------------------------------------------------------------------- |
+| `mappings`            | No       | Component mappings — how to detect components from HTML.                         |
+| `excludes`            | No       | Base mappings (`match` + `filters` only); matches are removed with all children. |
+| `ignoreParagraphWrap` | No       | When `true`, extracted text is not wrapped in paragraph tags.                    |
 
 > Elements can also be excluded directly in the HTML with the `data-cf-ignore` attribute.
 
@@ -18,12 +18,12 @@ Mappings tell Canvasflow how to recognise an HTML element as a specific componen
 
 Every mapping shares these foundational fields:
 
-| Property | Required | Description |
-| --- | --- | --- |
-| `match` | Yes | How many filters must match: `any` or `all`. |
-| `filters` | Yes | The list of [filters](#filters) identifying the element. |
-| `properties` | No | An arbitrary object copied verbatim onto the resulting component's `properties`. |
-| `name` | No | An optional label (identification only; not used for matching). |
+| Property     | Required | Description                                                                      |
+| ------------ | -------- | -------------------------------------------------------------------------------- |
+| `match`      | Yes      | How many filters must match: `any` or `all`.                                     |
+| `filters`    | Yes      | The list of [filters](#filters) identifying the element.                         |
+| `properties` | No       | An arbitrary object copied verbatim onto the resulting component's `properties`. |
+| `name`       | No       | An optional label (identification only; not used for matching).                  |
 
 ## Filters
 
@@ -67,15 +67,15 @@ The attribute filter has two forms, both keyed by `type: "attribute"`:
 
 Each component mapping extends the base mapping with a `component` field. Some types need extra sub-mappings:
 
-| `component` | Extra property | Notes |
-| --- | --- | --- |
-| `container` | — | Groups child components into one unit. |
-| `recipe` | — | Like `container` plus a `url`; the page should expose an LD+JSON recipe. |
-| `columns` | `column` | A sub-mapping describing each column. |
-| `live_container` | `post` | A sub-mapping describing each `live_post`. |
-| `gallery` | `slide` | A sub-mapping describing each slide; only valid image slides become items. |
-| `custom` | — | Preserves the matched element as raw/sanitized HTML instead of converting children. |
-| *text type* | — | Any text type (`headline`, `body`, `crosshead`, `text1`–`text60`, …) — an alternative to the `role` attribute. |
+| `component`      | Extra property | Notes                                                                                                          |
+| ---------------- | -------------- | -------------------------------------------------------------------------------------------------------------- |
+| `container`      | —              | Groups child components into one unit.                                                                         |
+| `recipe`         | —              | Like `container` plus a `url`; the page should expose an LD+JSON recipe.                                       |
+| `columns`        | `column`       | A sub-mapping describing each column.                                                                          |
+| `live_container` | `post`         | A sub-mapping describing each `live_post`.                                                                     |
+| `gallery`        | `slide`        | A sub-mapping describing each slide; only valid image slides become items.                                     |
+| `custom`         | —              | Preserves the matched element as raw/sanitized HTML instead of converting children.                            |
+| _text type_      | —              | Any text type (`headline`, `body`, `crosshead`, `text1`–`text60`, …) — an alternative to the `role` attribute. |
 
 Example — treat every `<section>` as a container:
 
@@ -95,7 +95,11 @@ Example — treat every `<section>` as a container:
     {
       "match": "any",
       "filters": [
-        { "type": "class", "match": "any", "items": ["advertisement", "newsletter-signup"] }
+        {
+          "type": "class",
+          "match": "any",
+          "items": ["advertisement", "newsletter-signup"]
+        }
       ]
     }
   ]

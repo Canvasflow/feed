@@ -24,11 +24,11 @@ Only `dist/` is published (`files` in `package.json`). The package exposes `./di
 
 Publishing is automated by the **🚀 Publish** workflow ([`.github/workflows/publish.yml`](../../.github/workflows/publish.yml)), triggered when a `v*` tag is pushed.
 
-| Job | Trigger | What it does |
-| --- | --- | --- |
-| **🧪 Test** | push of a `v*` tag | `npm ci`, then `npm run coverage` and append a coverage summary to the run summary. |
-| **🚀 Publish** | after Test | `npm ci` → `npm run build` → `npm pack --dry-run` → `npm publish` to GitHub Packages (`@canvasflow` scope). |
-| **📚 Sync Wiki** | push of a `v*` tag | Mirror `docs/wiki/` into the repository's GitHub Wiki (independent of the other jobs). |
+| Job              | Trigger            | What it does                                                                                                |
+| ---------------- | ------------------ | ----------------------------------------------------------------------------------------------------------- |
+| **🧪 Test**      | push of a `v*` tag | `npm ci`, then `npm run coverage` and append a coverage summary to the run summary.                         |
+| **🚀 Publish**   | after Test         | `npm ci` → `npm run build` → `npm pack --dry-run` → `npm publish` to GitHub Packages (`@canvasflow` scope). |
+| **📚 Sync Wiki** | push of a `v*` tag | Mirror `docs/wiki/` into the repository's GitHub Wiki (independent of the other jobs).                      |
 
 ### Releasing
 
@@ -41,7 +41,7 @@ Publishing is automated by the **🚀 Publish** workflow ([`.github/workflows/pu
 The **Sync Wiki** job mirrors the Markdown in [`docs/wiki/`](.) into the repo's GitHub Wiki. It:
 
 - runs on push of a `v*` tag, independently of the test/publish jobs;
-- clones the wiki Git repo (or initializes it if the wiki has never been created — the **Wikis** feature must be enabled in *Settings → Features*);
+- clones the wiki Git repo (or initializes it if the wiki has never been created — the **Wikis** feature must be enabled in _Settings → Features_);
 - `rsync`s `docs/wiki/` into the wiki root with `--delete`, so pages removed from source are removed from the wiki;
 - strips the `.md` suffix from links between sibling wiki pages (leaving repo-relative `../../…` and absolute `https://…` links untouched), then commits and pushes to the wiki's `master` branch.
 
@@ -49,6 +49,6 @@ Because of that link rewriting, write internal links as `[Page](Page.md)` — th
 
 ### Authoring conventions
 
-- One page per file; the filename (with spaces as hyphens) is the wiki page title, e.g. `Getting-Started.md` → *Getting Started*.
+- One page per file; the filename (with spaces as hyphens) is the wiki page title, e.g. `Getting-Started.md` → _Getting Started_.
 - `Home.md` is the landing page; `_Sidebar.md` is the navigation sidebar.
 - Link sibling pages with the `.md` suffix; link repo files with `../../` relative paths.

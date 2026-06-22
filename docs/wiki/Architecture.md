@@ -24,12 +24,12 @@ The feed pipeline **drives** the HTML pipeline: `build()` runs each item's `cont
 
 ## Feed pipeline (`src/rss/`)
 
-| File | Responsibility |
-| --- | --- |
-| [`RSSFeed.ts`](../../src/rss/RSSFeed.ts) | Parses XML with `fast-xml-parser`; exposes `validate()` and `build()`. |
-| [`RSS.ts`](../../src/rss/RSS.ts) | The typed `RSS` / `Channel` / `Item` interfaces. |
-| [`Tag.ts`](../../src/rss/Tag.ts) | Required-tag and valid-tag allow-lists per level (rss / channel / item). |
-| [`Attributes.ts`](../../src/rss/Attributes.ts) | Helpers for the parser's attribute conventions. |
+| File                                           | Responsibility                                                           |
+| ---------------------------------------------- | ------------------------------------------------------------------------ |
+| [`RSSFeed.ts`](../../src/rss/RSSFeed.ts)       | Parses XML with `fast-xml-parser`; exposes `validate()` and `build()`.   |
+| [`RSS.ts`](../../src/rss/RSS.ts)               | The typed `RSS` / `Channel` / `Item` interfaces.                         |
+| [`Tag.ts`](../../src/rss/Tag.ts)               | Required-tag and valid-tag allow-lists per level (rss / channel / item). |
+| [`Attributes.ts`](../../src/rss/Attributes.ts) | Helpers for the parser's attribute conventions.                          |
 
 - **`validate()`** checks required tags against the `Tag.ts` allow-lists and populates `errors`/`warnings` arrays on the RSS, channel, and item objects.
 - **`build()`** constructs the typed `RSS` object and converts each item's `content:encoded` into a `components` array.
@@ -44,17 +44,17 @@ XML attributes from the parser use the `@_` prefix convention (e.g. `@_url`, `@_
 2. **Parse** with `himalaya` into a `Node[]` AST.
 3. **Reduce** the node tree via `reduceComponents(params)` into `Component[]`.
 
-| File / folder | Responsibility |
-| --- | --- |
-| [`HTMLMapper.ts`](../../src/component/HTMLMapper.ts) | Public entry: `toComponents()` and `getRootElement()`; HTML pre-processing. |
-| [`mapping/Mapping.ts`](../../src/component/mapping/Mapping.ts) | The `reduceComponents` reducer and the element-detection engine. |
-| [`mapping/Mapping.schema.ts`](../../src/component/mapping/Mapping.schema.ts) | Zod schemas for `Params`, `Mapping`, and filters. |
-| [`mapping/Mapping.constants.ts`](../../src/component/mapping/Mapping.constants.ts) | Tag / attribute allow-lists used during conversion. |
-| [`mapping/Mapping.utils.ts`](../../src/component/mapping/Mapping.utils.ts) | Leaf helpers (`sanitizeNode`, `matchesPattern`, `processTextLinks`, …). |
-| [`mapping/Mapping.embeds.ts`](../../src/component/mapping/Mapping.embeds.ts) | Self-contained social-embed converters/detectors. |
-| [`Component.ts`](../../src/component/Component.ts) | `ComponentType` / `TextType` unions, component interfaces, and `is*` guards. |
-| [`node/Node.ts`](../../src/component/node/Node.ts) | himalaya AST node types and helpers (`getAttributes`, `findDescendants`, `SetUtils`). |
-| [`schema/Schema.ts`](../../src/component/schema/Schema.ts) | Zod schemas for recipe (JSON-LD) extraction. |
+| File / folder                                                                      | Responsibility                                                                        |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| [`HTMLMapper.ts`](../../src/component/HTMLMapper.ts)                               | Public entry: `toComponents()` and `getRootElement()`; HTML pre-processing.           |
+| [`mapping/Mapping.ts`](../../src/component/mapping/Mapping.ts)                     | The `reduceComponents` reducer and the element-detection engine.                      |
+| [`mapping/Mapping.schema.ts`](../../src/component/mapping/Mapping.schema.ts)       | Zod schemas for `Params`, `Mapping`, and filters.                                     |
+| [`mapping/Mapping.constants.ts`](../../src/component/mapping/Mapping.constants.ts) | Tag / attribute allow-lists used during conversion.                                   |
+| [`mapping/Mapping.utils.ts`](../../src/component/mapping/Mapping.utils.ts)         | Leaf helpers (`sanitizeNode`, `matchesPattern`, `processTextLinks`, …).               |
+| [`mapping/Mapping.embeds.ts`](../../src/component/mapping/Mapping.embeds.ts)       | Self-contained social-embed converters/detectors.                                     |
+| [`Component.ts`](../../src/component/Component.ts)                                 | `ComponentType` / `TextType` unions, component interfaces, and `is*` guards.          |
+| [`node/Node.ts`](../../src/component/node/Node.ts)                                 | himalaya AST node types and helpers (`getAttributes`, `findDescendants`, `SetUtils`). |
+| [`schema/Schema.ts`](../../src/component/schema/Schema.ts)                         | Zod schemas for recipe (JSON-LD) extraction.                                          |
 
 ### The detection engine
 

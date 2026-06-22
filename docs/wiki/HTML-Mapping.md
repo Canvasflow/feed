@@ -13,9 +13,9 @@ const components = HTMLMapper.toComponents(html, params /* optional */);
 const root = HTMLMapper.getRootElement(html, rootMapping); // string | null
 ```
 
-| Method | Returns | Purpose |
-| --- | --- | --- |
-| `toComponents(html, params?)` | `Component[]` | The full HTML → components conversion. |
+| Method                          | Returns          | Purpose                                                                    |
+| ------------------------------- | ---------------- | -------------------------------------------------------------------------- |
+| `toComponents(html, params?)`   | `Component[]`    | The full HTML → components conversion.                                     |
 | `getRootElement(html, mapping)` | `string \| null` | Serialize the first element matching `mapping` (used to scope extraction). |
 
 ## The pipeline
@@ -40,15 +40,15 @@ For each element the reducer tries, in order:
 
 ## Default text mapping
 
-| HTML | Component type |
-| --- | --- |
-| `h1` | `headline` |
-| `h2` | `title` |
-| `h3` | `subtitle` |
-| `h4` | `intro` |
-| `p` | `body` |
-| `blockquote` | `blockquote` |
-| `footer` | `footer` |
+| HTML         | Component type |
+| ------------ | -------------- |
+| `h1`         | `headline`     |
+| `h2`         | `title`        |
+| `h3`         | `subtitle`     |
+| `h4`         | `intro`        |
+| `p`          | `body`         |
+| `blockquote` | `blockquote`   |
+| `footer`     | `footer`       |
 
 Any text element's `role` attribute overrides the default (e.g. `<p role="crosshead">` → `crosshead`, `<p role="text12">` → `text12`).
 
@@ -58,14 +58,14 @@ Text components keep only [phrasing content](https://developer.mozilla.org/en-US
 
 ## Built-in element detection (summary)
 
-| Content | Detected from |
-| --- | --- |
-| Image | `<img>`, `<picture>` (uses the fallback `<img>`), `<figure>` (+ `<figcaption>`/`<small role="credit">`). |
-| Gallery | `role="gallery"`/`role="mosaic"` container, or a custom gallery mapping. |
-| Video | `<video>` (`src` or first `<source>`); YouTube/Vimeo/Dailymotion via `<iframe>`. |
-| Audio | `<audio>`; Apple Podcasts via `<iframe>`. |
-| Social | `blockquote`/`a` markers for Instagram, Twitter/X, TikTok. |
-| Table | `<table>` → `htmltable` (restricted tag allow-list). |
-| Button | `<a role="button">` or `<button><a></button>`. |
+| Content | Detected from                                                                                            |
+| ------- | -------------------------------------------------------------------------------------------------------- |
+| Image   | `<img>`, `<picture>` (uses the fallback `<img>`), `<figure>` (+ `<figcaption>`/`<small role="credit">`). |
+| Gallery | `role="gallery"`/`role="mosaic"` container, or a custom gallery mapping.                                 |
+| Video   | `<video>` (`src` or first `<source>`); YouTube/Vimeo/Dailymotion via `<iframe>`.                         |
+| Audio   | `<audio>`; Apple Podcasts via `<iframe>`.                                                                |
+| Social  | `blockquote`/`a` markers for Instagram, Twitter/X, TikTok.                                               |
+| Table   | `<table>` → `htmltable` (restricted tag allow-list).                                                     |
+| Button  | `<a role="button">` or `<button><a></button>`.                                                           |
 
 Each of these has a dedicated section (required attributes, examples, edge cases) in [`docs/HTML.md`](../../docs/HTML.md). To recognise content that does not follow these conventions, define a [custom mapping](Custom-Mappings.md).

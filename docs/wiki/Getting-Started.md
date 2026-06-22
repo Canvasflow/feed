@@ -76,17 +76,17 @@ npm install
 
 ### Everyday commands
 
-| Command | What it does |
-| --- | --- |
-| `npm run build` | Compile and bundle the library into `dist/` (ESM + `.d.mts`) via `vp pack`. |
-| `npm test` | Run the full test suite once (`vp test`). |
-| `npm run test:debug` | Run tests with no timeout and no file parallelism (debugging). |
-| `npm run test:ui` | Run tests in watch mode with the interactive Vitest UI. |
-| `npm run lint` / `npm run lint:fix` | Lint (and auto-fix) the source. |
-| `npm run format` | Format the whole project (`vp fmt .`). |
-| `npm run coverage` | Run the suite and print a v8 coverage report. |
-| `npm run commit` | Create a Conventional Commit interactively (commitizen). |
-| `npm run changelog` | Refresh `CHANGELOG.md` from recent commits. |
+| Command                             | What it does                                                                |
+| ----------------------------------- | --------------------------------------------------------------------------- |
+| `npm run build`                     | Compile and bundle the library into `dist/` (ESM + `.d.mts`) via `vp pack`. |
+| `npm test`                          | Run the full test suite once (`vp test`).                                   |
+| `npm run test:debug`                | Run tests with no timeout and no file parallelism (debugging).              |
+| `npm run test:ui`                   | Run tests in watch mode with the interactive Vitest UI.                     |
+| `npm run lint` / `npm run lint:fix` | Lint (and auto-fix) the source.                                             |
+| `npm run format`                    | Format the whole project (`vp fmt .`).                                      |
+| `npm run coverage`                  | Run the suite and print a v8 coverage report.                               |
+| `npm run commit`                    | Create a Conventional Commit interactively (commitizen).                    |
+| `npm run changelog`                 | Refresh `CHANGELOG.md` from recent commits.                                 |
 
 A fuller table — including the tag-filtered test scripts — is in the [README](../../README.md#scripts) and on the [Testing](Testing.md) page.
 

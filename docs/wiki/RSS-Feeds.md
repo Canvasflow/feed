@@ -10,16 +10,16 @@ The `RSSFeed` class parses RSS/Atom XML, validates it, and builds a typed `RSS` 
 import { RSSFeed } from '@canvasflow/feed';
 
 const feed = new RSSFeed(xml, params /* optional Params */);
-await feed.validate();   // populate errors/warnings
-const rss = await feed.build();   // typed RSS, items include components
+await feed.validate(); // populate errors/warnings
+const rss = await feed.build(); // typed RSS, items include components
 ```
 
-| Method | Returns | Purpose |
-| --- | --- | --- |
-| `new RSSFeed(content, params?)` | — | Parse the XML (`fast-xml-parser`) and store the raw tree privately. An optional `Params` configures HTML conversion. |
-| `validate()` | `Promise<void>` | Check required tags against the `Tag.ts` allow-lists; fill `errors`/`warnings` on the `rss`, `channel`, and each `item`. |
-| `build()` | `Promise<RSS>` | Build the typed `RSS`; convert each item's `content:encoded` HTML into `components` via `HTMLMapper`. |
-| `set root(mapping)` | — | Scope content extraction to a sub-element (a `Mapping`) before conversion. |
+| Method                          | Returns         | Purpose                                                                                                                  |
+| ------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `new RSSFeed(content, params?)` | —               | Parse the XML (`fast-xml-parser`) and store the raw tree privately. An optional `Params` configures HTML conversion.     |
+| `validate()`                    | `Promise<void>` | Check required tags against the `Tag.ts` allow-lists; fill `errors`/`warnings` on the `rss`, `channel`, and each `item`. |
+| `build()`                       | `Promise<RSS>`  | Build the typed `RSS`; convert each item's `content:encoded` HTML into `components` via `HTMLMapper`.                    |
+| `set root(mapping)`             | —               | Scope content extraction to a sub-element (a `Mapping`) before conversion.                                               |
 
 Static helpers: `RSSFeed.validateParams(params?, root?)`, `RSSFeed.toJSON(rss)`, `RSSFeed.toString(rss)`, and `RSSFeed.getRecipeFromUrl(url)` / `RSSFeed.getHtmlContent(url)`. See [API Reference](API-Reference.md).
 
@@ -27,11 +27,11 @@ Static helpers: `RSSFeed.validateParams(params?, root?)`, `RSSFeed.toJSON(rss)`,
 
 Validation is driven by allow-lists in [`Tag.ts`](../../src/rss/Tag.ts). Anything **required** that is missing becomes an error; anything **not in the valid set** becomes a warning (`Invalid property "<name>"`). Nothing throws.
 
-| Level | Required | A few of the valid tags |
-| --- | --- | --- |
-| `rss` | `channel` | `channel` |
-| `channel` | `title`, `item` | `link`, `description`, `language`, `generator`, `docs`, `category`, `image`, `ttl`, `pubDate`, `lastBuildDate`, `atom:link`, `sy:*` |
-| `item` | `title`, `guid`, `pubDate` | `link`, `description`, `category`, `author`, `enclosure`, `content:encoded`, `media:*`, `atom:*`, `dc:*`, `cf:*` |
+| Level     | Required                   | A few of the valid tags                                                                                                             |
+| --------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `rss`     | `channel`                  | `channel`                                                                                                                           |
+| `channel` | `title`, `item`            | `link`, `description`, `language`, `generator`, `docs`, `category`, `image`, `ttl`, `pubDate`, `lastBuildDate`, `atom:link`, `sy:*` |
+| `item`    | `title`, `guid`, `pubDate` | `link`, `description`, `category`, `author`, `enclosure`, `content:encoded`, `media:*`, `atom:*`, `dc:*`, `cf:*`                    |
 
 ## Parser conventions
 
@@ -42,14 +42,14 @@ Validation is driven by allow-lists in [`Tag.ts`](../../src/rss/Tag.ts). Anythin
 
 Canvasflow reads a curated subset of each namespace (anything else is ignored):
 
-| Prefix | Namespace | Used for |
-| --- | --- | --- |
-| `atom` | Atom | `atom:link` (channel self-reference), `atom:author`, `atom:updated`. |
-| `dc` | Dublin Core | `dc:creator`, `dc:date`, `dc:language`, `dcterms:modified`. |
-| `sy` | Syndication | `sy:updatePeriod`, `sy:updateFrequency`, `sy:updateBase`. |
-| `content` | Content | `content:encoded` — the full HTML body, source of `components`. |
-| `media` | Media RSS | `media:content`, `media:group`, and nested `media:*` metadata. |
-| `cf` | Canvasflow | `cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`. |
+| Prefix    | Namespace   | Used for                                                                                       |
+| --------- | ----------- | ---------------------------------------------------------------------------------------------- |
+| `atom`    | Atom        | `atom:link` (channel self-reference), `atom:author`, `atom:updated`.                           |
+| `dc`      | Dublin Core | `dc:creator`, `dc:date`, `dc:language`, `dcterms:modified`.                                    |
+| `sy`      | Syndication | `sy:updatePeriod`, `sy:updateFrequency`, `sy:updateBase`.                                      |
+| `content` | Content     | `content:encoded` — the full HTML body, source of `components`.                                |
+| `media`   | Media RSS   | `media:content`, `media:group`, and nested `media:*` metadata.                                 |
+| `cf`      | Canvasflow  | `cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`. |
 
 Full element-by-element tables (requirements, ancestors, descriptions) are in [`docs/RSS.md`](../../docs/RSS.md).
 
