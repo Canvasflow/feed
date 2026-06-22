@@ -3,21 +3,15 @@ import { z } from 'zod';
 import sanitizeHtml from 'sanitize-html';
 
 import {
-  type AudioComponent,
   type ButtonComponent,
   type Component,
   type CustomComponent,
-  type DailymotionComponent,
   type FigureContainerComponent,
   type HTMLTableComponent,
-  type InfogramComponent,
   type LinkContainerComponent,
   type TextComponent,
   type TextType,
   type TikTokComponent,
-  type TwitterComponent,
-  type VimeoComponent,
-  type YoutubeComponent,
   isAudioComponent,
   isFigureContainerComponent,
   isHTMLTableComponent,
@@ -26,13 +20,11 @@ import {
   isTextComponent,
   isValidTextRole,
   isVideoComponent,
-  isYoutubeComponent,
   isButtonComponent,
 } from '../Component';
 import {
   type ElementNode,
   type Node,
-  type NodeFilterFn,
   findDescendants,
   getAttributes,
 } from '../node/Node';
@@ -73,16 +65,11 @@ import {
   excludeNode,
   filterAllMapping,
   filterAnyMapping,
-  fromFigcaption,
 } from './Mapping.utils';
 import {
   toInstagram,
   toTikTok,
-  toInfogram,
-  toDailymotion,
-  toYoutube,
   toYoutubeFromAnchor,
-  toVimeo,
   isInstagramNode,
   isTikTokNode,
 } from './Mapping.embeds';
@@ -91,11 +78,19 @@ import {
   toImage,
   toVideo,
   toAudio,
-  toApplePodcast,
   toGallery,
   toGalleryFromMapping,
+  toTwitter,
+  isTwitterNode,
+  fromIframe,
 } from './Mapping.media';
-import { toContainer, toColumns, toLiveContainer } from './Mapping.container';
+import {
+  toContainer,
+  toColumns,
+  toLiveContainer,
+  toFigureContainer,
+  toLinkContainer,
+} from './Mapping.container';
 
 // Re-export the publicly consumed constants and helpers so the package surface
 // is unchanged.
@@ -671,102 +666,13 @@ function toHTMLTable(node: ElementNode): HTMLTableComponent {
 }
 
 /**
- * Transform an html component to Canvasflow Twitter Component
- *
- * @param {ElementNode | URL} node
- * @returns {TwitterComponent}
- */
-function toTwitter(node: ElementNode | URL): TwitterComponent | null {
-  if (node instanceof URL) {
-    return toTweetFromUrl(node);
-  }
-  const twitterRegex = /\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const params: { id?: string; account?: string } = {};
-  let attrs: Record<string, string> = {};
-
-  const anchorNodes = node.children.reduce(
-    findDescendants('a'),
-    []
-  ) as ElementNode[];
-  const validAnchorNodes = anchorNodes.filter((node: ElementNode) => {
-    const attributes = getAttributes(node.attributes);
-    attrs = Object.fromEntries(attributes);
-    const url = attributes.get('href') || '';
-    if (!url) return false;
-    if (twitterRegex.test(url)) return true;
-    return false;
-  });
-
-  if (!validAnchorNodes.length) return null;
-
-  const tweetNode = validAnchorNodes.pop();
-
-  if (tweetNode) {
-    const attributes = getAttributes(tweetNode.attributes);
-    attrs = Object.fromEntries(attributes);
-    const tweetUrl = attributes.get('href') || '';
-
-    let values: Array<string> = [];
-    values = twitterRegex.exec(tweetUrl) || [];
-    params.id = values[3];
-    params.account = values[1];
-  }
-
-  return {
-    height: '350',
-    fixedheight: 'on',
-    bleed: 'on',
-    params,
-    component: 'twitter',
-    errors,
-    warnings,
-    element: {
-      tag: node.tagName,
-      attributes: attrs,
-    },
-  };
-}
-
-/**
- * Transform an tweet URL to Canvasflow Twitter Component
- *
- * @param {URL} uri
- * @returns {TwitterComponent}
- */
-function toTweetFromUrl(uri: URL): TwitterComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const params: { id?: string; account?: string } = {};
-
-  const tweetUrl = uri.pathname;
-
-  const twitterRegex = /\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
-
-  const values: Array<string> = twitterRegex.exec(tweetUrl) || [];
-  params.id = values[3];
-  params.account = values[1];
-
-  return {
-    height: '350',
-    fixedheight: 'on',
-    bleed: 'on',
-    params,
-    component: 'twitter',
-    errors,
-    warnings,
-  };
-}
-
-/**
  * Transform an html node into a Canvasflow Custom Component
  *
  * @param {ElementNode} node
  * @param {Record<string, unknown> | undefined} properties
  * @returns {CustomComponent}
  */
-function toCustom(
+export function toCustom(
   node: ElementNode,
   properties?: Record<string, unknown>
 ): CustomComponent {
@@ -790,145 +696,6 @@ function toCustom(
       attributes: Object.fromEntries(attributes),
     },
   };
-}
-
-function filterClassNameDescendants(className: string): NodeFilterFn {
-  return (node: Node): boolean => {
-    const { type } = node;
-    if (type !== 'element') return false;
-
-    const attributes = getAttributes(node.attributes);
-    const classNames = attributes.get('class');
-    if (!classNames) return false;
-    if (typeof classNames !== 'string') return false;
-    for (const name of classNames.split(' ')) {
-      if (name === className) {
-        return true;
-      }
-    }
-
-    return false;
-  };
-}
-
-/**
- * Transform an a tag into a Canvasflow LinkContainer Component
- *
- * @param {ElementNode} node
- * @param {Params} [params]
- * @param {Record<string, unknown>} [properties]
- * @returns {LinkContainerComponent}
- */
-function toLinkContainer(
-  node: ElementNode,
-  params?: Params,
-  properties?: Record<string, unknown>
-): LinkContainerComponent {
-  const warnings: string[] = [];
-  const errors: string[] = [];
-  const attributes = getAttributes(node.attributes);
-  const id = attributes.get('id');
-
-  const link: string | undefined = attributes.get('href');
-
-  const containerParams: Params = params
-    ? structuredClone({
-        ...params,
-        ignoreParagraphWrap: true,
-      })
-    : { ignoreParagraphWrap: true };
-
-  const components: Array<Component> = node.children.length
-    ? node.children.reduce(reduceComponents(containerParams), [])
-    : [];
-
-  const component: LinkContainerComponent = {
-    id,
-    attributes,
-    component: 'container',
-    type: 'link',
-    link: link || '',
-    components,
-    errors,
-    warnings,
-    properties,
-    element: {
-      tag: node.tagName,
-      attributes: Object.fromEntries(attributes),
-    },
-  };
-
-  return component;
-}
-
-/**
- * Transform an a Figure elemento into a Canvasflow FigureContainer Component
- *
- * @param {ElementNode} node
- * @param {Params} [params]
- * @param {Record<string, unknown>} [properties]
- * @returns {FigureContainerComponent}
- */
-function toFigureContainer(
-  node: ElementNode,
-  params?: Params,
-  properties?: Record<string, unknown>
-): FigureContainerComponent {
-  const warnings: string[] = [];
-  const errors: string[] = [];
-  const attributes = getAttributes(node.attributes);
-  const id = attributes.get('id');
-  let caption = '';
-  let credit = '';
-
-  // Get the figcaption section
-  const figcaptionNodes = node.children.reduce(
-    findDescendants('figcaption'),
-    []
-  );
-  if (figcaptionNodes.length) {
-    const figcaptionNode = figcaptionNodes.shift() as ElementNode;
-    const ficaptionResponse = fromFigcaption(figcaptionNode);
-    if (ficaptionResponse) {
-      caption = ficaptionResponse.caption || '';
-      credit = ficaptionResponse.credit || '';
-    }
-  }
-
-  const creditNodes = node.children.reduce(
-    findDescendants(filterClassNameDescendants('credit')),
-    []
-  );
-
-  if (creditNodes.length) {
-    const creditNode = creditNodes.shift() as ElementNode;
-    credit = sanitizeNode(creditNode, {
-      allowedTags: [],
-      allowedAttributes: {},
-    });
-  }
-
-  const components = node.children
-    .reduce(findDescendants(filterFigureDescendants(params)), [])
-    .reduce(reduceComponents(params), []);
-
-  const component: FigureContainerComponent = {
-    id,
-    component: 'container',
-    type: 'figure',
-    components,
-    caption,
-    credit,
-    errors,
-    warnings,
-    properties,
-    element: {
-      tag: node.tagName,
-      attributes: Object.fromEntries(attributes),
-    },
-  };
-
-  return component;
 }
 
 /**
@@ -1005,221 +772,6 @@ function toText(
 }
 
 /**
- * Filter the valid descendants for figures
- *
- * @param {Params} [params\
- * @returns {NodeFilterFn}
- */
-function filterFigureDescendants(params?: Params): NodeFilterFn {
-  return (node: Node): boolean => {
-    const { type } = node;
-    if (type !== 'element') return false;
-    const { tagName } = node;
-    // Exclude the nodes that we need to ignore
-    if (params?.excludes?.length) {
-      const isNodeExcluded = excludeNode(node, params.excludes);
-      if (isNodeExcluded) {
-        return false;
-      }
-    }
-
-    const validFigureTags = new Set([
-      'audio',
-      'img',
-      'picture',
-      'table',
-      'video',
-    ]);
-
-    if (validFigureTags.has(tagName)) {
-      return true;
-    }
-    if (isTwitterNode(node)) {
-      return true;
-    }
-
-    if (isTikTokNode(node)) {
-      return true;
-    }
-
-    if (tagName === 'iframe') {
-      const iframeComponent = fromIframe(node);
-      return isYoutubeComponent(iframeComponent);
-    }
-
-    return false;
-  };
-}
-
-/**
- * It process an iframe node and returns a Canvasflow component
- *
- * @param {ElementNode} node
- * @returns {YoutubeComponent | InfogramComponent | DailymotionComponent | TikTokComponent | VimeoComponent | TwitterComponent | CustomComponent | AudioComponent | null}
- */
-function fromIframe(
-  node: ElementNode
-):
-  | YoutubeComponent
-  | InfogramComponent
-  | DailymotionComponent
-  | TikTokComponent
-  | VimeoComponent
-  | TwitterComponent
-  | CustomComponent
-  | AudioComponent
-  | null {
-  const attributes = getAttributes(node.attributes);
-  const id = attributes.get('id');
-
-  let src = attributes.get('src') || '';
-
-  // If the iframe do not have a src we just ignore it
-  if (!src || src.length === 0) {
-    return null;
-  }
-
-  if (src.startsWith('//')) {
-    src = `https:${src}`;
-  }
-
-  let builtComponent;
-
-  const url = new URL(src);
-
-  switch (url.origin) {
-    case 'https://e.infogram.com':
-      builtComponent = toInfogram(url);
-      builtComponent.id = id;
-      builtComponent.element = {
-        tag: node.tagName,
-        attributes: Object.fromEntries(attributes),
-      };
-      builtComponent.html = sanitizeNode(node, {
-        allowedTags,
-        allowedAttributes: false,
-      });
-      return builtComponent;
-    case 'https://www.youtube.com':
-      builtComponent = toYoutube(url);
-      builtComponent.element = {
-        tag: node.tagName,
-        attributes: Object.fromEntries(attributes),
-      };
-      builtComponent.html = sanitizeNode(node, {
-        allowedTags,
-        allowedAttributes: false,
-      });
-      builtComponent.id = id;
-      return builtComponent;
-    case 'https://embed.podcasts.apple.com':
-      builtComponent = toApplePodcast(node);
-      builtComponent.element = {
-        tag: node.tagName,
-        attributes: Object.fromEntries(attributes),
-      };
-      builtComponent.id = id;
-      return builtComponent;
-  }
-
-  const searchParams = {
-    src: url.searchParams.get('src'),
-    url: url.searchParams.get('url'),
-  };
-
-  // Check if youtube is in the source url
-  if (
-    searchParams.src &&
-    searchParams.src.startsWith('https://www.youtube.com')
-  ) {
-    builtComponent = toYoutube(new URL(searchParams.src));
-    builtComponent.html = sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    });
-    builtComponent.element = {
-      tag: node.tagName,
-      attributes: Object.fromEntries(attributes),
-    };
-    builtComponent.id = id;
-    return builtComponent;
-  }
-
-  // Check if youtube is in the source url
-  if (
-    searchParams.url &&
-    searchParams.url.startsWith('https://www.tiktok.com')
-  ) {
-    builtComponent = toTikTok(new URL(searchParams.url));
-    builtComponent.html = sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    });
-    builtComponent.element = {
-      tag: node.tagName,
-      attributes: Object.fromEntries(attributes),
-    };
-    builtComponent.id = id;
-    return builtComponent;
-  }
-
-  // Check if Dailymotion is in the source url
-  if (
-    searchParams.url &&
-    searchParams.url.startsWith('https://www.dailymotion.com')
-  ) {
-    builtComponent = toDailymotion(new URL(searchParams.url));
-    builtComponent.element = {
-      tag: node.tagName,
-      attributes: Object.fromEntries(attributes),
-    };
-    builtComponent.html = sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    });
-    builtComponent.id = id;
-    return builtComponent;
-  }
-
-  // Check if Dailymotion is in the source url
-  if (searchParams.url && searchParams.url.startsWith('https://vimeo.com')) {
-    builtComponent = toVimeo(new URL(searchParams.url));
-    builtComponent.element = {
-      tag: node.tagName,
-      attributes: Object.fromEntries(attributes),
-    };
-    builtComponent.html = sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    });
-    builtComponent.id = id;
-    return builtComponent;
-  }
-
-  if (
-    searchParams.url &&
-    (searchParams.url.startsWith('https://twitter.com') ||
-      searchParams.url.startsWith('https://x.com'))
-  ) {
-    builtComponent = toTwitter(new URL(searchParams.url));
-    if (!builtComponent) return builtComponent;
-
-    builtComponent.html = sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    });
-    builtComponent.element = {
-      tag: node.tagName,
-      attributes: Object.fromEntries(attributes),
-    };
-    builtComponent.id = id;
-    return builtComponent;
-  }
-
-  return toCustom(node);
-}
-
-/**
  * It returns `true` if the node has a button as a children
  *
  * @param {ElementNode} node
@@ -1231,30 +783,6 @@ function hasButton(node: ElementNode): boolean {
       return true;
     }
   }
-  return false;
-}
-
-/**
- * It checks if an html node is an valid Twitter Node
- *
- * @param {ElementNode} node
- * @returns {boolean}
- */
-function isTwitterNode(node: ElementNode): boolean {
-  const { tagName } = node;
-  const attributes = getAttributes(node.attributes);
-  const classNames = attributes.get('class');
-
-  if (
-    (tagName === 'blockquote' || tagName === 'a') &&
-    classNames &&
-    classNames
-      .split(' ')
-      .some((v) => new Set(['twitter-tweet', 'twitter-timeline']).has(v))
-  ) {
-    return true;
-  }
-
   return false;
 }
 

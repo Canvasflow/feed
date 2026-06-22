@@ -2,6 +2,8 @@ import {
   type Component,
   type ColumnsComponent,
   type ContainerComponent,
+  type FigureContainerComponent,
+  type LinkContainerComponent,
   type LiveContainerComponent,
   type LivePostComponent,
   type RecipeComponent,
@@ -19,7 +21,9 @@ import {
   excludeNode,
   filterAllMapping,
   filterAnyMapping,
+  fromFigcaption,
 } from './Mapping.utils';
+import { filterFigureDescendants } from './Mapping.media';
 import {
   type ColumnsMapping,
   type LiveContainerMapping,
@@ -290,4 +294,143 @@ function filterLivePostDescendants(
 
     return false;
   };
+}
+
+function filterClassNameDescendants(className: string): NodeFilterFn {
+  return (node: Node): boolean => {
+    const { type } = node;
+    if (type !== 'element') return false;
+
+    const attributes = getAttributes(node.attributes);
+    const classNames = attributes.get('class');
+    if (!classNames) return false;
+    if (typeof classNames !== 'string') return false;
+    for (const name of classNames.split(' ')) {
+      if (name === className) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+}
+
+/**
+ * Transform an a tag into a Canvasflow LinkContainer Component
+ *
+ * @param {ElementNode} node
+ * @param {Params} [params]
+ * @param {Record<string, unknown>} [properties]
+ * @returns {LinkContainerComponent}
+ */
+export function toLinkContainer(
+  node: ElementNode,
+  params?: Params,
+  properties?: Record<string, unknown>
+): LinkContainerComponent {
+  const warnings: string[] = [];
+  const errors: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  const id = attributes.get('id');
+
+  const link: string | undefined = attributes.get('href');
+
+  const containerParams: Params = params
+    ? structuredClone({
+        ...params,
+        ignoreParagraphWrap: true,
+      })
+    : { ignoreParagraphWrap: true };
+
+  const components: Array<Component> = node.children.length
+    ? node.children.reduce(reduceComponents(containerParams), [])
+    : [];
+
+  const component: LinkContainerComponent = {
+    id,
+    attributes,
+    component: 'container',
+    type: 'link',
+    link: link || '',
+    components,
+    errors,
+    warnings,
+    properties,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
+  };
+
+  return component;
+}
+
+/**
+ * Transform an a Figure elemento into a Canvasflow FigureContainer Component
+ *
+ * @param {ElementNode} node
+ * @param {Params} [params]
+ * @param {Record<string, unknown>} [properties]
+ * @returns {FigureContainerComponent}
+ */
+export function toFigureContainer(
+  node: ElementNode,
+  params?: Params,
+  properties?: Record<string, unknown>
+): FigureContainerComponent {
+  const warnings: string[] = [];
+  const errors: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  const id = attributes.get('id');
+  let caption = '';
+  let credit = '';
+
+  // Get the figcaption section
+  const figcaptionNodes = node.children.reduce(
+    findDescendants('figcaption'),
+    []
+  );
+  if (figcaptionNodes.length) {
+    const figcaptionNode = figcaptionNodes.shift() as ElementNode;
+    const ficaptionResponse = fromFigcaption(figcaptionNode);
+    if (ficaptionResponse) {
+      caption = ficaptionResponse.caption || '';
+      credit = ficaptionResponse.credit || '';
+    }
+  }
+
+  const creditNodes = node.children.reduce(
+    findDescendants(filterClassNameDescendants('credit')),
+    []
+  );
+
+  if (creditNodes.length) {
+    const creditNode = creditNodes.shift() as ElementNode;
+    credit = sanitizeNode(creditNode, {
+      allowedTags: [],
+      allowedAttributes: {},
+    });
+  }
+
+  const components = node.children
+    .reduce(findDescendants(filterFigureDescendants(params)), [])
+    .reduce(reduceComponents(params), []);
+
+  const component: FigureContainerComponent = {
+    id,
+    component: 'container',
+    type: 'figure',
+    components,
+    caption,
+    credit,
+    errors,
+    warnings,
+    properties,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
+  };
+
+  return component;
 }

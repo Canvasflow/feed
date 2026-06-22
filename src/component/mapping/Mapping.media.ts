@@ -3,12 +3,19 @@ import sanitizeHtml from 'sanitize-html';
 import {
   type AudioComponent,
   type Component,
+  type CustomComponent,
+  type DailymotionComponent,
   type GalleryComponent,
   type GalleryImage,
   type ImageComponent,
+  type InfogramComponent,
+  type TikTokComponent,
+  type TwitterComponent,
   type VideoComponent,
+  type VimeoComponent,
   type YoutubeComponent,
   isImageComponent,
+  isYoutubeComponent,
 } from '../Component';
 import {
   type ElementNode,
@@ -30,11 +37,20 @@ import {
   fromFigcaption,
 } from './Mapping.utils';
 import {
+  toInfogram,
+  toYoutube,
+  toTikTok,
+  toDailymotion,
+  toVimeo,
+  isTikTokNode,
+} from './Mapping.embeds';
+import {
   type GalleryMapping,
   type LinkResponse,
   type Params,
   reduceComponents,
   fromNode,
+  toCustom,
 } from './Mapping';
 
 /**
@@ -720,5 +736,333 @@ function mapImageToGalleryImage(component: ImageComponent): GalleryImage {
     credit,
     width,
     height,
+  };
+}
+
+/**
+ * Transform an html component to Canvasflow Twitter Component
+ *
+ * @param {ElementNode | URL} node
+ * @returns {TwitterComponent}
+ */
+export function toTwitter(node: ElementNode | URL): TwitterComponent | null {
+  if (node instanceof URL) {
+    return toTweetFromUrl(node);
+  }
+  const twitterRegex = /\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const params: { id?: string; account?: string } = {};
+  let attrs: Record<string, string> = {};
+
+  const anchorNodes = node.children.reduce(
+    findDescendants('a'),
+    []
+  ) as ElementNode[];
+  const validAnchorNodes = anchorNodes.filter((node: ElementNode) => {
+    const attributes = getAttributes(node.attributes);
+    attrs = Object.fromEntries(attributes);
+    const url = attributes.get('href') || '';
+    if (!url) return false;
+    if (twitterRegex.test(url)) return true;
+    return false;
+  });
+
+  if (!validAnchorNodes.length) return null;
+
+  const tweetNode = validAnchorNodes.pop();
+
+  if (tweetNode) {
+    const attributes = getAttributes(tweetNode.attributes);
+    attrs = Object.fromEntries(attributes);
+    const tweetUrl = attributes.get('href') || '';
+
+    let values: Array<string> = [];
+    values = twitterRegex.exec(tweetUrl) || [];
+    params.id = values[3];
+    params.account = values[1];
+  }
+
+  return {
+    height: '350',
+    fixedheight: 'on',
+    bleed: 'on',
+    params,
+    component: 'twitter',
+    errors,
+    warnings,
+    element: {
+      tag: node.tagName,
+      attributes: attrs,
+    },
+  };
+}
+
+/**
+ * Transform an tweet URL to Canvasflow Twitter Component
+ *
+ * @param {URL} uri
+ * @returns {TwitterComponent}
+ */
+function toTweetFromUrl(uri: URL): TwitterComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const params: { id?: string; account?: string } = {};
+
+  const tweetUrl = uri.pathname;
+
+  const twitterRegex = /\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
+
+  const values: Array<string> = twitterRegex.exec(tweetUrl) || [];
+  params.id = values[3];
+  params.account = values[1];
+
+  return {
+    height: '350',
+    fixedheight: 'on',
+    bleed: 'on',
+    params,
+    component: 'twitter',
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * It checks if an html node is an valid Twitter Node
+ *
+ * @param {ElementNode} node
+ * @returns {boolean}
+ */
+export function isTwitterNode(node: ElementNode): boolean {
+  const { tagName } = node;
+  const attributes = getAttributes(node.attributes);
+  const classNames = attributes.get('class');
+
+  if (
+    (tagName === 'blockquote' || tagName === 'a') &&
+    classNames &&
+    classNames
+      .split(' ')
+      .some((v) => new Set(['twitter-tweet', 'twitter-timeline']).has(v))
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * It process an iframe node and returns a Canvasflow component
+ *
+ * @param {ElementNode} node
+ * @returns {YoutubeComponent | InfogramComponent | DailymotionComponent | TikTokComponent | VimeoComponent | TwitterComponent | CustomComponent | AudioComponent | null}
+ */
+export function fromIframe(
+  node: ElementNode
+):
+  | YoutubeComponent
+  | InfogramComponent
+  | DailymotionComponent
+  | TikTokComponent
+  | VimeoComponent
+  | TwitterComponent
+  | CustomComponent
+  | AudioComponent
+  | null {
+  const attributes = getAttributes(node.attributes);
+  const id = attributes.get('id');
+
+  let src = attributes.get('src') || '';
+
+  // If the iframe do not have a src we just ignore it
+  if (!src || src.length === 0) {
+    return null;
+  }
+
+  if (src.startsWith('//')) {
+    src = `https:${src}`;
+  }
+
+  let builtComponent;
+
+  const url = new URL(src);
+
+  switch (url.origin) {
+    case 'https://e.infogram.com':
+      builtComponent = toInfogram(url);
+      builtComponent.id = id;
+      builtComponent.element = {
+        tag: node.tagName,
+        attributes: Object.fromEntries(attributes),
+      };
+      builtComponent.html = sanitizeNode(node, {
+        allowedTags,
+        allowedAttributes: false,
+      });
+      return builtComponent;
+    case 'https://www.youtube.com':
+      builtComponent = toYoutube(url);
+      builtComponent.element = {
+        tag: node.tagName,
+        attributes: Object.fromEntries(attributes),
+      };
+      builtComponent.html = sanitizeNode(node, {
+        allowedTags,
+        allowedAttributes: false,
+      });
+      builtComponent.id = id;
+      return builtComponent;
+    case 'https://embed.podcasts.apple.com':
+      builtComponent = toApplePodcast(node);
+      builtComponent.element = {
+        tag: node.tagName,
+        attributes: Object.fromEntries(attributes),
+      };
+      builtComponent.id = id;
+      return builtComponent;
+  }
+
+  const searchParams = {
+    src: url.searchParams.get('src'),
+    url: url.searchParams.get('url'),
+  };
+
+  // Check if youtube is in the source url
+  if (
+    searchParams.src &&
+    searchParams.src.startsWith('https://www.youtube.com')
+  ) {
+    builtComponent = toYoutube(new URL(searchParams.src));
+    builtComponent.html = sanitizeNode(node, {
+      allowedTags,
+      allowedAttributes: false,
+    });
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
+    builtComponent.id = id;
+    return builtComponent;
+  }
+
+  // Check if youtube is in the source url
+  if (
+    searchParams.url &&
+    searchParams.url.startsWith('https://www.tiktok.com')
+  ) {
+    builtComponent = toTikTok(new URL(searchParams.url));
+    builtComponent.html = sanitizeNode(node, {
+      allowedTags,
+      allowedAttributes: false,
+    });
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
+    builtComponent.id = id;
+    return builtComponent;
+  }
+
+  // Check if Dailymotion is in the source url
+  if (
+    searchParams.url &&
+    searchParams.url.startsWith('https://www.dailymotion.com')
+  ) {
+    builtComponent = toDailymotion(new URL(searchParams.url));
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
+    builtComponent.html = sanitizeNode(node, {
+      allowedTags,
+      allowedAttributes: false,
+    });
+    builtComponent.id = id;
+    return builtComponent;
+  }
+
+  // Check if Dailymotion is in the source url
+  if (searchParams.url && searchParams.url.startsWith('https://vimeo.com')) {
+    builtComponent = toVimeo(new URL(searchParams.url));
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
+    builtComponent.html = sanitizeNode(node, {
+      allowedTags,
+      allowedAttributes: false,
+    });
+    builtComponent.id = id;
+    return builtComponent;
+  }
+
+  if (
+    searchParams.url &&
+    (searchParams.url.startsWith('https://twitter.com') ||
+      searchParams.url.startsWith('https://x.com'))
+  ) {
+    builtComponent = toTwitter(new URL(searchParams.url));
+    if (!builtComponent) return builtComponent;
+
+    builtComponent.html = sanitizeNode(node, {
+      allowedTags,
+      allowedAttributes: false,
+    });
+    builtComponent.element = {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    };
+    builtComponent.id = id;
+    return builtComponent;
+  }
+
+  return toCustom(node);
+}
+
+/**
+ * Filter the valid descendants for figures
+ *
+ * @param {Params} [params\
+ * @returns {NodeFilterFn}
+ */
+export function filterFigureDescendants(params?: Params): NodeFilterFn {
+  return (node: Node): boolean => {
+    const { type } = node;
+    if (type !== 'element') return false;
+    const { tagName } = node;
+    // Exclude the nodes that we need to ignore
+    if (params?.excludes?.length) {
+      const isNodeExcluded = excludeNode(node, params.excludes);
+      if (isNodeExcluded) {
+        return false;
+      }
+    }
+
+    const validFigureTags = new Set([
+      'audio',
+      'img',
+      'picture',
+      'table',
+      'video',
+    ]);
+
+    if (validFigureTags.has(tagName)) {
+      return true;
+    }
+    if (isTwitterNode(node)) {
+      return true;
+    }
+
+    if (isTikTokNode(node)) {
+      return true;
+    }
+
+    if (tagName === 'iframe') {
+      const iframeComponent = fromIframe(node);
+      return isYoutubeComponent(iframeComponent);
+    }
+
+    return false;
   };
 }
