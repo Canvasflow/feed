@@ -106,7 +106,11 @@ This filter looks exclusively at the `class` attribute of an HTML element.
 
 #### Attribute Filter
 
-This filter searches for a specific attribute within an HTML element.
+This filter searches for a specific attribute within an HTML element. It comes in two forms — an **exact-value** match and a **pattern** match — both identified by `type: "attribute"`.
+
+**Exact-value form**
+
+Matches when the attribute's value is exactly equal to `value`.
 
 | Property | Required | Description                                                                                                                                                                    |
 | :------- | :------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -119,6 +123,38 @@ This filter searches for a specific attribute within an HTML element.
   "type": "attribute",
   "key": "data-component",
   "value": "gallery"
+}
+```
+
+**Pattern form**
+
+Matches when the attribute is present and its value matches the supplied regular expression pattern. Use this when the attribute value is not fixed — for example when it carries a generated id, a numeric suffix, or a namespaced prefix.
+
+| Property  | Required | Description                                                                                                                  |
+| :-------- | :------- | :--------------------------------------------------------------------------------------------------------------------------- |
+| `type`    | Yes      | Must be `attribute`.                                                                                                         |
+| `key`     | Yes      | The name of the attribute to look for.                                                                                       |
+| `pattern` | Yes      | A regular expression (as a string) that the attribute's value must match. The attribute must be present for a pattern match. |
+
+> When a `pattern` property is present, the filter matches by regular expression and the `value` property is ignored. The pattern is evaluated with JavaScript's `RegExp`; remember to escape backslashes within the JSON string (e.g. `\\d`).
+
+For example, to match a `<div>` whose `id` follows the pattern `article-body-<number>` (such as `article-body-42`):
+
+```json
+{
+  "type": "attribute",
+  "key": "id",
+  "pattern": "^article-body-\\d+$"
+}
+```
+
+Or to match any element whose `data-component-name` starts with the `Recirculation:` prefix (such as `Recirculation:ArticleRiver`):
+
+```json
+{
+  "type": "attribute",
+  "key": "data-component-name",
+  "pattern": "Recirculation:.*"
 }
 ```
 

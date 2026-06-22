@@ -1685,3 +1685,422 @@ describe('Recipe', () => {
     }
   );
 });
+
+// Builds a minimal valid RSS feed wrapping the provided item body and optional
+// channel extras, so individual branches can be exercised without fixtures.
+function buildFeed(
+  itemBody: string,
+  { channelExtra = '' }: { channelExtra?: string } = {}
+): string {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:cf="urn:cf" xmlns:media="urn:media" xmlns:dc="urn:dc">
+  <channel>
+    <title>Test Feed</title>
+    ${channelExtra}
+    <item>
+      <title>An item</title>
+      <guid>item-1</guid>
+      <pubDate>Mon, 02 Jun 2025 10:00:00 GMT</pubDate>
+      ${itemBody}
+    </item>
+  </channel>
+</rss>`;
+}
+
+describe('replaceErrors', () => {
+  test(
+    'It should serialize an Error to its message',
+    { tags: ['unit', 'rss'] },
+    () => {
+      const result = replaceErrors('key', new Error('boom'));
+      expect(result).toBe('boom');
+    }
+  );
+
+  test(
+    'It should pass through non-error values unchanged',
+    { tags: ['unit', 'rss'] },
+    () => {
+      expect(replaceErrors('key', 42)).toBe(42);
+      expect(replaceErrors('key', 'plain')).toBe('plain');
+    }
+  );
+});
+
+describe('RSSFeed serialization', () => {
+  test(
+    'It should expose toString and toJSON',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(buildFeed(''));
+      const rss = await feed.build();
+
+      const str = RSSFeed.toString(rss);
+      expect(typeof str).toBe('string');
+      expect(str).toContain('Test Feed');
+
+      const json = RSSFeed.toJSON(rss) as { channel: { title: string } };
+      expect(json.channel.title).toBe('Test Feed');
+    }
+  );
+});
+
+describe('RSSFeed validation branches', () => {
+  test(
+    'It should report a missing required item property',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const content = `<?xml version="1.0" encoding="UTF-8"?>
+<rss>
+  <channel>
+    <title>Test Feed</title>
+    <item>
+      <title>No guid or pubDate</title>
+    </item>
+  </channel>
+</rss>`;
+      const feed = new RSSFeed(content);
+      await feed.validate();
+      expect(feed.errors.length).toBeGreaterThan(0);
+      expect(feed.errors).toContain('Required property "guid" is missing');
+      expect(feed.errors).toContain('Required property "pubDate" is missing');
+    }
+  );
+
+  test(
+    'It should short-circuit build when the root mapping is invalid',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(buildFeed(''));
+      // Invalid root mapping: filters must be an array of valid filters.
+      feed.root = { match: 'all', filters: 'nope' } as unknown as Mapping;
+      const rss = await feed.build();
+      expect(rss.errors.length).toBeGreaterThan(0);
+      expect(rss.channel.items.length).toBe(0);
+    }
+  );
+});
+
+describe('cf:liveCoverageState', () => {
+  test(
+    'It should null out an unrecognized live coverage state',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(`<cf:liveCoverageState state="paused"/>`)
+      );
+      const rss = await feed.build();
+      const item = rss.channel.items[0];
+      expect(item['cf:liveCoverageState']).toBe(null);
+    }
+  );
+});
+
+describe('cf:thumbnail branches', () => {
+  test(
+    'It should error on a missing url and warn on invalid type and dimensions',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(
+          `<cf:thumbnail url="" width="abc" height="xyz" fileSize="nope" type="image/bmp"/>`
+        )
+      );
+      const rss = await feed.build();
+      const item = rss.channel.items[0];
+      const thumbnail = item['cf:thumbnail'];
+      expect(thumbnail).toBeDefined();
+      if (!thumbnail) return;
+      // Invalid numeric strings become undefined.
+      expect(thumbnail.width).toBeUndefined();
+      expect(thumbnail.height).toBeUndefined();
+      expect(thumbnail.fileSize).toBeUndefined();
+      // Unsupported mime type is dropped.
+      expect(thumbnail.type).toBeUndefined();
+      expect(item.errors).toContain(
+        `Required property "url" is missing in 'cf:thumbnail'`
+      );
+      expect(item.warnings.length).toBeGreaterThan(0);
+    }
+  );
+});
+
+describe('processCanvasflowBooleanTag branches', () => {
+  test(
+    'It should error on a non-boolean scalar value',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(`<cf:isSponsored>maybe</cf:isSponsored>`)
+      );
+      const rss = await feed.build();
+      const item = rss.channel.items[0];
+      expect(item['cf:isSponsored']).toBe(false);
+      expect(
+        item.errors.some((e) =>
+          `${e}`.includes("Invalid value for 'cf:isSponsored'")
+        )
+      ).toBe(true);
+    }
+  );
+
+  test(
+    'It should warn and error when attributes wrap a non-boolean value',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(`<cf:isPaid foo="bar">maybe</cf:isPaid>`)
+      );
+      const rss = await feed.build();
+      const item = rss.channel.items[0];
+      expect(
+        item.warnings.some((w) =>
+          `${w}`.includes("Attributes are not allowed for the 'cf:isPaid'")
+        )
+      ).toBe(true);
+      expect(
+        item.errors.some((e) =>
+          `${e}`.includes("Invalid value for 'cf:isPaid'")
+        )
+      ).toBe(true);
+    }
+  );
+
+  test(
+    'It should accept a real boolean value',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(`<cf:hasAffiliateLinks>true</cf:hasAffiliateLinks>`)
+      );
+      const rss = await feed.build();
+      const item = rss.channel.items[0];
+      expect(item['cf:hasAffiliateLinks']).toBe(true);
+    }
+  );
+});
+
+describe('enclosure mapping', () => {
+  test(
+    'It should collect errors and warnings for an incomplete enclosure',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(buildFeed(`<enclosure other="x"/>`));
+      const rss = await feed.build();
+      const item = rss.channel.items[0];
+      expect(item.enclosure.length).toBe(1);
+      const enclosure = item.enclosure[0];
+      expect(enclosure.url).toBe('');
+      expect(enclosure.type).toBe('');
+      expect(enclosure.length).toBe(0);
+      expect(enclosure.errors).toContain('Required property "url" is missing');
+      expect(enclosure.warnings).toContain('Property "type" is suggested');
+      expect(enclosure.warnings).toContain('Property "length" is suggested');
+    }
+  );
+});
+
+describe('media:group mapping', () => {
+  test(
+    'It should error when a media:group is missing media:content',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(
+          `<media:group><media:title>A group</media:title></media:group>`
+        )
+      );
+      const rss = await feed.build();
+      const item = rss.channel.items[0];
+      expect(item.mediaGroup.length).toBe(1);
+      const group = item.mediaGroup[0];
+      expect(group).toBeDefined();
+      if (!group) return;
+      expect(group.errors).toContain(
+        'Required property "media:content" is missing'
+      );
+      const { mediaContent } = group;
+      expect(mediaContent).toBeDefined();
+      if (!mediaContent) return;
+      expect(mediaContent.length).toBe(0);
+    }
+  );
+});
+
+describe('media:content mapping', () => {
+  test(
+    'It should warn on missing url, type and medium',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(buildFeed(`<media:content other="x"/>`));
+      const rss = await feed.build();
+      const item = rss.channel.items[0];
+      const media = item.mediaContent[0];
+      expect(media.url).toBe('');
+      expect(media.errors).toContain('Required property "url" is missing');
+      expect(media.warnings).toContain('Property "type" is suggested');
+      expect(media.warnings).toContain('Property "medium" is suggested');
+    }
+  );
+
+  test(
+    'It should collapse array credit and thumbnail and read object titles',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(
+          `<media:content url="https://example.com/a.jpg" type="image/jpeg">
+            <media:credit>First</media:credit>
+            <media:credit>Second</media:credit>
+            <media:thumbnail url="https://example.com/t1.jpg"/>
+            <media:thumbnail url="https://example.com/t2.jpg"/>
+            <media:title type="plain">A title</media:title>
+            <media:description type="plain">A description</media:description>
+          </media:content>`
+        )
+      );
+      const rss = await feed.build();
+      const media = rss.channel.items[0].mediaContent[0];
+      expect(media.credit).toBe('First');
+      expect(media.thumbnail).toBe('https://example.com/t1.jpg');
+      expect(media.title).toBe('A title');
+      expect(media.description).toBe('A description');
+      expect(media.warnings).toContain(
+        'Only one "media:credit" element is allowed'
+      );
+      expect(media.warnings).toContain(
+        'Only one "media:thumbnail" element is allowed'
+      );
+    }
+  );
+
+  test(
+    'It should read credit from a #text node',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(
+          `<media:content url="https://example.com/a.jpg" type="image/jpeg">
+            <media:credit role="author">Jane Doe</media:credit>
+          </media:content>`
+        )
+      );
+      const rss = await feed.build();
+      const media = rss.channel.items[0].mediaContent[0];
+      expect(media.credit).toBe('Jane Doe');
+    }
+  );
+
+  test(
+    'It should resolve a relative media url against the channel origin',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(`<media:content url="/images/a.jpg" type="image/jpeg"/>`, {
+          channelExtra: '<link>https://example.com/feed</link>',
+        })
+      );
+      const rss = await feed.build();
+      const media = rss.channel.items[0].mediaContent[0];
+      expect(media.url).toBe('https://example.com/images/a.jpg');
+      expect(media.warnings).toContain('Property "url" is not an absolute URL');
+    }
+  );
+});
+
+describe('getRecipeFromUrl with stubbed fetch', () => {
+  const originalFetch = globalThis.fetch;
+
+  function stubFetch(html: string) {
+    globalThis.fetch = (async () =>
+      ({ text: async () => html }) as Response) as typeof fetch;
+  }
+
+  test(
+    'It should extract a top-level Recipe from ld+json',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const recipe = { '@type': 'Recipe', name: 'Soup' };
+      stubFetch(
+        `<html><head><script type="application/ld+json">${JSON.stringify(
+          recipe
+        )}</script></head><body></body></html>`
+      );
+      try {
+        const result = await RSSFeed.getRecipeFromUrl('https://example.com/r');
+        expect(result).toBeTruthy();
+        expect(result?.name).toBe('Soup');
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    }
+  );
+
+  test(
+    'It should extract a Recipe nested in @graph',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const graph = {
+        '@graph': [{ '@type': 'WebPage' }, { '@type': 'Recipe', name: 'Cake' }],
+      };
+      stubFetch(
+        `<html><head><script type="application/ld+json">${JSON.stringify(
+          graph
+        )}</script></head><body></body></html>`
+      );
+      try {
+        const result = await RSSFeed.getRecipeFromUrl('https://example.com/r');
+        expect(result?.name).toBe('Cake');
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    }
+  );
+
+  test(
+    'It should return null when no recipe script is present',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      stubFetch(`<html><head></head><body><p>No recipe</p></body></html>`);
+      try {
+        const result = await RSSFeed.getRecipeFromUrl('https://example.com/r');
+        expect(result).toBe(null);
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    }
+  );
+
+  test(
+    'It should skip empty ld+json scripts',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      stubFetch(
+        `<html><head><script type="application/ld+json"></script></head><body></body></html>`
+      );
+      try {
+        const result = await RSSFeed.getRecipeFromUrl('https://example.com/r');
+        expect(result).toBe(null);
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    }
+  );
+
+  test(
+    'It should rethrow when fetch fails',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      globalThis.fetch = (async () => {
+        throw new Error('network down');
+      }) as typeof fetch;
+      try {
+        await expect(
+          RSSFeed.getHtmlContent('https://example.com/r')
+        ).rejects.toThrow('network down');
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    }
+  );
+});

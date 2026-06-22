@@ -29,7 +29,7 @@ Canvasflow offers a list of text components that can be used to add semantic mea
 - `body`
 - `blockquote`
 - `footer`
-- `text1-text50`
+- `text1-text60`
 
 > Canvasflow provides a set of components called `text` which enables users to group different type of components that can later by styled together.
 
@@ -624,20 +624,21 @@ This filter looks exclusively at the `class` attribute of an HTML element. It re
 - `match`
 - `items`
 
-`match`: Accepts one of three values. `any` means that a match is valid as long as at least one of the specified classes is present in the element's class list. `all` means that every specified class must be present, regardless of order. `equal` is a strict version of `all`, requiring all classes to appear in the exact order specified.
+`match`: Accepts one of three values. `any` means that a match is valid as long as at least one of the specified classes is present in the element's class list. `all` means that every specified class must be present, regardless of order. `equal` is a strict version of `all`, requiring the element's class list to contain exactly the specified classes and nothing else (order does not matter).
 
 `items`: A list of class names to match against.
 
 ##### Attribute Filter
 
-This filter searches for a specific attribute within an HTML element. It requires two properties:
-
-- `key`
-- `value`
+This filter searches for a specific attribute within an HTML element. It comes in two forms — an exact-value match and a pattern (regular expression) match — both using `type: "attribute"` and a `key`.
 
 `key`: The name of the attribute to look for.
 
-`value`: The exact value that attribute must have.
+`value`: The exact value that attribute must have. It can be set to `null` to match attributes that are present without a value (boolean attributes such as `controls` or `data-live`).
+
+`pattern`: As an alternative to `value`, a regular expression (as a string) that the attribute's value must match. When `pattern` is present the filter matches by regular expression and `value` is ignored.
+
+> See [Attribute Filter](Mappings.md#attribute-filter) in the Mappings reference for full details and examples of both forms.
 
 #### Match
 

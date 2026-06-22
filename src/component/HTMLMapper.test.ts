@@ -127,6 +127,90 @@ describe('Root Element', () => {
   );
 
   test(
+    'It should return the root element with an attribute pattern filter',
+    { tags: ['unit', 'html'] },
+    () => {
+      const rootMapping: Mapping = {
+        match: 'all',
+        filters: [
+          {
+            type: 'attribute',
+            key: 'id',
+            pattern: '^article-body-\\d+$',
+          },
+        ],
+      };
+      const rootElement = `<div id="article-body-42"><p>This is the first content</p><h2>This is a title</h2></div>`;
+      const content = `
+        <html>
+          <div data-widget="header">
+            <h1>Example</h1>
+          </div>
+          ${rootElement}
+        </html>
+      `;
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(rootElement);
+    }
+  );
+
+  test(
+    'It should return empty when the attribute pattern filter does not match',
+    { tags: ['unit', 'html'] },
+    () => {
+      const rootMapping: Mapping = {
+        match: 'all',
+        filters: [
+          {
+            type: 'attribute',
+            key: 'id',
+            pattern: '^article-body-\\d+$',
+          },
+        ],
+      };
+      const rootElement = `<div id="article-body-main"><p>This is the first content</p><h2>This is a title</h2></div>`;
+      const content = `
+        <html>
+          <div data-widget="header">
+            <h1>Example</h1>
+          </div>
+          ${rootElement}
+        </html>
+      `;
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(null);
+    }
+  );
+
+  test(
+    'It should match an attribute pattern filter with the any match mode',
+    { tags: ['unit', 'html'] },
+    () => {
+      const rootMapping: Mapping = {
+        match: 'any',
+        filters: [
+          {
+            type: 'attribute',
+            key: 'data-component-name',
+            pattern: 'Recirculation:.*',
+          },
+        ],
+      };
+      const rootElement = `<div data-component-name="Recirculation:ArticleRiver"><p>This is the first content</p></div>`;
+      const content = `
+        <html>
+          <div data-widget="header">
+            <h1>Example</h1>
+          </div>
+          ${rootElement}
+        </html>
+      `;
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(rootElement);
+    }
+  );
+
+  test(
     'It should return empty because the root element do not match the all mapping',
     { tags: ['unit', 'html'] },
     () => {
@@ -197,6 +281,27 @@ describe('Text components', () => {
       const component = components.pop() as TextComponent;
       expect(component).toBeDefined();
       expect(component.component).toBe('body');
+    }
+  );
+
+  test(
+    'It should preserve whitespace between inline elements as a non-breaking space',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `<p><span>now $452</span> <span>at Amazon</span></p>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as TextComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('body');
+      // The whitespace-only text node between the two spans is preserved as a
+      // non-breaking space (U+00A0) instead of being collapsed to a regular
+      // space, which downstream trimming could drop.
+      expect(component.text).toContain('\u00A0');
+      expect(component.text).not.toContain('</span> <span>');
+      expect(component.text).toBe(
+        '<p><span>now $452</span>\u00A0<span>at Amazon</span></p>'
+      );
     }
   );
 

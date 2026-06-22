@@ -51,6 +51,8 @@ import {
 } from './Node';
 import {
   AttributeFilterSchema,
+  AttributeValueFilterSchema,
+  AttributePatternFilterSchema,
   ClassFilterSchema,
   ColumnsMappingSchema,
   ContainerMappingSchema,
@@ -72,6 +74,10 @@ export type Filter = z.infer<typeof FilterSchema>;
 export type TagFilter = z.infer<typeof TagFilterSchema>;
 export type ClassFilter = z.infer<typeof ClassFilterSchema>;
 export type AttributeFilter = z.infer<typeof AttributeFilterSchema>;
+export type AttributeValueFilter = z.infer<typeof AttributeValueFilterSchema>;
+export type AttributePatternFilter = z.infer<
+  typeof AttributePatternFilterSchema
+>;
 
 export type Mapping = z.infer<typeof MappingSchema>;
 export type LinkResponse = z.infer<typeof LinkResponseSchema>;
@@ -539,11 +545,6 @@ function fromNode(
   }
 
   if (tagName === 'picture') {
-    return toImage(node);
-  }
-
-  // Check if the tag belongs to an image tag
-  if (imageTags.has(tagName) || (tagName === 'a' && hasImage(node))) {
     return toImage(node);
   }
 
@@ -1023,24 +1024,6 @@ function toTweetFromUrl(uri: URL): TwitterComponent {
   const warnings: string[] = [];
   const params: { id?: string; account?: string } = {};
 
-  const url = uri.toString();
-
-  if (
-    !url.startsWith('https://x.com') &&
-    !url.startsWith('https://twitter.com')
-  ) {
-    errors.push('Invalid Twitter video URL format.');
-    return {
-      height: '350',
-      fixedheight: 'on',
-      bleed: 'on',
-      params,
-      component: 'twitter',
-      errors,
-      warnings,
-    };
-  }
-
   const tweetUrl = uri.pathname;
 
   const twitterRegex = /\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
@@ -1228,16 +1211,6 @@ function mapImageToGalleryImage(component: ImageComponent): GalleryImage {
  * @returns {ImageComponent}
  */
 function toImage(node: ElementNode): ImageComponent {
-  let link: string | undefined;
-  if (node.tagName === 'a') {
-    const nodeResp = getLinkFromImageNode(node);
-    if (nodeResp.node) {
-      node = nodeResp.node;
-    }
-
-    link = nodeResp.link;
-  }
-
   const { tagName } = node;
   const attributes = getAttributes(node.attributes);
   const id = attributes.get('id');
@@ -1245,29 +1218,18 @@ function toImage(node: ElementNode): ImageComponent {
   if (tagName === 'figure') {
     const imageComponent: ImageComponent = fromFigure(node) as ImageComponent;
     imageComponent.id = id;
-    if (link) {
-      imageComponent.link = link;
-    }
-
     return imageComponent;
   }
 
   if (tagName === 'picture') {
     const imageComponent: ImageComponent = fromPicture(node);
     imageComponent.id = id;
-    if (link) {
-      imageComponent.link = link;
-    }
     return imageComponent;
   }
 
   const errors: string[] = [];
   const warnings: string[] = [];
   let imageurl = '';
-
-  if (!attributes) {
-    errors.push('No attributes found on image node');
-  }
 
   const src = attributes.get('src');
   if (src) {
@@ -1282,7 +1244,6 @@ function toImage(node: ElementNode): ImageComponent {
     component: 'image',
     imageurl,
     alt,
-    link,
     width: width ? parseInt(`${width}`, 10) : undefined,
     height: height ? parseInt(`${height}`, 10) : undefined,
     errors,
@@ -2003,11 +1964,32 @@ function toFigureContainer(
  * applied to the component that matches
  * @returns {TextComponent} Text Component
  */
+/**
+ * Preserve whitespace that sits between inline elements inside a text
+ * component by converting whitespace-only text nodes to non-breaking spaces.
+ * This keeps the spacing in markup such as `<b>foo</b> <i>bar</i>` from being
+ * collapsed away when the component's content is serialized.
+ *
+ * @param {Node} node
+ * @returns {void}
+ */
+function preserveInlineWhitespace(node: Node): void {
+  if (node.type !== 'element' || !node.children) return;
+  for (const child of node.children) {
+    if (child.type === 'text' && /^\s+$/.test(child.content)) {
+      child.content = child.content.replace(/ /g, '&nbsp;');
+    } else {
+      preserveInlineWhitespace(child);
+    }
+  }
+}
+
 function toText(
   node: ElementNode,
   component: TextType,
   properties?: Record<string, unknown>
 ): TextComponent {
+  preserveInlineWhitespace(node);
   const html = stringify([node]);
   const warnings: string[] = [];
   const attributes = getAttributes(node.attributes);
@@ -2514,18 +2496,6 @@ function hasButton(node: ElementNode): boolean {
 }
 
 /**
- * It returns `true`if the node has an `image`, `figure` or `picture` in their
- * descendants
- *
- * @param {ElementNode} node
- * @returns {boolean}
- */
-function hasImage(node: ElementNode): boolean {
-  const imageTagNames = ['img', 'figure', 'picture'];
-  return node.children.reduce(findDescendants(imageTagNames), []).length > 0;
-}
-
-/**
  * It checks if an html node is an valid Instragram Node
  *
  * @param {ElementNode} node
@@ -2646,38 +2616,6 @@ function reduceLinkContainerComponent(
   };
 }
 
-function getLinkFromImageNode(node: ElementNode): {
-  node: ElementNode;
-  link?: string;
-} {
-  let link: string | undefined;
-  if (node.tagName === 'a') {
-    const attributes = getAttributes(node.attributes);
-    const href = attributes.get('href');
-    if (href) {
-      link = href;
-    }
-    if (node.children) {
-      for (const c of node.children) {
-        if (
-          c.type === 'element' &&
-          (c.tagName === 'img' ||
-            c.tagName === 'picture' ||
-            c.tagName === 'figure')
-        ) {
-          node = c;
-          break;
-        }
-      }
-    }
-  }
-
-  return {
-    node,
-    link,
-  };
-}
-
 function getCredit(node: ElementNode): string | undefined {
   let credit: string | undefined;
 
@@ -2792,6 +2730,15 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
 
     if (filter.type === 'attribute') {
       const attributeValue = attributes.get(filter.key);
+      if ('pattern' in filter) {
+        if (
+          attributeValue !== undefined &&
+          new RegExp(filter.pattern).test(attributeValue)
+        ) {
+          return true;
+        }
+        continue;
+      }
       if (attributeValue === filter.value) {
         return true;
       }
@@ -2846,6 +2793,15 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
     }
     if (filter.type === 'attribute') {
       const attributeValue = attributes.get(filter.key);
+      if ('pattern' in filter) {
+        if (
+          attributeValue === undefined ||
+          !new RegExp(filter.pattern).test(attributeValue)
+        ) {
+          return false;
+        }
+        continue;
+      }
       if (attributeValue !== filter.value) return false;
       continue;
     }
@@ -2899,10 +2855,7 @@ export function isValidMapping(mapping: unknown): boolean {
   });
   try {
     ParamsSchema.parse(mapping);
-  } catch (e) {
-    if (e instanceof z.ZodError) {
-      return false;
-    }
+  } catch {
     return false;
   }
   return true;
