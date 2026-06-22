@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { type Recipe, RecipeSchema } from './Schema';
+import { type Recipe, RecipeSchema } from './schema/Schema';
 
 export const MAX_TEXT = 60;
 

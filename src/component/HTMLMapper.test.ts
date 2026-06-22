@@ -10,7 +10,7 @@ import {
   isValidParams,
   isValidMapping,
   processTextLinks,
-} from './Mapping';
+} from './mapping/Mapping';
 import {
   type GalleryComponent,
   type ImageComponent,

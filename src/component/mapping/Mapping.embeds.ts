@@ -5,13 +5,13 @@ import type {
   DailymotionComponent,
   YoutubeComponent,
   VimeoComponent,
-} from './Component';
+} from '../Component';
 import {
   type ElementNode,
   type Node,
   findDescendants,
   getAttributes,
-} from './Node';
+} from '../node/Node';
 import { allowedTags } from './Mapping.constants';
 import { sanitizeNode, isYoutubeUrl } from './Mapping.utils';
 

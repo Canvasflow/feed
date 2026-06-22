@@ -37,7 +37,7 @@ import {
   isVideoComponent,
   isYoutubeComponent,
   isButtonComponent,
-} from './Component';
+} from '../Component';
 import {
   type ElementNode,
   type Node,
@@ -45,7 +45,7 @@ import {
   findDescendants,
   getAttributes,
   SetUtils,
-} from './Node';
+} from '../node/Node';
 import {
   AttributeFilterSchema,
   AttributeValueFilterSchema,

@@ -1,7 +1,7 @@
 import { stringify } from 'himalaya';
 import sanitizeHtml from 'sanitize-html';
 
-import type { Node } from './Node';
+import type { Node } from '../node/Node';
 import { textAllowedTags, textAllowedAttributes } from './Mapping.constants';
 
 /**

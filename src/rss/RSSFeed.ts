@@ -15,9 +15,16 @@ import type {
 import { Tag } from './Tag';
 import * as Attributes from './Attributes';
 import { HTMLMapper } from '../component/HTMLMapper';
-import type { Recipe } from '../component/Schema';
-import { isValidParams, type Mapping, type Params } from '../component/Mapping';
-import { MappingSchema, ParamsSchema } from '../component/Mapping.schema';
+import type { Recipe } from '../component/schema/Schema';
+import {
+  isValidParams,
+  type Mapping,
+  type Params,
+} from '../component/mapping/Mapping';
+import {
+  MappingSchema,
+  ParamsSchema,
+} from '../component/mapping/Mapping.schema';
 
 /**
  * Raw, dynamically-shaped output of fast-xml-parser. It is consumed only
