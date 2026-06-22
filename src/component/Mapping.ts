@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-/* @ts-expect-error */
 import { stringify } from 'himalaya';
 import { z } from 'zod';
 import sanitizeHtml from 'sanitize-html';
@@ -160,6 +158,7 @@ const textAllowedTags = [
 ];
 
 const allowedCaptionTags = ['b', 'strong', 'em', 'i'];
+const allowedFigcaptionTags = ['span', ...allowedCaptionTags];
 
 const htmlTableAllowedTags = [
   'table',
@@ -181,6 +180,20 @@ const htmlTableAllowedTags = [
   's',
   'a',
 ];
+
+/**
+ * Serialize a node back to HTML and sanitize it with the given options.
+ *
+ * @param {Node} node
+ * @param {Parameters<typeof sanitizeHtml>[1]} options
+ * @returns {string}
+ */
+function sanitizeNode(
+  node: Node,
+  options: Parameters<typeof sanitizeHtml>[1]
+): string {
+  return sanitizeHtml(stringify([node]), options);
+}
 
 /**
  * It gets the root node from a list of nodes
@@ -274,7 +287,7 @@ export function mapLivePost(params?: Params): MapLivePostComponentsFn {
     return {
       id,
       component: 'live_post',
-      html: sanitizeHtml(stringify([node]), {
+      html: sanitizeNode(node, {
         allowedTags,
         allowedAttributes: false,
       }),
@@ -711,8 +724,7 @@ function toInstagram(node: ElementNode): InstagramComponent {
         break;
     }
   } catch (e: unknown) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const err = e as any;
+    const err = e as { message?: unknown; input?: unknown };
     errors.push(`${err.message}: "${err.input}"`);
   }
 
@@ -1142,7 +1154,7 @@ function toGalleryFromMapping(
     role: 'default',
     images,
     properties,
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1318,7 +1330,7 @@ function toYoutubeFromAnchor(node: ElementNode): YoutubeComponent {
     attributes: Object.fromEntries(attributes),
   };
   component.id = attributes.get('id');
-  component.html = sanitizeHtml(stringify([node]), {
+  component.html = sanitizeNode(node, {
     allowedTags,
     allowedAttributes: false,
   });
@@ -1445,7 +1457,7 @@ function toVideo(node: ElementNode): VideoComponent {
     movietype: 'hosted',
     errors,
     warnings,
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1502,7 +1514,7 @@ function toAudio(node: ElementNode): AudioComponent {
     loop,
     errors,
     warnings,
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1549,7 +1561,7 @@ function toApplePodcast(node: ElementNode): AudioComponent {
     loop: false,
     errors,
     warnings,
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1578,7 +1590,7 @@ function toCustom(
     content,
     node,
     properties,
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1619,7 +1631,7 @@ function toContainer(
     errors: [],
     warnings,
     properties,
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1673,7 +1685,7 @@ function toColumns(
   return {
     id,
     component: 'columns',
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1780,7 +1792,7 @@ function toLiveContainer(
   return {
     id,
     component: 'live_container',
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1926,7 +1938,7 @@ function toFigureContainer(
 
   if (creditNodes.length) {
     const creditNode = creditNodes.shift() as ElementNode;
-    credit = sanitizeHtml(stringify([creditNode]), {
+    credit = sanitizeNode(creditNode, {
       allowedTags: [],
       allowedAttributes: {},
     });
@@ -2094,7 +2106,7 @@ function fromFigcaption(node: ElementNode): FigcaptionResponse {
     credit = getCredit(n as ElementNode);
     const html = stringify([n]);
     caption = sanitizeHtml(html, {
-      allowedTags: ['span', 'b', 'strong', 'em', 'i'],
+      allowedTags: allowedFigcaptionTags,
     });
     break;
   }
@@ -2239,7 +2251,7 @@ function fromFigure(
 
   return {
     component: 'image',
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -2302,7 +2314,7 @@ function fromPicture(node: ElementNode): ImageComponent {
   return {
     component: 'image',
     imageurl,
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -2356,7 +2368,7 @@ function fromIframe(
         tag: node.tagName,
         attributes: Object.fromEntries(attributes),
       };
-      builtComponent.html = sanitizeHtml(stringify([node]), {
+      builtComponent.html = sanitizeNode(node, {
         allowedTags,
         allowedAttributes: false,
       });
@@ -2367,7 +2379,7 @@ function fromIframe(
         tag: node.tagName,
         attributes: Object.fromEntries(attributes),
       };
-      builtComponent.html = sanitizeHtml(stringify([node]), {
+      builtComponent.html = sanitizeNode(node, {
         allowedTags,
         allowedAttributes: false,
       });
@@ -2394,7 +2406,7 @@ function fromIframe(
     searchParams.src.startsWith('https://www.youtube.com')
   ) {
     builtComponent = toYoutube(new URL(searchParams.src));
-    builtComponent.html = sanitizeHtml(stringify([node]), {
+    builtComponent.html = sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     });
@@ -2412,7 +2424,7 @@ function fromIframe(
     searchParams.url.startsWith('https://www.tiktok.com')
   ) {
     builtComponent = toTikTok(new URL(searchParams.url));
-    builtComponent.html = sanitizeHtml(stringify([node]), {
+    builtComponent.html = sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     });
@@ -2434,7 +2446,7 @@ function fromIframe(
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
     };
-    builtComponent.html = sanitizeHtml(stringify([node]), {
+    builtComponent.html = sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     });
@@ -2449,7 +2461,7 @@ function fromIframe(
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
     };
-    builtComponent.html = sanitizeHtml(stringify([node]), {
+    builtComponent.html = sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     });
@@ -2465,7 +2477,7 @@ function fromIframe(
     builtComponent = toTwitter(new URL(searchParams.url));
     if (!builtComponent) return builtComponent;
 
-    builtComponent.html = sanitizeHtml(stringify([node]), {
+    builtComponent.html = sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     });
@@ -2627,8 +2639,8 @@ function getCredit(node: ElementNode): string | undefined {
         if (credit) {
           return acc;
         }
-        credit = sanitizeHtml(stringify([n]), {
-          allowedTags: ['span', 'b', 'strong', 'em', 'i'],
+        credit = sanitizeNode(n, {
+          allowedTags: allowedFigcaptionTags,
         });
         return acc;
       }
@@ -2737,6 +2749,52 @@ function matchesPattern(value: string, pattern: string): boolean {
 }
 
 /**
+ * Determine whether a single filter matches an element, described by its tag
+ * name and attribute map.
+ *
+ * @param {string} tagName
+ * @param {Map<string, string>} attributes
+ * @param {Filter} filter
+ * @returns {boolean}
+ */
+function matchesFilter(
+  tagName: string,
+  attributes: Map<string, string>,
+  filter: Filter
+): boolean {
+  if (filter.type === 'tag') {
+    return new Set(filter.items).has(tagName);
+  }
+
+  if (filter.type === 'attribute') {
+    const attributeValue = attributes.get(filter.key);
+    if ('pattern' in filter) {
+      return (
+        attributeValue !== undefined &&
+        matchesPattern(attributeValue, filter.pattern)
+      );
+    }
+    return attributeValue === filter.value;
+  }
+
+  // class filter
+  const classNames = attributes.get('class');
+  // An element without a class attribute can never match a class filter.
+  if (!classNames) return false;
+  const itemsSet = new Set(filter.items);
+  const classesNamesSet: Set<string> = new Set(classNames.split(' '));
+  switch (filter.match) {
+    case 'equal':
+      return SetUtils.equal(classesNamesSet, itemsSet);
+    case 'all':
+      return SetUtils.subset(classesNamesSet, itemsSet);
+    default:
+      // Use match any as the default case
+      return SetUtils.intersect(classesNamesSet, itemsSet).size > 0;
+  }
+}
+
+/**
  * Filter is at least one filter matches
  *
  * @param {ElementNode} node
@@ -2746,57 +2804,7 @@ function matchesPattern(value: string, pattern: string): boolean {
 function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
   const { tagName } = node;
   const attributes = getAttributes(node.attributes);
-
-  for (const filter of filters) {
-    if (filter.type === 'tag') {
-      if (new Set(filter.items).has(tagName)) return true;
-      continue;
-    }
-
-    if (filter.type === 'attribute') {
-      const attributeValue = attributes.get(filter.key);
-      if ('pattern' in filter) {
-        if (
-          attributeValue !== undefined &&
-          matchesPattern(attributeValue, filter.pattern)
-        ) {
-          return true;
-        }
-        continue;
-      }
-      if (attributeValue === filter.value) {
-        return true;
-      }
-      continue;
-    }
-
-    if (filter.type === 'class') {
-      const classNames = attributes.get('class');
-
-      // It doesn't have a class in the element so is going to ignore it
-      if (!classNames) continue;
-      const itemsSet = new Set(filter.items);
-      const classesNamesSet: Set<string> = new Set(classNames.split(' '));
-      switch (filter.match) {
-        case 'equal':
-          if (SetUtils.equal(classesNamesSet, itemsSet)) {
-            return true;
-          }
-          continue;
-        case 'all':
-          if (SetUtils.subset(classesNamesSet, itemsSet)) {
-            return true;
-          }
-          continue;
-      }
-      // Use match any as the default case
-      if (SetUtils.intersect(classesNamesSet, itemsSet).size > 0) {
-        return true;
-      }
-      continue;
-    }
-  }
-  return false;
+  return filters.some((filter) => matchesFilter(tagName, attributes, filter));
 }
 
 /**
@@ -2807,58 +2815,11 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
  * @returns {boolean}
  */
 function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
-  const { tagName } = node;
-  const attributes = getAttributes(node.attributes);
   // If there aren't any filter, this is invalid
   if (!filters.length) return false;
-
-  for (const filter of filters) {
-    if (filter.type === 'tag') {
-      if (!new Set(filter.items).has(tagName)) return false;
-    }
-    if (filter.type === 'attribute') {
-      const attributeValue = attributes.get(filter.key);
-      if ('pattern' in filter) {
-        if (
-          attributeValue === undefined ||
-          !matchesPattern(attributeValue, filter.pattern)
-        ) {
-          return false;
-        }
-        continue;
-      }
-      if (attributeValue !== filter.value) return false;
-      continue;
-    }
-    if (filter.type === 'class') {
-      const classNames = attributes.get('class');
-
-      // It doesn't have a class in the element and has a filter of type class
-      // is invalid
-      if (!classNames) return false;
-
-      const itemsSet = new Set(filter.items);
-      const classesNamesSet: Set<string> = new Set(classNames.split(' '));
-      switch (filter.match) {
-        case 'equal':
-          if (!SetUtils.equal(classesNamesSet, itemsSet)) {
-            return false;
-          }
-          continue;
-        case 'all':
-          if (!SetUtils.subset(classesNamesSet, itemsSet)) {
-            return false;
-          }
-          continue;
-      }
-      // Use match any as the default case
-      if (SetUtils.intersect(classesNamesSet, itemsSet).size === 0) {
-        return false;
-      }
-      continue;
-    }
-  }
-  return true;
+  const { tagName } = node;
+  const attributes = getAttributes(node.attributes);
+  return filters.every((filter) => matchesFilter(tagName, attributes, filter));
 }
 
 /**

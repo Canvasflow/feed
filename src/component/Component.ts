@@ -349,9 +349,9 @@ export const LinkContainerComponentSchema: z.ZodType<
     component: z.literal('container'),
     components: z.array(ComponentSchema),
     link: z.string().optional(),
-    // Use runtime Map constructor for instanceof; generics are TS-only and
-    // can't appear at runtime. Cast to any to satisfy Zod typing.
-    attributes: z.instanceof(Map as any).optional(),
+    attributes: z
+      .custom<Map<string, string>>((value) => value instanceof Map)
+      .optional(),
   })
 );
 

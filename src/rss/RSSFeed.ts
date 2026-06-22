@@ -74,8 +74,7 @@ export class RSSFeed {
       if (!content) {
         continue;
       }
-      // eslint-disable-next-line
-      const parseContent = JSON.parse(content) as any;
+      const parseContent = JSON.parse(content);
       if (parseContent['@type'] && parseContent['@type'] === 'Recipe') {
         recipe = parseContent as Recipe;
         break;
@@ -372,8 +371,7 @@ export class RSSFeed {
     if (typeof item.guid === 'string') {
       guid = item.guid;
     } else if (typeof item.guid === 'object' && item?.guid) {
-      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-      const g = item?.guid as any;
+      const g = item.guid as { '#text'?: unknown };
       guid = `${g['#text']}`;
     }
     const title =
@@ -786,9 +784,9 @@ export function replaceErrors(_: string, value: unknown) {
   if (value instanceof Error) {
     const error: Record<string, unknown> = {};
 
+    const source = value as unknown as Record<string, unknown>;
     Object.getOwnPropertyNames(value).forEach(function (propName) {
-      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-      error[propName] = (value as any)[propName];
+      error[propName] = source[propName];
     });
 
     return error.message;
