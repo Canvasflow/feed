@@ -131,9 +131,9 @@ Matches when the attribute's value is exactly equal to `value`.
 Matches when the attribute is present and its value matches the supplied regular expression pattern. Use this when the attribute value is not fixed — for example when it carries a generated id, a numeric suffix, or a namespaced prefix.
 
 | Property  | Required | Description                                                                                                                  |
-| :-------- | :------- | :-------------------------------------------------------------------------------------------------------------------------- |
-| `type`    | Yes      | Must be `attribute`.                                                                                                        |
-| `key`     | Yes      | The name of the attribute to look for.                                                                                      |
+| :-------- | :------- | :--------------------------------------------------------------------------------------------------------------------------- |
+| `type`    | Yes      | Must be `attribute`.                                                                                                         |
+| `key`     | Yes      | The name of the attribute to look for.                                                                                       |
 | `pattern` | Yes      | A regular expression (as a string) that the attribute's value must match. The attribute must be present for a pattern match. |
 
 > When a `pattern` property is present, the filter matches by regular expression and the `value` property is ignored. The pattern is evaluated with JavaScript's `RegExp`; remember to escape backslashes within the JSON string (e.g. `\\d`).
