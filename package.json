@@ -1,7 +1,7 @@
 {
   "name": "@canvasflow/feed",
   "description": "This is canvasflow utility for processing feeds",
-  "version": "1.15.7",
+  "version": "1.15.8",
   "type": "module",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
@@ -22,10 +22,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/canvasflow/feed.git"
+    "url": "https://github.com/Canvasflow/feed.git"
   },
   "bugs": {
-    "url": "https://github.com/canvasflow/feed/issues"
+    "url": "https://github.com/Canvasflow/feed/issues"
   },
   "scripts": {
     "dev": "vp dev",
