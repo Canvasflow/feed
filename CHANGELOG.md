@@ -1,5 +1,31 @@
 # CHANGELOG
 
+## 🏷️ 1.15.8
+
+_June 22, 2026_
+
+♻️ Refactor
+
+- (component) Group modules into mapping/node/schema folders ([`3781043`](https://github.com/Canvasflow/feed/commit/3781043a71007e9a5e1e170f9e3ef2559a053140))
+- (mapping) Split Mapping.ts into focused modules ([`6f933ad`](https://github.com/Canvasflow/feed/commit/6f933ad1c528b12e23d0829e646ec4211a0b8f0a))
+- Dedupe filter logic, centralize sanitize, add himalaya types ([`1239512`](https://github.com/Canvasflow/feed/commit/12395126781cc43c5ca1808b0b0a6ce48a724fdf))
+- Harden validation, encapsulate raw data, guard pattern filters ([`70df820`](https://github.com/Canvasflow/feed/commit/70df820de525f1efafcfc33d6bba749b808ef005))
+
+📝 Docs
+
+- (wiki) Drop references to removed docs/*.md files ([`39a8730`](https://github.com/Canvasflow/feed/commit/39a87301e5f055296bedf051c6e109d019295f49))
+- Rewrite README as intro pointing to the wiki; drop docs/*.md ([`55b95aa`](https://github.com/Canvasflow/feed/commit/55b95aabefbc5b02af2010dc2f826a8c8ac3e325))
+- (wiki) Add GitHub Wiki pages and a wiki-sync publish job ([`7d738bc`](https://github.com/Canvasflow/feed/commit/7d738bc7c846b00d2fefa8955be3ba5aad9a3c5e))
+
+🎨 Style
+
+- (docs) Align README documentation table ([`a168349`](https://github.com/Canvasflow/feed/commit/a168349c944e224df2fd2e5045569f8588b83afa))
+- (wiki) Apply formatter table alignment ([`aa38ed6`](https://github.com/Canvasflow/feed/commit/aa38ed6643481b7b08a3a58154dbc60326869f35))
+
+🧹 Chores
+
+- Drop emoji comment and align repository URLs casing ([`28b4464`](https://github.com/Canvasflow/feed/commit/28b4464df3c1243b89ce5c09cfeb4228a5724a4c))
+
 ## 🏷️ 1.15.7
 
 _June 22, 2026_

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { TextTypeSchema } from './Component';
+import { TextTypeSchema } from '../Component';
 
 // Primitives
 export const MatchTypeSchema = z.enum(['any', 'all']);

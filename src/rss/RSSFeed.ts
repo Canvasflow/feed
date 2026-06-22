@@ -15,14 +15,28 @@ import type {
 import { Tag } from './Tag';
 import * as Attributes from './Attributes';
 import { HTMLMapper } from '../component/HTMLMapper';
-import type { Recipe } from '../component/Schema';
-import { isValidParams, type Mapping, type Params } from '../component/Mapping';
-import { MappingSchema, ParamsSchema } from '../component/Mapping.schema';
+import type { Recipe } from '../component/schema/Schema';
+import {
+  isValidParams,
+  type Mapping,
+  type Params,
+} from '../component/mapping/Mapping';
+import {
+  MappingSchema,
+  ParamsSchema,
+} from '../component/mapping/Mapping.schema';
+
+/**
+ * Raw, dynamically-shaped output of fast-xml-parser. It is consumed only
+ * internally by validate()/build(); consumers should read the typed `rss`
+ * property instead.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ParsedXml = Record<string, any>;
 
 export class RSSFeed {
   public content: string;
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  public data: any;
+  private readonly data: ParsedXml;
   public rss: RSS;
   public errors: Array<unknown> = [];
   private params: Params | undefined;
@@ -67,8 +81,7 @@ export class RSSFeed {
       if (!content) {
         continue;
       }
-      // eslint-disable-next-line
-      const parseContent = JSON.parse(content) as any;
+      const parseContent = JSON.parse(content);
       if (parseContent['@type'] && parseContent['@type'] === 'Recipe') {
         recipe = parseContent as Recipe;
         break;
@@ -90,14 +103,8 @@ export class RSSFeed {
   }
 
   static async getHtmlContent(url: string, headers?: HeadersInit) {
-    try {
-      const response = await fetch(url, { method: 'GET', headers });
-      const data = await response.text();
-      return data;
-    } catch (err) {
-      console.error('Error:', err);
-      throw err;
-    }
+    const response = await fetch(url, { method: 'GET', headers });
+    return response.text();
   }
 
   async validate(): Promise<void> {
@@ -371,8 +378,7 @@ export class RSSFeed {
     if (typeof item.guid === 'string') {
       guid = item.guid;
     } else if (typeof item.guid === 'object' && item?.guid) {
-      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-      const g = item?.guid as any;
+      const g = item.guid as { '#text'?: unknown };
       guid = `${g['#text']}`;
     }
     const title =
@@ -785,9 +791,9 @@ export function replaceErrors(_: string, value: unknown) {
   if (value instanceof Error) {
     const error: Record<string, unknown> = {};
 
+    const source = value as unknown as Record<string, unknown>;
     Object.getOwnPropertyNames(value).forEach(function (propName) {
-      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-      error[propName] = (value as any)[propName];
+      error[propName] = source[propName];
     });
 
     return error.message;

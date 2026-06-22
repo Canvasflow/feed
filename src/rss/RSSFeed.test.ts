@@ -5,9 +5,13 @@ import { test, expect, describe, beforeEach } from 'vite-plus/test';
 
 import { replaceErrors, RSSFeed } from './RSSFeed';
 import type { ImageComponent, TextComponent } from '../component/Component';
-import type { Recipe } from '../component/Schema';
+import type { Recipe } from '../component/schema/Schema';
 import { HTMLMapper } from '../component/HTMLMapper';
-import type { ComponentMapping, Mapping, Params } from '../component/Mapping';
+import type {
+  ComponentMapping,
+  Mapping,
+  Params,
+} from '../component/mapping/Mapping';
 
 describe('Invalid RSS', () => {
   test(

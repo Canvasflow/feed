@@ -1,5 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-/* @ts-expect-error */
 import { stringify } from 'himalaya';
 import { z } from 'zod';
 import sanitizeHtml from 'sanitize-html';
@@ -20,7 +18,6 @@ import {
   type HTMLTableComponent,
   type ImageComponent,
   type InfogramComponent,
-  type InstagramComponent,
   type LinkContainerComponent,
   type RecipeComponent,
   type TextComponent,
@@ -40,7 +37,7 @@ import {
   isVideoComponent,
   isYoutubeComponent,
   isButtonComponent,
-} from './Component';
+} from '../Component';
 import {
   type ElementNode,
   type Node,
@@ -48,7 +45,7 @@ import {
   findDescendants,
   getAttributes,
   SetUtils,
-} from './Node';
+} from '../node/Node';
 import {
   AttributeFilterSchema,
   AttributeValueFilterSchema,
@@ -69,6 +66,41 @@ import {
   LinkResponseSchema,
   GalleryMappingSchema,
 } from './Mapping.schema';
+import {
+  imageTags,
+  textTags,
+  textTagsSet,
+  mappingTagsSet,
+  textAllowedAttributes,
+  allowedTags,
+  textAllowedTags,
+  allowedCaptionTags,
+  allowedFigcaptionTags,
+  htmlTableAllowedTags,
+} from './Mapping.constants';
+import {
+  sanitizeNode,
+  matchesPattern,
+  isYoutubeUrl,
+  processTextLinks,
+  isEmpty,
+} from './Mapping.utils';
+import {
+  toInstagram,
+  toTikTok,
+  toInfogram,
+  toDailymotion,
+  toYoutube,
+  toYoutubeFromAnchor,
+  toVimeo,
+  isInstagramNode,
+  isTikTokNode,
+} from './Mapping.embeds';
+
+// Re-export the publicly consumed constants and helpers so the package surface
+// is unchanged.
+export { textTags, textTagsSet, mappingTagsSet };
+export { processTextLinks, isEmpty };
 
 export type Filter = z.infer<typeof FilterSchema>;
 export type TagFilter = z.infer<typeof TagFilterSchema>;
@@ -96,91 +128,6 @@ interface FigcaptionResponse {
   caption?: string;
   credit?: string;
 }
-
-const imageTags = new Set(['img', 'picture']);
-
-export const textTags = [
-  'h1',
-  'h2',
-  'h3',
-  'h4',
-  'h5',
-  'h6',
-  'p',
-  'footer',
-  'blockquote',
-  'ol',
-  'ul',
-  'a',
-];
-
-export const textTagsSet = new Set(textTags);
-export const mappingTagsSet: Set<string> = new Set([
-  ...textTags,
-  'recipe',
-  'container',
-]);
-
-const textAllowedAttributes: Record<string, Array<string>> = {
-  a: ['href', 'target', 'rel'],
-};
-
-for (const tag of textTags) {
-  let attributes = ['id', 'role', 'style', 'class'];
-  const allowedAttributes = textAllowedAttributes[tag] || [];
-  if (allowedAttributes.length) {
-    attributes = attributes.concat(allowedAttributes);
-  }
-  textAllowedAttributes[tag] = attributes;
-}
-
-const allowedTags = sanitizeHtml.defaults.allowedTags.filter(
-  (tag) => tag !== 'script' && tag !== 'style'
-);
-
-const textAllowedTags = [
-  ...new Set([
-    'strong',
-    'b',
-    'em',
-    'i',
-    'a',
-    'ul',
-    'ol',
-    'li',
-    'br',
-    'sup',
-    'sub',
-    'del',
-    's',
-    'p',
-    'span',
-    'small',
-  ]),
-];
-
-const allowedCaptionTags = ['b', 'strong', 'em', 'i'];
-
-const htmlTableAllowedTags = [
-  'table',
-  'thead',
-  'tbody',
-  'tfoot',
-  'tr',
-  'th',
-  'td',
-  'em',
-  'i',
-  'b',
-  'strong',
-  'sup',
-  'sub',
-  'span',
-  'br',
-  'small',
-  's',
-  'a',
-];
 
 /**
  * It gets the root node from a list of nodes
@@ -274,7 +221,7 @@ export function mapLivePost(params?: Params): MapLivePostComponentsFn {
     return {
       id,
       component: 'live_post',
-      html: sanitizeHtml(stringify([node]), {
+      html: sanitizeNode(node, {
         allowedTags,
         allowedAttributes: false,
       }),
@@ -654,110 +601,6 @@ function toImg(node: ElementNode): ImageComponent {
 }
 
 /**
- * Transform an html component to Canvasflow Instagram Component
- *
- * @param {ElementNode} node
- * @returns {InstagramComponent}
- */
-function toInstagram(node: ElementNode): InstagramComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const component: InstagramComponent = {
-    id: '',
-    component: 'instagram',
-    type: 'post',
-    errors,
-    warnings,
-    element: {
-      tag: node.tagName,
-    },
-  };
-
-  const attributes = getAttributes(node.attributes);
-  if (component.element && attributes) {
-    component.element.attributes = Object.fromEntries(attributes);
-  }
-  const url =
-    attributes.get('data-instgrm-permalink') || getLegacyInstagramUrl(node);
-
-  if (!url) {
-    errors.push('URL not found on node');
-    component.errors = errors;
-    return component;
-  }
-
-  try {
-    const urlInfo = new URL(url);
-    const splitUrl = urlInfo.pathname.split('/');
-    const type = splitUrl[1] ? splitUrl[1].toLowerCase() : 'post';
-
-    if (!splitUrl[1]) {
-      errors.push('URL does not contain a type.');
-    }
-
-    if (!splitUrl[2]) {
-      errors.push('URL does not contain an ID.');
-    }
-
-    component.id = splitUrl[2];
-
-    switch (type) {
-      case 'p':
-        component.type = 'post';
-        break;
-      case 'reel':
-      case 'tv':
-        component.type = type;
-        break;
-    }
-  } catch (e: unknown) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const err = e as any;
-    errors.push(`${err.message}: "${err.input}"`);
-  }
-
-  component.errors = errors;
-
-  return component;
-}
-
-/**
- * Uses Instagram legacy embed API to detect the url
- *
- * @param {ElementNode} node
- * @returns {string}
- */
-function getLegacyInstagramUrl(node: ElementNode): string {
-  const anchorNodes: Node[] = node.children
-    .reduce(findDescendants('a'), [])
-    .filter(filterInstagramAnchor);
-
-  if (!anchorNodes.length) return '';
-
-  const anchorNode = anchorNodes.shift() as ElementNode;
-  const anchorNodeAttributes = getAttributes(anchorNode.attributes);
-
-  return anchorNodeAttributes.get('href') || '';
-}
-
-/**
- * Filters if anchor tag nodes have a valid instagram url
- *
- * @param {ElementNode} node
- * @returns {boolean}
- */
-function filterInstagramAnchor(node: Node): boolean {
-  if (node.type !== 'element') return false;
-  if (!node.attributes) return false;
-  const attributes = getAttributes(node.attributes);
-  const href = attributes.get('href');
-  if (!href) return false;
-  return /(?:https?:\/\/)?(?:www\.)?instagram\.com\/(?:p|reel|tv)\/([A-Za-z0-9_-]+)/.test(
-    href
-  );
-}
-
-/**
  * Transform an html component to Canvasflow Button Component
  *
  * @param {ElementNode} node
@@ -915,42 +758,6 @@ function toHTMLTable(node: ElementNode): HTMLTableComponent {
     },
   };
 
-  return component;
-}
-
-/**
- * Transform an URL into a TikTokComponent
- *
- * @param {URL} url
- * @returns {TikTokComponent}
- */
-function toTikTok(url: URL): TikTokComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  const params = {
-    username: '',
-    id: '',
-  };
-
-  const match = url
-    .toString()
-    .match(
-      /^https:\/\/www\.tiktok\.com\/(@[\w.\-_]+)\/video\/(\d+)(?:[/?].*)?$/
-    );
-  if (match) {
-    params.username = match[1] || '';
-    params.id = match[2] || '';
-  } else {
-    errors.push('Invalid TikTok video URL format.');
-  }
-  const component: TikTokComponent = {
-    component: 'video',
-    vidtype: 'tiktok',
-    params,
-    errors,
-    warnings,
-  };
   return component;
 }
 
@@ -1142,7 +949,7 @@ function toGalleryFromMapping(
     role: 'default',
     images,
     properties,
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1252,151 +1059,6 @@ function toImage(node: ElementNode): ImageComponent {
 }
 
 /**
- * Transform an infogram url into an Canvasflow Infogram Component
- *
- * @param {URL} url
- * @returns {InfogramComponent}
- */
-function toInfogram(url: URL): InfogramComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  return {
-    component: 'infogram',
-    params: {
-      id: url.pathname.replace('/', ''),
-      parentUrl: url.searchParams.get('parent_url') || '',
-      src: 'embed',
-    },
-    errors,
-    warnings,
-  };
-}
-
-/**
- * Transform an Dailymotion url into a Canvasflow DailyMotion Component
- *
- * @param {URL} url
- * @returns {DailymotionComponent}
- */
-function toDailymotion(url: URL): DailymotionComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  const regExp =
-    /(?:dailymotion\.com\/(?:video|hub)|dai\.ly)\/([0-9a-z]+)(?:[-_0-9a-zA-Z]+#video=([a-z0-9]+))?/;
-
-  if (!regExp.test(url.href)) {
-    errors.push('Invalid  Dailymotion video URL format.');
-  }
-
-  const id = url.pathname.split('/').pop() as string;
-
-  return {
-    component: 'video',
-    vidtype: 'dailymotion',
-    params: {
-      id,
-    },
-    errors,
-    warnings,
-  };
-}
-
-/**
- * Creates a Youtube Component from an anchor element
- *
- * @param {ElementNode} node
- * @returns {YoutubeComponent}
- */
-function toYoutubeFromAnchor(node: ElementNode): YoutubeComponent {
-  const attributes = getAttributes(node.attributes);
-  const url = attributes.get('href') || '';
-  const component = toYoutube(new URL(url));
-  component.element = {
-    tag: node.tagName,
-    attributes: Object.fromEntries(attributes),
-  };
-  component.id = attributes.get('id');
-  component.html = sanitizeHtml(stringify([node]), {
-    allowedTags,
-    allowedAttributes: false,
-  });
-  return component;
-}
-
-/**
- * Transform an youtube url into a Canvasflow Youtube Component
- *
- * @param {URL} url
- * @returns {YoutubeComponent}
- */
-function toYoutube(url: URL): YoutubeComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  if (!isYoutubeUrl(url.href)) {
-    errors.push('Invalid Youtube video URL format.');
-  }
-
-  const id = url.pathname.split('/').pop() as string;
-
-  if (!/^[a-zA-Z0-9_-]{11}$/.test(id)) {
-    errors.push('Invalid YouTube video ID.');
-  }
-
-  return {
-    component: 'video',
-    vidtype: 'youtube',
-    params: {
-      id,
-    },
-    errors,
-    warnings,
-  };
-}
-
-/**
- * Check if url is a valid Youtube url
- *
- * @param {string} url
- * @returns {boolean}
- */
-function isYoutubeUrl(url: string): boolean {
-  const regExp =
-    /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-
-  return regExp.test(url);
-}
-
-/**
- * Transform an vimeo url into a Canvasflow Vimeo Component
- *
- * @param {URL} url
- * @returns {VimeoComponent}
- */
-function toVimeo(url: URL): VimeoComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  if (!url.toString().startsWith('https://vimeo.com')) {
-    errors.push('Invalid  Dailymotion video URL format.');
-  }
-
-  const id = url.pathname.split('/').pop() as string;
-
-  return {
-    component: 'video',
-    vidtype: 'vimeo',
-    params: {
-      id,
-    },
-    errors,
-    warnings,
-  };
-}
-
-/**
  * Transform an video HTML node into a Canvasflow Video Component
  *
  * @param {ElementNode} node
@@ -1445,7 +1107,7 @@ function toVideo(node: ElementNode): VideoComponent {
     movietype: 'hosted',
     errors,
     warnings,
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1502,7 +1164,7 @@ function toAudio(node: ElementNode): AudioComponent {
     loop,
     errors,
     warnings,
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1549,7 +1211,7 @@ function toApplePodcast(node: ElementNode): AudioComponent {
     loop: false,
     errors,
     warnings,
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1578,7 +1240,7 @@ function toCustom(
     content,
     node,
     properties,
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1619,7 +1281,7 @@ function toContainer(
     errors: [],
     warnings,
     properties,
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1673,7 +1335,7 @@ function toColumns(
   return {
     id,
     component: 'columns',
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1780,7 +1442,7 @@ function toLiveContainer(
   return {
     id,
     component: 'live_container',
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -1926,7 +1588,7 @@ function toFigureContainer(
 
   if (creditNodes.length) {
     const creditNode = creditNodes.shift() as ElementNode;
-    credit = sanitizeHtml(stringify([creditNode]), {
+    credit = sanitizeNode(creditNode, {
       allowedTags: [],
       allowedAttributes: {},
     });
@@ -2094,7 +1756,7 @@ function fromFigcaption(node: ElementNode): FigcaptionResponse {
     credit = getCredit(n as ElementNode);
     const html = stringify([n]);
     caption = sanitizeHtml(html, {
-      allowedTags: ['span', 'b', 'strong', 'em', 'i'],
+      allowedTags: allowedFigcaptionTags,
     });
     break;
   }
@@ -2239,7 +1901,7 @@ function fromFigure(
 
   return {
     component: 'image',
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -2302,7 +1964,7 @@ function fromPicture(node: ElementNode): ImageComponent {
   return {
     component: 'image',
     imageurl,
-    html: sanitizeHtml(stringify([node]), {
+    html: sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     }),
@@ -2356,7 +2018,7 @@ function fromIframe(
         tag: node.tagName,
         attributes: Object.fromEntries(attributes),
       };
-      builtComponent.html = sanitizeHtml(stringify([node]), {
+      builtComponent.html = sanitizeNode(node, {
         allowedTags,
         allowedAttributes: false,
       });
@@ -2367,7 +2029,7 @@ function fromIframe(
         tag: node.tagName,
         attributes: Object.fromEntries(attributes),
       };
-      builtComponent.html = sanitizeHtml(stringify([node]), {
+      builtComponent.html = sanitizeNode(node, {
         allowedTags,
         allowedAttributes: false,
       });
@@ -2394,7 +2056,7 @@ function fromIframe(
     searchParams.src.startsWith('https://www.youtube.com')
   ) {
     builtComponent = toYoutube(new URL(searchParams.src));
-    builtComponent.html = sanitizeHtml(stringify([node]), {
+    builtComponent.html = sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     });
@@ -2412,7 +2074,7 @@ function fromIframe(
     searchParams.url.startsWith('https://www.tiktok.com')
   ) {
     builtComponent = toTikTok(new URL(searchParams.url));
-    builtComponent.html = sanitizeHtml(stringify([node]), {
+    builtComponent.html = sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     });
@@ -2434,7 +2096,7 @@ function fromIframe(
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
     };
-    builtComponent.html = sanitizeHtml(stringify([node]), {
+    builtComponent.html = sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     });
@@ -2449,7 +2111,7 @@ function fromIframe(
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
     };
-    builtComponent.html = sanitizeHtml(stringify([node]), {
+    builtComponent.html = sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     });
@@ -2465,7 +2127,7 @@ function fromIframe(
     builtComponent = toTwitter(new URL(searchParams.url));
     if (!builtComponent) return builtComponent;
 
-    builtComponent.html = sanitizeHtml(stringify([node]), {
+    builtComponent.html = sanitizeNode(node, {
       allowedTags,
       allowedAttributes: false,
     });
@@ -2493,22 +2155,6 @@ function hasButton(node: ElementNode): boolean {
     }
   }
   return false;
-}
-
-/**
- * It checks if an html node is an valid Instragram Node
- *
- * @param {ElementNode} node
- * @returns {boolean}
- */
-function isInstagramNode(node: ElementNode): boolean {
-  const { tagName } = node;
-  const attributes = getAttributes(node.attributes);
-  return (
-    tagName === 'blockquote' &&
-    (attributes.get('data-instgrm-version') === '6' ||
-      attributes.get('data-instgrm-permalink') !== undefined)
-  );
 }
 
 /**
@@ -2546,26 +2192,6 @@ function isButtonNode(node: ElementNode): boolean {
   const attributes = getAttributes(node.attributes);
   const role = attributes.get('role');
   return tagName === 'button' || (tagName === 'a' && role === 'button');
-}
-
-/**
- * It checks if an html node is an valid TikTok Node
- *
- * @param {ElementNode} node
- * @returns {boolean}
- */
-function isTikTokNode(node: ElementNode): boolean {
-  const { tagName } = node;
-  const attributes = getAttributes(node.attributes);
-  const classNames = attributes.get('class');
-  if (
-    tagName === 'blockquote' &&
-    classNames &&
-    classNames.includes('tiktok-embed')
-  ) {
-    return true;
-  }
-  return false;
 }
 
 function reduceLinkContainerComponent(
@@ -2627,8 +2253,8 @@ function getCredit(node: ElementNode): string | undefined {
         if (credit) {
           return acc;
         }
-        credit = sanitizeHtml(stringify([n]), {
-          allowedTags: ['span', 'b', 'strong', 'em', 'i'],
+        credit = sanitizeNode(n, {
+          allowedTags: allowedFigcaptionTags,
         });
         return acc;
       }
@@ -2712,6 +2338,52 @@ function getImageLink(node: ElementNode): LinkResponse {
 }
 
 /**
+ * Determine whether a single filter matches an element, described by its tag
+ * name and attribute map.
+ *
+ * @param {string} tagName
+ * @param {Map<string, string>} attributes
+ * @param {Filter} filter
+ * @returns {boolean}
+ */
+function matchesFilter(
+  tagName: string,
+  attributes: Map<string, string>,
+  filter: Filter
+): boolean {
+  if (filter.type === 'tag') {
+    return new Set(filter.items).has(tagName);
+  }
+
+  if (filter.type === 'attribute') {
+    const attributeValue = attributes.get(filter.key);
+    if ('pattern' in filter) {
+      return (
+        attributeValue !== undefined &&
+        matchesPattern(attributeValue, filter.pattern)
+      );
+    }
+    return attributeValue === filter.value;
+  }
+
+  // class filter
+  const classNames = attributes.get('class');
+  // An element without a class attribute can never match a class filter.
+  if (!classNames) return false;
+  const itemsSet = new Set(filter.items);
+  const classesNamesSet: Set<string> = new Set(classNames.split(' '));
+  switch (filter.match) {
+    case 'equal':
+      return SetUtils.equal(classesNamesSet, itemsSet);
+    case 'all':
+      return SetUtils.subset(classesNamesSet, itemsSet);
+    default:
+      // Use match any as the default case
+      return SetUtils.intersect(classesNamesSet, itemsSet).size > 0;
+  }
+}
+
+/**
  * Filter is at least one filter matches
  *
  * @param {ElementNode} node
@@ -2721,57 +2393,7 @@ function getImageLink(node: ElementNode): LinkResponse {
 function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
   const { tagName } = node;
   const attributes = getAttributes(node.attributes);
-
-  for (const filter of filters) {
-    if (filter.type === 'tag') {
-      if (new Set(filter.items).has(tagName)) return true;
-      continue;
-    }
-
-    if (filter.type === 'attribute') {
-      const attributeValue = attributes.get(filter.key);
-      if ('pattern' in filter) {
-        if (
-          attributeValue !== undefined &&
-          new RegExp(filter.pattern).test(attributeValue)
-        ) {
-          return true;
-        }
-        continue;
-      }
-      if (attributeValue === filter.value) {
-        return true;
-      }
-      continue;
-    }
-
-    if (filter.type === 'class') {
-      const classNames = attributes.get('class');
-
-      // It doesn't have a class in the element so is going to ignore it
-      if (!classNames) continue;
-      const itemsSet = new Set(filter.items);
-      const classesNamesSet: Set<string> = new Set(classNames.split(' '));
-      switch (filter.match) {
-        case 'equal':
-          if (SetUtils.equal(classesNamesSet, itemsSet)) {
-            return true;
-          }
-          continue;
-        case 'all':
-          if (SetUtils.subset(classesNamesSet, itemsSet)) {
-            return true;
-          }
-          continue;
-      }
-      // Use match any as the default case
-      if (SetUtils.intersect(classesNamesSet, itemsSet).size > 0) {
-        return true;
-      }
-      continue;
-    }
-  }
-  return false;
+  return filters.some((filter) => matchesFilter(tagName, attributes, filter));
 }
 
 /**
@@ -2782,58 +2404,11 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
  * @returns {boolean}
  */
 function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
-  const { tagName } = node;
-  const attributes = getAttributes(node.attributes);
   // If there aren't any filter, this is invalid
   if (!filters.length) return false;
-
-  for (const filter of filters) {
-    if (filter.type === 'tag') {
-      if (!new Set(filter.items).has(tagName)) return false;
-    }
-    if (filter.type === 'attribute') {
-      const attributeValue = attributes.get(filter.key);
-      if ('pattern' in filter) {
-        if (
-          attributeValue === undefined ||
-          !new RegExp(filter.pattern).test(attributeValue)
-        ) {
-          return false;
-        }
-        continue;
-      }
-      if (attributeValue !== filter.value) return false;
-      continue;
-    }
-    if (filter.type === 'class') {
-      const classNames = attributes.get('class');
-
-      // It doesn't have a class in the element and has a filter of type class
-      // is invalid
-      if (!classNames) return false;
-
-      const itemsSet = new Set(filter.items);
-      const classesNamesSet: Set<string> = new Set(classNames.split(' '));
-      switch (filter.match) {
-        case 'equal':
-          if (!SetUtils.equal(classesNamesSet, itemsSet)) {
-            return false;
-          }
-          continue;
-        case 'all':
-          if (!SetUtils.subset(classesNamesSet, itemsSet)) {
-            return false;
-          }
-          continue;
-      }
-      // Use match any as the default case
-      if (SetUtils.intersect(classesNamesSet, itemsSet).size === 0) {
-        return false;
-      }
-      continue;
-    }
-  }
-  return true;
+  const { tagName } = node;
+  const attributes = getAttributes(node.attributes);
+  return filters.every((filter) => matchesFilter(tagName, attributes, filter));
 }
 
 /**
@@ -2843,22 +2418,8 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
  * @returns {boolean}
  */
 export function isValidMapping(mapping: unknown): boolean {
-  if (!mapping) return false;
-  // Zod Schema validation
-  const ParamsSchema = z.object({
-    mappings: z
-      .object({
-        match: z.custom<MatchType>(),
-        filters: z.custom<Filter>().array(),
-      })
-      .array(),
-  });
-  try {
-    ParamsSchema.parse(mapping);
-  } catch {
-    return false;
-  }
-  return true;
+  return z.object({ mappings: z.array(MappingSchema) }).safeParse(mapping)
+    .success;
 }
 
 export type Params = z.infer<typeof ParamsSchema>;
@@ -2880,159 +2441,21 @@ export function filterEmptyTextNode(node: Node): boolean {
 }
 
 /**
- * Process the links in the text
- *
- * @param {string} html
- * @param {string} [link='/']
- * @returns {string}
- */
-export function processTextLinks(html: string, link: string = '/'): string {
-  if (link && !link.endsWith('/')) {
-    link += '/';
-  }
-
-  const allowedTags = textAllowedTags;
-  const allowedAttributes = textAllowedAttributes;
-  const isRelative = (url: string) => !URL.canParse(url);
-  return sanitizeHtml(html, {
-    allowedTags,
-    allowedAttributes,
-    transformTags: {
-      a: function (tagName, attribs) {
-        if (!attribs) {
-          return {
-            tagName,
-            attribs: {},
-          };
-        }
-
-        let href = attribs.href;
-        if (!href) {
-          return {
-            tagName,
-            attribs,
-          };
-        }
-
-        if (removeProtocol(href).includes(':')) {
-          const port = getPortFromUrl(href);
-
-          if (port === null) {
-            attribs.href = '/';
-            return {
-              tagName,
-              attribs,
-            };
-          }
-        }
-
-        if (href.startsWith('//') || href.startsWith('./')) {
-          href = href.slice(2);
-        }
-        if (isRelative(href)) {
-          attribs.href = link + href;
-        }
-
-        return {
-          tagName,
-          attribs,
-        };
-      },
-    },
-  });
-}
-
-/**
- * Get port from url
- *
- * @param {string} url
- * @returns {number | null}
- */
-function getPortFromUrl(url: string): number | null {
-  const regex = /:(\d+)/;
-  const match = url.match(regex);
-
-  if (match && match[1]) {
-    return parseInt(match[1], 10);
-  }
-  return null;
-}
-
-/**
- * Remove the protocol from string
- *
- * @param {string} url
- * @returns {string}
- */
-function removeProtocol(url: string): string {
-  if (url.startsWith('https:')) {
-    url = url.slice(6);
-  }
-  if (url.startsWith('http:')) {
-    url = url.slice(5);
-  }
-  return url;
-}
-
-/**
  * Check if a param is valid
  *
  * @param {unknown} params
  * @returns {boolean}
  */
 export function isValidParams(params: unknown): boolean {
-  if (!params) return false;
-  // Zod Schema validation
-  const ParamsSchema = z.object({
-    mappings: z
-      .object({
-        name: z.string().optional(),
-        match: z.custom<MatchType>(),
-        component: z.custom<TextType>(),
-        filters: z.custom<Filter>().array(),
-      })
-      .array(),
-  });
-  try {
-    ParamsSchema.parse(params);
-  } catch (e) {
-    if (e instanceof z.ZodError) {
-      return false;
-    }
-    return false;
-  }
-  return true;
+  return ParamsSchema.safeParse(params).success;
 }
 
 export function validateParams(params: unknown): Params {
-  const ParamsSchema = z.object({
-    mappings: z
-      .object({
-        name: z.string().optional(),
-        match: z.custom<MatchType>(),
-        component: z.custom<TextType>(),
-        filters: z.custom<Filter>().array(),
-      })
-      .array()
-      .optional(),
-    excludes: z.custom<Mapping>().array().optional(),
-    ignoreParagraphWrap: z.boolean().optional(),
-  });
   const result = ParamsSchema.safeParse(params);
   if (!result.success) {
     throw new Error(result.error.message);
   }
-  return result.data as Params;
-}
-
-/**
- * Check if the string is empty
- *
- * @param {string} content
- * @returns {boolean}
- */
-export function isEmpty(content: string): boolean {
-  return content.replace(/[\r\n\t]/g, '').trim().length === 0;
+  return result.data;
 }
 
 /**

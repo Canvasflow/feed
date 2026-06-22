@@ -10,7 +10,7 @@ import {
   isValidParams,
   isValidMapping,
   processTextLinks,
-} from './Mapping';
+} from './mapping/Mapping';
 import {
   type GalleryComponent,
   type ImageComponent,
@@ -3518,7 +3518,7 @@ describe('Mapping', () => {
       ];
       const excludes = [
         {
-          match: 3,
+          match: 'all',
           filters: [
             {
               type: 'tag',

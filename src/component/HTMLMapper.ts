@@ -1,10 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-/* @ts-expect-error */
 import { parse, stringify } from 'himalaya';
 import { parseHTML } from 'linkedom';
 
 import type { Component } from './Component';
-import type { Node } from './Node';
+import type { Node } from './node/Node';
 import {
   type Mapping,
   type Params,
@@ -12,7 +10,7 @@ import {
   reduceComponents,
   reduceEmptyTextNode,
   getRootElement,
-} from './Mapping';
+} from './mapping/Mapping';
 
 export class HTMLMapper {
   /**
@@ -84,7 +82,7 @@ function extractAnchorsWithImages(html: string): string {
     // Only unwrap p or h1–h6
     if (!REMOVABLE_PARENTS.has(parent.tagName.toLowerCase())) continue;
 
-    // 🔑 CLONE before replacing to avoid linkedom bug
+    // Clone before replacing to avoid a linkedom bug.
     const clonedAnchor = anchor.cloneNode(true) as HTMLElement;
 
     // Replace the parent with the anchor
