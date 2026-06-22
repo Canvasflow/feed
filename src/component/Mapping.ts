@@ -2711,6 +2711,31 @@ function getImageLink(node: ElementNode): LinkResponse {
   };
 }
 
+const patternCache = new Map<string, RegExp | null>();
+
+/**
+ * Safely test a value against an attribute pattern filter's regular
+ * expression. Compiled patterns are cached, and an invalid pattern is treated
+ * as a non-match instead of throwing, so a single malformed mapping cannot
+ * abort the whole conversion.
+ *
+ * @param {string} value
+ * @param {string} pattern
+ * @returns {boolean}
+ */
+function matchesPattern(value: string, pattern: string): boolean {
+  let regex = patternCache.get(pattern);
+  if (regex === undefined) {
+    try {
+      regex = new RegExp(pattern);
+    } catch {
+      regex = null;
+    }
+    patternCache.set(pattern, regex);
+  }
+  return regex !== null && regex.test(value);
+}
+
 /**
  * Filter is at least one filter matches
  *
@@ -2733,7 +2758,7 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
       if ('pattern' in filter) {
         if (
           attributeValue !== undefined &&
-          new RegExp(filter.pattern).test(attributeValue)
+          matchesPattern(attributeValue, filter.pattern)
         ) {
           return true;
         }
@@ -2796,7 +2821,7 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
       if ('pattern' in filter) {
         if (
           attributeValue === undefined ||
-          !new RegExp(filter.pattern).test(attributeValue)
+          !matchesPattern(attributeValue, filter.pattern)
         ) {
           return false;
         }
@@ -2843,22 +2868,8 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
  * @returns {boolean}
  */
 export function isValidMapping(mapping: unknown): boolean {
-  if (!mapping) return false;
-  // Zod Schema validation
-  const ParamsSchema = z.object({
-    mappings: z
-      .object({
-        match: z.custom<MatchType>(),
-        filters: z.custom<Filter>().array(),
-      })
-      .array(),
-  });
-  try {
-    ParamsSchema.parse(mapping);
-  } catch {
-    return false;
-  }
-  return true;
+  return z.object({ mappings: z.array(MappingSchema) }).safeParse(mapping)
+    .success;
 }
 
 export type Params = z.infer<typeof ParamsSchema>;
@@ -2981,48 +2992,15 @@ function removeProtocol(url: string): string {
  * @returns {boolean}
  */
 export function isValidParams(params: unknown): boolean {
-  if (!params) return false;
-  // Zod Schema validation
-  const ParamsSchema = z.object({
-    mappings: z
-      .object({
-        name: z.string().optional(),
-        match: z.custom<MatchType>(),
-        component: z.custom<TextType>(),
-        filters: z.custom<Filter>().array(),
-      })
-      .array(),
-  });
-  try {
-    ParamsSchema.parse(params);
-  } catch (e) {
-    if (e instanceof z.ZodError) {
-      return false;
-    }
-    return false;
-  }
-  return true;
+  return ParamsSchema.safeParse(params).success;
 }
 
 export function validateParams(params: unknown): Params {
-  const ParamsSchema = z.object({
-    mappings: z
-      .object({
-        name: z.string().optional(),
-        match: z.custom<MatchType>(),
-        component: z.custom<TextType>(),
-        filters: z.custom<Filter>().array(),
-      })
-      .array()
-      .optional(),
-    excludes: z.custom<Mapping>().array().optional(),
-    ignoreParagraphWrap: z.boolean().optional(),
-  });
   const result = ParamsSchema.safeParse(params);
   if (!result.success) {
     throw new Error(result.error.message);
   }
-  return result.data as Params;
+  return result.data;
 }
 
 /**

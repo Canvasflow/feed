@@ -3518,7 +3518,7 @@ describe('Mapping', () => {
       ];
       const excludes = [
         {
-          match: 3,
+          match: 'all',
           filters: [
             {
               type: 'tag',

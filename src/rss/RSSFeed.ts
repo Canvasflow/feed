@@ -19,10 +19,17 @@ import type { Recipe } from '../component/Schema';
 import { isValidParams, type Mapping, type Params } from '../component/Mapping';
 import { MappingSchema, ParamsSchema } from '../component/Mapping.schema';
 
+/**
+ * Raw, dynamically-shaped output of fast-xml-parser. It is consumed only
+ * internally by validate()/build(); consumers should read the typed `rss`
+ * property instead.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ParsedXml = Record<string, any>;
+
 export class RSSFeed {
   public content: string;
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  public data: any;
+  private readonly data: ParsedXml;
   public rss: RSS;
   public errors: Array<unknown> = [];
   private params: Params | undefined;
@@ -90,14 +97,8 @@ export class RSSFeed {
   }
 
   static async getHtmlContent(url: string, headers?: HeadersInit) {
-    try {
-      const response = await fetch(url, { method: 'GET', headers });
-      const data = await response.text();
-      return data;
-    } catch (err) {
-      console.error('Error:', err);
-      throw err;
-    }
+    const response = await fetch(url, { method: 'GET', headers });
+    return response.text();
   }
 
   async validate(): Promise<void> {
