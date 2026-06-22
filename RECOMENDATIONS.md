@@ -24,11 +24,12 @@ are ordered roughly by impact/risk.
 
 ## 2. Code Quality & Type Safety
 
-1. **Large, monolithic modules.** `src/component/mapping/Mapping.ts` is ~2,546
-   lines and `HTMLMapper.test.ts` ~3,830 lines. These are hard to navigate and
-   review. Consider splitting `Mapping.ts` along the lines it already hints at
-   (`Mapping.embeds.ts`, `Mapping.utils.ts`, `Mapping.schema.ts`) and breaking
-   the test file by component family.
+1. **Large test module.** `Mapping.ts` has been split by component group
+   (`Mapping.media.ts` for image/video/audio/gallery, `Mapping.container.ts`
+   for columns/container/live_container/recipe, with shared helpers in
+   `Mapping.utils.ts`), bringing it down from ~2,546 to ~1,433 lines. The test
+   file `HTMLMapper.test.ts` (~3,830 lines) remains large — consider breaking it
+   up by component family.
 2. **`ParsedXml` boundary still uses `any`.** The `HTMLMapper` `any` casts were
    removed, but `RSSFeed`'s `ParsedXml` (raw `fast-xml-parser` output) remains
    `Record<string, any>` because `build()` reads its leaf values loosely as
