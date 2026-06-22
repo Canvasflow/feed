@@ -254,20 +254,8 @@ function removeBreaklines(value: string | undefined): string {
 
 function mapEmptyText(node: Node): Node {
   if (node.type === 'comment') return node;
-  if (node.type === 'element') {
-    if (node.children) {
-      node.children = node.children.map(mapEmptyText);
-    }
-    return node;
-  }
-
-  if (node.type !== 'text') return node;
-
-  const { content } = node;
-  if (!content.length) return node;
-
-  if (content.length >= 1 && /^\s+$/.test(content) && content.trim().length) {
-    node.content = content.replace(/ /g, '&nbsp;');
+  if (node.type === 'element' && node.children) {
+    node.children = node.children.map(mapEmptyText);
   }
 
   return node;

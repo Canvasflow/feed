@@ -1,5 +1,35 @@
 # CHANGELOG
 
+## 🏷️ 1.15.7
+
+_June 22, 2026_
+
+✨ Features
+
+- (mapping) Preserve whitespace between inline elements as nbsp ([`b9ee537`](https://github.com/Canvasflow/feed/commit/b9ee5373abb1bc8fd973db3300959bb7f6355b40))
+- (mapping) Support regex matching in attribute filters ([`56e7564`](https://github.com/Canvasflow/feed/commit/56e7564addedcb66036c19be5ca1e7dfadbc1db7))
+
+🐛 Fixed
+
+- (rss) Align channel allow-list with supported tags ([`f13dccd`](https://github.com/Canvasflow/feed/commit/f13dccda2d4c342f8e7e570f589a9b099f25db70))
+
+♻️ Refactor
+
+- (mapping) Rename attribute filter regex property to pattern ([`0c61ff4`](https://github.com/Canvasflow/feed/commit/0c61ff44a418fbe35786da34c3b1deee86c07002))
+
+🧪 Tests
+
+- (coverage) Enforce coverage thresholds ([`ac75d48`](https://github.com/Canvasflow/feed/commit/ac75d489e9c78d8fed0e87991f87939baf2ae15b))
+- Raise rss and component coverage above 95% ([`09f962e`](https://github.com/Canvasflow/feed/commit/09f962e268cacf355cfec3634333abdc534979ef))
+
+📝 Docs
+
+- (html) Correct text range, class equal semantics, and attribute filter ([`107770f`](https://github.com/Canvasflow/feed/commit/107770f43853068cac049a45b5ff9cd82308c804))
+
+🎨 Style
+
+- (docs) Align attribute pattern filter table columns ([`5c1d6a4`](https://github.com/Canvasflow/feed/commit/5c1d6a471d7419b5c2f44b372c803a3685de90b1))
+
 ## 🏷️ 1.15.6
 
 _June 17, 2026_

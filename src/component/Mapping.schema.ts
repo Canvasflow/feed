@@ -17,13 +17,24 @@ export const ClassFilterSchema = z.object({
   items: z.array(z.string()),
 });
 
-export const AttributeFilterSchema = z.object({
+export const AttributeValueFilterSchema = z.object({
   type: z.literal('attribute'),
   key: z.string(),
   value: z.string().nullable(),
 });
 
-export const FilterSchema = z.discriminatedUnion('type', [
+export const AttributePatternFilterSchema = z.object({
+  type: z.literal('attribute'),
+  key: z.string(),
+  pattern: z.string(),
+});
+
+export const AttributeFilterSchema = z.union([
+  AttributeValueFilterSchema,
+  AttributePatternFilterSchema,
+]);
+
+export const FilterSchema = z.union([
   TagFilterSchema,
   ClassFilterSchema,
   AttributeFilterSchema,
