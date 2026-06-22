@@ -7,8 +7,9 @@ are ordered roughly by impact/risk.
 > This list shows only the **outstanding** items. Recommendations that have been
 > implemented (publish-pipeline registry pinning, lint/build gating, the Node
 > test matrix, the documentation-accuracy fixes, removal of the `any` escape
-> hatches) and the coverage-threshold enforcement check (verified gating CI)
-> have been removed.
+> hatches, Dependabot dependency automation) and the coverage-threshold
+> enforcement check (verified gating CI) have been removed. The LICENSE
+> recommendation was dropped: this library is internal-only.
 
 ---
 
@@ -22,14 +23,7 @@ are ordered roughly by impact/risk.
 
 ## 2. Project Governance & Metadata
 
-1. **No LICENSE file.** Publishing a package with no license is a legal blocker
-   for consumers. Add one (and a `"license"` field in `package.json`, which is
-   currently absent).
-2. **No dependency automation.** There's no `dependabot.yml` or Renovate config.
-   For a library with several parsing/sanitization dependencies
-   (`sanitize-html`, `fast-xml-parser`, `linkedom`), automated security/version
-   PRs are valuable. Add Dependabot.
-3. **No `SECURITY.md` / `CONTRIBUTING.md` at repo root.** Contribution guidance
+1. **No `SECURITY.md` / `CONTRIBUTING.md` at repo root.** Contribution guidance
    lives in `docs/wiki/Contributing.md`, but a root `SECURITY.md` (this package
    parses untrusted HTML/XML) and a discoverable contributing pointer are worth
    adding.
