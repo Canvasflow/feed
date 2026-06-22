@@ -23,15 +23,15 @@ export const AttributeValueFilterSchema = z.object({
   value: z.string().nullable(),
 });
 
-export const AttributeRegexFilterSchema = z.object({
+export const AttributePatternFilterSchema = z.object({
   type: z.literal('attribute'),
   key: z.string(),
-  regex: z.string(),
+  pattern: z.string(),
 });
 
 export const AttributeFilterSchema = z.union([
   AttributeValueFilterSchema,
-  AttributeRegexFilterSchema,
+  AttributePatternFilterSchema,
 ]);
 
 export const FilterSchema = z.union([

@@ -106,7 +106,7 @@ This filter looks exclusively at the `class` attribute of an HTML element.
 
 #### Attribute Filter
 
-This filter searches for a specific attribute within an HTML element. It comes in two forms — an **exact-value** match and a **regex** match — both identified by `type: "attribute"`.
+This filter searches for a specific attribute within an HTML element. It comes in two forms — an **exact-value** match and a **pattern** match — both identified by `type: "attribute"`.
 
 **Exact-value form**
 
@@ -126,17 +126,17 @@ Matches when the attribute's value is exactly equal to `value`.
 }
 ```
 
-**Regex form**
+**Pattern form**
 
-Matches when the attribute is present and its value matches the supplied regular expression. Use this when the attribute value is not fixed — for example when it carries a generated id, a numeric suffix, or a namespaced prefix.
+Matches when the attribute is present and its value matches the supplied regular expression pattern. Use this when the attribute value is not fixed — for example when it carries a generated id, a numeric suffix, or a namespaced prefix.
 
-| Property | Required | Description                                                                                                                |
-| :------- | :------- | :------------------------------------------------------------------------------------------------------------------------- |
-| `type`   | Yes      | Must be `attribute`.                                                                                                       |
-| `key`    | Yes      | The name of the attribute to look for.                                                                                     |
-| `regex`  | Yes      | A regular expression (as a string) that the attribute's value must match. The attribute must be present for a regex match. |
+| Property  | Required | Description                                                                                                                  |
+| :-------- | :------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| `type`    | Yes      | Must be `attribute`.                                                                                                        |
+| `key`     | Yes      | The name of the attribute to look for.                                                                                      |
+| `pattern` | Yes      | A regular expression (as a string) that the attribute's value must match. The attribute must be present for a pattern match. |
 
-> When a `regex` property is present, the filter matches by regular expression and the `value` property is ignored. The expression is evaluated with JavaScript's `RegExp`; remember to escape backslashes within the JSON string (e.g. `\\d`).
+> When a `pattern` property is present, the filter matches by regular expression and the `value` property is ignored. The pattern is evaluated with JavaScript's `RegExp`; remember to escape backslashes within the JSON string (e.g. `\\d`).
 
 For example, to match a `<div>` whose `id` follows the pattern `article-body-<number>` (such as `article-body-42`):
 
@@ -144,7 +144,7 @@ For example, to match a `<div>` whose `id` follows the pattern `article-body-<nu
 {
   "type": "attribute",
   "key": "id",
-  "regex": "^article-body-\\d+$"
+  "pattern": "^article-body-\\d+$"
 }
 ```
 
@@ -154,7 +154,7 @@ Or to match any element whose `data-component-name` starts with the `Recirculati
 {
   "type": "attribute",
   "key": "data-component-name",
-  "regex": "Recirculation:.*"
+  "pattern": "Recirculation:.*"
 }
 ```
 

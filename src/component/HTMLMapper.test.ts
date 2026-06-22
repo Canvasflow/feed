@@ -127,7 +127,7 @@ describe('Root Element', () => {
   );
 
   test(
-    'It should return the root element with an attribute regex filter',
+    'It should return the root element with an attribute pattern filter',
     { tags: ['unit', 'html'] },
     () => {
       const rootMapping: Mapping = {
@@ -136,7 +136,7 @@ describe('Root Element', () => {
           {
             type: 'attribute',
             key: 'id',
-            regex: '^article-body-\\d+$',
+            pattern: '^article-body-\\d+$',
           },
         ],
       };
@@ -155,7 +155,7 @@ describe('Root Element', () => {
   );
 
   test(
-    'It should return empty when the attribute regex filter does not match',
+    'It should return empty when the attribute pattern filter does not match',
     { tags: ['unit', 'html'] },
     () => {
       const rootMapping: Mapping = {
@@ -164,7 +164,7 @@ describe('Root Element', () => {
           {
             type: 'attribute',
             key: 'id',
-            regex: '^article-body-\\d+$',
+            pattern: '^article-body-\\d+$',
           },
         ],
       };
@@ -183,7 +183,7 @@ describe('Root Element', () => {
   );
 
   test(
-    'It should match an attribute regex filter with the any match mode',
+    'It should match an attribute pattern filter with the any match mode',
     { tags: ['unit', 'html'] },
     () => {
       const rootMapping: Mapping = {
@@ -192,7 +192,7 @@ describe('Root Element', () => {
           {
             type: 'attribute',
             key: 'data-component-name',
-            regex: 'Recirculation:.*',
+            pattern: 'Recirculation:.*',
           },
         ],
       };

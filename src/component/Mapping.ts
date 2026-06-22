@@ -52,7 +52,7 @@ import {
 import {
   AttributeFilterSchema,
   AttributeValueFilterSchema,
-  AttributeRegexFilterSchema,
+  AttributePatternFilterSchema,
   ClassFilterSchema,
   ColumnsMappingSchema,
   ContainerMappingSchema,
@@ -75,7 +75,9 @@ export type TagFilter = z.infer<typeof TagFilterSchema>;
 export type ClassFilter = z.infer<typeof ClassFilterSchema>;
 export type AttributeFilter = z.infer<typeof AttributeFilterSchema>;
 export type AttributeValueFilter = z.infer<typeof AttributeValueFilterSchema>;
-export type AttributeRegexFilter = z.infer<typeof AttributeRegexFilterSchema>;
+export type AttributePatternFilter = z.infer<
+  typeof AttributePatternFilterSchema
+>;
 
 export type Mapping = z.infer<typeof MappingSchema>;
 export type LinkResponse = z.infer<typeof LinkResponseSchema>;
@@ -2707,10 +2709,10 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
 
     if (filter.type === 'attribute') {
       const attributeValue = attributes.get(filter.key);
-      if ('regex' in filter) {
+      if ('pattern' in filter) {
         if (
           attributeValue !== undefined &&
-          new RegExp(filter.regex).test(attributeValue)
+          new RegExp(filter.pattern).test(attributeValue)
         ) {
           return true;
         }
@@ -2770,10 +2772,10 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
     }
     if (filter.type === 'attribute') {
       const attributeValue = attributes.get(filter.key);
-      if ('regex' in filter) {
+      if ('pattern' in filter) {
         if (
           attributeValue === undefined ||
-          !new RegExp(filter.regex).test(attributeValue)
+          !new RegExp(filter.pattern).test(attributeValue)
         ) {
           return false;
         }
