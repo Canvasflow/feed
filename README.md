@@ -121,15 +121,15 @@ the full picture.
 The [**project wiki**](https://github.com/Canvasflow/feed/wiki) is the source of
 in-depth documentation:
 
-| Page | What it covers |
-| --- | --- |
-| [Getting Started](https://github.com/Canvasflow/feed/wiki/Getting-Started) | Install, quick usage, and contributor commands. |
-| [Architecture](https://github.com/Canvasflow/feed/wiki/Architecture) | The two pipelines and the detection engine. |
-| [API Reference](https://github.com/Canvasflow/feed/wiki/API-Reference) | `RSSFeed` / `HTMLMapper` members, helpers, and exported types. |
-| [RSS Feeds](https://github.com/Canvasflow/feed/wiki/RSS-Feeds) | `validate()`/`build()`, supported tags, and namespaces. |
-| [HTML Mapping](https://github.com/Canvasflow/feed/wiki/HTML-Mapping) | The conversion pipeline and default rules. |
+| Page                                                                       | What it covers                                                              |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| [Getting Started](https://github.com/Canvasflow/feed/wiki/Getting-Started) | Install, quick usage, and contributor commands.                             |
+| [Architecture](https://github.com/Canvasflow/feed/wiki/Architecture)       | The two pipelines and the detection engine.                                 |
+| [API Reference](https://github.com/Canvasflow/feed/wiki/API-Reference)     | `RSSFeed` / `HTMLMapper` members, helpers, and exported types.              |
+| [RSS Feeds](https://github.com/Canvasflow/feed/wiki/RSS-Feeds)             | `validate()`/`build()`, supported tags, and namespaces.                     |
+| [HTML Mapping](https://github.com/Canvasflow/feed/wiki/HTML-Mapping)       | The conversion pipeline and default rules.                                  |
 | [Custom Mappings](https://github.com/Canvasflow/feed/wiki/Custom-Mappings) | The `Params`/`Mapping` model: filters, match modes, and component mappings. |
-| [Component Types](https://github.com/Canvasflow/feed/wiki/Component-Types) | The component union, interfaces, and type guards. |
+| [Component Types](https://github.com/Canvasflow/feed/wiki/Component-Types) | The component union, interfaces, and type guards.                           |
 
 > The wiki is generated from the Markdown in [`docs/wiki/`](./docs/wiki) and synced
 > on release.
