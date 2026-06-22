@@ -63,6 +63,12 @@ export default defineConfig({
         '.commitlintrc.js',
       ],
       reporter: ['text', 'json', 'json-summary', 'html'],
+      thresholds: {
+        statements: 95,
+        branches: 88,
+        functions: 99,
+        lines: 97,
+      },
     },
   },
   pack: {
