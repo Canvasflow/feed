@@ -22,10 +22,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/canvasflow/feed.git"
+    "url": "https://github.com/Canvasflow/feed.git"
   },
   "bugs": {
-    "url": "https://github.com/canvasflow/feed/issues"
+    "url": "https://github.com/Canvasflow/feed/issues"
   },
   "scripts": {
     "dev": "vp dev",

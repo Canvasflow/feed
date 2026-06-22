@@ -82,7 +82,7 @@ function extractAnchorsWithImages(html: string): string {
     // Only unwrap p or h1–h6
     if (!REMOVABLE_PARENTS.has(parent.tagName.toLowerCase())) continue;
 
-    // 🔑 CLONE before replacing to avoid linkedom bug
+    // Clone before replacing to avoid a linkedom bug.
     const clonedAnchor = anchor.cloneNode(true) as HTMLElement;
 
     // Replace the parent with the anchor
