@@ -4,22 +4,28 @@
 
 A TypeScript library that parses **RSS/Atom** feeds and transforms their HTML
 content into structured **Canvasflow components**. It validates feeds against
-Canvasflow's required-tag rules and converts `content:encoded` HTML into a typed
-`components` array ready to be consumed by Canvasflow.
+Canvasflow's required-tag rules and converts each item's `content:encoded` HTML
+into a typed `components` array ready to be consumed by Canvasflow.
 
 The package is published as an **ESM** module (with TypeScript declarations) to
 **GitHub Packages**.
+
+> 📖 **Full documentation lives in the [project wiki](https://github.com/Canvasflow/feed/wiki).**
+> This README is a quick introduction; the wiki covers the architecture, the
+> mapping model, and the complete API.
 
 ## Features
 
 - Parse and validate RSS/Atom feeds (`fast-xml-parser` under the hood).
 - Build a strongly-typed `RSS` object from raw feed XML.
-- Convert HTML into Canvasflow `Component[]` (images, galleries, video, audio,
-  embeds for Twitter/Instagram/YouTube/TikTok/Vimeo/Dailymotion, recipes, HTML
-  tables, columns, containers, live posts, and more).
+- Convert HTML into Canvasflow `Component[]` — images, galleries, video, audio,
+  embeds (Twitter/X, Instagram, YouTube, TikTok, Vimeo, Dailymotion, Infogram,
+  Apple Podcasts), recipes, HTML tables, columns, containers, live posts, and more.
 - Configurable HTML → component mapping via `Params`/`Mapping`.
 - Canvasflow `cf:` namespace extensions (`cf:hasAffiliateLinks`, `cf:isSponsored`,
   `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`).
+- Pure and side-effect-free: malformed input is reported through `errors`/`warnings`
+  rather than thrown.
 
 ## Requirements
 
@@ -42,7 +48,7 @@ Then install:
 npm install @canvasflow/feed
 ```
 
-## Usage
+## Quick start
 
 ### Parse and build a feed
 
@@ -53,7 +59,7 @@ const xml = await fetch('https://example.com/feed.xml').then((r) => r.text());
 
 const feed = new RSSFeed(xml);
 
-// Validate the feed — populates `errors`/`warnings` on the RSS/channel/items.
+// Validate the feed — populates `errors`/`warnings` on the RSS / channel / items.
 await feed.validate();
 
 // Build a typed RSS object. Each item's `content:encoded` HTML is converted
@@ -75,103 +81,87 @@ const components = HTMLMapper.toComponents(
 );
 ```
 
-### Default HTML → component mapping
+By default `<h1>` → `headline`, `<h2>` → `title`, `<p>` → `body`, and so on; a
+text element's `role` attribute overrides the default (e.g. `<p role="crosshead">`).
+Detection of images, embeds, tables, and containers — and how to configure it —
+is documented on the [HTML Mapping](https://github.com/Canvasflow/feed/wiki/HTML-Mapping)
+and [Custom Mappings](https://github.com/Canvasflow/feed/wiki/Custom-Mappings) wiki pages.
 
-| HTML         | Component type |
-| ------------ | -------------- |
-| `h1`         | `headline`     |
-| `h2`         | `title`        |
-| `h3`         | `subtitle`     |
-| `h4`         | `intro`        |
-| `p`          | `body`         |
-| `blockquote` | `blockquote`   |
-| `footer`     | `footer`       |
+## How it works
 
-Any text element's `role` attribute overrides the default mapping
-(e.g. `<p role="crosshead">` → `crosshead`). Styles and classes are stripped;
-only `href`/`target`/`rel` survive on `<a>` elements.
+Two cooperating pipelines drive the library:
+
+1. **Feed pipeline** (`src/rss/`) — `RSSFeed` wraps `fast-xml-parser`, validates
+   required tags, and builds the typed `RSS` object.
+2. **HTML pipeline** (`src/component/`) — `HTMLMapper.toComponents()` pre-processes
+   the HTML, parses it with `himalaya`, and reduces the node tree into `Component[]`
+   through the detection engine in `component/mapping/`.
+
+`build()` runs each item's `content:encoded` through the HTML pipeline, so the two
+connect automatically.
+
+```
+src/
+├── index.ts            # Public entry point (re-exports the API)
+├── rss/                # Feed pipeline: RSSFeed, RSS types, Tag allow-lists, Attributes
+└── component/
+    ├── HTMLMapper.ts   # HTML → Component[] entry point
+    ├── Component.ts    # Component types and is* type guards
+    ├── mapping/        # Detection engine, Zod schemas, constants, utils, embeds
+    ├── node/           # himalaya AST node helpers
+    └── schema/         # Zod schemas for recipe (JSON-LD) extraction
+```
+
+See [Architecture](https://github.com/Canvasflow/feed/wiki/Architecture) and
+[Project Structure](https://github.com/Canvasflow/feed/wiki/Project-Structure) for
+the full picture.
 
 ## Documentation
 
-In-depth references for each part of the pipeline live in the [`docs/`](./docs)
-directory:
+The [**project wiki**](https://github.com/Canvasflow/feed/wiki) is the source of
+in-depth documentation:
 
-| Document                       | Description                                                                                                                                       |
-| :----------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [HTML](./docs/HTML.md)         | How HTML elements are matched to Canvasflow components — text, images, galleries, video, audio, buttons, social embeds, tables, and containers.   |
-| [Mappings](./docs/Mappings.md) | The `Params`/`Mapping` configuration model: filters, match modes, excludes, and every component mapping (container, columns, gallery, and so on). |
-| [RSS](./docs/RSS.md)           | The supported RSS structure and namespaces (Atom, Dublin Core, Syndication, Content, Media RSS, and the Canvasflow `cf:` extensions).             |
+| Page | What it covers |
+| --- | --- |
+| [Getting Started](https://github.com/Canvasflow/feed/wiki/Getting-Started) | Install, quick usage, and contributor commands. |
+| [Architecture](https://github.com/Canvasflow/feed/wiki/Architecture) | The two pipelines and the detection engine. |
+| [API Reference](https://github.com/Canvasflow/feed/wiki/API-Reference) | `RSSFeed` / `HTMLMapper` members, helpers, and exported types. |
+| [RSS Feeds](https://github.com/Canvasflow/feed/wiki/RSS-Feeds) | `validate()`/`build()`, supported tags, and namespaces. |
+| [HTML Mapping](https://github.com/Canvasflow/feed/wiki/HTML-Mapping) | The conversion pipeline and default rules. |
+| [Custom Mappings](https://github.com/Canvasflow/feed/wiki/Custom-Mappings) | The `Params`/`Mapping` model: filters, match modes, and component mappings. |
+| [Component Types](https://github.com/Canvasflow/feed/wiki/Component-Types) | The component union, interfaces, and type guards. |
 
-## Scripts
+> The wiki is generated from the Markdown in [`docs/wiki/`](./docs/wiki) and synced
+> on release.
+
+## Development
 
 This project uses [`vite-plus`](https://www.npmjs.com/package/vite-plus) (`vp`)
 for development, building, testing, linting, and formatting.
 
-| Script                     | Command                                          | Description                                                                             |
-| -------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------- |
-| `npm run dev`              | `vp dev`                                         | Start the `vite-plus` dev mode.                                                         |
-| `npm run build`            | `vp pack`                                        | Compile and bundle the library into `dist/` (ESM + `.d.mts` declarations).              |
-| `npm run test`             | `vp test`                                        | Run the full test suite once.                                                           |
-| `npm run test:debug`       | `vp test --test-timeout=0 --no-file-parallelism` | Run tests with no timeout and no file parallelism (useful for debugging/breakpoints).   |
-| `npm run test:ui`          | `vp test watch --ui --open`                      | Run tests in watch mode and open the interactive Vitest UI in the browser.              |
-| `npm run test:unit`        | `vp test --ui --tags-filter=unit`                | Run only `unit`-tagged tests in the UI.                                                 |
-| `npm run test:integration` | `vp test --ui --tags-filter=integration`         | Run only `integration`-tagged tests in the UI (these make network requests).            |
-| `npm run test:todo`        | `vp test --ui --tags-filter=todo`                | Run only `todo`-tagged tests in the UI (incomplete tests / features under development). |
-| `npm run test:broken`      | `vp test --ui --tags-filter=broken`              | Run only `broken`-tagged tests in the UI (known-failing tests that need fixing).        |
-| `npm run lint`             | `vp lint`                                        | Lint the source files.                                                                  |
-| `npm run lint:fix`         | `vp lint --fix`                                  | Lint and automatically fix fixable problems.                                            |
-| `npm run coverage`         | `vp test --coverage`                             | Run the test suite and print a coverage report (text/json/html via the v8 provider).    |
-| `npm run coverage:ui`      | `vp test watch --coverage --ui --open`           | Run coverage in watch mode and view it in the Vitest UI.                                |
-| `npm run commit`           | `cz`                                             | Create a Conventional Commit interactively via commitizen.                              |
-| `npm run format`           | `vp fmt .`                                       | Format the entire project.                                                              |
-| `npm run changelog`        | `node scripts/update-changelog.mjs`              | Update `CHANGELOG.md` from recent commits.                                              |
-
-> The `VP_VERSION` environment variable in the UI/coverage scripts pins the
-> `vite-plus` runtime version used for those interactive sessions.
-
-### Running a single test file
-
 ```bash
-npx vitest run src/rss/RSSFeed.test.ts
+npm install        # install dependencies
+npm run build      # compile + bundle into dist/ (ESM + .d.mts)
+npm test           # run the full test suite once
+npm run lint       # lint the source
+npm run coverage   # run tests with a coverage report (v8, threshold-gated)
 ```
 
-### Test tags
+Run a single test file with `npx vitest run src/rss/RSSFeed.test.ts`. The full
+script list, test tags, and coverage thresholds are documented on the
+[Testing](https://github.com/Canvasflow/feed/wiki/Testing) wiki page.
 
-Tests are tagged via `{ tags: [...] }` in their Vitest options. The configured
-tags are `unit`, `rss`, `html`, `integration`, `recipe`, `todo`, and `broken`.
-The `integration` and `recipe` tags are **skipped by default** (they make
-network requests).
-
-## Project structure
-
-```
-src/
-├── index.ts                 # Public entry point (re-exports RSSFeed & HTMLMapper)
-├── rss/
-│   ├── RSSFeed.ts           # Feed parsing, validate() and build()
-│   ├── RSS.ts               # RSS/channel/item types
-│   ├── Tag.ts               # Required-tag allow-lists
-│   └── Attributes.ts        # Attribute helpers
-├── component/
-│   ├── HTMLMapper.ts        # HTML → Component[] pipeline
-│   ├── Mapping.ts           # Node-tree reducer & element matching
-│   ├── Component.ts         # Component types and type guards
-│   ├── Node.ts              # himalaya AST node helpers
-│   └── Schema.ts            # Zod schemas (recipes, etc.)
-└── support/                 # Test fixtures (feeds & HTML snippets)
-```
-
-## Commit convention
-
-Commits follow [Conventional Commits](https://www.conventionalcommits.org/). Use
-`npm run commit` (commitizen) or write messages manually as
-`type(scope): subject`. Messages are linted with commitlint.
+Commits follow [Conventional Commits](https://www.conventionalcommits.org/)
+(enforced by commitlint; `npm run commit` opens the commitizen prompt). See the
+[Contributing](https://github.com/Canvasflow/feed/wiki/Contributing) page.
 
 ## Publishing
 
-Publishing is automated via the `🚀 Publish` GitHub Actions workflow
-(`.github/workflows/publish.yml`), which runs the test suite, reports coverage
-in the run summary, and publishes the package when a `v*` tag is pushed.
+Publishing is automated by the `🚀 Publish` GitHub Actions workflow
+(`.github/workflows/publish.yml`): on a `v*` tag it runs the test suite, reports
+coverage, publishes the package to GitHub Packages, and syncs the wiki. Details
+are on the [Build & Publishing](https://github.com/Canvasflow/feed/wiki/Build-and-Publishing)
+page.
 
 ## License
 
