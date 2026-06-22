@@ -63,4 +63,4 @@ const rss = await feed.build(); // items carry a typed `components` array
 const components = HTMLMapper.toComponents('<h1>Title</h1><p>Body</p>');
 ```
 
-> **Source of truth:** this wiki describes behaviour as implemented in `src/`. When code and wiki disagree, the code wins — please update the wiki in the same PR. The in-repo deep-dive references live in [`docs/`](../../docs): [HTML](../../docs/HTML.md), [Mappings](../../docs/Mappings.md), and [RSS](../../docs/RSS.md).
+> **Source of truth:** this wiki describes behaviour as implemented in `src/`. When code and wiki disagree, the code wins — please update the wiki in the same PR.

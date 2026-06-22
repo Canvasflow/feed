@@ -32,4 +32,4 @@ Domain and project terms used throughout `@canvasflow/feed` and this wiki.
 
 - [Architecture](Architecture.md)
 - [API Reference](API-Reference.md)
-- In-repo references: [HTML](../../docs/HTML.md) · [Mappings](../../docs/Mappings.md) · [RSS](../../docs/RSS.md)
+- [HTML Mapping](HTML-Mapping.md) · [Custom Mappings](Custom-Mappings.md) · [RSS Feeds](RSS-Feeds.md)

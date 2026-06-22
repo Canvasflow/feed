@@ -1,6 +1,6 @@
 # RSS Feeds
 
-The `RSSFeed` class parses RSS/Atom XML, validates it, and builds a typed `RSS` object whose items carry a converted `components` array. This page covers the feed pipeline; for the exhaustive tag/namespace reference see [`docs/RSS.md`](../../docs/RSS.md).
+The `RSSFeed` class parses RSS/Atom XML, validates it, and builds a typed `RSS` object whose items carry a converted `components` array. This page covers the feed pipeline and the supported tags and namespaces.
 
 ← Back to [Home](Home.md) · Related: [API Reference](API-Reference.md) · [HTML Mapping](HTML-Mapping.md)
 
@@ -50,8 +50,6 @@ Canvasflow reads a curated subset of each namespace (anything else is ignored):
 | `content` | Content     | `content:encoded` — the full HTML body, source of `components`.                                |
 | `media`   | Media RSS   | `media:content`, `media:group`, and nested `media:*` metadata.                                 |
 | `cf`      | Canvasflow  | `cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`. |
-
-Full element-by-element tables (requirements, ancestors, descriptions) are in [`docs/RSS.md`](../../docs/RSS.md).
 
 ## How items become components
 

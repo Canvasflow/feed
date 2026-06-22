@@ -48,4 +48,4 @@ type(scope): subject
 
 ## Updating docs & this wiki
 
-The deep references live in [`docs/`](../../docs) (`HTML.md`, `Mappings.md`, `RSS.md`) and the onboarding pages live in [`docs/wiki/`](.). When you change behaviour, update the relevant page **in the same PR** — if code and docs disagree, the code wins. The wiki is published automatically on release; see [Build & Publishing](Build-and-Publishing.md).
+The wiki pages live in [`docs/wiki/`](.). When you change behaviour, update the relevant page **in the same PR** — if code and docs disagree, the code wins. The wiki is published automatically on release; see [Build & Publishing](Build-and-Publishing.md).

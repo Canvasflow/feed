@@ -1,6 +1,6 @@
 # HTML Mapping
 
-`HTMLMapper.toComponents(html, params?)` turns an HTML string into a typed `Component[]`. This page explains the pipeline and the default rules; the exhaustive element-by-element reference is in [`docs/HTML.md`](../../docs/HTML.md), and configuration is on [Custom Mappings](Custom-Mappings.md).
+`HTMLMapper.toComponents(html, params?)` turns an HTML string into a typed `Component[]`. This page explains the pipeline and the default rules; configuration is on [Custom Mappings](Custom-Mappings.md).
 
 ← Back to [Home](Home.md) · Related: [Custom Mappings](Custom-Mappings.md) · [Component Types](Component-Types.md)
 
@@ -68,4 +68,4 @@ Text components keep only [phrasing content](https://developer.mozilla.org/en-US
 | Table   | `<table>` → `htmltable` (restricted tag allow-list).                                                     |
 | Button  | `<a role="button">` or `<button><a></button>`.                                                           |
 
-Each of these has a dedicated section (required attributes, examples, edge cases) in [`docs/HTML.md`](../../docs/HTML.md). To recognise content that does not follow these conventions, define a [custom mapping](Custom-Mappings.md).
+To recognise content that does not follow these conventions, define a [custom mapping](Custom-Mappings.md).

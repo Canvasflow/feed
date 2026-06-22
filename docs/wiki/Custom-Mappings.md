@@ -1,6 +1,6 @@
 # Custom Mappings
 
-Mappings tell Canvasflow how to recognise an HTML element as a specific component instead of skipping it or applying the default rules. They are supplied through a `Params` object passed to `RSSFeed` or `HTMLMapper.toComponents()`. This page summarises the model; the complete reference with worked examples is in [`docs/Mappings.md`](../../docs/Mappings.md).
+Mappings tell Canvasflow how to recognise an HTML element as a specific component instead of skipping it or applying the default rules. They are supplied through a `Params` object passed to `RSSFeed` or `HTMLMapper.toComponents()`. This page documents the model with worked examples.
 
 ← Back to [Home](Home.md) · Related: [HTML Mapping](HTML-Mapping.md) · [Component Types](Component-Types.md)
 
@@ -109,5 +109,3 @@ Example — treat every `<section>` as a container:
 ## Validation
 
 `Params`/`Mapping` are validated with Zod schemas ([`mapping/Mapping.schema.ts`](../../src/component/mapping/Mapping.schema.ts)). The exported helpers `isValidParams()`, `isValidMapping()`, and `validateParams()` (and the static `RSSFeed.validateParams()`) reuse those schemas. See [API Reference](API-Reference.md).
-
-The full document — every component mapping with HTML + JSON examples and evaluation details — is [`docs/Mappings.md`](../../docs/Mappings.md).
