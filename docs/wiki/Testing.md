@@ -52,7 +52,33 @@ Tests are tagged via `{ tags: [...] }` in their Vitest options. The configured t
 
 The UI scripts filter on a tag, e.g. `npm run test:unit`, `npm run test:integration`, `npm run test:todo`, `npm run test:broken`.
 
-> `integration` and `recipe` are skipped in `vite.config.ts` because they make network requests. Tag new tests appropriately: `unit` for isolated logic, `rss` for feed parsing, `html` for component conversion.
+> `integration` and `recipe` are skipped in `vite.config.ts` because they make
+> network requests. Tag new tests appropriately: `unit` for isolated logic,
+> `rss` for feed parsing, `html` for component conversion.
+
+### Running the skipped tags
+
+`integration` and `recipe` have `skip: true` in `vite.config.ts`, so a normal
+`npm test` never runs them (they require network access).
+
+`--tagsFilter` only **selects** which tests to consider — it does **not**
+override a tag's `skip`. A test is skipped if _any_ of its tags is skipped, and
+the network tests are tagged `['integration', 'recipe']`. So `npm run
+test:integration` (which just adds `--tags-filter=integration`) still reports
+them as skipped.
+
+To actually run them, flip `skip: true` → `false` for **both** tags in
+`vite.config.ts`, then run the filter:
+
+```ts
+// vite.config.ts → test.tags
+{ name: 'integration', /* … */ skip: false },
+{ name: 'recipe',      /* … */ skip: false },
+```
+
+```bash
+npx vp test --tags-filter=integration
+```
 
 ## Coverage thresholds
 
