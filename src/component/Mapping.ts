@@ -546,11 +546,6 @@ function fromNode(
     return toImage(node);
   }
 
-  // Check if the tag belongs to an image tag
-  if (imageTags.has(tagName) || (tagName === 'a' && hasImage(node))) {
-    return toImage(node);
-  }
-
   if (mappedComponent && mapping) {
     if (mappedComponent === 'recipe' || mappedComponent === 'container') {
       return toContainer(mappedComponent, node, params, properties);
@@ -1027,24 +1022,6 @@ function toTweetFromUrl(uri: URL): TwitterComponent {
   const warnings: string[] = [];
   const params: { id?: string; account?: string } = {};
 
-  const url = uri.toString();
-
-  if (
-    !url.startsWith('https://x.com') &&
-    !url.startsWith('https://twitter.com')
-  ) {
-    errors.push('Invalid Twitter video URL format.');
-    return {
-      height: '350',
-      fixedheight: 'on',
-      bleed: 'on',
-      params,
-      component: 'twitter',
-      errors,
-      warnings,
-    };
-  }
-
   const tweetUrl = uri.pathname;
 
   const twitterRegex = /\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
@@ -1232,16 +1209,6 @@ function mapImageToGalleryImage(component: ImageComponent): GalleryImage {
  * @returns {ImageComponent}
  */
 function toImage(node: ElementNode): ImageComponent {
-  let link: string | undefined;
-  if (node.tagName === 'a') {
-    const nodeResp = getLinkFromImageNode(node);
-    if (nodeResp.node) {
-      node = nodeResp.node;
-    }
-
-    link = nodeResp.link;
-  }
-
   const { tagName } = node;
   const attributes = getAttributes(node.attributes);
   const id = attributes.get('id');
@@ -1249,29 +1216,18 @@ function toImage(node: ElementNode): ImageComponent {
   if (tagName === 'figure') {
     const imageComponent: ImageComponent = fromFigure(node) as ImageComponent;
     imageComponent.id = id;
-    if (link) {
-      imageComponent.link = link;
-    }
-
     return imageComponent;
   }
 
   if (tagName === 'picture') {
     const imageComponent: ImageComponent = fromPicture(node);
     imageComponent.id = id;
-    if (link) {
-      imageComponent.link = link;
-    }
     return imageComponent;
   }
 
   const errors: string[] = [];
   const warnings: string[] = [];
   let imageurl = '';
-
-  if (!attributes) {
-    errors.push('No attributes found on image node');
-  }
 
   const src = attributes.get('src');
   if (src) {
@@ -1286,7 +1242,6 @@ function toImage(node: ElementNode): ImageComponent {
     component: 'image',
     imageurl,
     alt,
-    link,
     width: width ? parseInt(`${width}`, 10) : undefined,
     height: height ? parseInt(`${height}`, 10) : undefined,
     errors,
@@ -2518,18 +2473,6 @@ function hasButton(node: ElementNode): boolean {
 }
 
 /**
- * It returns `true`if the node has an `image`, `figure` or `picture` in their
- * descendants
- *
- * @param {ElementNode} node
- * @returns {boolean}
- */
-function hasImage(node: ElementNode): boolean {
-  const imageTagNames = ['img', 'figure', 'picture'];
-  return node.children.reduce(findDescendants(imageTagNames), []).length > 0;
-}
-
-/**
  * It checks if an html node is an valid Instragram Node
  *
  * @param {ElementNode} node
@@ -2647,38 +2590,6 @@ function reduceLinkContainerComponent(
 
     acc.push(component);
     return acc;
-  };
-}
-
-function getLinkFromImageNode(node: ElementNode): {
-  node: ElementNode;
-  link?: string;
-} {
-  let link: string | undefined;
-  if (node.tagName === 'a') {
-    const attributes = getAttributes(node.attributes);
-    const href = attributes.get('href');
-    if (href) {
-      link = href;
-    }
-    if (node.children) {
-      for (const c of node.children) {
-        if (
-          c.type === 'element' &&
-          (c.tagName === 'img' ||
-            c.tagName === 'picture' ||
-            c.tagName === 'figure')
-        ) {
-          node = c;
-          break;
-        }
-      }
-    }
-  }
-
-  return {
-    node,
-    link,
   };
 }
 
