@@ -51,6 +51,8 @@ import {
 } from './Node';
 import {
   AttributeFilterSchema,
+  AttributeValueFilterSchema,
+  AttributeRegexFilterSchema,
   ClassFilterSchema,
   ColumnsMappingSchema,
   ContainerMappingSchema,
@@ -72,6 +74,8 @@ export type Filter = z.infer<typeof FilterSchema>;
 export type TagFilter = z.infer<typeof TagFilterSchema>;
 export type ClassFilter = z.infer<typeof ClassFilterSchema>;
 export type AttributeFilter = z.infer<typeof AttributeFilterSchema>;
+export type AttributeValueFilter = z.infer<typeof AttributeValueFilterSchema>;
+export type AttributeRegexFilter = z.infer<typeof AttributeRegexFilterSchema>;
 
 export type Mapping = z.infer<typeof MappingSchema>;
 export type LinkResponse = z.infer<typeof LinkResponseSchema>;
@@ -2792,6 +2796,15 @@ function filterAnyMapping(node: ElementNode, filters: Filter[]): boolean {
 
     if (filter.type === 'attribute') {
       const attributeValue = attributes.get(filter.key);
+      if ('regex' in filter) {
+        if (
+          attributeValue !== undefined &&
+          new RegExp(filter.regex).test(attributeValue)
+        ) {
+          return true;
+        }
+        continue;
+      }
       if (attributeValue === filter.value) {
         return true;
       }
@@ -2846,6 +2859,15 @@ function filterAllMapping(node: ElementNode, filters: Filter[]): boolean {
     }
     if (filter.type === 'attribute') {
       const attributeValue = attributes.get(filter.key);
+      if ('regex' in filter) {
+        if (
+          attributeValue === undefined ||
+          !new RegExp(filter.regex).test(attributeValue)
+        ) {
+          return false;
+        }
+        continue;
+      }
       if (attributeValue !== filter.value) return false;
       continue;
     }

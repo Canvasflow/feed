@@ -127,6 +127,90 @@ describe('Root Element', () => {
   );
 
   test(
+    'It should return the root element with an attribute regex filter',
+    { tags: ['unit', 'html'] },
+    () => {
+      const rootMapping: Mapping = {
+        match: 'all',
+        filters: [
+          {
+            type: 'attribute',
+            key: 'id',
+            regex: '^article-body-\\d+$',
+          },
+        ],
+      };
+      const rootElement = `<div id="article-body-42"><p>This is the first content</p><h2>This is a title</h2></div>`;
+      const content = `
+        <html>
+          <div data-widget="header">
+            <h1>Example</h1>
+          </div>
+          ${rootElement}
+        </html>
+      `;
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(rootElement);
+    }
+  );
+
+  test(
+    'It should return empty when the attribute regex filter does not match',
+    { tags: ['unit', 'html'] },
+    () => {
+      const rootMapping: Mapping = {
+        match: 'all',
+        filters: [
+          {
+            type: 'attribute',
+            key: 'id',
+            regex: '^article-body-\\d+$',
+          },
+        ],
+      };
+      const rootElement = `<div id="article-body-main"><p>This is the first content</p><h2>This is a title</h2></div>`;
+      const content = `
+        <html>
+          <div data-widget="header">
+            <h1>Example</h1>
+          </div>
+          ${rootElement}
+        </html>
+      `;
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(null);
+    }
+  );
+
+  test(
+    'It should match an attribute regex filter with the any match mode',
+    { tags: ['unit', 'html'] },
+    () => {
+      const rootMapping: Mapping = {
+        match: 'any',
+        filters: [
+          {
+            type: 'attribute',
+            key: 'data-component-name',
+            regex: 'Recirculation:.*',
+          },
+        ],
+      };
+      const rootElement = `<div data-component-name="Recirculation:ArticleRiver"><p>This is the first content</p></div>`;
+      const content = `
+        <html>
+          <div data-widget="header">
+            <h1>Example</h1>
+          </div>
+          ${rootElement}
+        </html>
+      `;
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(rootElement);
+    }
+  );
+
+  test(
     'It should return empty because the root element do not match the all mapping',
     { tags: ['unit', 'html'] },
     () => {
