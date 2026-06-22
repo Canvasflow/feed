@@ -27,12 +27,13 @@ import {
 } from '../component/mapping/Mapping.schema';
 
 /**
- * Raw, dynamically-shaped output of fast-xml-parser. It is consumed only
- * internally by validate()/build(); consumers should read the typed `rss`
- * property instead.
+ * Raw, dynamically-shaped output of fast-xml-parser. Modeled as a recursive
+ * tree of named nodes — it is consumed only internally by validate()/build()
+ * for key traversal; consumers should read the typed `rss` property instead.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ParsedXml = Record<string, any>;
+interface ParsedXml {
+  [key: string]: ParsedXml;
+}
 
 export class RSSFeed {
   public content: string;

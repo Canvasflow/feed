@@ -93,8 +93,7 @@ function extractAnchorsWithImages(html: string): string {
 
   // move all top-level nodes into wrapper
   while (document.firstChild) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    wrapper.appendChild(document.firstChild as any);
+    wrapper.appendChild(document.firstChild);
   }
 
   // return the HTML of the wrapper — this is your final HTML string
@@ -109,17 +108,11 @@ function extractAnchorsWithImages(html: string): string {
  * @returns {string}
  */
 export function splitParagraphImages(html: string, tag: string): string {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const parsed = parseHTML(html) as any;
-
-  // Always treat content as a fragment (RSS-safe)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const root: any =
-    parsed.fragment ??
-    parsed.document ??
-    (() => {
-      throw new Error('Unable to parse HTML snippet');
-    })();
+  // parseHTML always yields a document; treat it as the (RSS-safe) root.
+  const { document: root } = parseHTML(html);
+  if (!root) {
+    throw new Error('Unable to parse HTML snippet');
+  }
 
   const paragraphs = Array.from(root.querySelectorAll(tag));
 
@@ -129,7 +122,7 @@ export function splitParagraphImages(html: string, tag: string): string {
     if (!parent) continue;
 
     const children = Array.from(p.childNodes);
-    let buffer: unknown[] = [];
+    let buffer: ChildNode[] = [];
 
     // Extract original attributes once
     const originalAttrs = Array.from(p.attributes).map((attr) => ({
