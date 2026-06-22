@@ -1964,11 +1964,32 @@ function toFigureContainer(
  * applied to the component that matches
  * @returns {TextComponent} Text Component
  */
+/**
+ * Preserve whitespace that sits between inline elements inside a text
+ * component by converting whitespace-only text nodes to non-breaking spaces.
+ * This keeps the spacing in markup such as `<b>foo</b> <i>bar</i>` from being
+ * collapsed away when the component's content is serialized.
+ *
+ * @param {Node} node
+ * @returns {void}
+ */
+function preserveInlineWhitespace(node: Node): void {
+  if (node.type !== 'element' || !node.children) return;
+  for (const child of node.children) {
+    if (child.type === 'text' && /^\s+$/.test(child.content)) {
+      child.content = child.content.replace(/ /g, '&nbsp;');
+    } else {
+      preserveInlineWhitespace(child);
+    }
+  }
+}
+
 function toText(
   node: ElementNode,
   component: TextType,
   properties?: Record<string, unknown>
 ): TextComponent {
+  preserveInlineWhitespace(node);
   const html = stringify([node]);
   const warnings: string[] = [];
   const attributes = getAttributes(node.attributes);
@@ -2834,10 +2855,7 @@ export function isValidMapping(mapping: unknown): boolean {
   });
   try {
     ParamsSchema.parse(mapping);
-  } catch (e) {
-    if (e instanceof z.ZodError) {
-      return false;
-    }
+  } catch {
     return false;
   }
   return true;

@@ -285,6 +285,27 @@ describe('Text components', () => {
   );
 
   test(
+    'It should preserve whitespace between inline elements as a non-breaking space',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `<p><span>now $452</span> <span>at Amazon</span></p>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as TextComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('body');
+      // The whitespace-only text node between the two spans is preserved as a
+      // non-breaking space (U+00A0) instead of being collapsed to a regular
+      // space, which downstream trimming could drop.
+      expect(component.text).toContain('\u00A0');
+      expect(component.text).not.toContain('</span> <span>');
+      expect(component.text).toBe(
+        '<p><span>now $452</span>\u00A0<span>at Amazon</span></p>'
+      );
+    }
+  );
+
+  test(
     'It should create a body component from anchor that also has an image',
     { tags: ['unit', 'html'] },
     () => {
