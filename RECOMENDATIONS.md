@@ -7,9 +7,10 @@ are ordered roughly by impact/risk.
 > This list shows only the **outstanding** items. Recommendations that have been
 > implemented (publish-pipeline registry pinning, lint/build gating, the Node
 > test matrix, the documentation-accuracy fixes, removal of the HTMLMapper
-> `any` casts, Dependabot dependency automation) and the coverage-threshold
-> enforcement check (verified gating CI) have been removed. The LICENSE
-> recommendation was dropped: this library is internal-only.
+> `any` casts, Dependabot dependency automation, root `SECURITY.md` /
+> `CONTRIBUTING.md`) and the coverage-threshold enforcement check (verified
+> gating CI) have been removed. The LICENSE recommendation was dropped: this
+> library is internal-only.
 
 ---
 
@@ -21,14 +22,7 @@ are ordered roughly by impact/risk.
    code can merge undetected and only fails at release time. Add a `ci.yml` that
    runs on `pull_request` and `push` executing `lint`, `build`, and `coverage`.
 
-## 2. Project Governance & Metadata
-
-1. **No `SECURITY.md` / `CONTRIBUTING.md` at repo root.** Contribution guidance
-   lives in `docs/wiki/Contributing.md`, but a root `SECURITY.md` (this package
-   parses untrusted HTML/XML) and a discoverable contributing pointer are worth
-   adding.
-
-## 3. Code Quality & Type Safety
+## 2. Code Quality & Type Safety
 
 1. **Large, monolithic modules.** `src/component/mapping/Mapping.ts` is ~2,546
    lines and `HTMLMapper.test.ts` ~3,830 lines. These are hard to navigate and
