@@ -1,17 +1,12 @@
-import { stringify } from 'himalaya';
 import { z } from 'zod';
-import sanitizeHtml from 'sanitize-html';
 
 import {
   type Component,
-  type CustomComponent,
-  type HTMLTableComponent,
   type TextComponent,
   type TextType,
   type TikTokComponent,
   isFigureContainerComponent,
   isLinkContainerComponent,
-  isValidTextRole,
 } from '../Component';
 import { type ElementNode, type Node, getAttributes } from '../node/Node';
 import {
@@ -34,16 +29,8 @@ import {
   LinkResponseSchema,
   GalleryMappingSchema,
 } from './Mapping.schema';
+import { textTags, textTagsSet, mappingTagsSet } from './Mapping.constants';
 import {
-  textTags,
-  textTagsSet,
-  mappingTagsSet,
-  textAllowedAttributes,
-  textAllowedTags,
-  htmlTableAllowedTags,
-} from './Mapping.constants';
-import {
-  sanitizeContentHtml,
   isYoutubeUrl,
   processTextLinks,
   isEmpty,
@@ -81,12 +68,16 @@ import {
   toButton,
   isButtonNode,
 } from './Mapping.container';
+import { toHTMLTable } from './Mapping.table';
+import { toCustom } from './Mapping.custom';
+import { toText } from './Mapping.text';
 
 // Re-export the publicly consumed constants and helpers so the package surface
 // is unchanged.
 export { textTags, textTagsSet, mappingTagsSet };
 export { processTextLinks, isEmpty };
 export { mapLivePost } from './Mapping.container';
+export { toCustom } from './Mapping.custom';
 
 export type Filter = z.infer<typeof FilterSchema>;
 export type TagFilter = z.infer<typeof TagFilterSchema>;
@@ -443,150 +434,6 @@ export function fromNode(
   }
 
   return null;
-}
-
-/**
- * Transform an html table component to Canvasflow HTMLTable Component
- *
- * @param {ElementNode} node
- * @returns {HTMLTableComponent}
- */
-function toHTMLTable(node: ElementNode): HTMLTableComponent {
-  let html = stringify([node]);
-  const errors: string[] = [];
-  const warnings: string[] = [];
-
-  const attributes = getAttributes(node.attributes);
-
-  const allowedTags = htmlTableAllowedTags;
-  const allowedAttributes = textAllowedAttributes;
-
-  html = sanitizeHtml(html, {
-    allowedTags,
-    allowedAttributes,
-  })
-    .replace(/[\r\n\t]/g, '')
-    .replace(/\s\s+/g, ' ')
-    .trim();
-
-  const id = attributes.get('id');
-
-  const component: HTMLTableComponent = {
-    id,
-    component: 'htmltable',
-    html,
-    errors,
-    warnings,
-    element: {
-      tag: node.tagName,
-      attributes: Object.fromEntries(attributes),
-    },
-  };
-
-  return component;
-}
-
-/**
- * Transform an html node into a Canvasflow Custom Component
- *
- * @param {ElementNode} node
- * @param {Record<string, unknown> | undefined} properties
- * @returns {CustomComponent}
- */
-export function toCustom(
-  node: ElementNode,
-  properties?: Record<string, unknown>
-): CustomComponent {
-  const content = stringify([node]);
-  const attributes = getAttributes(node.attributes);
-  const id = attributes.get('id');
-  return {
-    id,
-    component: 'custom',
-    errors: [],
-    warnings: [],
-    content,
-    node,
-    properties,
-    html: sanitizeContentHtml(node),
-    element: {
-      tag: node.tagName,
-      attributes: Object.fromEntries(attributes),
-    },
-  };
-}
-
-/**
- * Transform an html node into Canvasflow Text Component
- *
- * @param {ElementNode} node
- * @param {TextType} component
- * @param {Record<string, unknown>} [properties] - Properties that
- * applied to the component that matches
- * @returns {TextComponent} Text Component
- */
-/**
- * Preserve whitespace that sits between inline elements inside a text
- * component by converting whitespace-only text nodes to non-breaking spaces.
- * This keeps the spacing in markup such as `<b>foo</b> <i>bar</i>` from being
- * collapsed away when the component's content is serialized.
- *
- * @param {Node} node
- * @returns {void}
- */
-function preserveInlineWhitespace(node: Node): void {
-  if (node.type !== 'element' || !node.children) return;
-  for (const child of node.children) {
-    if (child.type === 'text' && /^\s+$/.test(child.content)) {
-      child.content = child.content.replace(/ /g, '&nbsp;');
-    } else {
-      preserveInlineWhitespace(child);
-    }
-  }
-}
-
-function toText(
-  node: ElementNode,
-  component: TextType,
-  properties?: Record<string, unknown>
-): TextComponent {
-  preserveInlineWhitespace(node);
-  const html = stringify([node]);
-  const warnings: string[] = [];
-  const attributes = getAttributes(node.attributes);
-
-  const allowedTags = textAllowedTags;
-  const allowedAttributes = textAllowedAttributes;
-
-  const text = sanitizeHtml(html, {
-    allowedTags,
-    allowedAttributes,
-  });
-  const id = attributes.get('id');
-  const role = attributes.get('role');
-  if (role) {
-    // If the role was set and is valid we apply it
-    if (isValidTextRole(role)) {
-      component = role as TextType;
-    } else {
-      // If the role was invalid we use body as fallback
-      warnings.push(`role '${role}' is invalid`);
-      component = 'body';
-    }
-  }
-
-  return {
-    id,
-    component,
-    properties,
-    text: typeof text === 'string' ? text.trim() : text,
-    errors: [],
-    warnings,
-    element: {
-      tag: node.tagName,
-      attributes: Object.fromEntries(attributes),
-    },
-  };
 }
 
 /**
