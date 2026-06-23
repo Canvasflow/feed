@@ -122,7 +122,7 @@ export function splitParagraphImages(html: string, tag: string): string {
     if (!parent) continue;
 
     const children = Array.from(p.childNodes);
-    let buffer: ChildNode[] = [];
+    let buffer: (typeof children)[number][] = [];
 
     // Extract original attributes once
     const originalAttrs = Array.from(p.attributes).map((attr) => ({
