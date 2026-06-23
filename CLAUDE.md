@@ -2,15 +2,20 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+This project uses [`vite-plus`](https://www.npmjs.com/package/vite-plus) (`vp`)
+for development, building, testing, linting, and formatting.
+
 ## Commands
 
 ```bash
-npm run build          # tsc + vite build → dist/
-npm run test:run       # run all tests once (no UI)
-npm run test           # vitest with UI (interactive)
-npm run lint           # eslint on .ts files
-npm run format         # prettier --write .
-npm run coverage       # vitest coverage report
+npm run build          # vp pack → dist/ (ESM + .d.mts)
+npm test               # vp test — run all tests once
+npm run test:debug     # vp test, no timeout + no file parallelism (breakpoints)
+npm run test:ui        # vp test watch + interactive Vitest UI
+npm run lint           # vp lint on .ts files
+npm run lint:fix       # vp lint --fix
+npm run format         # vp fmt .
+npm run coverage       # vp test --coverage (v8, threshold-gated)
 ```
 
 Run a single test file:
@@ -19,17 +24,19 @@ Run a single test file:
 npx vitest run src/rss/RSSFeed.test.ts
 ```
 
-Run tests by tag:
+Run tests by tag (`vp test --tags-filter`), or via the prewired UI scripts:
 
 ```bash
-npx vitest run --reporter=verbose -- --tags-filter=unit
-npx vitest run --reporter=verbose -- --tags-filter=rss
-npx vitest run --reporter=verbose -- --tags-filter=html
+vp test --tags-filter=unit
+vp test --tags-filter=rss
+vp test --tags-filter=html
+
+npm run test:unit          # test:integration, test:todo, test:broken also exist
 ```
 
 ## Architecture
 
-This is a TypeScript library (`@canvasflow/feed`) that processes RSS/Atom feeds and transforms HTML content into Canvasflow components. It is published to GitHub Packages as both ESM and CJS.
+This is a TypeScript library (`@canvasflow/feed`) that processes RSS/Atom feeds and transforms HTML content into Canvasflow components. It is published to GitHub Packages as an ESM module with TypeScript declarations (`dist/index.mjs` + `dist/index.d.mts`).
 
 ### Entry point
 

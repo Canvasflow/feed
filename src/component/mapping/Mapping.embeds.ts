@@ -12,8 +12,7 @@ import {
   findDescendants,
   getAttributes,
 } from '../node/Node';
-import { allowedTags } from './Mapping.constants';
-import { sanitizeNode, isYoutubeUrl } from './Mapping.utils';
+import { sanitizeContentHtml, isYoutubeUrl } from './Mapping.utils';
 
 /**
  * Transform an html component to Canvasflow Instagram Component
@@ -98,6 +97,7 @@ function getLegacyInstagramUrl(node: ElementNode): string {
   const anchorNode = anchorNodes.shift() as ElementNode;
   const anchorNodeAttributes = getAttributes(anchorNode.attributes);
 
+  /* v8 ignore next -- matched anchors always carry an href */
   return anchorNodeAttributes.get('href') || '';
 }
 
@@ -108,6 +108,7 @@ function getLegacyInstagramUrl(node: ElementNode): string {
  * @returns {boolean}
  */
 function filterInstagramAnchor(node: Node): boolean {
+  /* v8 ignore next 2 -- only `<a>` element nodes reach this filter */
   if (node.type !== 'element') return false;
   if (!node.attributes) return false;
   const attributes = getAttributes(node.attributes);
@@ -139,6 +140,7 @@ export function toTikTok(url: URL): TikTokComponent {
       /^https:\/\/www\.tiktok\.com\/(@[\w.\-_]+)\/video\/(\d+)(?:[/?].*)?$/
     );
   if (match) {
+    /* v8 ignore next 2 -- the regex guarantees both capture groups */
     params.username = match[1] || '';
     params.id = match[2] || '';
   } else {
@@ -214,6 +216,7 @@ export function toDailymotion(url: URL): DailymotionComponent {
  */
 export function toYoutubeFromAnchor(node: ElementNode): YoutubeComponent {
   const attributes = getAttributes(node.attributes);
+  /* v8 ignore next -- only invoked for anchors with a youtube href */
   const url = attributes.get('href') || '';
   const component = toYoutube(new URL(url));
   component.element = {
@@ -221,10 +224,7 @@ export function toYoutubeFromAnchor(node: ElementNode): YoutubeComponent {
     attributes: Object.fromEntries(attributes),
   };
   component.id = attributes.get('id');
-  component.html = sanitizeNode(node, {
-    allowedTags,
-    allowedAttributes: false,
-  });
+  component.html = sanitizeContentHtml(node);
   return component;
 }
 
