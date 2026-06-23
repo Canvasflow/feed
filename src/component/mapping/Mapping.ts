@@ -3,31 +3,17 @@ import { z } from 'zod';
 import sanitizeHtml from 'sanitize-html';
 
 import {
-  type ButtonComponent,
   type Component,
   type CustomComponent,
-  type FigureContainerComponent,
   type HTMLTableComponent,
-  type LinkContainerComponent,
   type TextComponent,
   type TextType,
   type TikTokComponent,
-  isAudioComponent,
   isFigureContainerComponent,
-  isHTMLTableComponent,
-  isImageComponent,
   isLinkContainerComponent,
-  isTextComponent,
   isValidTextRole,
-  isVideoComponent,
-  isButtonComponent,
 } from '../Component';
-import {
-  type ElementNode,
-  type Node,
-  findDescendants,
-  getAttributes,
-} from '../node/Node';
+import { type ElementNode, type Node, getAttributes } from '../node/Node';
 import {
   AttributeFilterSchema,
   AttributeValueFilterSchema,
@@ -53,12 +39,11 @@ import {
   textTagsSet,
   mappingTagsSet,
   textAllowedAttributes,
-  allowedTags,
   textAllowedTags,
   htmlTableAllowedTags,
 } from './Mapping.constants';
 import {
-  sanitizeNode,
+  sanitizeContentHtml,
   isYoutubeUrl,
   processTextLinks,
   isEmpty,
@@ -90,6 +75,11 @@ import {
   toLiveContainer,
   toFigureContainer,
   toLinkContainer,
+  appendLinkContainerComponents,
+  appendFigureContainerComponents,
+  toAnchorButton,
+  toButton,
+  isButtonNode,
 } from './Mapping.container';
 
 // Re-export the publicly consumed constants and helpers so the package surface
@@ -242,55 +232,6 @@ type ReduceComponentsFn = (
   acc: Array<Component>,
   node: Node
 ) => Array<Component>;
-
-/**
- * It appends link container components into components
- *
- * @param {Component[]} acc
- * @param {LinkContainerComponent} container
- * @returns {void}
- */
-function appendLinkContainerComponents(
-  acc: Component[],
-  container: LinkContainerComponent
-): void {
-  const link = container.link;
-  const attributes = container.attributes;
-  const components = container.components.reduce(
-    reduceLinkContainerComponent(link, attributes, container.element),
-    []
-  );
-  for (const component of components) {
-    acc.push(component);
-  }
-}
-
-/**
- * It appends fgure container components into components
- *
- * @param {Component[]} acc
- * @param {FigureContainerComponent} container
- * @returns {void}
- */
-function appendFigureContainerComponents(
-  acc: Component[],
-  container: FigureContainerComponent
-): void {
-  const { credit, caption, components } = container;
-
-  for (const component of components) {
-    if (
-      isAudioComponent(component) ||
-      isImageComponent(component) ||
-      isVideoComponent(component) ||
-      isHTMLTableComponent(component)
-    ) {
-      component.caption = caption;
-      component.credit = credit;
-    }
-    acc.push(component);
-  }
-}
 
 /**
  * It process a node individually and transform it into a single canvasflow
@@ -505,126 +446,6 @@ export function fromNode(
 }
 
 /**
- * Transform an html component to Canvasflow Button Component
- *
- * @param {ElementNode} node
- * @returns {ButtonComponent}
- */
-function toAnchorButton(node: ElementNode): ButtonComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const attributes = getAttributes(node.attributes);
-  let text: string | undefined;
-  const link: string | undefined = attributes.get('href');
-
-  const buttonsNode = node.children.reduce(findDescendants('button'), []);
-
-  if (buttonsNode.length > 0) {
-    const button = buttonsNode[0] as ElementNode;
-
-    text = button.children
-      .filter((n) => n.type === 'text')
-      .map((n) => n.content)
-      .join(' ')
-      .trim();
-  }
-  if (!text) {
-    errors.push('Button text is required');
-  }
-
-  if (!link) {
-    errors.push('Button link is required');
-  }
-
-  return {
-    component: 'button',
-    text,
-    link,
-    errors,
-    warnings,
-    element: {
-      tag: node.tagName,
-      attributes: Object.fromEntries(attributes),
-    },
-  };
-}
-
-/**
- * Transform an html component to Canvasflow Button Component
- *
- * @param {ElementNode} node
- * @returns {ButtonComponent}
- */
-function toButton(node: ElementNode): ButtonComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const attributes = getAttributes(node.attributes);
-  let text: string | undefined;
-  let link: string | undefined;
-
-  // Process from a tag with role button
-  if (node.tagName === 'a') {
-    link = attributes.get('href');
-    text = node.children
-      .filter((n) => n.type === 'text')
-      .map((n) => n.content)
-      .join(' ')
-      .trim();
-    if (!text) {
-      errors.push('Button text is required');
-    }
-  } else if (node.tagName === 'button') {
-    const anchorNodes = node.children.reduce(findDescendants('a'), []);
-    if (anchorNodes.length > 0) {
-      const aNode = anchorNodes[0] as ElementNode;
-      const aAttributes = getAttributes(aNode.attributes);
-      link = aAttributes.get('href');
-      if (!link) {
-        errors.push('href attribute is required in a button link');
-      }
-      text = aNode.children
-        .filter((n) => n.type === 'text')
-        .map((n) => n.content)
-        .join(' ')
-        .trim();
-      if (!text) {
-        errors.push('Button text is required');
-      }
-    } else {
-      text = node.children
-        .filter((n) => n.type === 'text')
-        .map((n) => n.content)
-        .join(' ')
-        .trim();
-      if (!text) {
-        errors.push('Button text is required');
-      }
-      warnings.push(
-        'button without a link is not clickable, consider using an a tag with role button'
-      );
-    }
-  } else {
-    errors.push('invalid button implementation');
-  }
-
-  if (!link) {
-    errors.push('Button link is required');
-  }
-
-  return {
-    component: 'button',
-    text,
-    link,
-    errors,
-    warnings,
-    element: {
-      tag: node.tagName,
-      attributes: Object.fromEntries(attributes),
-    },
-  };
-}
-
-/**
  * Transform an html table component to Canvasflow HTMLTable Component
  *
  * @param {ElementNode} node
@@ -687,10 +508,7 @@ export function toCustom(
     content,
     node,
     properties,
-    html: sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    }),
+    html: sanitizeContentHtml(node),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -784,67 +602,6 @@ function hasButton(node: ElementNode): boolean {
     }
   }
   return false;
-}
-
-/**
- * It checks if an html node is an valid Button Node
- *
- * @param {ElementNode} node
- * @returns {boolean}
- */
-function isButtonNode(node: ElementNode): boolean {
-  const { tagName } = node;
-  const attributes = getAttributes(node.attributes);
-  const role = attributes.get('role');
-  return tagName === 'button' || (tagName === 'a' && role === 'button');
-}
-
-function reduceLinkContainerComponent(
-  link?: string,
-  attributes?: Map<string, string>,
-  element?: {
-    tag: string;
-    attributes?: Record<string, string>;
-  }
-): (acc: Component[], item: Component) => Component[] {
-  return (acc: Component[], component: Component): Component[] => {
-    // You don't have a link so return as it is
-    if (!link) {
-      acc.push(component);
-      return acc;
-    }
-
-    if (isTextComponent(component)) {
-      if (attributes && attributes.size > 0) {
-        attributes.set('href', link);
-        const linkAttributes: string[] = [];
-        for (const [attr, value] of attributes) {
-          linkAttributes.push(`${attr}="${value}"`);
-        }
-        component.text = `<a ${linkAttributes.join(' ')}>${component.text}</a>`;
-      } else {
-        component.text = `<a href="${link}">${component.text}</a>`;
-      }
-
-      if (element) {
-        component.element = element;
-      }
-    }
-
-    if (isImageComponent(component)) {
-      component.link = link;
-    }
-
-    if (isButtonComponent(component)) {
-      if (!component.link) {
-        component.link = link;
-        component.errors = [];
-      }
-    }
-
-    acc.push(component);
-    return acc;
-  };
 }
 
 /**

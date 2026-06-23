@@ -1,4 +1,5 @@
 import {
+  type ButtonComponent,
   type Component,
   type ColumnsComponent,
   type ContainerComponent,
@@ -7,6 +8,12 @@ import {
   type LiveContainerComponent,
   type LivePostComponent,
   type RecipeComponent,
+  isAudioComponent,
+  isButtonComponent,
+  isHTMLTableComponent,
+  isImageComponent,
+  isTextComponent,
+  isVideoComponent,
 } from '../Component';
 import {
   type ElementNode,
@@ -15,9 +22,9 @@ import {
   findDescendants,
   getAttributes,
 } from '../node/Node';
-import { allowedTags } from './Mapping.constants';
 import {
   sanitizeNode,
+  sanitizeContentHtml,
   excludeNode,
   filterAllMapping,
   filterAnyMapping,
@@ -52,10 +59,7 @@ export function mapLivePost(params?: Params): MapLivePostComponentsFn {
     return {
       id,
       component: 'live_post',
-      html: sanitizeNode(node, {
-        allowedTags,
-        allowedAttributes: false,
-      }),
+      html: sanitizeContentHtml(node),
       components,
       errors,
       warnings,
@@ -99,10 +103,7 @@ export function toContainer(
     errors: [],
     warnings,
     properties,
-    html: sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    }),
+    html: sanitizeContentHtml(node),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -153,10 +154,7 @@ export function toColumns(
   return {
     id,
     component: 'columns',
-    html: sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    }),
+    html: sanitizeContentHtml(node),
     columns,
     errors,
     warnings,
@@ -241,10 +239,7 @@ export function toLiveContainer(
   return {
     id,
     component: 'live_container',
-    html: sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    }),
+    html: sanitizeContentHtml(node),
     posts,
     errors,
     warnings,
@@ -433,4 +428,238 @@ export function toFigureContainer(
   };
 
   return component;
+}
+
+/* ---------------------------------------------------------------------------
+ * Button + link/figure container helpers (moved from Mapping.ts)
+ * ------------------------------------------------------------------------- */
+
+/**
+ * It appends link container components into components
+ *
+ * @param {Component[]} acc
+ * @param {LinkContainerComponent} container
+ * @returns {void}
+ */
+export function appendLinkContainerComponents(
+  acc: Component[],
+  container: LinkContainerComponent
+): void {
+  const link = container.link;
+  const attributes = container.attributes;
+  const components = container.components.reduce(
+    reduceLinkContainerComponent(link, attributes, container.element),
+    []
+  );
+  for (const component of components) {
+    acc.push(component);
+  }
+}
+
+/**
+ * It appends fgure container components into components
+ *
+ * @param {Component[]} acc
+ * @param {FigureContainerComponent} container
+ * @returns {void}
+ */
+export function appendFigureContainerComponents(
+  acc: Component[],
+  container: FigureContainerComponent
+): void {
+  const { credit, caption, components } = container;
+
+  for (const component of components) {
+    if (
+      isAudioComponent(component) ||
+      isImageComponent(component) ||
+      isVideoComponent(component) ||
+      isHTMLTableComponent(component)
+    ) {
+      component.caption = caption;
+      component.credit = credit;
+    }
+    acc.push(component);
+  }
+}
+
+/**
+ * Transform an html component to Canvasflow Button Component
+ *
+ * @param {ElementNode} node
+ * @returns {ButtonComponent}
+ */
+export function toAnchorButton(node: ElementNode): ButtonComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  let text: string | undefined;
+  const link: string | undefined = attributes.get('href');
+
+  const buttonsNode = node.children.reduce(findDescendants('button'), []);
+
+  if (buttonsNode.length > 0) {
+    const button = buttonsNode[0] as ElementNode;
+
+    text = button.children
+      .filter((n) => n.type === 'text')
+      .map((n) => n.content)
+      .join(' ')
+      .trim();
+  }
+  if (!text) {
+    errors.push('Button text is required');
+  }
+
+  if (!link) {
+    errors.push('Button link is required');
+  }
+
+  return {
+    component: 'button',
+    text,
+    link,
+    errors,
+    warnings,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
+  };
+}
+
+/**
+ * Transform an html component to Canvasflow Button Component
+ *
+ * @param {ElementNode} node
+ * @returns {ButtonComponent}
+ */
+export function toButton(node: ElementNode): ButtonComponent {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const attributes = getAttributes(node.attributes);
+  let text: string | undefined;
+  let link: string | undefined;
+
+  // Process from a tag with role button
+  if (node.tagName === 'a') {
+    link = attributes.get('href');
+    text = node.children
+      .filter((n) => n.type === 'text')
+      .map((n) => n.content)
+      .join(' ')
+      .trim();
+    if (!text) {
+      errors.push('Button text is required');
+    }
+  } else if (node.tagName === 'button') {
+    const anchorNodes = node.children.reduce(findDescendants('a'), []);
+    if (anchorNodes.length > 0) {
+      const aNode = anchorNodes[0] as ElementNode;
+      const aAttributes = getAttributes(aNode.attributes);
+      link = aAttributes.get('href');
+      if (!link) {
+        errors.push('href attribute is required in a button link');
+      }
+      text = aNode.children
+        .filter((n) => n.type === 'text')
+        .map((n) => n.content)
+        .join(' ')
+        .trim();
+      if (!text) {
+        errors.push('Button text is required');
+      }
+    } else {
+      text = node.children
+        .filter((n) => n.type === 'text')
+        .map((n) => n.content)
+        .join(' ')
+        .trim();
+      if (!text) {
+        errors.push('Button text is required');
+      }
+      warnings.push(
+        'button without a link is not clickable, consider using an a tag with role button'
+      );
+    }
+  } else {
+    errors.push('invalid button implementation');
+  }
+
+  if (!link) {
+    errors.push('Button link is required');
+  }
+
+  return {
+    component: 'button',
+    text,
+    link,
+    errors,
+    warnings,
+    element: {
+      tag: node.tagName,
+      attributes: Object.fromEntries(attributes),
+    },
+  };
+}
+
+/**
+ * It checks if an html node is an valid Button Node
+ *
+ * @param {ElementNode} node
+ * @returns {boolean}
+ */
+export function isButtonNode(node: ElementNode): boolean {
+  const { tagName } = node;
+  const attributes = getAttributes(node.attributes);
+  const role = attributes.get('role');
+  return tagName === 'button' || (tagName === 'a' && role === 'button');
+}
+
+function reduceLinkContainerComponent(
+  link?: string,
+  attributes?: Map<string, string>,
+  element?: {
+    tag: string;
+    attributes?: Record<string, string>;
+  }
+): (acc: Component[], item: Component) => Component[] {
+  return (acc: Component[], component: Component): Component[] => {
+    // You don't have a link so return as it is
+    if (!link) {
+      acc.push(component);
+      return acc;
+    }
+
+    if (isTextComponent(component)) {
+      if (attributes && attributes.size > 0) {
+        attributes.set('href', link);
+        const linkAttributes: string[] = [];
+        for (const [attr, value] of attributes) {
+          linkAttributes.push(`${attr}="${value}"`);
+        }
+        component.text = `<a ${linkAttributes.join(' ')}>${component.text}</a>`;
+      } else {
+        component.text = `<a href="${link}">${component.text}</a>`;
+      }
+
+      if (element) {
+        component.element = element;
+      }
+    }
+
+    if (isImageComponent(component)) {
+      component.link = link;
+    }
+
+    if (isButtonComponent(component)) {
+      if (!component.link) {
+        component.link = link;
+        component.errors = [];
+      }
+    }
+
+    acc.push(component);
+    return acc;
+  };
 }
