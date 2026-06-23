@@ -71,11 +71,28 @@ export interface Attribute {
   value: string;
 }
 
+/**
+ * Small set helpers used when matching tag/class allow-lists.
+ */
 export class SetUtils {
+  /**
+   * Return the intersection of two sets.
+   *
+   * @param {Set<T>} a
+   * @param {Set<T>} b
+   * @returns {Set<T>}
+   */
   static intersect<T>(a: Set<T>, b: Set<T>): Set<T> {
     return new Set([...a].filter((x) => b.has(x)));
   }
 
+  /**
+   * Return `true` when every member of `b` is also in `a`.
+   *
+   * @param {Set<T>} a
+   * @param {Set<T>} b
+   * @returns {boolean}
+   */
   static subset<T>(a: Set<T>, b: Set<T>): boolean {
     for (const i of b) {
       if (!a.has(i)) {
@@ -86,6 +103,13 @@ export class SetUtils {
     return true;
   }
 
+  /**
+   * Return `true` when both sets contain exactly the same members.
+   *
+   * @param {Set<T>} a
+   * @param {Set<T>} b
+   * @returns {boolean}
+   */
   static equal<T>(a: Set<T>, b: Set<T>): boolean {
     if (a.size !== b.size) return false;
     return [...a].every((x) => b.has(x));

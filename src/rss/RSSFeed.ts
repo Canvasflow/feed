@@ -27,6 +27,11 @@ import {
 } from '../component/mapping/Mapping.schema';
 import type { ParsedXml } from './ParsedXml';
 
+/**
+ * Parses an RSS/Atom XML string and exposes `validate()` (populates
+ * errors/warnings against the tag allow-lists) and `build()` (produces a typed
+ * `RSS` object whose items' HTML content is converted to components).
+ */
 export class RSSFeed {
   public content: string;
   private readonly data: ParsedXml;
@@ -647,6 +652,13 @@ export class RSSFeed {
   }
 }
 
+/**
+ * Map a raw `<enclosure>` attribute object to a typed `Enclosure`, recording
+ * errors/warnings for missing url/type/length.
+ *
+ * @param {Attributes.Enclosure} e
+ * @returns {Enclosure}
+ */
 function mapEnclosure(e: Attributes.Enclosure): Enclosure {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -668,6 +680,13 @@ function mapEnclosure(e: Attributes.Enclosure): Enclosure {
   };
 }
 
+/**
+ * Build a mapper from raw `<media:group>` objects to typed `MediaGroup`s,
+ * resolving contained media content against `origin`.
+ *
+ * @param {string | undefined} origin
+ * @returns {(mediaGroup: Attributes.MediaGroup) => MediaGroup}
+ */
 function mapMediaGroup(
   origin: string | undefined
 ): (mediaGroup: Attributes.MediaGroup) => MediaGroup {
@@ -689,6 +708,14 @@ function mapMediaGroup(
   };
 }
 
+/**
+ * Build a mapper from raw `<media:content>` objects to typed `MediaContent`,
+ * normalising credit/thumbnail/title/description and resolving relative URLs
+ * against `origin`.
+ *
+ * @param {string | undefined} origin
+ * @returns {(mediaContent: Attributes.MediaContent) => MediaContent}
+ */
 function mapMediaContent(
   origin: string | undefined
 ): (mediaContent: Attributes.MediaContent) => MediaContent {
@@ -782,6 +809,14 @@ function mapMediaContent(
   };
 }
 
+/**
+ * `JSON.stringify` replacer that serialises `Error` values to their message so
+ * errors survive `RSSFeed.toString()`/`toJSON()`.
+ *
+ * @param {string} _ unused JSON key
+ * @param {unknown} value
+ * @returns {unknown}
+ */
 export function replaceErrors(_: string, value: unknown) {
   if (value instanceof Error) {
     const error: Record<string, unknown> = {};

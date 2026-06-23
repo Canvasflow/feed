@@ -169,8 +169,8 @@ export function toColumns(
 /**
  * Filter the html nodes that match a column
  *
- * @param {ColumnsMapping} [mapping\
- * @param {Params} [params\
+ * @param {ColumnsMapping} mapping
+ * @param {Params} [params]
  * @returns {NodeFilterFn}
  */
 function filterColumnsDescendants(
@@ -253,10 +253,10 @@ export function toLiveContainer(
 }
 
 /**
- * Filter the html nodes that match a live container
+ * Filter the html nodes that match a live post inside a live container.
  *
- * @param {LiveContainerMapping} [mapping\
- * @param {Params} [params\
+ * @param {LiveContainerMapping} mapping
+ * @param {Params} [params]
  * @returns {NodeFilterFn}
  */
 function filterLivePostDescendants(
@@ -293,6 +293,12 @@ function filterLivePostDescendants(
   };
 }
 
+/**
+ * Build a node filter that matches elements carrying the given class name.
+ *
+ * @param {string} className
+ * @returns {NodeFilterFn}
+ */
 function filterClassNameDescendants(className: string): NodeFilterFn {
   return (node: Node): boolean => {
     const { type } = node;
@@ -461,7 +467,7 @@ export function appendLinkContainerComponents(
 }
 
 /**
- * It appends fgure container components into components
+ * It appends figure container components into components
  *
  * @param {Component[]} acc
  * @param {FigureContainerComponent} container
@@ -620,6 +626,15 @@ export function isButtonNode(node: ElementNode): boolean {
   return tagName === 'button' || (tagName === 'a' && role === 'button');
 }
 
+/**
+ * Build a reducer that applies a link container's `link` to each child
+ * component: wrapping text in an anchor, setting image/button links.
+ *
+ * @param {string} [link]
+ * @param {Map<string, string>} [attributes]
+ * @param {{ tag: string; attributes?: Record<string, string> }} [element]
+ * @returns {(acc: Component[], item: Component) => Component[]}
+ */
 function reduceLinkContainerComponent(
   link?: string,
   attributes?: Map<string, string>,

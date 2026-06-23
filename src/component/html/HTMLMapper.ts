@@ -12,6 +12,10 @@ import {
   getRootElement,
 } from '../mapping/Mapping';
 
+/**
+ * Converts HTML strings into Canvasflow `Component[]` and exposes helpers for
+ * extracting a scoped root element from a content fragment.
+ */
 export class HTMLMapper {
   /**
    * Get the root element inside the content
@@ -96,7 +100,6 @@ function extractAnchorsWithImages(html: string): string {
     wrapper.appendChild(document.firstChild);
   }
 
-  // return the HTML of the wrapper — this is your final HTML string
   return wrapper.innerHTML;
 }
 
@@ -246,6 +249,13 @@ function removeBreaklines(value: string | undefined): string {
   return value.replace(/(\r\n|\n|\r)/gm, '');
 }
 
+/**
+ * Recursively walk a parsed node tree. Comment and text nodes are returned
+ * as-is; element nodes have their children mapped through the same function.
+ *
+ * @param {Node} node
+ * @returns {Node}
+ */
 function mapEmptyText(node: Node): Node {
   if (node.type === 'comment') return node;
   if (node.type === 'element' && node.children) {

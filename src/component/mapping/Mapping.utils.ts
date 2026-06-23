@@ -299,6 +299,13 @@ export function excludeNode(node: ElementNode, excludes: Mapping[]): boolean {
   return false;
 }
 
+/**
+ * Extract a credit string from a node's `<small>`/`role="credit"` children and
+ * strip those children from the node in place. Only the first credit is kept.
+ *
+ * @param {ElementNode} node
+ * @returns {string | undefined}
+ */
 function getCredit(node: ElementNode): string | undefined {
   let credit: string | undefined;
 

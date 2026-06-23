@@ -455,7 +455,7 @@ function hasButton(node: ElementNode): boolean {
 }
 
 /**
- * Check if a valid has the correct structure
+ * Check whether `mapping` matches the expected `{ mappings: Mapping[] }` shape.
  *
  * @param {unknown} mapping
  * @returns {boolean}
@@ -493,6 +493,12 @@ export function isValidParams(params: unknown): boolean {
   return ParamsSchema.safeParse(params).success;
 }
 
+/**
+ * Parse and return typed `Params`, throwing if `params` is invalid.
+ *
+ * @param {unknown} params
+ * @returns {Params}
+ */
 export function validateParams(params: unknown): Params {
   const result = ParamsSchema.safeParse(params);
   if (!result.success) {
@@ -519,7 +525,6 @@ function getMappingComponent(
       mapping: undefined,
     };
   }
-  // if (!mappingTagsSet.has(tagName)) return;
 
   for (const mapping of mappings) {
     const { component, match, filters, properties } = mapping;

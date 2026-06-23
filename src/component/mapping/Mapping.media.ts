@@ -622,7 +622,7 @@ export function toGallery(node: ElementNode): GalleryComponent {
 }
 
 /**
- * Transform a HTML element into a Canvasflow Live Container component
+ * Transform a HTML element into a Canvasflow Gallery component using a mapping
  *
  * @param {ElementNode} node
  * @param {Params | undefined} params
@@ -671,10 +671,10 @@ export function toGalleryFromMapping(
 }
 
 /**
- * Filter the html nodes that match a live container
+ * Filter the html nodes that match a gallery slide
  *
- * @param {LiveContainerMapping} [mapping\
- * @param {Params} [params\
+ * @param {GalleryMapping} mapping
+ * @param {Params} [params]
  * @returns {NodeFilterFn}
  */
 function filterGallerySlideDescendants(
@@ -711,6 +711,12 @@ function filterGallerySlideDescendants(
   };
 }
 
+/**
+ * Map an image component to the gallery image shape.
+ *
+ * @param {ImageComponent} component
+ * @returns {GalleryImage}
+ */
 function mapImageToGalleryImage(component: ImageComponent): GalleryImage {
   const { imageurl, caption, link, alt, credit, width, height } = component;
   return {
@@ -990,7 +996,7 @@ export function fromIframe(
 /**
  * Filter the valid descendants for figures
  *
- * @param {Params} [params\
+ * @param {Params} [params]
  * @returns {NodeFilterFn}
  */
 export function filterFigureDescendants(params?: Params): NodeFilterFn {
