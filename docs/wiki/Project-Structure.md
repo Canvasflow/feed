@@ -21,25 +21,33 @@ src/
 rss/
 ├── RSSFeed.ts          # The RSSFeed class: validate() and build()
 ├── RSS.ts              # Typed RSS / Channel / Item / media interfaces
+├── ParsedXml.ts        # Typed view of the raw fast-xml-parser output
 ├── Tag.ts              # Required-tag & valid-tag allow-lists (rss / channel / item)
 ├── Attributes.ts       # Attribute helpers for fast-xml-parser output
-└── RSSFeed.test.ts     # Feed parsing/validation tests
+├── RSSFeed.test.ts     # Feed parsing/validation tests
+└── RSSFeed.coverage.test.ts
 ```
 
 ## component/ — HTML pipeline
 
 ```
 component/
-├── HTMLMapper.ts           # Public entry: toComponents(), getRootElement(), pre-processing
-├── HTMLMapper.test.ts
 ├── Component.ts            # ComponentType/TextType unions, interfaces, is* guards
 ├── Component.test.ts
+├── html/
+│   ├── HTMLMapper.ts       # Public entry: toComponents(), getRootElement(), pre-processing
+│   └── HTMLMapper.*.test.ts# Tests split by component family (text/embeds/media/table/container/mapping)
 ├── mapping/
-│   ├── Mapping.ts          # reduceComponents reducer + recursive detection engine
-│   ├── Mapping.schema.ts   # Zod schemas: Params, Mapping, filters, component mappings
+│   ├── Mapping.ts          # reduceComponents reducer + the recursive detection engine
+│   ├── Mapping.media.ts    # image / picture / figure / video / audio / gallery / iframe / twitter
+│   ├── Mapping.embeds.ts   # Social-embed converters/detectors (Instagram, TikTok, YouTube, Vimeo…)
+│   ├── Mapping.container.ts# container / columns / live_container / link & figure containers / buttons
+│   ├── Mapping.table.ts    # toHTMLTable (<table> → htmltable)
+│   ├── Mapping.custom.ts   # toCustom (custom component)
+│   ├── Mapping.text.ts     # toText (text components)
+│   ├── Mapping.utils.ts    # Leaf helpers (sanitizeNode, sanitizeContentHtml, matchesPattern…)
 │   ├── Mapping.constants.ts# Tag/attribute allow-lists
-│   ├── Mapping.utils.ts    # Leaf helpers (sanitizeNode, matchesPattern, processTextLinks…)
-│   ├── Mapping.embeds.ts   # Social-embed converters/detectors (Instagram, TikTok, YouTube…)
+│   ├── Mapping.schema.ts   # Zod schemas: Params, Mapping, filters, component mappings
 │   └── Mapping.test.ts
 ├── node/
 │   ├── Node.ts             # himalaya AST node types + helpers (getAttributes, findDescendants, SetUtils)
@@ -49,7 +57,7 @@ component/
     └── Schema.test.ts
 ```
 
-> The `component/` sources are grouped into per-concern folders (`mapping/`, `node/`, `schema/`) with their tests colocated. `Mapping.ts` holds the recursive detection engine; its leaf concerns are extracted into the sibling `Mapping.*` modules and re-exported so the public API is unchanged.
+> The `component/` sources are grouped into per-concern folders (`html/`, `mapping/`, `node/`, `schema/`) with their tests colocated. `Mapping.ts` holds the recursive detection engine (`reduceComponents`/`fromNode`); the per-family converters are extracted into the sibling `Mapping.*` modules and re-exported so the public API is unchanged.
 
 ## Test fixtures
 

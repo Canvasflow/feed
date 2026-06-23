@@ -11,12 +11,19 @@ Tests are colocated with the code they cover as `*.test.ts`:
 ```
 src/
 ├── rss/RSSFeed.test.ts
-├── component/HTMLMapper.test.ts
+├── rss/RSSFeed.coverage.test.ts
 ├── component/Component.test.ts
+├── component/html/HTMLMapper.{text,embeds,media,table,container,mapping}.test.ts
+├── component/html/HTMLMapper.coverage.test.ts
 ├── component/mapping/Mapping.test.ts
+├── component/mapping/Mapping.coverage.test.ts
 ├── component/node/Node.test.ts
 └── component/schema/Schema.test.ts
 ```
+
+> The large `HTMLMapper` suite is split into per-component-family files under
+> `component/html/` (text, embeds, media, table, container, mapping). The
+> `*.coverage.test.ts` files target otherwise-uncovered branches.
 
 `setupFiles` runs [`src/setupTests.ts`](../../src/setupTests.ts), which exposes `process.env.SUPPORT_PATH` and `process.env.FEEDS_PATH` so tests read fixtures (under `src/support/`) without hardcoded paths.
 
@@ -86,10 +93,10 @@ Coverage uses the **v8** provider and is gated by thresholds in `vite.config.ts`
 
 | Metric     | Minimum |
 | ---------- | ------- |
-| Statements | 95%     |
-| Branches   | 88%     |
+| Statements | 99%     |
+| Branches   | 95%     |
 | Functions  | 99%     |
-| Lines      | 97%     |
+| Lines      | 99%     |
 
 `src/index.ts`, config files, and `*.d.ts` are excluded from coverage.
 
