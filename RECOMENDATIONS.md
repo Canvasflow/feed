@@ -7,11 +7,16 @@ are ordered roughly by impact/risk.
 > This list shows only the **outstanding** items. Recommendations that have been
 > implemented (publish-pipeline registry pinning, lint/build gating, the Node
 > test matrix, the documentation-accuracy fixes, removal of the HTMLMapper
-> `any` casts, splitting `HTMLMapper.test.ts` into per-family modules, replacing
-> `RSSFeed`'s `ParsedXml` `any` boundary with typed interfaces, Dependabot
-> dependency automation, root `SECURITY.md` / `CONTRIBUTING.md`) and the
-> coverage-threshold enforcement check (verified gating CI) have been removed.
-> The LICENSE recommendation was dropped: this library is internal-only.
+> `any` casts, splitting `HTMLMapper.test.ts` into per-family modules, moving
+> `HTMLMapper.ts` and its test modules into `src/component/html/`, further
+> decomposing `Mapping.ts` — button/link-container helpers into
+> `Mapping.container.ts`, `toHTMLTable` into `Mapping.table.ts`, `toCustom` into
+> `Mapping.custom.ts`, `toText` into `Mapping.text.ts` (down to ~565 lines) —
+> replacing `RSSFeed`'s `ParsedXml` `any` boundary with typed interfaces,
+> Dependabot dependency automation, root `SECURITY.md` / `CONTRIBUTING.md`) and
+> the coverage-threshold enforcement check (verified gating CI) have been
+> removed. The LICENSE recommendation was dropped: this library is
+> internal-only.
 
 ---
 
