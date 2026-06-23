@@ -103,11 +103,11 @@ connect automatically.
 ```
 src/
 ├── index.ts            # Public entry point (re-exports the API)
-├── rss/                # Feed pipeline: RSSFeed, RSS types, Tag allow-lists, Attributes
+├── rss/                # Feed pipeline: RSSFeed, RSS/ParsedXml types, Tag allow-lists, Attributes
 └── component/
-    ├── HTMLMapper.ts   # HTML → Component[] entry point
     ├── Component.ts    # Component types and is* type guards
-    ├── mapping/        # Detection engine, Zod schemas, constants, utils, embeds
+    ├── html/           # HTMLMapper — HTML → Component[] entry point
+    ├── mapping/        # Detection engine + per-family converters, Zod schemas, constants, utils
     ├── node/           # himalaya AST node helpers
     └── schema/         # Zod schemas for recipe (JSON-LD) extraction
 ```

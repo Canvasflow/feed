@@ -49,21 +49,29 @@ This is a TypeScript library (`@canvasflow/feed`) that processes RSS/Atom feeds 
 - `validate()` — checks required tags against `Tag.ts` allow-lists; populates `errors`/`warnings` arrays on the RSS, channel, and item objects.
 - `build()` — constructs a typed `RSS` object. Items have their `content:encoded` HTML field automatically converted to a `components` array via `HTMLMapper.toComponents()`.
 
-XML attributes from the parser use the `@_` prefix convention (e.g., `@_url`, `@_type`). Canvasflow-specific RSS extensions use the `cf:` namespace (`cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`).
+XML attributes from the parser use the `@_` prefix convention (e.g., `@_url`, `@_type`). Canvasflow-specific RSS extensions use the `cf:` namespace (`cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`). The raw parser output is kept private (`RSSFeed.data`) and typed via `src/rss/ParsedXml.ts`; consumers read the typed `rss` property.
 
-An optional `Params` (from `Mapping.ts`) can be passed to `RSSFeed` to configure how HTML is converted. An optional `root` setter accepts a `Mapping` to scope content extraction to a sub-element before conversion.
+An optional `Params` (from `mapping/Mapping.ts`) can be passed to `RSSFeed` to configure how HTML is converted. An optional `root` setter accepts a `Mapping` to scope content extraction to a sub-element before conversion.
 
-### HTMLMapper (`src/component/`)
+### HTMLMapper (`src/component/html/`)
 
 `HTMLMapper.toComponents(html, params?)` is the core HTML→component pipeline:
 
 1. Pre-processes the HTML string (removes breaklines, sanitizes invalid hrefs, extracts `<a>` wrappers around images, splits `<p>` tags containing `<img>` elements).
 2. Parses with `himalaya` into a `Node[]` AST.
-3. Reduces the node tree via `reduceComponents(params)` from `Mapping.ts` into `Component[]`.
+3. Reduces the node tree via `reduceComponents(params)` from `mapping/Mapping.ts` into `Component[]`.
 
-### Mapping (`src/component/Mapping.ts`)
+### Mapping (`src/component/mapping/`)
 
-Contains the `reduceComponents` reducer and all element-matching logic. The default HTML→Canvasflow component mapping is:
+`Mapping.ts` contains the `reduceComponents` reducer and the recursive element-matching engine (`fromNode`). The per-family converters are split into sibling modules that `Mapping.ts` imports and re-exports (so the public API is unchanged):
+
+- `Mapping.media.ts` — image / picture / figure / video / audio / gallery / iframe / twitter
+- `Mapping.embeds.ts` — Instagram / TikTok / YouTube / Vimeo / Dailymotion / Infogram
+- `Mapping.container.ts` — container / columns / live_container / link & figure containers / buttons
+- `Mapping.table.ts` (`toHTMLTable`), `Mapping.custom.ts` (`toCustom`), `Mapping.text.ts` (`toText`)
+- `Mapping.utils.ts` (leaf helpers), `Mapping.constants.ts` (allow-lists), `Mapping.schema.ts` (Zod schemas)
+
+The default HTML→Canvasflow component mapping is:
 
 | HTML         | Component type |
 | ------------ | -------------- |
