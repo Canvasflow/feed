@@ -4,8 +4,8 @@ import {
   type ComponentMapping,
   type Mapping,
   processTextLinks,
-} from './mapping/Mapping';
-import { type TextComponent, type CustomComponent } from './Component';
+} from '../mapping/Mapping';
+import { type TextComponent, type CustomComponent } from '../Component';
 
 describe('Root Element', () => {
   test(

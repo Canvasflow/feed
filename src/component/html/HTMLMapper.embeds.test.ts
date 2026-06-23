@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vite-plus/test';
 import { HTMLMapper } from './HTMLMapper';
-import { type Mapping } from './mapping/Mapping';
+import { type Mapping } from '../mapping/Mapping';
 import {
   type TwitterComponent,
   type InstagramComponent,
@@ -8,7 +8,7 @@ import {
   type TikTokComponent,
   type DailymotionComponent,
   type VimeoComponent,
-} from './Component';
+} from '../Component';
 
 describe('Instagram component', () => {
   test(

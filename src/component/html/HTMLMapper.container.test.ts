@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vite-plus/test';
 import { HTMLMapper } from './HTMLMapper';
-import { type ComponentMapping } from './mapping/Mapping';
+import { type ComponentMapping } from '../mapping/Mapping';
 import {
   type ImageComponent,
   type TextComponent,
@@ -15,7 +15,7 @@ import {
   isImageComponent,
   isHTMLTableComponent,
   isButtonComponent,
-} from './Component';
+} from '../Component';
 
 describe('Button component', () => {
   test(

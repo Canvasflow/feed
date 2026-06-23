@@ -2,7 +2,7 @@ import path, { join } from 'path';
 import { readFileSync } from 'fs';
 import { test, expect, describe, beforeEach } from 'vite-plus/test';
 import { HTMLMapper } from './HTMLMapper';
-import { type ComponentMapping } from './mapping/Mapping';
+import { type ComponentMapping } from '../mapping/Mapping';
 import {
   type GalleryComponent,
   type ImageComponent,
@@ -10,7 +10,7 @@ import {
   type AudioComponent,
   isGalleryComponent,
   isGalleryImage,
-} from './Component';
+} from '../Component';
 
 describe('Image component', () => {
   test(

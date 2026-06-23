@@ -7,8 +7,8 @@ import {
   type Mapping,
   isValidParams,
   isValidMapping,
-} from './mapping/Mapping';
-import { type TextComponent, type ContainerComponent } from './Component';
+} from '../mapping/Mapping';
+import { type TextComponent, type ContainerComponent } from '../Component';
 
 describe('Mapping', () => {
   test(

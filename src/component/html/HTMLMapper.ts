@@ -1,8 +1,8 @@
 import { parse, stringify } from 'himalaya';
 import { parseHTML } from 'linkedom';
 
-import type { Component } from './Component';
-import type { Node } from './node/Node';
+import type { Component } from '../Component';
+import type { Node } from '../node/Node';
 import {
   type Mapping,
   type Params,
@@ -10,7 +10,7 @@ import {
   reduceComponents,
   reduceEmptyTextNode,
   getRootElement,
-} from './mapping/Mapping';
+} from '../mapping/Mapping';
 
 export class HTMLMapper {
   /**

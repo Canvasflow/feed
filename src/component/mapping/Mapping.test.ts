@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vite-plus/test';
 
-import { HTMLMapper } from '../HTMLMapper';
+import { HTMLMapper } from '../html/HTMLMapper';
 import {
   type Params,
   isValidMapping,

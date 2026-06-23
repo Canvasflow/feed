@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vite-plus/test';
 import { HTMLMapper } from './HTMLMapper';
-import { type HTMLTableComponent } from './Component';
+import { type HTMLTableComponent } from '../Component';
 
 describe('HTMLTable components', () => {
   test(

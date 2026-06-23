@@ -14,7 +14,7 @@ import type {
 } from './RSS';
 import { Tag } from './Tag';
 import * as Attributes from './Attributes';
-import { HTMLMapper } from '../component/HTMLMapper';
+import { HTMLMapper } from '../component/html/HTMLMapper';
 import type { Recipe } from '../component/schema/Schema';
 import {
   isValidParams,
