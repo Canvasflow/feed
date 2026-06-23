@@ -2,15 +2,20 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+This project uses [`vite-plus`](https://www.npmjs.com/package/vite-plus) (`vp`)
+for development, building, testing, linting, and formatting.
+
 ## Commands
 
 ```bash
-npm run build          # tsc + vite build → dist/
-npm run test:run       # run all tests once (no UI)
-npm run test           # vitest with UI (interactive)
-npm run lint           # eslint on .ts files
-npm run format         # prettier --write .
-npm run coverage       # vitest coverage report
+npm run build          # vp pack → dist/ (ESM + .d.mts)
+npm test               # vp test — run all tests once
+npm run test:debug     # vp test, no timeout + no file parallelism (breakpoints)
+npm run test:ui        # vp test watch + interactive Vitest UI
+npm run lint           # vp lint on .ts files
+npm run lint:fix       # vp lint --fix
+npm run format         # vp fmt .
+npm run coverage       # vp test --coverage (v8, threshold-gated)
 ```
 
 Run a single test file:
@@ -19,17 +24,19 @@ Run a single test file:
 npx vitest run src/rss/RSSFeed.test.ts
 ```
 
-Run tests by tag:
+Run tests by tag (`vp test --tags-filter`), or via the prewired UI scripts:
 
 ```bash
-npx vitest run --reporter=verbose -- --tags-filter=unit
-npx vitest run --reporter=verbose -- --tags-filter=rss
-npx vitest run --reporter=verbose -- --tags-filter=html
+vp test --tags-filter=unit
+vp test --tags-filter=rss
+vp test --tags-filter=html
+
+npm run test:unit          # test:integration, test:todo, test:broken also exist
 ```
 
 ## Architecture
 
-This is a TypeScript library (`@canvasflow/feed`) that processes RSS/Atom feeds and transforms HTML content into Canvasflow components. It is published to GitHub Packages as both ESM and CJS.
+This is a TypeScript library (`@canvasflow/feed`) that processes RSS/Atom feeds and transforms HTML content into Canvasflow components. It is published to GitHub Packages as an ESM module with TypeScript declarations (`dist/index.mjs` + `dist/index.d.mts`).
 
 ### Entry point
 
@@ -42,21 +49,29 @@ This is a TypeScript library (`@canvasflow/feed`) that processes RSS/Atom feeds 
 - `validate()` — checks required tags against `Tag.ts` allow-lists; populates `errors`/`warnings` arrays on the RSS, channel, and item objects.
 - `build()` — constructs a typed `RSS` object. Items have their `content:encoded` HTML field automatically converted to a `components` array via `HTMLMapper.toComponents()`.
 
-XML attributes from the parser use the `@_` prefix convention (e.g., `@_url`, `@_type`). Canvasflow-specific RSS extensions use the `cf:` namespace (`cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`).
+XML attributes from the parser use the `@_` prefix convention (e.g., `@_url`, `@_type`). Canvasflow-specific RSS extensions use the `cf:` namespace (`cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`). The raw parser output is kept private (`RSSFeed.data`) and typed via `src/rss/ParsedXml.ts`; consumers read the typed `rss` property.
 
-An optional `Params` (from `Mapping.ts`) can be passed to `RSSFeed` to configure how HTML is converted. An optional `root` setter accepts a `Mapping` to scope content extraction to a sub-element before conversion.
+An optional `Params` (from `mapping/Mapping.ts`) can be passed to `RSSFeed` to configure how HTML is converted. An optional `root` setter accepts a `Mapping` to scope content extraction to a sub-element before conversion.
 
-### HTMLMapper (`src/component/`)
+### HTMLMapper (`src/component/html/`)
 
 `HTMLMapper.toComponents(html, params?)` is the core HTML→component pipeline:
 
 1. Pre-processes the HTML string (removes breaklines, sanitizes invalid hrefs, extracts `<a>` wrappers around images, splits `<p>` tags containing `<img>` elements).
 2. Parses with `himalaya` into a `Node[]` AST.
-3. Reduces the node tree via `reduceComponents(params)` from `Mapping.ts` into `Component[]`.
+3. Reduces the node tree via `reduceComponents(params)` from `mapping/Mapping.ts` into `Component[]`.
 
-### Mapping (`src/component/Mapping.ts`)
+### Mapping (`src/component/mapping/`)
 
-Contains the `reduceComponents` reducer and all element-matching logic. The default HTML→Canvasflow component mapping is:
+`Mapping.ts` contains the `reduceComponents` reducer and the recursive element-matching engine (`fromNode`). The per-family converters are split into sibling modules that `Mapping.ts` imports and re-exports (so the public API is unchanged):
+
+- `Mapping.media.ts` — image / picture / figure / video / audio / gallery / iframe / twitter
+- `Mapping.embeds.ts` — Instagram / TikTok / YouTube / Vimeo / Dailymotion / Infogram
+- `Mapping.container.ts` — container / columns / live_container / link & figure containers / buttons
+- `Mapping.table.ts` (`toHTMLTable`), `Mapping.custom.ts` (`toCustom`), `Mapping.text.ts` (`toText`)
+- `Mapping.utils.ts` (leaf helpers), `Mapping.constants.ts` (allow-lists), `Mapping.schema.ts` (Zod schemas)
+
+The default HTML→Canvasflow component mapping is:
 
 | HTML         | Component type |
 | ------------ | -------------- |

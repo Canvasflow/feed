@@ -14,7 +14,7 @@ import type {
 } from './RSS';
 import { Tag } from './Tag';
 import * as Attributes from './Attributes';
-import { HTMLMapper } from '../component/HTMLMapper';
+import { HTMLMapper } from '../component/html/HTMLMapper';
 import type { Recipe } from '../component/schema/Schema';
 import {
   isValidParams,
@@ -25,15 +25,13 @@ import {
   MappingSchema,
   ParamsSchema,
 } from '../component/mapping/Mapping.schema';
+import type { ParsedXml } from './ParsedXml';
 
 /**
- * Raw, dynamically-shaped output of fast-xml-parser. It is consumed only
- * internally by validate()/build(); consumers should read the typed `rss`
- * property instead.
+ * Parses an RSS/Atom XML string and exposes `validate()` (populates
+ * errors/warnings against the tag allow-lists) and `build()` (produces a typed
+ * `RSS` object whose items' HTML content is converted to components).
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ParsedXml = Record<string, any>;
-
 export class RSSFeed {
   public content: string;
   private readonly data: ParsedXml;
@@ -127,6 +125,7 @@ export class RSSFeed {
 
     const items = data.rss?.channel?.item;
 
+    /* v8 ignore next 3 -- channel validation guarantees an item is present here */
     if (items === null || items === undefined) {
       return;
     }
@@ -148,6 +147,7 @@ export class RSSFeed {
           const paramsError = { params: result.error.issues };
           errors.push(paramsError);
         }
+        /* v8 ignore next 3 -- safeParse does not throw; defensive catch */
       } catch (e) {
         errors.push(e);
       }
@@ -163,6 +163,7 @@ export class RSSFeed {
           };
           errors.push(rootError);
         }
+        /* v8 ignore next 3 -- safeParse does not throw; defensive catch */
       } catch (e) {
         errors.push(e);
       }
@@ -251,13 +252,9 @@ export class RSSFeed {
     this.rss.channel['sy:updatePeriod'] = channel['sy:updatePeriod'];
     this.rss.channel['sy:updateBase'] = channel['sy:updateBase'];
 
-    let items: Record<string, unknown> | Array<Record<string, unknown>> =
-      channel.item;
-
-    if (channel.item) {
-      if (!Array.isArray(items)) {
-        items = [items];
-      }
+    const rawItems = channel.item;
+    if (rawItems) {
+      const items = Array.isArray(rawItems) ? rawItems : [rawItems];
       for (const item of items) {
         this.rss.channel.items.push(this.buildItem(item));
       }
@@ -334,6 +331,7 @@ export class RSSFeed {
   }
 
   private validateItems(items: Array<Record<string, unknown>>) {
+    /* v8 ignore next 3 -- validateItems is only ever called with arrays */
     if (!isIterable(items)) {
       return;
     }
@@ -515,6 +513,7 @@ export class RSSFeed {
         );
       }
       if (thumbnail.type !== undefined) {
+        /* v8 ignore next 5 -- @_type is parsed as a string when present */
         if (typeof thumbnail.type !== 'string') {
           response.warnings.push(
             `Invalid value for property 'type' in 'cf:thumbnail'`
@@ -596,6 +595,7 @@ export class RSSFeed {
       const text = (item[tagName] as { [key: string]: unknown })[
         '#text'
       ] as string;
+      /* v8 ignore next 4 -- the parser coerces "true"/"false" text to booleans */
       if (text === 'true' || text === 'false') {
         response[tagName] = text === 'true';
         return;
@@ -652,6 +652,13 @@ export class RSSFeed {
   }
 }
 
+/**
+ * Map a raw `<enclosure>` attribute object to a typed `Enclosure`, recording
+ * errors/warnings for missing url/type/length.
+ *
+ * @param {Attributes.Enclosure} e
+ * @returns {Enclosure}
+ */
 function mapEnclosure(e: Attributes.Enclosure): Enclosure {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -673,6 +680,13 @@ function mapEnclosure(e: Attributes.Enclosure): Enclosure {
   };
 }
 
+/**
+ * Build a mapper from raw `<media:group>` objects to typed `MediaGroup`s,
+ * resolving contained media content against `origin`.
+ *
+ * @param {string | undefined} origin
+ * @returns {(mediaGroup: Attributes.MediaGroup) => MediaGroup}
+ */
 function mapMediaGroup(
   origin: string | undefined
 ): (mediaGroup: Attributes.MediaGroup) => MediaGroup {
@@ -694,6 +708,14 @@ function mapMediaGroup(
   };
 }
 
+/**
+ * Build a mapper from raw `<media:content>` objects to typed `MediaContent`,
+ * normalising credit/thumbnail/title/description and resolving relative URLs
+ * against `origin`.
+ *
+ * @param {string | undefined} origin
+ * @returns {(mediaContent: Attributes.MediaContent) => MediaContent}
+ */
 function mapMediaContent(
   origin: string | undefined
 ): (mediaContent: Attributes.MediaContent) => MediaContent {
@@ -787,6 +809,14 @@ function mapMediaContent(
   };
 }
 
+/**
+ * `JSON.stringify` replacer that serialises `Error` values to their message so
+ * errors survive `RSSFeed.toString()`/`toJSON()`.
+ *
+ * @param {string} _ unused JSON key
+ * @param {unknown} value
+ * @returns {unknown}
+ */
 export function replaceErrors(_: string, value: unknown) {
   if (value instanceof Error) {
     const error: Record<string, unknown> = {};
@@ -808,6 +838,7 @@ export function replaceErrors(_: string, value: unknown) {
  * @returns {Boolean}
  */
 function isIterable(input: unknown): boolean {
+  /* v8 ignore next 3 -- only invoked with concrete arrays today */
   if (input === null || input === undefined) {
     return false;
   }

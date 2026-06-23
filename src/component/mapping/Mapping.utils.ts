@@ -1,8 +1,19 @@
 import { stringify } from 'himalaya';
 import sanitizeHtml from 'sanitize-html';
 
-import type { Node } from '../node/Node';
-import { textAllowedTags, textAllowedAttributes } from './Mapping.constants';
+import {
+  type ElementNode,
+  type Node,
+  getAttributes,
+  SetUtils,
+} from '../node/Node';
+import {
+  allowedTags,
+  textAllowedTags,
+  textAllowedAttributes,
+  allowedFigcaptionTags,
+} from './Mapping.constants';
+import type { Filter, Mapping } from './Mapping';
 
 /**
  * Serialize a node back to HTML and sanitize it with the given options.
@@ -16,6 +27,22 @@ export function sanitizeNode(
   options: Parameters<typeof sanitizeHtml>[1]
 ): string {
   return sanitizeHtml(stringify([node]), options);
+}
+
+/**
+ * Serialize a node to sanitized HTML using the default content policy — the
+ * shared `allowedTags` allow-list with every attribute stripped. This is the
+ * common case used by component builders to populate their `html` field; it
+ * keeps the sanitization policy in a single place.
+ *
+ * @param {Node} node
+ * @returns {string}
+ */
+export function sanitizeContentHtml(node: Node): string {
+  return sanitizeNode(node, {
+    allowedTags,
+    allowedAttributes: false,
+  });
 }
 
 const patternCache = new Map<string, RegExp | null>();
@@ -76,6 +103,7 @@ export function processTextLinks(html: string, link: string = '/'): string {
     allowedAttributes,
     transformTags: {
       a: function (tagName, attribs) {
+        /* v8 ignore next 6 -- sanitize-html always passes an attribs object */
         if (!attribs) {
           return {
             tagName,
@@ -159,4 +187,185 @@ function removeProtocol(url: string): string {
  */
 export function isEmpty(content: string): boolean {
   return content.replace(/[\r\n\t]/g, '').trim().length === 0;
+}
+
+export interface FigcaptionResponse {
+  caption?: string;
+  credit?: string;
+}
+
+/**
+ * Determine whether a single filter matches an element, described by its tag
+ * name and attribute map.
+ *
+ * @param {string} tagName
+ * @param {Map<string, string>} attributes
+ * @param {Filter} filter
+ * @returns {boolean}
+ */
+function matchesFilter(
+  tagName: string,
+  attributes: Map<string, string>,
+  filter: Filter
+): boolean {
+  if (filter.type === 'tag') {
+    return new Set(filter.items).has(tagName);
+  }
+
+  if (filter.type === 'attribute') {
+    const attributeValue = attributes.get(filter.key);
+    if ('pattern' in filter) {
+      return (
+        attributeValue !== undefined &&
+        matchesPattern(attributeValue, filter.pattern)
+      );
+    }
+    return attributeValue === filter.value;
+  }
+
+  // class filter
+  const classNames = attributes.get('class');
+  // An element without a class attribute can never match a class filter.
+  if (!classNames) return false;
+  const itemsSet = new Set(filter.items);
+  const classesNamesSet: Set<string> = new Set(classNames.split(' '));
+  switch (filter.match) {
+    case 'equal':
+      return SetUtils.equal(classesNamesSet, itemsSet);
+    case 'all':
+      return SetUtils.subset(classesNamesSet, itemsSet);
+    default:
+      // Use match any as the default case
+      return SetUtils.intersect(classesNamesSet, itemsSet).size > 0;
+  }
+}
+
+/**
+ * Filter is at least one filter matches
+ *
+ * @param {ElementNode} node
+ * @param {Filter[]} filters
+ * @returns {boolean}
+ */
+export function filterAnyMapping(
+  node: ElementNode,
+  filters: Filter[]
+): boolean {
+  const { tagName } = node;
+  const attributes = getAttributes(node.attributes);
+  return filters.some((filter) => matchesFilter(tagName, attributes, filter));
+}
+
+/**
+ * All the filters need to match to be considered valid
+ *
+ * @param {ElementNode} node
+ * @param {Filter[]} filters
+ * @returns {boolean}
+ */
+export function filterAllMapping(
+  node: ElementNode,
+  filters: Filter[]
+): boolean {
+  // If there aren't any filter, this is invalid
+  if (!filters.length) return false;
+  const { tagName } = node;
+  const attributes = getAttributes(node.attributes);
+  return filters.every((filter) => matchesFilter(tagName, attributes, filter));
+}
+
+/**
+ * Check if a node should be excluded
+ *
+ * @param {ElementNode} node
+ * @param {Mapping[]} [excludes]
+ * @returns {boolean}
+ */
+export function excludeNode(node: ElementNode, excludes: Mapping[]): boolean {
+  for (const mapping of excludes) {
+    const { match, filters } = mapping;
+    if (match === 'all') {
+      if (filterAllMapping(node, filters)) {
+        return true;
+      }
+    }
+    if (match === 'any') {
+      if (filterAnyMapping(node, filters)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Extract a credit string from a node's `<small>`/`role="credit"` children and
+ * strip those children from the node in place. Only the first credit is kept.
+ *
+ * @param {ElementNode} node
+ * @returns {string | undefined}
+ */
+function getCredit(node: ElementNode): string | undefined {
+  let credit: string | undefined;
+
+  node.children = node.children.reduce((acc: Array<Node>, n: Node) => {
+    if (n.type === 'element') {
+      const attributes = getAttributes(n.attributes);
+      const role = attributes.get('role');
+      if (n.tagName === 'small' || role === 'credit') {
+        /* v8 ignore next 3 -- keeps only the first credit; extra credits are rare */
+        if (credit) {
+          return acc;
+        }
+        credit = sanitizeNode(n, {
+          allowedTags: allowedFigcaptionTags,
+        });
+        return acc;
+      }
+
+      acc.push(n);
+      return acc;
+    }
+
+    const content = n.content.replace(/[\r\n\t]/g, '').replace(/\s\s+/g, ' ');
+
+    if (content.length) {
+      n.content = content;
+      acc.push(n);
+    }
+
+    return acc;
+  }, []);
+  return credit ? credit.trim() : credit;
+}
+
+/**
+ * It process a figcaption node and get the caption and credit
+ *
+ * @param {ElementNode} node
+ * @returns {FigcaptionResponse}
+ */
+export function fromFigcaption(node: ElementNode): FigcaptionResponse {
+  let caption: string | undefined;
+  let credit: string | undefined;
+  const figcaptionNodes =
+    node.tagName === 'figcaption'
+      ? [node]
+      : node.children.filter(
+          (n) => n.type === 'element' && n.tagName === 'figcaption'
+        );
+  for (const n of figcaptionNodes) {
+    credit = getCredit(n as ElementNode);
+    const html = stringify([n]);
+    caption = sanitizeHtml(html, {
+      allowedTags: allowedFigcaptionTags,
+    });
+    break;
+  }
+
+  return {
+    caption: caption ? caption.trim() : caption,
+    credit: credit ? credit.trim() : credit,
+  };
 }

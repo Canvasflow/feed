@@ -6,7 +6,7 @@ import { test, expect, describe, beforeEach } from 'vite-plus/test';
 import { replaceErrors, RSSFeed } from './RSSFeed';
 import type { ImageComponent, TextComponent } from '../component/Component';
 import type { Recipe } from '../component/schema/Schema';
-import { HTMLMapper } from '../component/HTMLMapper';
+import { HTMLMapper } from '../component/html/HTMLMapper';
 import type {
   ComponentMapping,
   Mapping,

@@ -1,8 +1,8 @@
 import { parse, stringify } from 'himalaya';
 import { parseHTML } from 'linkedom';
 
-import type { Component } from './Component';
-import type { Node } from './node/Node';
+import type { Component } from '../Component';
+import type { Node } from '../node/Node';
 import {
   type Mapping,
   type Params,
@@ -10,8 +10,12 @@ import {
   reduceComponents,
   reduceEmptyTextNode,
   getRootElement,
-} from './mapping/Mapping';
+} from '../mapping/Mapping';
 
+/**
+ * Converts HTML strings into Canvasflow `Component[]` and exposes helpers for
+ * extracting a scoped root element from a content fragment.
+ */
 export class HTMLMapper {
   /**
    * Get the root element inside the content
@@ -93,11 +97,9 @@ function extractAnchorsWithImages(html: string): string {
 
   // move all top-level nodes into wrapper
   while (document.firstChild) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    wrapper.appendChild(document.firstChild as any);
+    wrapper.appendChild(document.firstChild);
   }
 
-  // return the HTML of the wrapper — this is your final HTML string
   return wrapper.innerHTML;
 }
 
@@ -109,27 +111,23 @@ function extractAnchorsWithImages(html: string): string {
  * @returns {string}
  */
 export function splitParagraphImages(html: string, tag: string): string {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const parsed = parseHTML(html) as any;
-
-  // Always treat content as a fragment (RSS-safe)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const root: any =
-    parsed.fragment ??
-    parsed.document ??
-    (() => {
-      throw new Error('Unable to parse HTML snippet');
-    })();
+  // parseHTML always yields a document; treat it as the (RSS-safe) root.
+  const { document: root } = parseHTML(html);
+  /* v8 ignore next 3 -- parseHTML always yields a document; defensive guard */
+  if (!root) {
+    throw new Error('Unable to parse HTML snippet');
+  }
 
   const paragraphs = Array.from(root.querySelectorAll(tag));
 
   for (const paragraph of paragraphs) {
     const p = paragraph as Element;
     const parent = p.parentNode;
+    /* v8 ignore next -- matched elements always have a parent node */
     if (!parent) continue;
 
     const children = Array.from(p.childNodes);
-    let buffer: unknown[] = [];
+    let buffer: (typeof children)[number][] = [];
 
     // Extract original attributes once
     const originalAttrs = Array.from(p.attributes).map((attr) => ({
@@ -213,6 +211,7 @@ function sanitizeInvalidAnchorHrefs(html: string): string {
  * @returns {boolean}
  */
 function isValidHref(href: string): boolean {
+  /* v8 ignore next -- callers guard against empty href before invoking */
   if (!href) return false;
 
   const value = href.trim();
@@ -250,6 +249,13 @@ function removeBreaklines(value: string | undefined): string {
   return value.replace(/(\r\n|\n|\r)/gm, '');
 }
 
+/**
+ * Recursively walk a parsed node tree. Comment and text nodes are returned
+ * as-is; element nodes have their children mapped through the same function.
+ *
+ * @param {Node} node
+ * @returns {Node}
+ */
 function mapEmptyText(node: Node): Node {
   if (node.type === 'comment') return node;
   if (node.type === 'element' && node.children) {

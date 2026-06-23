@@ -350,6 +350,7 @@ export const LinkContainerComponentSchema: z.ZodType<
     components: z.array(ComponentSchema),
     link: z.string().optional(),
     attributes: z
+      /* v8 ignore next -- schema predicate only runs when this nested schema is parsed directly */
       .custom<Map<string, string>>((value) => value instanceof Map)
       .optional(),
   })
@@ -465,6 +466,7 @@ for (let i = 1; i <= MAX_TEXT; i++) {
   validRoleType.add(`text${i}`);
 }
 
+/** Type guard that narrows `object` to a gallery component. */
 export function isGalleryComponent(
   object: unknown
 ): object is GalleryComponent {
@@ -477,11 +479,13 @@ export function isGalleryComponent(
   );
 }
 
+/** Type guard that narrows `object` to a gallery image. */
 export function isGalleryImage(object: unknown): object is GalleryComponent {
   const result = GalleryImageSchema.safeParse(object);
   return result.success;
 }
 
+/** Type guard that narrows `object` to an image component. */
 export function isImageComponent(object: unknown): object is ImageComponent {
   const potential = object as Record<string, unknown>;
 
@@ -493,10 +497,12 @@ export function isImageComponent(object: unknown): object is ImageComponent {
   );
 }
 
+/** Check whether `role` is a recognised text component role. */
 export function isValidTextRole(role: string): boolean {
   return validRoleType.has(role);
 }
 
+/** Type guard that narrows `object` to a text component. */
 export function isTextComponent(object: unknown): object is TextComponent {
   const potential = object as Record<string, unknown>;
 
@@ -509,6 +515,7 @@ export function isTextComponent(object: unknown): object is TextComponent {
   );
 }
 
+/** Type guard that narrows `object` to an HTML table component. */
 export function isHTMLTableComponent(
   object: unknown
 ): object is HTMLTableComponent {
@@ -522,6 +529,7 @@ export function isHTMLTableComponent(
   );
 }
 
+/** Type guard that narrows `object` to a video component. */
 export function isVideoComponent(object: unknown): object is VideoComponent {
   const potential = object as Record<string, unknown>;
 
@@ -532,6 +540,7 @@ export function isVideoComponent(object: unknown): object is VideoComponent {
   );
 }
 
+/** Type guard that narrows `object` to a YouTube video component. */
 export function isYoutubeComponent(
   object: unknown
 ): object is YoutubeComponent {
@@ -544,6 +553,7 @@ export function isYoutubeComponent(
   );
 }
 
+/** Type guard that narrows `object` to a Vimeo video component. */
 export function isVimeoComponent(object: unknown): object is VimeoComponent {
   const potential = object as Record<string, unknown>;
 
@@ -554,6 +564,7 @@ export function isVimeoComponent(object: unknown): object is VimeoComponent {
   );
 }
 
+/** Type guard that narrows `object` to a Dailymotion video component. */
 export function isDailymotionComponent(
   object: unknown
 ): object is DailymotionComponent {
@@ -566,6 +577,7 @@ export function isDailymotionComponent(
   );
 }
 
+/** Type guard that narrows `object` to a TikTok video component. */
 export function isTikTokComponent(object: unknown): object is TikTokComponent {
   const potential = object as Record<string, unknown>;
 
@@ -576,6 +588,7 @@ export function isTikTokComponent(object: unknown): object is TikTokComponent {
   );
 }
 
+/** Type guard that narrows `object` to a recipe component. */
 export function isRecipeComponent(object: unknown): object is RecipeComponent {
   const potential = object as Record<string, unknown>;
 
@@ -586,6 +599,7 @@ export function isRecipeComponent(object: unknown): object is RecipeComponent {
   );
 }
 
+/** Type guard that narrows `object` to a container component. */
 export function isContainerComponent(
   object: unknown
 ): object is ContainerComponent {
@@ -598,6 +612,7 @@ export function isContainerComponent(
   );
 }
 
+/** Type guard that narrows `object` to a link container component. */
 export function isLinkContainerComponent(
   object: unknown
 ): object is LinkContainerComponent {
@@ -610,6 +625,7 @@ export function isLinkContainerComponent(
   return isValid;
 }
 
+/** Type guard that narrows `object` to a figure container component. */
 export function isFigureContainerComponent(
   object: unknown
 ): object is FigureContainerComponent {
@@ -622,6 +638,7 @@ export function isFigureContainerComponent(
   return isValid;
 }
 
+/** Type guard that narrows `object` to a button component. */
 export function isButtonComponent(object: unknown): object is ButtonComponent {
   const potential = object as Record<string, unknown>;
 
@@ -632,6 +649,7 @@ export function isButtonComponent(object: unknown): object is ButtonComponent {
   );
 }
 
+/** Type guard that narrows `object` to an audio component. */
 export function isAudioComponent(object: unknown): object is AudioComponent {
   const potential = object as Record<string, unknown>;
 
@@ -642,6 +660,7 @@ export function isAudioComponent(object: unknown): object is AudioComponent {
   );
 }
 
+/** Type guard that narrows `object` to a Twitter component. */
 export function isTwitterComponent(
   object: unknown
 ): object is TwitterComponent {
@@ -654,6 +673,7 @@ export function isTwitterComponent(
   );
 }
 
+/** Type guard that narrows `object` to an Instagram component. */
 export function isInstagramComponent(
   object: unknown
 ): object is InstagramComponent {
@@ -666,6 +686,7 @@ export function isInstagramComponent(
   );
 }
 
+/** Type guard that narrows `object` to an Infogram component. */
 export function isInfogramComponent(
   object: unknown
 ): object is InfogramComponent {
@@ -678,6 +699,7 @@ export function isInfogramComponent(
   );
 }
 
+/** Type guard that narrows `object` to a spacer component. */
 export function isSpacerComponent(object: unknown): object is SpacerComponent {
   const potential = object as Record<string, unknown>;
 
@@ -688,6 +710,7 @@ export function isSpacerComponent(object: unknown): object is SpacerComponent {
   );
 }
 
+/** Type guard that narrows `object` to a custom component. */
 export function isCustomComponent(object: unknown): object is CustomComponent {
   const potential = object as Record<string, unknown>;
 
