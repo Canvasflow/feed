@@ -8,6 +8,7 @@ import {
   SetUtils,
 } from '../node/Node';
 import {
+  allowedTags,
   textAllowedTags,
   textAllowedAttributes,
   allowedFigcaptionTags,
@@ -26,6 +27,22 @@ export function sanitizeNode(
   options: Parameters<typeof sanitizeHtml>[1]
 ): string {
   return sanitizeHtml(stringify([node]), options);
+}
+
+/**
+ * Serialize a node to sanitized HTML using the default content policy — the
+ * shared `allowedTags` allow-list with every attribute stripped. This is the
+ * common case used by component builders to populate their `html` field; it
+ * keeps the sanitization policy in a single place.
+ *
+ * @param {Node} node
+ * @returns {string}
+ */
+export function sanitizeContentHtml(node: Node): string {
+  return sanitizeNode(node, {
+    allowedTags,
+    allowedAttributes: false,
+  });
 }
 
 const patternCache = new Map<string, RegExp | null>();

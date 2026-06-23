@@ -12,8 +12,7 @@ import {
   findDescendants,
   getAttributes,
 } from '../node/Node';
-import { allowedTags } from './Mapping.constants';
-import { sanitizeNode, isYoutubeUrl } from './Mapping.utils';
+import { sanitizeContentHtml, isYoutubeUrl } from './Mapping.utils';
 
 /**
  * Transform an html component to Canvasflow Instagram Component
@@ -221,10 +220,7 @@ export function toYoutubeFromAnchor(node: ElementNode): YoutubeComponent {
     attributes: Object.fromEntries(attributes),
   };
   component.id = attributes.get('id');
-  component.html = sanitizeNode(node, {
-    allowedTags,
-    allowedAttributes: false,
-  });
+  component.html = sanitizeContentHtml(node);
   return component;
 }
 

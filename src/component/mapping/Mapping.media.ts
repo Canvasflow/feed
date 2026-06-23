@@ -24,13 +24,9 @@ import {
   findDescendants,
   getAttributes,
 } from '../node/Node';
+import { imageTags, allowedCaptionTags } from './Mapping.constants';
 import {
-  imageTags,
-  allowedTags,
-  allowedCaptionTags,
-} from './Mapping.constants';
-import {
-  sanitizeNode,
+  sanitizeContentHtml,
   excludeNode,
   filterAllMapping,
   filterAnyMapping,
@@ -188,10 +184,7 @@ function fromPicture(node: ElementNode): ImageComponent {
   return {
     component: 'image',
     imageurl,
-    html: sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    }),
+    html: sanitizeContentHtml(node),
     alt,
     errors,
     warnings,
@@ -332,10 +325,7 @@ function fromFigure(
 
   return {
     component: 'image',
-    html: sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    }),
+    html: sanitizeContentHtml(node),
     imageurl,
     alt,
     link,
@@ -467,10 +457,7 @@ export function toVideo(node: ElementNode): VideoComponent {
     movietype: 'hosted',
     errors,
     warnings,
-    html: sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    }),
+    html: sanitizeContentHtml(node),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -524,10 +511,7 @@ export function toAudio(node: ElementNode): AudioComponent {
     loop,
     errors,
     warnings,
-    html: sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    }),
+    html: sanitizeContentHtml(node),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -571,10 +555,7 @@ export function toApplePodcast(node: ElementNode): AudioComponent {
     loop: false,
     errors,
     warnings,
-    html: sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    }),
+    html: sanitizeContentHtml(node),
   };
 }
 
@@ -677,10 +658,7 @@ export function toGalleryFromMapping(
     role: 'default',
     images,
     properties,
-    html: sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    }),
+    html: sanitizeContentHtml(node),
     errors,
     warnings,
   };
@@ -896,10 +874,7 @@ export function fromIframe(
         tag: node.tagName,
         attributes: Object.fromEntries(attributes),
       };
-      builtComponent.html = sanitizeNode(node, {
-        allowedTags,
-        allowedAttributes: false,
-      });
+      builtComponent.html = sanitizeContentHtml(node);
       return builtComponent;
     case 'https://www.youtube.com':
       builtComponent = toYoutube(url);
@@ -907,10 +882,7 @@ export function fromIframe(
         tag: node.tagName,
         attributes: Object.fromEntries(attributes),
       };
-      builtComponent.html = sanitizeNode(node, {
-        allowedTags,
-        allowedAttributes: false,
-      });
+      builtComponent.html = sanitizeContentHtml(node);
       builtComponent.id = id;
       return builtComponent;
     case 'https://embed.podcasts.apple.com':
@@ -934,10 +906,7 @@ export function fromIframe(
     searchParams.src.startsWith('https://www.youtube.com')
   ) {
     builtComponent = toYoutube(new URL(searchParams.src));
-    builtComponent.html = sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    });
+    builtComponent.html = sanitizeContentHtml(node);
     builtComponent.element = {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -952,10 +921,7 @@ export function fromIframe(
     searchParams.url.startsWith('https://www.tiktok.com')
   ) {
     builtComponent = toTikTok(new URL(searchParams.url));
-    builtComponent.html = sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    });
+    builtComponent.html = sanitizeContentHtml(node);
     builtComponent.element = {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -974,10 +940,7 @@ export function fromIframe(
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
     };
-    builtComponent.html = sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    });
+    builtComponent.html = sanitizeContentHtml(node);
     builtComponent.id = id;
     return builtComponent;
   }
@@ -989,10 +952,7 @@ export function fromIframe(
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
     };
-    builtComponent.html = sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    });
+    builtComponent.html = sanitizeContentHtml(node);
     builtComponent.id = id;
     return builtComponent;
   }
@@ -1005,10 +965,7 @@ export function fromIframe(
     builtComponent = toTwitter(new URL(searchParams.url));
     if (!builtComponent) return builtComponent;
 
-    builtComponent.html = sanitizeNode(node, {
-      allowedTags,
-      allowedAttributes: false,
-    });
+    builtComponent.html = sanitizeContentHtml(node);
     builtComponent.element = {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
