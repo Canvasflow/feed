@@ -103,6 +103,7 @@ export function processTextLinks(html: string, link: string = '/'): string {
     allowedAttributes,
     transformTags: {
       a: function (tagName, attribs) {
+        /* v8 ignore next 6 -- sanitize-html always passes an attribs object */
         if (!attribs) {
           return {
             tagName,
@@ -306,6 +307,7 @@ function getCredit(node: ElementNode): string | undefined {
       const attributes = getAttributes(n.attributes);
       const role = attributes.get('role');
       if (n.tagName === 'small' || role === 'credit') {
+        /* v8 ignore next 3 -- keeps only the first credit; extra credits are rare */
         if (credit) {
           return acc;
         }

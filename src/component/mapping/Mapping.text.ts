@@ -72,6 +72,8 @@ export function toText(
     id,
     component,
     properties,
+    // sanitizeHtml always returns a string; the non-string arm is defensive.
+    /* v8 ignore next */
     text: typeof text === 'string' ? text.trim() : text,
     errors: [],
     warnings,

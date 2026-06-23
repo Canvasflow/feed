@@ -350,6 +350,7 @@ export const LinkContainerComponentSchema: z.ZodType<
     components: z.array(ComponentSchema),
     link: z.string().optional(),
     attributes: z
+      /* v8 ignore next -- schema predicate only runs when this nested schema is parsed directly */
       .custom<Map<string, string>>((value) => value instanceof Map)
       .optional(),
   })

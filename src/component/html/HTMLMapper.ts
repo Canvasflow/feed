@@ -110,6 +110,7 @@ function extractAnchorsWithImages(html: string): string {
 export function splitParagraphImages(html: string, tag: string): string {
   // parseHTML always yields a document; treat it as the (RSS-safe) root.
   const { document: root } = parseHTML(html);
+  /* v8 ignore next 3 -- parseHTML always yields a document; defensive guard */
   if (!root) {
     throw new Error('Unable to parse HTML snippet');
   }
@@ -119,6 +120,7 @@ export function splitParagraphImages(html: string, tag: string): string {
   for (const paragraph of paragraphs) {
     const p = paragraph as Element;
     const parent = p.parentNode;
+    /* v8 ignore next -- matched elements always have a parent node */
     if (!parent) continue;
 
     const children = Array.from(p.childNodes);
@@ -206,6 +208,7 @@ function sanitizeInvalidAnchorHrefs(html: string): string {
  * @returns {boolean}
  */
 function isValidHref(href: string): boolean {
+  /* v8 ignore next -- callers guard against empty href before invoking */
   if (!href) return false;
 
   const value = href.trim();

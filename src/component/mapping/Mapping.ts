@@ -188,6 +188,7 @@ export function reduceComponents(params?: Params): ReduceComponentsFn {
 
     if (Array.isArray(component)) {
       for (const c of component) {
+        /* v8 ignore next -- fromNode never yields falsy array entries */
         if (!c) continue;
         if (isLinkContainerComponent(c)) {
           appendLinkContainerComponents(acc, c);
@@ -324,6 +325,7 @@ export function fromNode(
         errors: ['cite attribute is required'],
       } as TikTokComponent;
     }
+    /* v8 ignore next -- cite presence is checked above; `|| ''` is defensive */
     const tiktokComponent = toTikTok(new URL(attributes.get('cite') || ''));
     if (tagName) {
       tiktokComponent.element = {
@@ -433,6 +435,7 @@ export function fromNode(
     return components;
   }
 
+  /* v8 ignore next -- element nodes always expose a children array */
   return null;
 }
 

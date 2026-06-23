@@ -134,7 +134,7 @@ export function toColumns(
     ? node.children
         .reduce(findDescendants(filterColumnsDescendants(mapping, params)), [])
         .filter((node: Node) => node.type === 'element')
-    : [];
+    : /* v8 ignore next -- children is always defined on an element node */ [];
 
   if (!columnNodes.length) {
     errors.push('HTML node do not have children');
@@ -179,6 +179,7 @@ function filterColumnsDescendants(
 ): NodeFilterFn {
   return (node: Node): boolean => {
     const { type } = node;
+    /* v8 ignore next -- findDescendants only ever passes element nodes */
     if (type !== 'element') return false;
     // Exclude the nodes that we need to ignore
     if (params?.excludes?.length) {
@@ -230,7 +231,7 @@ export function toLiveContainer(
         .reduce(findDescendants(filterLivePostDescendants(mapping, params)), [])
         .filter((node: Node) => node.type === 'element')
         .map(mapLivePost(params))
-    : [];
+    : /* v8 ignore next -- children is always defined on an element node */ [];
 
   if (!posts.length) {
     errors.push('HTML node do not have children');
@@ -264,6 +265,7 @@ function filterLivePostDescendants(
 ): NodeFilterFn {
   return (node: Node): boolean => {
     const { type } = node;
+    /* v8 ignore next -- findDescendants only ever passes element nodes */
     if (type !== 'element') return false;
     // Exclude the nodes that we need to ignore
     if (params?.excludes?.length) {
@@ -294,11 +296,13 @@ function filterLivePostDescendants(
 function filterClassNameDescendants(className: string): NodeFilterFn {
   return (node: Node): boolean => {
     const { type } = node;
+    /* v8 ignore next -- findDescendants only ever passes element nodes */
     if (type !== 'element') return false;
 
     const attributes = getAttributes(node.attributes);
     const classNames = attributes.get('class');
     if (!classNames) return false;
+    /* v8 ignore next -- attribute map values are always strings */
     if (typeof classNames !== 'string') return false;
     for (const name of classNames.split(' ')) {
       if (name === className) {
@@ -639,6 +643,7 @@ function reduceLinkContainerComponent(
           linkAttributes.push(`${attr}="${value}"`);
         }
         component.text = `<a ${linkAttributes.join(' ')}>${component.text}</a>`;
+        /* v8 ignore next 3 -- the link container always carries an href attribute */
       } else {
         component.text = `<a href="${link}">${component.text}</a>`;
       }

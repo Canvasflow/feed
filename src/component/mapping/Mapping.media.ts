@@ -164,6 +164,7 @@ function fromPicture(node: ElementNode): ImageComponent {
   }
 
   for (const n of imageNodes) {
+    /* v8 ignore next -- imageNodes are pre-filtered to elements */
     if (n.type !== 'element') continue;
     const attributes = getAttributes(n.attributes);
     const src = attributes.get('src');
@@ -310,6 +311,7 @@ function fromFigure(
     }
 
     for (const n of pictureNodes) {
+      /* v8 ignore next -- pictureNodes are pre-filtered to elements */
       if (n.type !== 'element') continue;
       const picture: ImageComponent = fromPicture(n);
       imageurl = picture.imageurl;
@@ -432,8 +434,10 @@ export function toVideo(node: ElementNode): VideoComponent {
   const sources = node.children
     .filter((n) => n.type === 'element' && n.tagName === 'source')
     .map((n: Node) => {
+      /* v8 ignore next -- sources are pre-filtered to elements */
       if (n.type !== 'element') return '';
       const attr = getAttributes(n.attributes);
+      /* v8 ignore next -- the empty fallback is filtered out below */
       return attr.get('src') || '';
     })
     .filter((i) => !!i);
@@ -488,8 +492,10 @@ export function toAudio(node: ElementNode): AudioComponent {
   const sources = node.children
     .filter((n) => n.type === 'element' && n.tagName === 'source')
     .map((n: Node) => {
+      /* v8 ignore next -- sources are pre-filtered to elements */
       if (n.type !== 'element') return '';
       const attr = getAttributes(n.attributes);
+      /* v8 ignore next -- the empty fallback is filtered out below */
       return attr.get('src') || '';
     })
     .filter((i) => !!i);
@@ -677,6 +683,7 @@ function filterGallerySlideDescendants(
 ): NodeFilterFn {
   return (node: Node): boolean => {
     const { type } = node;
+    /* v8 ignore next -- findDescendants only ever passes element nodes */
     if (type !== 'element') return false;
     // Exclude the nodes that we need to ignore
     if (params?.excludes?.length) {
@@ -750,12 +757,15 @@ export function toTwitter(node: ElementNode | URL): TwitterComponent | null {
 
   const tweetNode = validAnchorNodes.pop();
 
+  /* v8 ignore next 2 -- validAnchorNodes is non-empty here, so pop() is defined */
   if (tweetNode) {
     const attributes = getAttributes(tweetNode.attributes);
     attrs = Object.fromEntries(attributes);
+    /* v8 ignore next -- a valid tweet anchor always has an href */
     const tweetUrl = attributes.get('href') || '';
 
     let values: Array<string> = [];
+    /* v8 ignore next -- the regex already matched, so exec never returns null */
     values = twitterRegex.exec(tweetUrl) || [];
     params.id = values[3];
     params.account = values[1];
@@ -986,6 +996,7 @@ export function fromIframe(
 export function filterFigureDescendants(params?: Params): NodeFilterFn {
   return (node: Node): boolean => {
     const { type } = node;
+    /* v8 ignore next -- findDescendants only ever passes element nodes */
     if (type !== 'element') return false;
     const { tagName } = node;
     // Exclude the nodes that we need to ignore
