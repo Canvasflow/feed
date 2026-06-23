@@ -25,16 +25,7 @@ import {
   MappingSchema,
   ParamsSchema,
 } from '../component/mapping/Mapping.schema';
-
-/**
- * Raw, dynamically-shaped output of fast-xml-parser. Its leaf values are read
- * loosely by build()/validate() as strings, numbers, nested objects, or
- * arrays depending on the feed, so `any` is the appropriate boundary type
- * here; consumers should read the typed `rss` property instead. A future
- * improvement would be to zod-validate this into a typed structure.
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ParsedXml = Record<string, any>;
+import type { ParsedXml } from './ParsedXml';
 
 export class RSSFeed {
   public content: string;
@@ -253,13 +244,9 @@ export class RSSFeed {
     this.rss.channel['sy:updatePeriod'] = channel['sy:updatePeriod'];
     this.rss.channel['sy:updateBase'] = channel['sy:updateBase'];
 
-    let items: Record<string, unknown> | Array<Record<string, unknown>> =
-      channel.item;
-
-    if (channel.item) {
-      if (!Array.isArray(items)) {
-        items = [items];
-      }
+    const rawItems = channel.item;
+    if (rawItems) {
+      const items = Array.isArray(rawItems) ? rawItems : [rawItems];
       for (const item of items) {
         this.rss.channel.items.push(this.buildItem(item));
       }

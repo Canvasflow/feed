@@ -28,7 +28,9 @@ export interface Channel {
     type?: string;
   };
   'sy:updatePeriod'?: string;
-  'sy:updateFrequency'?: string;
+  // `build()` normalises this to a number via parseInt when present, but the
+  // untouched raw value flows through otherwise, so both shapes are valid.
+  'sy:updateFrequency'?: string | number;
   'sy:updateBase'?: string;
 }
 

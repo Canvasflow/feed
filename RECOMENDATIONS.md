@@ -7,10 +7,11 @@ are ordered roughly by impact/risk.
 > This list shows only the **outstanding** items. Recommendations that have been
 > implemented (publish-pipeline registry pinning, lint/build gating, the Node
 > test matrix, the documentation-accuracy fixes, removal of the HTMLMapper
-> `any` casts, Dependabot dependency automation, root `SECURITY.md` /
-> `CONTRIBUTING.md`) and the coverage-threshold enforcement check (verified
-> gating CI) have been removed. The LICENSE recommendation was dropped: this
-> library is internal-only.
+> `any` casts, splitting `HTMLMapper.test.ts` into per-family modules, replacing
+> `RSSFeed`'s `ParsedXml` `any` boundary with typed interfaces, Dependabot
+> dependency automation, root `SECURITY.md` / `CONTRIBUTING.md`) and the
+> coverage-threshold enforcement check (verified gating CI) have been removed.
+> The LICENSE recommendation was dropped: this library is internal-only.
 
 ---
 
@@ -21,20 +22,6 @@ are ordered roughly by impact/risk.
    lint, and build never run on PRs or on pushes to `main`/`develop`, so broken
    code can merge undetected and only fails at release time. Add a `ci.yml` that
    runs on `pull_request` and `push` executing `lint`, `build`, and `coverage`.
-
-## 2. Code Quality & Type Safety
-
-1. **Large test module.** `Mapping.ts` has been split by component group
-   (`Mapping.media.ts` for image/video/audio/gallery, `Mapping.container.ts`
-   for columns/container/live_container/recipe, with shared helpers in
-   `Mapping.utils.ts`), bringing it down from ~2,546 to ~1,433 lines. The test
-   file `HTMLMapper.test.ts` (~3,830 lines) remains large — consider breaking it
-   up by component family.
-2. **`ParsedXml` boundary still uses `any`.** The `HTMLMapper` `any` casts were
-   removed, but `RSSFeed`'s `ParsedXml` (raw `fast-xml-parser` output) remains
-   `Record<string, any>` because `build()` reads its leaf values loosely as
-   strings/numbers/objects/arrays. Properly removing it means zod-validating the
-   parsed feed into a typed structure — a larger refactor left for later.
 
 ---
 
