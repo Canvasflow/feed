@@ -81,6 +81,11 @@ export class RSSFeed {
   private _root: Mapping | undefined;
   private _validated = false;
 
+  /**
+   * @param {string} content - Raw RSS/Atom XML string to parse.
+   * @param {Params} [params] - Optional mapping configuration passed to
+   *   `HTMLMapper.toComponents()` during `build()`.
+   */
   constructor(content: string, params?: Params) {
     this.content = content;
     const parser = new XMLParser({
@@ -582,7 +587,7 @@ function buildThumbnail(
     '@_fileSize'?: string;
   };
   const thumbnail: Thumbnail = {
-    url: cfThumbnail['@_url'] || '',
+    url: cfThumbnail['@_url'] ?? '',
     width: cfThumbnail['@_width']
       ? parseInt(cfThumbnail['@_width'], 10)
       : undefined,
@@ -780,8 +785,8 @@ function mapEnclosure(e: Attributes.Enclosure): Enclosure {
   }
   return {
     length: e['@_length'] ? parseInt(`${e['@_length']}`, 10) : 0,
-    type: e['@_type'] || '',
-    url: e['@_url'] || '',
+    type: e['@_type'] ?? '',
+    url: e['@_url'] ?? '',
     errors,
     warnings,
   };
@@ -829,7 +834,7 @@ function mapMediaContent(
   return (mediaContent: Attributes.MediaContent): MediaContent => {
     const errors: string[] = [];
     const warnings: string[] = [];
-    let url = mediaContent['@_url'] || '';
+    let url = mediaContent['@_url'] ?? '';
     const type = mediaContent['@_type'];
     const medium = mediaContent['@_medium'];
     let credit: string | undefined;

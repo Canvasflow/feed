@@ -85,7 +85,7 @@ export function toImg(node: ElementNode): ImageComponent {
 
   return {
     component: 'image',
-    imageurl: src || '',
+    imageurl: src ?? '',
     alt,
     width,
     height,
@@ -174,7 +174,7 @@ function fromPicture(node: ElementNode): ImageComponent {
 
     alt = attributes.get('alt');
 
-    imageurl = src || '';
+    imageurl = src ?? '';
     break;
   }
 
@@ -296,7 +296,7 @@ function fromFigure(
         errors.push('Image src attribute is missing');
       }
 
-      imageurl = src || '';
+      imageurl = src ?? '';
       break;
     }
   }
@@ -356,7 +356,7 @@ function fromFigure(
  */
 function getImageLink(node: ElementNode): LinkResponse {
   const attributes = getAttributes(node.attributes);
-  const link = attributes.get('href') || '';
+  const link = attributes.get('href') ?? '';
   const errors: string[] = [];
   const warnings: string[] = [];
   let height: number | undefined;
@@ -375,7 +375,7 @@ function getImageLink(node: ElementNode): LinkResponse {
       if (n.type !== 'element') continue;
       const attributes = getAttributes(n.attributes);
       const src = attributes.get('src');
-      alt = attributes.get('alt') || '';
+      alt = attributes.get('alt') ?? '';
       if (!src) {
         errors.push('Image src attribute is missing');
       }
@@ -390,7 +390,7 @@ function getImageLink(node: ElementNode): LinkResponse {
         height = parseInt(`${heightAttr}`, 10);
       }
 
-      imageurl = src || '';
+      imageurl = src ?? '';
       break;
     }
   }
@@ -438,7 +438,7 @@ export function toVideo(node: ElementNode): VideoComponent {
       if (n.type !== 'element') return '';
       const attr = getAttributes(n.attributes);
       /* v8 ignore next -- the empty fallback is filtered out below */
-      return attr.get('src') || '';
+      return attr.get('src') ?? '';
     })
     .filter((i) => !!i);
 
@@ -496,7 +496,7 @@ export function toAudio(node: ElementNode): AudioComponent {
       if (n.type !== 'element') return '';
       const attr = getAttributes(n.attributes);
       /* v8 ignore next -- the empty fallback is filtered out below */
-      return attr.get('src') || '';
+      return attr.get('src') ?? '';
     })
     .filter((i) => !!i);
 
@@ -753,7 +753,7 @@ export function toTwitter(node: ElementNode | URL): TwitterComponent | null {
   const validAnchorNodes = anchorNodes.filter((node: ElementNode) => {
     const attributes = getAttributes(node.attributes);
     attrs = Object.fromEntries(attributes);
-    const url = attributes.get('href') || '';
+    const url = attributes.get('href') ?? '';
     if (!url) return false;
     if (twitterRegex.test(url)) return true;
     return false;
@@ -768,7 +768,7 @@ export function toTwitter(node: ElementNode | URL): TwitterComponent | null {
     const attributes = getAttributes(tweetNode.attributes);
     attrs = Object.fromEntries(attributes);
     /* v8 ignore next -- a valid tweet anchor always has an href */
-    const tweetUrl = attributes.get('href') || '';
+    const tweetUrl = attributes.get('href') ?? '';
 
     let values: Array<string> = [];
     /* v8 ignore next -- the regex already matched, so exec never returns null */
@@ -867,7 +867,7 @@ export function fromIframe(
   const attributes = getAttributes(node.attributes);
   const id = attributes.get('id');
 
-  let src = attributes.get('src') || '';
+  let src = attributes.get('src') ?? '';
 
   // If the iframe do not have a src we just ignore it
   if (!src || src.length === 0) {

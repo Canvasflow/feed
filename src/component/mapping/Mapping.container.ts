@@ -356,7 +356,7 @@ export function toLinkContainer(
     attributes,
     component: 'container',
     type: 'link',
-    link: link || '',
+    link: link ?? '',
     components,
     errors,
     warnings,
@@ -399,8 +399,8 @@ export function toFigureContainer(
     const figcaptionNode = figcaptionNodes.shift() as ElementNode;
     const ficaptionResponse = fromFigcaption(figcaptionNode);
     if (ficaptionResponse) {
-      caption = ficaptionResponse.caption || '';
-      credit = ficaptionResponse.credit || '';
+      caption = ficaptionResponse.caption ?? '';
+      credit = ficaptionResponse.credit ?? '';
     }
   }
 
