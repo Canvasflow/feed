@@ -225,6 +225,21 @@ type ReduceComponentsFn = (
   node: Node
 ) => Array<Component>;
 
+const TEXT_TAG_MAPPING: Record<string, TextType> = {
+  h1: 'headline',
+  h2: 'title',
+  h3: 'subtitle',
+  h4: 'intro',
+  h5: 'crosshead',
+  h6: 'byline',
+  footer: 'footer',
+  blockquote: 'blockquote',
+  p: 'body',
+  ol: 'body',
+  ul: 'body',
+  a: 'body',
+};
+
 /**
  * It process a node individually and transform it into a single canvasflow
  * component
@@ -279,21 +294,6 @@ export function fromNode(
   }
 
   const role = attributes.get('role');
-
-  const textTagMapping: Record<string, TextType> = {
-    h1: 'headline',
-    h2: 'title',
-    h3: 'subtitle',
-    h4: 'intro',
-    h5: 'crosshead',
-    h6: 'byline',
-    footer: 'footer',
-    blockquote: 'blockquote',
-    p: 'body',
-    ol: 'body',
-    ul: 'body',
-    a: 'body',
-  };
 
   if (tagName === 'a' && isYoutubeUrl(attributes.get('href') || '')) {
     return toYoutubeFromAnchor(node);
@@ -413,9 +413,9 @@ export function fromNode(
   }
 
   // This section validates text tags
-  for (const tag in textTagMapping) {
+  for (const tag in TEXT_TAG_MAPPING) {
     if (tagName === tag) {
-      return toText(node, textTagMapping[tag]);
+      return toText(node, TEXT_TAG_MAPPING[tag]);
     }
   }
 
