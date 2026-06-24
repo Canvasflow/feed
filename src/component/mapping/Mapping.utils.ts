@@ -131,7 +131,23 @@ export function processTextLinks(html: string, link: string = '/'): string {
           }
         }
 
-        if (href.startsWith('//') || href.startsWith('./')) {
+        if (href.startsWith('//')) {
+          try {
+            const u = new URL('https:' + href);
+            // CMS-style paths (e.g. //link.aspx?id=…) parse with a hostname
+            // that looks like a filename. Real protocol-relative URLs have a
+            // proper domain (no file extension as the TLD).
+            if (
+              !/\.(aspx|php|html|htm|cfm|ashx|jsp|action)$/i.test(u.hostname)
+            ) {
+              return { tagName, attribs };
+            }
+          } catch {
+            // unparseable — fall through to treat as relative
+          }
+          href = href.slice(2);
+        }
+        if (href.startsWith('./')) {
           href = href.slice(2);
         }
         if (isRelative(href)) {
