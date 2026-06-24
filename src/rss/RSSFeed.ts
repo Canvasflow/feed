@@ -486,74 +486,11 @@ export class RSSFeed {
       }
     }
 
-    if (item['cf:thumbnail']) {
-      const cfThumbnail = item['cf:thumbnail'] as {
-        '@_url'?: string;
-        '@_width'?: string;
-        '@_height'?: string;
-        '@_type'?: string;
-        '@_fileSize'?: string;
-      };
-      const thumbnail: Thumbnail = {
-        url: cfThumbnail['@_url'] || '',
-        width: cfThumbnail['@_width']
-          ? parseInt(cfThumbnail['@_width'], 10)
-          : undefined,
-        height: cfThumbnail['@_height']
-          ? parseInt(cfThumbnail['@_height'], 10)
-          : undefined,
-        type: cfThumbnail['@_type'] || undefined,
-        fileSize: cfThumbnail['@_fileSize']
-          ? parseInt(cfThumbnail['@_fileSize'], 10)
-          : undefined,
-      };
-      if (!thumbnail.url) {
-        response.errors.push(
-          `Required property "url" is missing in 'cf:thumbnail'`
-        );
-      }
-      if (thumbnail.type !== undefined) {
-        /* v8 ignore next 5 -- @_type is parsed as a string when present */
-        if (typeof thumbnail.type !== 'string') {
-          response.warnings.push(
-            `Invalid value for property 'type' in 'cf:thumbnail'`
-          );
-          thumbnail.type = undefined;
-        } else {
-          const validMimeTypes = new Set([
-            'image/jpeg',
-            'image/png',
-            'image/gif',
-            'image/webp',
-          ]);
-          if (!validMimeTypes.has(thumbnail.type)) {
-            response.warnings.push(
-              `Invalid value for property 'type' in 'cf:thumbnail'.`
-            );
-            thumbnail.type = undefined;
-          }
-        }
-      }
-      if (thumbnail.width !== undefined && isNaN(thumbnail.width)) {
-        response.warnings.push(
-          `Invalid value for property 'width' in 'cf:thumbnail'`
-        );
-        thumbnail.width = undefined;
-      }
-      if (thumbnail.height !== undefined && isNaN(thumbnail.height)) {
-        response.warnings.push(
-          `Invalid value for property 'height' in 'cf:thumbnail'`
-        );
-        thumbnail.height = undefined;
-      }
-      if (thumbnail.fileSize !== undefined && isNaN(thumbnail.fileSize)) {
-        response.warnings.push(
-          `Invalid value for property 'fileSize' in 'cf:thumbnail'`
-        );
-        thumbnail.fileSize = undefined;
-      }
-      response['cf:thumbnail'] = thumbnail;
-    }
+    response['cf:thumbnail'] = this.buildThumbnail(
+      item,
+      response.errors,
+      response.warnings
+    );
 
     if (contentEncoded) {
       response.components = HTMLMapper.toComponents(
@@ -563,6 +500,69 @@ export class RSSFeed {
     }
 
     return response;
+  }
+
+  private buildThumbnail(
+    item: Record<string, unknown>,
+    errors: string[],
+    warnings: string[]
+  ): Thumbnail | undefined {
+    if (!item['cf:thumbnail']) return undefined;
+
+    const cfThumbnail = item['cf:thumbnail'] as {
+      '@_url'?: string;
+      '@_width'?: string;
+      '@_height'?: string;
+      '@_type'?: string;
+      '@_fileSize'?: string;
+    };
+    const thumbnail: Thumbnail = {
+      url: cfThumbnail['@_url'] || '',
+      width: cfThumbnail['@_width']
+        ? parseInt(cfThumbnail['@_width'], 10)
+        : undefined,
+      height: cfThumbnail['@_height']
+        ? parseInt(cfThumbnail['@_height'], 10)
+        : undefined,
+      type: cfThumbnail['@_type'] || undefined,
+      fileSize: cfThumbnail['@_fileSize']
+        ? parseInt(cfThumbnail['@_fileSize'], 10)
+        : undefined,
+    };
+    if (!thumbnail.url) {
+      errors.push(`Required property "url" is missing in 'cf:thumbnail'`);
+    }
+    if (thumbnail.type !== undefined) {
+      /* v8 ignore next 5 -- @_type is parsed as a string when present */
+      if (typeof thumbnail.type !== 'string') {
+        warnings.push(`Invalid value for property 'type' in 'cf:thumbnail'`);
+        thumbnail.type = undefined;
+      } else {
+        const validMimeTypes = new Set([
+          'image/jpeg',
+          'image/png',
+          'image/gif',
+          'image/webp',
+        ]);
+        if (!validMimeTypes.has(thumbnail.type)) {
+          warnings.push(`Invalid value for property 'type' in 'cf:thumbnail'.`);
+          thumbnail.type = undefined;
+        }
+      }
+    }
+    if (thumbnail.width !== undefined && isNaN(thumbnail.width)) {
+      warnings.push(`Invalid value for property 'width' in 'cf:thumbnail'`);
+      thumbnail.width = undefined;
+    }
+    if (thumbnail.height !== undefined && isNaN(thumbnail.height)) {
+      warnings.push(`Invalid value for property 'height' in 'cf:thumbnail'`);
+      thumbnail.height = undefined;
+    }
+    if (thumbnail.fileSize !== undefined && isNaN(thumbnail.fileSize)) {
+      warnings.push(`Invalid value for property 'fileSize' in 'cf:thumbnail'`);
+      thumbnail.fileSize = undefined;
+    }
+    return thumbnail;
   }
 
   private processCanvasflowBooleanTag(
