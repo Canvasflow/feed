@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^20.4.3",
-    "@commitlint/config-conventional": "^20.4.3",
+    "@commitlint/config-conventional": "^21.1.0",
     "@types/he": "^1.2.3",
     "@types/luxon": "^3.6.2",
     "@types/node": "^25.4.0",
