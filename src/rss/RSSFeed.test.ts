@@ -2108,3 +2108,85 @@ describe('getRecipeFromUrl with stubbed fetch', () => {
     }
   );
 });
+
+describe('getHtmlContent with stubbed fetch', () => {
+  const originalFetch = globalThis.fetch;
+
+  test(
+    'It should return the response text on a successful fetch',
+    { tags: ['unit'] },
+    async () => {
+      globalThis.fetch = (async () =>
+        ({
+          ok: true,
+          text: async () => '<html><body>Hello</body></html>',
+        }) as Response) as typeof fetch;
+      try {
+        const html = await RSSFeed.getHtmlContent('https://example.com');
+        expect(html).toContain('Hello');
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    }
+  );
+
+  test(
+    'It should return text even on a non-ok response',
+    { tags: ['unit'] },
+    async () => {
+      // getHtmlContent does not inspect response.ok — it always returns text()
+      globalThis.fetch = (async () =>
+        ({
+          ok: false,
+          status: 404,
+          text: async () => 'Not Found',
+        }) as Response) as typeof fetch;
+      try {
+        const html = await RSSFeed.getHtmlContent('https://example.com');
+        expect(html).toBe('Not Found');
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    }
+  );
+});
+
+describe('Item.pubDate normalization', () => {
+  test(
+    'It should normalize a valid RFC 2822 pubDate to ISO 8601',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const xml = `<rss version="2.0"><channel><title>T</title><link>http://example.com</link>
+        <description>D</description>
+        <item><title>Item</title><link>http://example.com/1</link>
+          <guid>1</guid>
+          <pubDate>Mon, 01 Jan 2024 12:00:00 +0000</pubDate>
+        </item></channel></rss>`;
+      const feed = new RSSFeed(xml);
+      await feed.validate();
+      const rss = await feed.build();
+      // Verify it is a valid ISO 8601 string representing the same UTC moment
+      const pubDate = rss.channel.items[0].pubDate!;
+      expect(pubDate).toBeTruthy();
+      expect(new Date(pubDate).toISOString()).toBe('2024-01-01T12:00:00.000Z');
+    }
+  );
+
+  test(
+    'It should preserve an unparseable pubDate and push a warning',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const xml = `<rss version="2.0"><channel><title>T</title><link>http://example.com</link>
+        <description>D</description>
+        <item><title>Item</title><link>http://example.com/1</link>
+          <guid>1</guid>
+          <pubDate>not-a-date</pubDate>
+        </item></channel></rss>`;
+      const feed = new RSSFeed(xml);
+      await feed.validate();
+      const rss = await feed.build();
+      expect(rss.channel.items[0].pubDate).toBe('not-a-date');
+      expect(rss.channel.items[0].warnings.length).toBeGreaterThan(0);
+    }
+  );
+});
