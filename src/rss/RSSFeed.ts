@@ -42,6 +42,7 @@ export class RSSFeed {
   private params: Params | undefined;
   private origin: string | undefined;
   private _root: Mapping | undefined;
+  private _validated = false;
 
   constructor(content: string, params?: Params) {
     this.content = content;
@@ -110,6 +111,7 @@ export class RSSFeed {
   async validate(): Promise<void> {
     const { data } = this;
     this.errors = [];
+    this._validated = true;
 
     if (!data.rss) {
       const error = 'Required property "rss" is missing at the root level';
@@ -174,7 +176,19 @@ export class RSSFeed {
     return errors;
   }
 
+  /**
+   * Constructs the typed `RSS` object from the parsed XML.
+   * `validate()` must be called before `build()`.
+   */
   async build(): Promise<RSS> {
+    if (!this._validated) {
+      await this.validate();
+    }
+
+    if (this.rss.errors.length) {
+      return this.rss;
+    }
+
     const { data } = this;
     const { rss } = data;
     const { channel } = rss;

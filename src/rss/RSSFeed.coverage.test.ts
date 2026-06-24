@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { test, expect, describe } from 'vite-plus/test';
 
 import { RSSFeed } from './RSSFeed';
@@ -30,6 +31,7 @@ describe('RSSFeed build coverage', () => {
     const feed = new RSSFeed(
       feedWith(`<cf:isSponsored foo="bar">maybe</cf:isSponsored>`)
     );
+    await feed.validate();
     const rss = await feed.build();
     const item = rss.channel.items[0];
     expect(item.warnings).toContain(
@@ -46,6 +48,7 @@ describe('RSSFeed build coverage', () => {
           `<media:content url="https://example.com/i.jpg" type="image/jpeg" isDefault="true" />`
         )
       );
+      await feed.validate();
       const rss = await feed.build();
       const item = rss.channel.items[0];
       expect(item.mediaContent[0].isDefault).toBe(true);
@@ -69,6 +72,7 @@ describe('RSSFeed build coverage', () => {
   </channel>
 </rss>`;
       const feed = new RSSFeed(raw);
+      await feed.validate();
       const rss = await feed.build();
       const item = rss.channel.items[0];
       expect(item.title).toBe('');
@@ -94,10 +98,37 @@ describe('RSSFeed build coverage', () => {
         filters: [{ type: 'tag', items: ['main'] }],
       };
       feed.root = root;
+      await feed.validate();
       const rss = await feed.build();
       const item = rss.channel.items[0];
       expect(item['content:encoded']).toContain('<h1>Kept</h1>');
       expect(item['content:encoded']).not.toContain('skip');
+    }
+  );
+});
+
+describe('RSSFeed ordering guard', () => {
+  test(
+    'auto-validates when build() is called without validate()',
+    { tags: ['unit'] },
+    async () => {
+      const feed = new RSSFeed(feedWith(''));
+      const rss = await feed.build();
+      expect(rss).toBeDefined();
+    }
+  );
+
+  test(
+    'resolves when validate() precedes build()',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const content = fs.readFileSync(
+        `${process.env.FEEDS_PATH}/codrops.rss`,
+        'utf-8'
+      );
+      const feed = new RSSFeed(content);
+      await feed.validate();
+      await expect(feed.build()).resolves.toBeDefined();
     }
   );
 });
