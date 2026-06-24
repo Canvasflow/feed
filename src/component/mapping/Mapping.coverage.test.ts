@@ -1,7 +1,11 @@
 import { test, expect, describe } from 'vite-plus/test';
 
 import { HTMLMapper } from '../html/HTMLMapper';
-import { type ComponentMapping, filterEmptyTextNode } from './Mapping';
+import {
+  type ComponentMapping,
+  filterEmptyTextNode,
+  isValidParams,
+} from './Mapping';
 import { matchesPattern, filterAllMapping, excludeNode } from './Mapping.utils';
 import {
   toTikTok,
@@ -380,5 +384,37 @@ describe('Mapping core direct branches', () => {
     expect(filterEmptyTextNode({ type: 'text', content: '' })).toBe(false);
     expect(filterEmptyTextNode({ type: 'text', content: 'hi' })).toBe(true);
     expect(filterEmptyTextNode({ type: 'comment', content: 'x' })).toBe(false);
+  });
+});
+
+describe('AttributePatternFilterSchema regex validation', () => {
+  const unitTags = { tags: ['unit'] };
+
+  test('isValidParams rejects an invalid regex pattern', unitTags, () => {
+    expect(
+      isValidParams({
+        mappings: [
+          {
+            match: 'any',
+            filters: [{ type: 'attribute', key: 'class', pattern: '[invalid' }],
+            component: 'body',
+          },
+        ],
+      })
+    ).toBe(false);
+  });
+
+  test('isValidParams accepts a valid regex pattern', unitTags, () => {
+    expect(
+      isValidParams({
+        mappings: [
+          {
+            match: 'any',
+            filters: [{ type: 'attribute', key: 'class', pattern: '^valid$' }],
+            component: 'body',
+          },
+        ],
+      })
+    ).toBe(true);
   });
 });
