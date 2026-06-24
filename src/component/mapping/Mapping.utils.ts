@@ -194,6 +194,19 @@ export interface FigcaptionResponse {
   credit?: string;
 }
 
+// Cache the Set for each filter object so it is built at most once per
+// filter reference, not once per element-filter pair during a pipeline run.
+const filterItemsCache = new WeakMap<object, Set<string>>();
+
+function getFilterItemsSet(filter: { items: string[] }): Set<string> {
+  let set = filterItemsCache.get(filter);
+  if (!set) {
+    set = new Set(filter.items);
+    filterItemsCache.set(filter, set);
+  }
+  return set;
+}
+
 /**
  * Determine whether a single filter matches an element, described by its tag
  * name and attribute map.
@@ -209,7 +222,7 @@ function matchesFilter(
   filter: Filter
 ): boolean {
   if (filter.type === 'tag') {
-    return new Set(filter.items).has(tagName);
+    return getFilterItemsSet(filter).has(tagName);
   }
 
   if (filter.type === 'attribute') {
@@ -227,7 +240,7 @@ function matchesFilter(
   const classNames = attributes.get('class');
   // An element without a class attribute can never match a class filter.
   if (!classNames) return false;
-  const itemsSet = new Set(filter.items);
+  const itemsSet = getFilterItemsSet(filter);
   const classesNamesSet: Set<string> = new Set(classNames.split(' '));
   switch (filter.match) {
     case 'equal':
