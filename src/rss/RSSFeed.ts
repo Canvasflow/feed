@@ -467,24 +467,10 @@ export class RSSFeed {
         : undefined,
     };
 
-    this.processCanvasflowBooleanTag(item, response, 'cf:hasAffiliateLinks');
-    this.processCanvasflowBooleanTag(item, response, 'cf:isSponsored');
-    this.processCanvasflowBooleanTag(item, response, 'cf:isPaid');
-
-    if (item['cf:liveCoverageState']) {
-      const liveCoverageState = item['cf:liveCoverageState'] as {
-        '@_state'?: string;
-      };
-
-      if (
-        liveCoverageState['@_state'] === 'live' ||
-        liveCoverageState['@_state'] === 'completed'
-      ) {
-        response['cf:liveCoverageState'] = liveCoverageState['@_state'];
-      } else {
-        response['cf:liveCoverageState'] = null;
-      }
-    }
+    Object.assign(
+      response,
+      this.buildCanvasflowFlags(item, response.errors, response.warnings)
+    );
 
     response['cf:thumbnail'] = this.buildThumbnail(
       item,
@@ -563,6 +549,46 @@ export class RSSFeed {
       thumbnail.fileSize = undefined;
     }
     return thumbnail;
+  }
+
+  private buildCanvasflowFlags(
+    item: Record<string, unknown>,
+    errors: string[],
+    warnings: string[]
+  ): {
+    'cf:hasAffiliateLinks': boolean;
+    'cf:isSponsored': boolean;
+    'cf:isPaid': boolean;
+    'cf:liveCoverageState': string | null | undefined;
+  } {
+    const flags = {
+      'cf:hasAffiliateLinks': false as boolean,
+      'cf:isSponsored': false as boolean,
+      'cf:isPaid': false as boolean,
+      'cf:liveCoverageState': undefined as string | null | undefined,
+      errors,
+      warnings,
+    };
+
+    // Cast to Item only for the fields processCanvasflowBooleanTag touches
+    // (the cf:* boolean field, errors, and warnings).
+    const proxy = flags as unknown as Item;
+    this.processCanvasflowBooleanTag(item, proxy, 'cf:hasAffiliateLinks');
+    this.processCanvasflowBooleanTag(item, proxy, 'cf:isSponsored');
+    this.processCanvasflowBooleanTag(item, proxy, 'cf:isPaid');
+
+    if (item['cf:liveCoverageState']) {
+      const liveCoverageState = item['cf:liveCoverageState'] as {
+        '@_state'?: string;
+      };
+      flags['cf:liveCoverageState'] =
+        liveCoverageState['@_state'] === 'live' ||
+        liveCoverageState['@_state'] === 'completed'
+          ? liveCoverageState['@_state']
+          : null;
+    }
+
+    return flags;
   }
 
   private processCanvasflowBooleanTag(
