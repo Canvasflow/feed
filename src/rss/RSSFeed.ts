@@ -460,7 +460,7 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
   }
   const title = item.title?.trim();
   const description = item.description
-    ? removeHTMLTags(item.description)
+    ? removeHTMLTags(`${item.description}`)
     : undefined;
   const link = item.link?.trim();
   let contentEncoded =
