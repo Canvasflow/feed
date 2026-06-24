@@ -299,7 +299,11 @@ export function fromNode(
     return toYoutubeFromAnchor(node);
   }
 
-  // This is a hack for forbes
+  // Some publishers (e.g. Forbes) wrap a <button> inside an <a> tag instead
+  // of using a standalone <button>. Without this check the <a> would be
+  // converted to a plain link component, silently discarding the button child.
+  // hasButton() detects the presence of a direct <button> child so we can
+  // route the whole anchor to toAnchorButton() instead.
   if (tagName === 'a' && hasButton(node)) {
     return toAnchorButton(node);
   }

@@ -12,6 +12,8 @@ import type {
   MediaGroup,
   Thumbnail,
 } from './RSS';
+import { replaceErrors } from './RSS';
+export { replaceErrors };
 import { Tag } from './Tag';
 import * as Attributes from './Attributes';
 import { HTMLMapper } from '../component/html/HTMLMapper';
@@ -25,7 +27,7 @@ import {
   MappingSchema,
   ParamsSchema,
 } from '../component/mapping/Mapping.schema';
-import type { ParsedXml } from './ParsedXml';
+import type { ParsedXml, ParsedItem } from './ParsedXml';
 
 /**
  * Parses an RSS/Atom XML string and exposes `validate()` (populates
@@ -36,7 +38,7 @@ export class RSSFeed {
   public content: string;
   private readonly data: ParsedXml;
   public rss: RSS;
-  public errors: Array<unknown> = [];
+  public errors: string[] = [];
   private params: Params | undefined;
   private origin: string | undefined;
   private _root: Mapping | undefined;
@@ -371,7 +373,7 @@ export class RSSFeed {
     item.warnings = warnings;
   }
 
-  private buildItem(item: Record<string, unknown>): Item {
+  private buildItem(item: ParsedItem): Item {
     let guid: string | undefined = undefined;
     if (typeof item.guid === 'string') {
       guid = item.guid;
@@ -379,13 +381,11 @@ export class RSSFeed {
       const g = item.guid as { '#text'?: unknown };
       guid = `${g['#text']}`;
     }
-    const title =
-      typeof item.title === 'string' ? item.title.trim() : undefined;
-    const description =
-      typeof item.description === 'string'
-        ? removeHTMLTags(item.description)
-        : undefined;
-    const link = typeof item.link === 'string' ? item.link.trim() : undefined;
+    const title = item.title?.trim();
+    const description = item.description
+      ? removeHTMLTags(item.description)
+      : undefined;
+    const link = item.link?.trim();
     let contentEncoded =
       typeof item['content:encoded'] === 'string'
         ? item['content:encoded'].trim()
@@ -399,30 +399,36 @@ export class RSSFeed {
         contentEncoded = rootElement;
       }
     }
-    let errors: string[] = [];
-    let warnings: string[] = [];
-    if (item.errors && Array.isArray(item.errors)) {
-      errors = item.errors;
+    const errors: string[] = item.errors ?? [];
+    const warnings: string[] = item.warnings ?? [];
+
+    let pubDate: string | undefined;
+    if (item.pubDate) {
+      const pubDateTime = DateTime.fromJSDate(new Date(item.pubDate));
+      if (pubDateTime.isValid) {
+        pubDate = pubDateTime.toISO() ?? undefined;
+      } else {
+        pubDate = item.pubDate;
+        warnings.push(`Unable to parse pubDate: "${item.pubDate}"`);
+      }
     }
-    if (item.warnings && Array.isArray(item.warnings)) {
-      warnings = item.warnings;
-    }
+
     const category: Array<string | { '#text': string }> = item.category
       ? Array.isArray(item.category)
         ? item.category.map((c) =>
-            typeof c === 'string' || typeof c === 'number' ? `${c}`.trim() : c
+            typeof c === 'string' || typeof c === 'number'
+              ? `${c}`.trim()
+              : (c as { '#text': string })
           )
         : [
             typeof item.category === 'string'
               ? item.category.trim()
-              : item.category,
+              : (item.category as { '#text': string }),
           ]
       : [];
 
-    if (item['dc:creator'] && Array.isArray(item['dc:creator'])) {
-      item['dc:creator'] = item['dc:creator']
-        .map((c: string) => c.trim())
-        .join(', ');
+    if (Array.isArray(item['dc:creator'])) {
+      item['dc:creator'] = item['dc:creator'].map((c) => c.trim()).join(', ');
     }
     const mediaContent = this.getMediaContent(item, this.origin);
 
@@ -439,7 +445,7 @@ export class RSSFeed {
         ? removeHTMLTags(he.decode(description))
         : description,
       link,
-      pubDate: item.pubDate ? `${item.pubDate}` : undefined,
+      pubDate,
       enclosure: this.getEnclosure(item),
       mediaGroup: this.getMediaGroup(item, this.origin),
       mediaContent,
@@ -489,7 +495,7 @@ export class RSSFeed {
   }
 
   private buildThumbnail(
-    item: Record<string, unknown>,
+    item: ParsedItem,
     errors: string[],
     warnings: string[]
   ): Thumbnail | undefined {
@@ -552,7 +558,7 @@ export class RSSFeed {
   }
 
   private buildCanvasflowFlags(
-    item: Record<string, unknown>,
+    item: ParsedItem,
     errors: string[],
     warnings: string[]
   ): {
@@ -833,29 +839,6 @@ function mapMediaContent(
       description: description ? description.trim() : description,
     };
   };
-}
-
-/**
- * `JSON.stringify` replacer that serialises `Error` values to their message so
- * errors survive `RSSFeed.toString()`/`toJSON()`.
- *
- * @param {string} _ unused JSON key
- * @param {unknown} value
- * @returns {unknown}
- */
-export function replaceErrors(_: string, value: unknown) {
-  if (value instanceof Error) {
-    const error: Record<string, unknown> = {};
-
-    const source = value as unknown as Record<string, unknown>;
-    Object.getOwnPropertyNames(value).forEach(function (propName) {
-      error[propName] = source[propName];
-    });
-
-    return error.message;
-  }
-
-  return value;
 }
 
 /**
