@@ -26,7 +26,17 @@ export const AttributeValueFilterSchema = z.object({
 export const AttributePatternFilterSchema = z.object({
   type: z.literal('attribute'),
   key: z.string(),
-  pattern: z.string(),
+  pattern: z.string().refine(
+    (val) => {
+      try {
+        new RegExp(val);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    { message: 'pattern must be a valid regular expression' }
+  ),
 });
 
 export const AttributeFilterSchema = z.union([
