@@ -47,6 +47,41 @@ describe('Node helpers', () => {
   );
 
   test(
+    'getAttributes preserves empty-string attribute values',
+    { tags: ['unit', 'html'] },
+    () => {
+      const map = getAttributes([{ key: 'alt', value: '' }]);
+      expect(map.has('alt')).toBe(true);
+      expect(map.get('alt')).toBe('');
+    }
+  );
+
+  test(
+    'getAttributes preserves falsy-but-valid string values ("0", "false")',
+    { tags: ['unit', 'html'] },
+    () => {
+      const map = getAttributes([
+        { key: 'tabindex', value: '0' },
+        { key: 'aria-hidden', value: 'false' },
+      ]);
+      expect(map.get('tabindex')).toBe('0');
+      expect(map.get('aria-hidden')).toBe('false');
+    }
+  );
+
+  test(
+    'getAttributes last-write-wins on duplicate attribute keys',
+    { tags: ['unit', 'html'] },
+    () => {
+      const map = getAttributes([
+        { key: 'class', value: 'first' },
+        { key: 'class', value: 'second' },
+      ]);
+      expect(map.get('class')).toBe('second');
+    }
+  );
+
+  test(
     'SetUtils intersect, subset and equal',
     {
       tags: ['unit', 'html'],
