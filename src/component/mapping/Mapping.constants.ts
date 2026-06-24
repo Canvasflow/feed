@@ -1,5 +1,7 @@
 import sanitizeHtml from 'sanitize-html';
 
+export const CF_IGNORE_ATTR = 'data-cf-ignore';
+
 export const imageTags = new Set(['img', 'picture']);
 
 export const textTags = [

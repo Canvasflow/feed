@@ -29,7 +29,12 @@ import {
   LinkResponseSchema,
   GalleryMappingSchema,
 } from './Mapping.schema';
-import { textTags, textTagsSet, mappingTagsSet } from './Mapping.constants';
+import {
+  textTags,
+  textTagsSet,
+  mappingTagsSet,
+  CF_IGNORE_ATTR,
+} from './Mapping.constants';
 import {
   isYoutubeUrl,
   processTextLinks,
@@ -289,7 +294,7 @@ export function fromNode(
   }
 
   // If the element is specifically ignored
-  if (attributes.get('data-cf-ignore') !== undefined) {
+  if (attributes.get(CF_IGNORE_ATTR) !== undefined) {
     return null;
   }
 
@@ -417,10 +422,9 @@ export function fromNode(
   }
 
   // This section validates text tags
-  for (const tag in TEXT_TAG_MAPPING) {
-    if (tagName === tag) {
-      return toText(node, TEXT_TAG_MAPPING[tag]);
-    }
+  const textType = TEXT_TAG_MAPPING[tagName];
+  if (textType !== undefined) {
+    return toText(node, textType);
   }
 
   if (node.children) {
