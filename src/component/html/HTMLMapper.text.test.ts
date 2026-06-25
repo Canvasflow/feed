@@ -551,4 +551,42 @@ describe('Relative links', () => {
       expect(content).toBe(result);
     }
   );
+
+  test(
+    'It should preserve genuine protocol-relative URLs unchanged',
+    { tags: ['unit', 'html'] },
+    () => {
+      const link = 'https://www.example.com/article/';
+      const href = '//cdn.example.com/image.jpg';
+      const html = `<a href="${href}">image</a>`;
+      const content = processTextLinks(html, link);
+      expect(content).toContain(`href="${href}"`);
+    }
+  );
+
+  test(
+    'It should leave absolute URLs unchanged',
+    { tags: ['unit', 'html'] },
+    () => {
+      const link = 'https://www.example.com/article/';
+      const href = 'https://other.com/page';
+      const html = `<a href="${href}">link</a>`;
+      const content = processTextLinks(html, link);
+      expect(content).toContain(`href="${href}"`);
+    }
+  );
+
+  test(
+    'It should resolve bare relative links against the base when no trailing slash',
+    { tags: ['unit', 'html'] },
+    () => {
+      const link = 'https://www.example.com/article';
+      const href = 'page.html';
+      const html = `<a href="${href}">link</a>`;
+      const content = processTextLinks(html, link);
+      expect(content).toContain(
+        `href="https://www.example.com/article/${href}"`
+      );
+    }
+  );
 });

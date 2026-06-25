@@ -29,7 +29,12 @@ import {
   LinkResponseSchema,
   GalleryMappingSchema,
 } from './Mapping.schema';
-import { textTags, textTagsSet, mappingTagsSet } from './Mapping.constants';
+import {
+  textTags,
+  textTagsSet,
+  mappingTagsSet,
+  CF_IGNORE_ATTR,
+} from './Mapping.constants';
 import {
   isYoutubeUrl,
   processTextLinks,
@@ -225,6 +230,21 @@ type ReduceComponentsFn = (
   node: Node
 ) => Array<Component>;
 
+const TEXT_TAG_MAPPING: Record<string, TextType> = {
+  h1: 'headline',
+  h2: 'title',
+  h3: 'subtitle',
+  h4: 'intro',
+  h5: 'crosshead',
+  h6: 'byline',
+  footer: 'footer',
+  blockquote: 'blockquote',
+  p: 'body',
+  ol: 'body',
+  ul: 'body',
+  a: 'body',
+};
+
 /**
  * It process a node individually and transform it into a single canvasflow
  * component
@@ -274,32 +294,21 @@ export function fromNode(
   }
 
   // If the element is specifically ignored
-  if (attributes.get('data-cf-ignore') !== undefined) {
+  if (attributes.get(CF_IGNORE_ATTR) !== undefined) {
     return null;
   }
 
   const role = attributes.get('role');
 
-  const textTagMapping: Record<string, TextType> = {
-    h1: 'headline',
-    h2: 'title',
-    h3: 'subtitle',
-    h4: 'intro',
-    h5: 'crosshead',
-    h6: 'byline',
-    footer: 'footer',
-    blockquote: 'blockquote',
-    p: 'body',
-    ol: 'body',
-    ul: 'body',
-    a: 'body',
-  };
-
   if (tagName === 'a' && isYoutubeUrl(attributes.get('href') || '')) {
     return toYoutubeFromAnchor(node);
   }
 
-  // This is a hack for forbes
+  // Some publishers (e.g. Forbes) wrap a <button> inside an <a> tag instead
+  // of using a standalone <button>. Without this check the <a> would be
+  // converted to a plain link component, silently discarding the button child.
+  // hasButton() detects the presence of a direct <button> child so we can
+  // route the whole anchor to toAnchorButton() instead.
   if (tagName === 'a' && hasButton(node)) {
     return toAnchorButton(node);
   }
@@ -413,10 +422,9 @@ export function fromNode(
   }
 
   // This section validates text tags
-  for (const tag in textTagMapping) {
-    if (tagName === tag) {
-      return toText(node, textTagMapping[tag]);
-    }
+  const textType = TEXT_TAG_MAPPING[tagName];
+  if (textType !== undefined) {
+    return toText(node, textType);
   }
 
   if (node.children) {

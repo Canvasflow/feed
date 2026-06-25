@@ -467,6 +467,7 @@ describe('Autocar', () => {
   test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
+    await feed.validate();
     const rss = await feed.build();
     if (outFilePath) {
       writeFileSync(
@@ -495,6 +496,7 @@ describe('Motorsport', () => {
   test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
+    await feed.validate();
     const rss = await feed.build();
 
     if (outFilePath) {
@@ -526,6 +528,7 @@ describe('Codrops', () => {
   test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
+    await feed.validate();
     const rss = await feed.build();
 
     if (outFilePath) {
@@ -586,6 +589,7 @@ describe('Motor1', () => {
   test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
+    await feed.validate();
     const rss = await feed.build();
 
     if (outFilePath) {
@@ -614,6 +618,7 @@ describe('Forbes', () => {
   test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
+    await feed.validate();
     const rss = await feed.build();
 
     if (outFilePath) {
@@ -660,6 +665,7 @@ describe('Forbes', () => {
       }
       const content = readFileSync(filePath, 'utf-8');
       const feed = new RSSFeed(content);
+      await feed.validate();
       const rss = await feed.build();
 
       if (outFilePath) {
@@ -687,6 +693,7 @@ describe('Forbes', () => {
     }
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
+    await feed.validate();
     const rss = await feed.build();
 
     if (outFilePath) {
@@ -719,6 +726,7 @@ describe('Womens Running', () => {
   test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
+    await feed.validate();
     const rss = await feed.build();
 
     if (outFilePath) {
@@ -748,6 +756,7 @@ describe('Vegan Food and Living', () => {
   test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
+    await feed.validate();
     const rss = await feed.build();
 
     if (outFilePath) {
@@ -784,6 +793,7 @@ describe('VMG', () => {
     async () => {
       const content = readFileSync(filePath, 'utf-8');
       const feed = new RSSFeed(content);
+      await feed.validate();
       const rss = await feed.build();
 
       if (outFilePath) {
@@ -1110,6 +1120,7 @@ describe('T3', () => {
       };
       const feed = new RSSFeed(content, params);
       feed.root = root;
+      await feed.validate();
       const rss = await feed.build();
       if (shouldDownloadRemote) {
         for (const item of rss.channel.items) {
@@ -1168,6 +1179,7 @@ describe('PureNews', () => {
   test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
+    await feed.validate();
     const rss = await feed.build();
 
     if (outFilePath) {
@@ -1200,6 +1212,7 @@ describe('Wccftech', () => {
   test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
+    await feed.validate();
     const rss = await feed.build();
 
     if (outFilePath) {
@@ -1232,6 +1245,7 @@ describe('Saga', () => {
   test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
+    await feed.validate();
     const rss = await feed.build();
 
     if (outFilePath) {
@@ -1277,6 +1291,7 @@ describe('Cultured Magazine', () => {
   test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
+    await feed.validate();
     const rss = await feed.build();
 
     if (outFilePath) {
@@ -1322,6 +1337,7 @@ describe('The New World', () => {
   test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
+    await feed.validate();
     const rss = await feed.build();
 
     if (outFilePath) {
@@ -1564,6 +1580,7 @@ describe('Discover Britain', () => {
   test(`It should build the content`, { tags: ['unit', 'rss'] }, async () => {
     const content = readFileSync(filePath, 'utf-8');
     const feed = new RSSFeed(content);
+    await feed.validate();
     const rss = await feed.build();
 
     if (outFilePath) {
@@ -1737,6 +1754,7 @@ describe('RSSFeed serialization', () => {
     { tags: ['unit', 'rss'] },
     async () => {
       const feed = new RSSFeed(buildFeed(''));
+      await feed.validate();
       const rss = await feed.build();
 
       const str = RSSFeed.toString(rss);
@@ -1778,6 +1796,7 @@ describe('RSSFeed validation branches', () => {
       const feed = new RSSFeed(buildFeed(''));
       // Invalid root mapping: filters must be an array of valid filters.
       feed.root = { match: 'all', filters: 'nope' } as unknown as Mapping;
+      await feed.validate();
       const rss = await feed.build();
       expect(rss.errors.length).toBeGreaterThan(0);
       expect(rss.channel.items.length).toBe(0);
@@ -1793,6 +1812,7 @@ describe('cf:liveCoverageState', () => {
       const feed = new RSSFeed(
         buildFeed(`<cf:liveCoverageState state="paused"/>`)
       );
+      await feed.validate();
       const rss = await feed.build();
       const item = rss.channel.items[0];
       expect(item['cf:liveCoverageState']).toBe(null);
@@ -1810,6 +1830,7 @@ describe('cf:thumbnail branches', () => {
           `<cf:thumbnail url="" width="abc" height="xyz" fileSize="nope" type="image/bmp"/>`
         )
       );
+      await feed.validate();
       const rss = await feed.build();
       const item = rss.channel.items[0];
       const thumbnail = item['cf:thumbnail'];
@@ -1837,6 +1858,7 @@ describe('processCanvasflowBooleanTag branches', () => {
       const feed = new RSSFeed(
         buildFeed(`<cf:isSponsored>maybe</cf:isSponsored>`)
       );
+      await feed.validate();
       const rss = await feed.build();
       const item = rss.channel.items[0];
       expect(item['cf:isSponsored']).toBe(false);
@@ -1855,6 +1877,7 @@ describe('processCanvasflowBooleanTag branches', () => {
       const feed = new RSSFeed(
         buildFeed(`<cf:isPaid foo="bar">maybe</cf:isPaid>`)
       );
+      await feed.validate();
       const rss = await feed.build();
       const item = rss.channel.items[0];
       expect(
@@ -1877,6 +1900,7 @@ describe('processCanvasflowBooleanTag branches', () => {
       const feed = new RSSFeed(
         buildFeed(`<cf:hasAffiliateLinks>true</cf:hasAffiliateLinks>`)
       );
+      await feed.validate();
       const rss = await feed.build();
       const item = rss.channel.items[0];
       expect(item['cf:hasAffiliateLinks']).toBe(true);
@@ -1890,6 +1914,7 @@ describe('enclosure mapping', () => {
     { tags: ['unit', 'rss'] },
     async () => {
       const feed = new RSSFeed(buildFeed(`<enclosure other="x"/>`));
+      await feed.validate();
       const rss = await feed.build();
       const item = rss.channel.items[0];
       expect(item.enclosure.length).toBe(1);
@@ -1914,6 +1939,7 @@ describe('media:group mapping', () => {
           `<media:group><media:title>A group</media:title></media:group>`
         )
       );
+      await feed.validate();
       const rss = await feed.build();
       const item = rss.channel.items[0];
       expect(item.mediaGroup.length).toBe(1);
@@ -1937,6 +1963,7 @@ describe('media:content mapping', () => {
     { tags: ['unit', 'rss'] },
     async () => {
       const feed = new RSSFeed(buildFeed(`<media:content other="x"/>`));
+      await feed.validate();
       const rss = await feed.build();
       const item = rss.channel.items[0];
       const media = item.mediaContent[0];
@@ -1963,6 +1990,7 @@ describe('media:content mapping', () => {
           </media:content>`
         )
       );
+      await feed.validate();
       const rss = await feed.build();
       const media = rss.channel.items[0].mediaContent[0];
       expect(media.credit).toBe('First');
@@ -1989,6 +2017,7 @@ describe('media:content mapping', () => {
           </media:content>`
         )
       );
+      await feed.validate();
       const rss = await feed.build();
       const media = rss.channel.items[0].mediaContent[0];
       expect(media.credit).toBe('Jane Doe');
@@ -2004,6 +2033,7 @@ describe('media:content mapping', () => {
           channelExtra: '<link>https://example.com/feed</link>',
         })
       );
+      await feed.validate();
       const rss = await feed.build();
       const media = rss.channel.items[0].mediaContent[0];
       expect(media.url).toBe('https://example.com/images/a.jpg');
@@ -2105,6 +2135,88 @@ describe('getRecipeFromUrl with stubbed fetch', () => {
       } finally {
         globalThis.fetch = originalFetch;
       }
+    }
+  );
+});
+
+describe('getHtmlContent with stubbed fetch', () => {
+  const originalFetch = globalThis.fetch;
+
+  test(
+    'It should return the response text on a successful fetch',
+    { tags: ['unit'] },
+    async () => {
+      globalThis.fetch = (async () =>
+        ({
+          ok: true,
+          text: async () => '<html><body>Hello</body></html>',
+        }) as Response) as typeof fetch;
+      try {
+        const html = await RSSFeed.getHtmlContent('https://example.com');
+        expect(html).toContain('Hello');
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    }
+  );
+
+  test(
+    'It should return text even on a non-ok response',
+    { tags: ['unit'] },
+    async () => {
+      // getHtmlContent does not inspect response.ok — it always returns text()
+      globalThis.fetch = (async () =>
+        ({
+          ok: false,
+          status: 404,
+          text: async () => 'Not Found',
+        }) as Response) as typeof fetch;
+      try {
+        const html = await RSSFeed.getHtmlContent('https://example.com');
+        expect(html).toBe('Not Found');
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    }
+  );
+});
+
+describe('Item.pubDate normalization', () => {
+  test(
+    'It should normalize a valid RFC 2822 pubDate to ISO 8601',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const xml = `<rss version="2.0"><channel><title>T</title><link>http://example.com</link>
+        <description>D</description>
+        <item><title>Item</title><link>http://example.com/1</link>
+          <guid>1</guid>
+          <pubDate>Mon, 01 Jan 2024 12:00:00 +0000</pubDate>
+        </item></channel></rss>`;
+      const feed = new RSSFeed(xml);
+      await feed.validate();
+      const rss = await feed.build();
+      // Verify it is a valid ISO 8601 string representing the same UTC moment
+      const pubDate = rss.channel.items[0].pubDate!;
+      expect(pubDate).toBeTruthy();
+      expect(new Date(pubDate).toISOString()).toBe('2024-01-01T12:00:00.000Z');
+    }
+  );
+
+  test(
+    'It should preserve an unparseable pubDate and push a warning',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const xml = `<rss version="2.0"><channel><title>T</title><link>http://example.com</link>
+        <description>D</description>
+        <item><title>Item</title><link>http://example.com/1</link>
+          <guid>1</guid>
+          <pubDate>not-a-date</pubDate>
+        </item></channel></rss>`;
+      const feed = new RSSFeed(xml);
+      await feed.validate();
+      const rss = await feed.build();
+      expect(rss.channel.items[0].pubDate).toBe('not-a-date');
+      expect(rss.channel.items[0].warnings.length).toBeGreaterThan(0);
     }
   );
 });

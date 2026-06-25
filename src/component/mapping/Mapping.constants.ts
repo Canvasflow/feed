@@ -1,4 +1,4 @@
-import sanitizeHtml from 'sanitize-html';
+export const CF_IGNORE_ATTR = 'data-cf-ignore';
 
 export const imageTags = new Set(['img', 'picture']);
 
@@ -37,9 +37,36 @@ for (const tag of textTags) {
   textAllowedAttributes[tag] = attributes;
 }
 
-export const allowedTags = sanitizeHtml.defaults.allowedTags.filter(
-  (tag) => tag !== 'script' && tag !== 'style'
-);
+export const allowedTags = [
+  // Structure
+  'p',
+  'blockquote',
+  'footer',
+  'ol',
+  'ul',
+  'li',
+  // Headings
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  // Inline
+  'a',
+  'strong',
+  'b',
+  'em',
+  'i',
+  'br',
+  'sup',
+  'sub',
+  'del',
+  's',
+  'small',
+  'span',
+  'u',
+];
 
 export const textAllowedTags = [
   ...new Set([

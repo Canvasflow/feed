@@ -1,6 +1,9 @@
 import { test, expect, describe } from 'vite-plus/test';
 import { HTMLMapper } from './HTMLMapper';
-import { type ComponentMapping } from '../mapping/Mapping';
+import {
+  type ComponentMapping,
+  type LiveContainerMapping,
+} from '../mapping/Mapping';
 import {
   type ImageComponent,
   type TextComponent,
@@ -11,6 +14,7 @@ import {
   type ContainerComponent,
   type ColumnsComponent,
   type LiveContainerComponent,
+  type LivePostComponent,
   isTextComponent,
   isImageComponent,
   isHTMLTableComponent,
@@ -633,6 +637,113 @@ describe('Figure container component', () => {
       expect(isImageComponent(imageComponent)).toBe(true);
       expect(imageComponent.imageurl).toBe(imagesUrls[1]);
       expect(imageComponent.caption).toBe(caption);
+    }
+  );
+});
+
+describe('Live container component', () => {
+  const liveMapping: LiveContainerMapping = {
+    component: 'live_container',
+    match: 'any',
+    filters: [{ type: 'class', items: ['live-blog'] }],
+    post: {
+      match: 'any',
+      filters: [{ type: 'class', items: ['live-post'] }],
+    },
+  };
+  const params = { mappings: [liveMapping] };
+
+  test(
+    'toLiveContainer produces a live_container with mapped posts',
+    { tags: ['unit', 'html'] },
+    () => {
+      const html = `
+        <div class="live-blog">
+          <article class="live-post" id="post-1"><p>First</p></article>
+          <article class="live-post" id="post-2"><p>Second</p></article>
+        </div>`;
+      const components = HTMLMapper.toComponents(html, params);
+      expect(components).toHaveLength(1);
+      const container = components[0] as LiveContainerComponent;
+      expect(container.component).toBe('live_container');
+      expect(container.posts).toHaveLength(2);
+      expect(container.errors).toHaveLength(0);
+    }
+  );
+
+  test(
+    'toLiveContainer with zero matching posts records an error',
+    { tags: ['unit', 'html'] },
+    () => {
+      const html = `<div class="live-blog"><p>no posts here</p></div>`;
+      const components = HTMLMapper.toComponents(html, params);
+      expect(components).toHaveLength(1);
+      const container = components[0] as LiveContainerComponent;
+      expect(container.component).toBe('live_container');
+      expect(container.posts).toHaveLength(0);
+      expect(container.errors.length).toBeGreaterThan(0);
+    }
+  );
+
+  test(
+    'mapLivePost maps id, components, and errors per post',
+    { tags: ['unit', 'html'] },
+    () => {
+      const html = `
+        <div class="live-blog">
+          <article class="live-post" id="entry-42">
+            <h2>Post title</h2>
+            <p>Body text</p>
+          </article>
+        </div>`;
+      const components = HTMLMapper.toComponents(html, params);
+      const container = components[0] as LiveContainerComponent;
+      const post = container.posts[0] as LivePostComponent;
+      expect(post.component).toBe('live_post');
+      expect(post.id).toBe('entry-42');
+      expect(post.components.length).toBeGreaterThan(0);
+      expect(post.errors).toHaveLength(0);
+    }
+  );
+
+  test(
+    'mapLivePost records an error when the post has no components',
+    { tags: ['unit', 'html'] },
+    () => {
+      const html = `
+        <div class="live-blog">
+          <article class="live-post"></article>
+        </div>`;
+      const components = HTMLMapper.toComponents(html, params);
+      const container = components[0] as LiveContainerComponent;
+      const post = container.posts[0] as LivePostComponent;
+      expect(post.errors.length).toBeGreaterThan(0);
+    }
+  );
+
+  test(
+    'live container nested inside a regular container is mapped correctly',
+    { tags: ['unit', 'html'] },
+    () => {
+      const containerMapping: ComponentMapping = {
+        component: 'container',
+        match: 'any',
+        filters: [{ type: 'class', items: ['wrapper'] }],
+      };
+      const nestedParams = { mappings: [containerMapping, liveMapping] };
+      const html = `
+        <div class="wrapper">
+          <div class="live-blog">
+            <article class="live-post" id="p1"><p>Post</p></article>
+          </div>
+        </div>`;
+      const components = HTMLMapper.toComponents(html, nestedParams);
+      expect(components).toHaveLength(1);
+      const outer = components[0] as ContainerComponent;
+      expect(outer.component).toBe('container');
+      const inner = outer.components[0] as LiveContainerComponent;
+      expect(inner.component).toBe('live_container');
+      expect(inner.posts).toHaveLength(1);
     }
   );
 });

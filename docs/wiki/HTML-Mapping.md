@@ -33,7 +33,7 @@ const root = HTMLMapper.getRootElement(html, rootMapping); // string | null
 For each element the reducer tries, in order:
 
 1. **Exclusion** — matches an `excludes` mapping, or has `data-cf-ignore` → element and children skipped.
-2. **Built-in detection** — social embeds (Instagram, Twitter/X, TikTok, YouTube, Vimeo, Dailymotion, Infogram, Apple Podcasts), `<table>`, `<video>`, `<audio>`, `<iframe>`, buttons, images (`<img>`, `<picture>`, `<figure>`), and `role="gallery"`/`role="mosaic"`.
+2. **Built-in detection** — social embeds (Instagram, Twitter/X, TikTok, YouTube, Vimeo, Dailymotion, Infogram, Apple Podcasts), `<table>`, `<video>`, `<audio>`, `<iframe>`, buttons, images (`<img>`, `<picture>`), `<figure>` (always produces a `FigureContainerComponent`), and `role="gallery"`/`role="mosaic"`.
 3. **Custom mappings** — each `mappings` entry, **in order**; the first match wins.
 4. **Default text rules** — the tag → text-component table below.
 5. **Descend** — otherwise ignore the element and evaluate its children.
@@ -60,7 +60,8 @@ Text components keep only [phrasing content](https://developer.mozilla.org/en-US
 
 | Content | Detected from                                                                                            |
 | ------- | -------------------------------------------------------------------------------------------------------- |
-| Image   | `<img>`, `<picture>` (uses the fallback `<img>`), `<figure>` (+ `<figcaption>`/`<small role="credit">`). |
+| Image   | `<img>`, `<picture>` (uses the fallback `<img>`).                                                        |
+| Figure  | `<figure>` — always produces a `FigureContainerComponent` (`component: 'container'`, `type: 'figure'`). Caption and credit are extracted from a `<figcaption>`; credit nodes are identified by the `<small>` tag, `role="credit"`, or `class="credit"`. The contained media components (image, video, audio) are nested under `components`. |
 | Gallery | `role="gallery"`/`role="mosaic"` container, or a custom gallery mapping.                                 |
 | Video   | `<video>` (`src` or first `<source>`); YouTube/Vimeo/Dailymotion via `<iframe>`.                         |
 | Audio   | `<audio>`; Apple Podcasts via `<iframe>`.                                                                |

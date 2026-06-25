@@ -102,6 +102,26 @@ export interface MediaGroup {
   warnings: string[];
 }
 
+/**
+ * `JSON.stringify` replacer that serialises `Error` values to their message so
+ * errors survive `RSSFeed.toString()`/`toJSON()`.
+ *
+ * @param {string} _ unused JSON key
+ * @param {unknown} value
+ * @returns {unknown}
+ */
+export function replaceErrors(_: string, value: unknown) {
+  if (value instanceof Error) {
+    const error: Record<string, unknown> = {};
+    const source = value as unknown as Record<string, unknown>;
+    Object.getOwnPropertyNames(value).forEach(function (propName) {
+      error[propName] = source[propName];
+    });
+    return error.message;
+  }
+  return value;
+}
+
 export interface MediaContent {
   /**
    * Direct URL to the media object. (Required)

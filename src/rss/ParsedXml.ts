@@ -45,8 +45,43 @@ export interface ParsedChannel {
 }
 
 /**
- * A single `<item>` element. Its fields are read defensively by
- * `RSSFeed.buildItem()` (each value re-checked with `typeof`/`Array.isArray`),
- * so the loose `unknown`-valued record is the honest shape here.
+ * A single `<item>` element as produced by fast-xml-parser. Known fields are
+ * typed; the index signature covers extension-namespace tags that only flow
+ * through validation loops. Defensive `typeof`/`Array.isArray` guards in
+ * `buildItem()` remain for fields typed as `unknown` or as unions where the
+ * parser's coercion behaviour is ambiguous.
  */
-export type ParsedItem = Record<string, unknown>;
+export interface ParsedItem {
+  guid?: string | { '#text'?: unknown; '@_isPermaLink'?: unknown };
+  title?: string;
+  description?: string;
+  link?: string;
+  'content:encoded'?: string;
+  pubDate?: string;
+  author?: string;
+  category?:
+    | string
+    | string[]
+    | Record<string, unknown>
+    | Array<Record<string, unknown>>;
+  enclosure?: Record<string, unknown> | Array<Record<string, unknown>>;
+  'media:group'?: Record<string, unknown> | Array<Record<string, unknown>>;
+  'media:content'?: Record<string, unknown> | Array<Record<string, unknown>>;
+  'dc:creator'?: string | string[];
+  'dc:date'?: string;
+  'dc:language'?: string;
+  'dcterms:modified'?: string;
+  'atom:updated'?: string;
+  'atom:author'?: Record<string, unknown>;
+  'atom:link'?: Record<string, unknown> | Array<Record<string, unknown>>;
+  'sy:updatePeriod'?: string;
+  'sy:updateFrequency'?: string | number;
+  'cf:hasAffiliateLinks'?: unknown;
+  'cf:isSponsored'?: unknown;
+  'cf:isPaid'?: unknown;
+  'cf:liveCoverageState'?: { '@_state'?: unknown };
+  'cf:thumbnail'?: Record<string, unknown>;
+  errors?: string[];
+  warnings?: string[];
+  [key: string]: unknown;
+}

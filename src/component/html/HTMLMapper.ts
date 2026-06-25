@@ -43,11 +43,7 @@ export class HTMLMapper {
   static toComponents(html: string, params?: Params): Component[] {
     html = removeBreaklines(html);
     html = sanitizeInvalidAnchorHrefs(html);
-    html = extractAnchorsWithImages(html);
-    const tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-    for (const tag of tags) {
-      html = splitParagraphImages(html, tag);
-    }
+    html = preprocessHTML(html);
 
     const parsedContent = parse(html).map(mapEmptyText);
 
@@ -58,67 +54,61 @@ export class HTMLMapper {
 }
 
 /**
- * Extract all <a> elements that contain <img> tags
- * and are wrapped inside p or heading tags.
+ * Run all DOM-based pre-processing mutations in a single linkedom pass and
+ * return the serialized result. Replaces the previous pattern of calling
+ * extractAnchorsWithImages + splitParagraphImages×7, each of which re-parsed
+ * the HTML from scratch.
  *
  * @param {string} html
  * @returns {string}
  */
-function extractAnchorsWithImages(html: string): string {
-  // Fast path: plain text
-  if (!html.includes('<')) {
-    return html;
-  }
-
-  const REMOVABLE_PARENTS = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
+function preprocessHTML(html: string): string {
+  if (!html.includes('<')) return html;
 
   const { document } = parseHTML(html);
+  extractAnchorsWithImagesDOM(document);
+  const tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+  for (const tag of tags) {
+    splitParagraphImagesDOM(document, tag);
+  }
+  return document.toString().trim();
+}
+
+/**
+ * Perform the anchor-extraction mutations on an already-parsed document.
+ * Anchors containing <img> that are direct children of p/h1–h6 are hoisted
+ * out of their parent element.
+ *
+ * @param {Document} document
+ */
+function extractAnchorsWithImagesDOM(document: Document): void {
+  const REMOVABLE_PARENTS = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
 
   const anchors = Array.from(document.querySelectorAll('a'));
 
   for (const anchor of anchors) {
-    // Only anchors with images
     if (!anchor.querySelector('img')) continue;
 
     const parent = anchor.parentElement;
     if (!parent) continue;
 
-    // Only unwrap p or h1–h6
     if (!REMOVABLE_PARENTS.has(parent.tagName.toLowerCase())) continue;
 
     // Clone before replacing to avoid a linkedom bug.
     const clonedAnchor = anchor.cloneNode(true) as HTMLElement;
-
-    // Replace the parent with the anchor
     parent.replaceWith(clonedAnchor);
   }
-  // We need an outer wrapper to serialize correctly
-  const wrapper = document.createElement('div');
-
-  // move all top-level nodes into wrapper
-  while (document.firstChild) {
-    wrapper.appendChild(document.firstChild);
-  }
-
-  return wrapper.innerHTML;
 }
 
 /**
- * Split paragraphs that have image inside
+ * Perform the paragraph-image-split mutations for one tag on an
+ * already-parsed document.
  *
- * @param {string} html
+ * @param {Document} document
  * @param {string} tag
- * @returns {string}
  */
-export function splitParagraphImages(html: string, tag: string): string {
-  // parseHTML always yields a document; treat it as the (RSS-safe) root.
-  const { document: root } = parseHTML(html);
-  /* v8 ignore next 3 -- parseHTML always yields a document; defensive guard */
-  if (!root) {
-    throw new Error('Unable to parse HTML snippet');
-  }
-
-  const paragraphs = Array.from(root.querySelectorAll(tag));
+function splitParagraphImagesDOM(document: Document, tag: string): void {
+  const paragraphs = Array.from(document.querySelectorAll(tag));
 
   for (const paragraph of paragraphs) {
     const p = paragraph as Element;
@@ -129,15 +119,13 @@ export function splitParagraphImages(html: string, tag: string): string {
     const children = Array.from(p.childNodes);
     let buffer: (typeof children)[number][] = [];
 
-    // Extract original attributes once
     const originalAttrs = Array.from(p.attributes).map((attr) => ({
       name: attr.name,
       value: attr.value,
     }));
 
     const createNewP = () => {
-      const newP = root.createElement(tag);
-      // copy attributes
+      const newP = document.createElement(tag);
       for (const { name, value } of originalAttrs) {
         newP.setAttribute(name, value);
       }
@@ -161,7 +149,7 @@ export function splitParagraphImages(html: string, tag: string): string {
 
       if (isImg) {
         flushBuffer();
-        parent.insertBefore(node, p); // move the img out
+        parent.insertBefore(node, p);
       } else {
         buffer.push(node);
       }
@@ -170,8 +158,25 @@ export function splitParagraphImages(html: string, tag: string): string {
     flushBuffer();
     parent.removeChild(p);
   }
+}
 
-  return root.toString().trim();
+/**
+ * Split paragraphs that have image inside.
+ * Public wrapper kept for backwards compatibility — internal code uses
+ * splitParagraphImagesDOM on a shared document via preprocessHTML.
+ *
+ * @param {string} html
+ * @param {string} tag
+ * @returns {string}
+ */
+export function splitParagraphImages(html: string, tag: string): string {
+  const { document } = parseHTML(html);
+  /* v8 ignore next 3 -- parseHTML always yields a document; defensive guard */
+  if (!document) {
+    throw new Error('Unable to parse HTML snippet');
+  }
+  splitParagraphImagesDOM(document, tag);
+  return document.toString().trim();
 }
 
 /**
