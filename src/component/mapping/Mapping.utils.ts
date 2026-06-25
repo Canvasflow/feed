@@ -343,7 +343,8 @@ function getCredit(node: ElementNode): string | undefined {
     if (n.type === 'element') {
       const attributes = getAttributes(n.attributes);
       const role = attributes.get('role');
-      if (n.tagName === 'small' || role === 'credit') {
+      const classes = attributes.get('class')?.split(' ') ?? [];
+      if (n.tagName === 'small' || role === 'credit' || classes.includes('credit')) {
         /* v8 ignore next 3 -- keeps only the first credit; extra credits are rare */
         if (credit) {
           return acc;
