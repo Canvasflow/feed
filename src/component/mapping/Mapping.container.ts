@@ -17,10 +17,12 @@ import {
 } from '../Component';
 import {
   type ElementNode,
+  type DescendantsReducer,
   type Node,
   type NodeFilterFn,
   findDescendants,
   getAttributes,
+  removeDescendants,
 } from '../node/Node';
 import {
   sanitizeNode,
@@ -132,9 +134,9 @@ export function toColumns(
 
   const columnNodes: ElementNode[] = node.children
     ? node.children
-        .reduce(findDescendants(filterColumnsDescendants(mapping, params)), [])
-        .filter((node: Node) => node.type === 'element')
-    : /* v8 ignore next -- children is always defined on an element node */ [];
+      .reduce(findDescendants(filterColumnsDescendants(mapping, params)), [])
+      .filter((node: Node) => node.type === 'element')
+    : /* v8 ignore next -- children is always defined on an element node */[];
 
   if (!columnNodes.length) {
     errors.push('HTML node do not have children');
@@ -228,10 +230,10 @@ export function toLiveContainer(
 
   const posts: LivePostComponent[] = node.children
     ? node.children
-        .reduce(findDescendants(filterLivePostDescendants(mapping, params)), [])
-        .filter((node: Node) => node.type === 'element')
-        .map(mapLivePost(params))
-    : /* v8 ignore next -- children is always defined on an element node */ [];
+      .reduce(findDescendants(filterLivePostDescendants(mapping, params)), [])
+      .filter((node: Node) => node.type === 'element')
+      .map(mapLivePost(params))
+    : /* v8 ignore next -- children is always defined on an element node */[];
 
   if (!posts.length) {
     errors.push('HTML node do not have children');
@@ -342,9 +344,9 @@ export function toLinkContainer(
 
   const containerParams: Params = params
     ? structuredClone({
-        ...params,
-        ignoreParagraphWrap: true,
-      })
+      ...params,
+      ignoreParagraphWrap: true,
+    })
     : { ignoreParagraphWrap: true };
 
   const components: Array<Component> = node.children.length
@@ -390,11 +392,27 @@ export function toFigureContainer(
   let caption = '';
   let credit = '';
 
-  // Get the figcaption section
-  const figcaptionNodes = node.children.reduce(
+  const creditFindFn = filterClassNameDescendants('credit');
+
+  // Find the credit node and extract the credit from it
+  const creditNodes = node.children.reduce(
+    findDescendants(creditFindFn),
+    []
+  );
+
+  // Remove the credit nodes from the children and find the figcaption node
+  let figcaptionNodes = node.children.reduce(
+    removeDescendants(creditFindFn),
+    []
+  );
+
+  // Find the figcaption node and extract the caption and credit from it
+  figcaptionNodes = figcaptionNodes.reduce(
     findDescendants('figcaption'),
     []
   );
+
+  // If we have a figcaption node, we will extract the caption and credit from it
   if (figcaptionNodes.length) {
     const figcaptionNode = figcaptionNodes.shift() as ElementNode;
     const ficaptionResponse = fromFigcaption(figcaptionNode);
@@ -404,11 +422,8 @@ export function toFigureContainer(
     }
   }
 
-  const creditNodes = node.children.reduce(
-    findDescendants(filterClassNameDescendants('credit')),
-    []
-  );
-
+  // If we have a credit node, we will extract the credit from it and override 
+  // the credit from the figcaption node
   if (creditNodes.length) {
     const creditNode = creditNodes.shift() as ElementNode;
     credit = sanitizeNode(creditNode, {
@@ -439,6 +454,7 @@ export function toFigureContainer(
 
   return component;
 }
+
 
 /* ---------------------------------------------------------------------------
  * Button + link/figure container helpers (moved from Mapping.ts)

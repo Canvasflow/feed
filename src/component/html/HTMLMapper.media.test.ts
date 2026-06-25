@@ -113,6 +113,53 @@ describe('Image component', () => {
   );
 
   test(
+    'It should process a figure with credit',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `
+        <figure>
+            <div>
+                <picture>
+                    <source type="image/webp"
+                        srcset="https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn-1920-80.jpg.webp 1920w, https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn-1600-80.jpg.webp 1600w, https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn-1280-80.jpg.webp 1280w, https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn-1024-80.jpg.webp 1024w, https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn-768-80.jpg.webp 768w, https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn-415-80.jpg.webp 415w"
+                        sizes="(min-width: 1024px) 970px, 100vw" />
+                    <img src="https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn.jpg" alt="Car fan"
+                        srcset="https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn-1920-80.jpg 1920w, https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn-1600-80.jpg 1600w, https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn-1280-80.jpg 1280w, https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn-1024-80.jpg 1024w, https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn-768-80.jpg 768w, https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn-415-80.jpg 415w"
+                        sizes="(min-width: 1024px) 970px, 100vw" data-new-v2-image="true">
+                </picture>
+                <picture>
+                    <source type="image/webp"
+                        srcset="https://cdn.mos.cms.futurecdn.net/ki3fuFZNuyXGrsiq3WhFsj-200-100.png.webp" />
+                    <img src="https://cdn.mos.cms.futurecdn.net/ki3fuFZNuyXGrsiq3WhFsj-200-100.png">
+                </picture>
+            </div>
+            <figcaption>
+                <div class="credit">(Image credit: Getty Images / <a
+                        href="https://www.gettyimages.co.uk/search/2/image?artistexact=Prostock-Studio"
+                        rel="nofollow">Prostock-Studio</a>)</div>
+            </figcaption>
+        </figure>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(2);
+      let component = components.shift() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.alt).toBe('Car fan');
+      expect(component?.caption).toBe('');
+      expect(component?.credit).toBe('(Image credit: Getty Images / Prostock-Studio)');
+      expect(component?.imageurl).toBe('https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn.jpg');
+      
+      component = components.shift() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.alt).toBeUndefined();
+      expect(component?.caption).toBe('');
+      expect(component?.credit).toBe('(Image credit: Getty Images / Prostock-Studio)');
+      expect(component?.imageurl).toBe('https://cdn.mos.cms.futurecdn.net/ki3fuFZNuyXGrsiq3WhFsj-200-100.png');
+    }
+  );
+
+  test(
     'It should process a figure component with caption and html',
     { tags: ['unit', 'html'] },
     () => {

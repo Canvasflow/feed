@@ -2,9 +2,9 @@
  * Find descendants base on tag, list of tags or a callback function
  *
  * @param {string | string[] | NodeFilterFn} findFn
- * @returns {FindDescendantsReducer}
+ * @returns {DescendantsReducer}
  */
-export function findDescendants(findFn: FindFn): FindDescendantsReducer {
+export function findDescendants(findFn: FindFn): DescendantsReducer {
   return (acc: Node[], node: Node): Node[] => {
     if (node.type !== 'element') return acc;
 
@@ -26,9 +26,27 @@ export function findDescendants(findFn: FindFn): FindDescendantsReducer {
   };
 }
 
+export function removeDescendants(findFn: FindFn): DescendantsReducer {
+  return (acc: Node[], node: Node): Node[] => {
+    if (node.type !== 'element') {
+      acc.push(node);
+      return acc;
+    }
+
+    const matched =
+      (typeof findFn === 'string' && node.tagName === findFn) ||
+      (Array.isArray(findFn) && new Set(findFn).has(node.tagName)) ||
+      (typeof findFn === 'function' && findFn(node));
+    if (matched) return acc;
+
+    acc.push({ ...node, children: node.children.reduce(removeDescendants(findFn), []) });
+    return acc;
+  };
+}
+
 export type FindFn = string | string[] | NodeFilterFn;
 export type NodeFilterFn = (n: Node) => boolean;
-export type FindDescendantsReducer = (acc: Node[], node: Node) => Node[];
+export type DescendantsReducer = (acc: Node[], node: Node) => Node[];
 
 /**
  * Transform an array of attribute to a map
