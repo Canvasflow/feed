@@ -148,7 +148,7 @@ describe('Image component', () => {
       expect(component?.caption).toBe('');
       expect(component?.credit).toBe('(Image credit: Getty Images / Prostock-Studio)');
       expect(component?.imageurl).toBe('https://cdn.mos.cms.futurecdn.net/votjqh4AFn3tEQhRBq8Arn.jpg');
-      
+
       component = components.shift() as ImageComponent;
       expect(component).toBeDefined();
       expect(component.component).toBe('image');

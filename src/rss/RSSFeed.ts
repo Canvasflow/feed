@@ -183,6 +183,14 @@ export class RSSFeed {
     }
   }
 
+  /**
+   * Validate `params` and an optional `root` mapping against their Zod schemas.
+   * Returns an array of validation errors; empty when both are valid.
+   *
+   * @param {Params} [params]
+   * @param {Mapping} [root]
+   * @returns {Array<unknown>}
+   */
   static validateParams(params?: Params, root?: Mapping): Array<unknown> {
     const errors: Array<unknown> = [];
     if (params) {
@@ -330,10 +338,25 @@ export class RSSFeed {
     return this.rss;
   }
 
+  /**
+   * Serialize an `RSS` object to a plain JSON value, with `Error` instances
+   * converted to serializable objects via the `replaceErrors` replacer.
+   *
+   * @param {RSS} rss
+   * @returns {unknown}
+   */
   static toJSON(rss: RSS): unknown {
     return JSON.parse(this.toString(rss));
   }
 
+  /**
+   * Serialize an `RSS` object to a formatted JSON string, with `Error`
+   * instances converted to serializable objects via the `replaceErrors`
+   * replacer.
+   *
+   * @param {RSS} rss
+   * @returns {string}
+   */
   static toString(rss: RSS): string {
     return JSON.stringify(rss, replaceErrors, 2);
   }

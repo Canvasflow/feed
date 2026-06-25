@@ -1,10 +1,19 @@
 /**
- * Find descendants base on tag, list of tags or a callback function
+ * Create a reducer that finds descendant element nodes matching a predicate.
  *
- * @param {string | string[] | NodeFilterFn} findFn
- * @returns {DescendantsReducer}
+ * The predicate (findFn) may be:
+ * - a string: match elements with the given tagName
+ * - a string[]: match elements whose tagName is in the list
+ * - a function: a callback that receives a Node and returns a boolean
+ *
+ * The returned reducer can be used with Array.prototype.reduce to collect
+ * matching descendant nodes from a tree of ElementNodes.
+ *
+ * @param {FindFn} findFn - tag name, list of tag names, or a predicate function
+ * @returns {DescendantsReducer} reducer that accumulates matching nodes
  */
 export function findDescendants(findFn: FindFn): DescendantsReducer {
+  const tagSet = Array.isArray(findFn) ? new Set(findFn) : null;
   return (acc: Node[], node: Node): Node[] => {
     if (node.type !== 'element') return acc;
 
@@ -12,10 +21,8 @@ export function findDescendants(findFn: FindFn): DescendantsReducer {
       acc.push(node);
     }
 
-    if (Array.isArray(findFn)) {
-      if (new Set(findFn).has(node.tagName)) {
-        acc.push(node);
-      }
+    if (tagSet !== null && tagSet.has(node.tagName)) {
+      acc.push(node);
     }
 
     if (typeof findFn === 'function' && findFn(node)) {
@@ -26,7 +33,22 @@ export function findDescendants(findFn: FindFn): DescendantsReducer {
   };
 }
 
+/**
+ * Create a reducer that removes descendant element nodes matching a predicate.
+ *
+ * The predicate (findFn) may be:
+ * - a string: remove elements with the given tagName
+ * - a string[]: remove elements whose tagName is in the list
+ * - a function: a callback that receives a Node and returns a boolean
+ *
+ * The returned reducer can be used with Array.prototype.reduce to produce
+ * a new tree with matching descendant nodes excluded.
+ *
+ * @param {FindFn} findFn - tag name, list of tag names, or a predicate function
+ * @returns {DescendantsReducer} reducer that accumulates non-matching nodes
+ */
 export function removeDescendants(findFn: FindFn): DescendantsReducer {
+  const tagSet = Array.isArray(findFn) ? new Set(findFn) : null;
   return (acc: Node[], node: Node): Node[] => {
     if (node.type !== 'element') {
       acc.push(node);
@@ -35,7 +57,7 @@ export function removeDescendants(findFn: FindFn): DescendantsReducer {
 
     const matched =
       (typeof findFn === 'string' && node.tagName === findFn) ||
-      (Array.isArray(findFn) && new Set(findFn).has(node.tagName)) ||
+      (tagSet !== null && tagSet.has(node.tagName)) ||
       (typeof findFn === 'function' && findFn(node));
     if (matched) return acc;
 
@@ -44,8 +66,26 @@ export function removeDescendants(findFn: FindFn): DescendantsReducer {
   };
 }
 
+/**
+ * Predicate used to find nodes.
+ */
 export type FindFn = string | string[] | NodeFilterFn;
+
+/**
+ * Callback used to filter nodes.
+ *
+ * @param {Node} n - node to evaluate
+ * @returns {boolean} true when the node matches the filter
+ */
 export type NodeFilterFn = (n: Node) => boolean;
+
+/**
+ * Reducer function for accumulating descendant nodes.
+ *
+ * @param {Node[]} acc - accumulated nodes
+ * @param {Node} node - current node being processed
+ * @returns {Node[]} updated accumulator
+ */
 export type DescendantsReducer = (acc: Node[], node: Node) => Node[];
 
 /**

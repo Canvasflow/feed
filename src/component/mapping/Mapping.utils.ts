@@ -4,6 +4,7 @@ import sanitizeHtml from 'sanitize-html';
 import {
   type ElementNode,
   type Node,
+  type NodeFilterFn,
   getAttributes,
   SetUtils,
 } from '../node/Node';
@@ -396,5 +397,22 @@ export function fromFigcaption(node: ElementNode): FigcaptionResponse {
   return {
     caption: caption ? caption.trim() : caption,
     credit: credit ? credit.trim() : credit,
+  };
+}
+
+/**
+ * Build a `NodeFilterFn` that returns `true` for element nodes whose `class`
+ * attribute contains the given class name as one of its space-separated tokens.
+ *
+ * @param {string} className - the CSS class name to match
+ * @returns {NodeFilterFn}
+ */
+export function filterClassNameDescendants(className: string): NodeFilterFn {
+  return (node: Node): boolean => {
+    /* v8 ignore next -- findDescendants only ever passes element nodes */
+    if (node.type !== 'element') return false;
+    const classNames = getAttributes(node.attributes).get('class');
+    if (!classNames) return false;
+    return classNames.split(' ').includes(className);
   };
 }

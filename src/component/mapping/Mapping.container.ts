@@ -17,7 +17,6 @@ import {
 } from '../Component';
 import {
   type ElementNode,
-  type DescendantsReducer,
   type Node,
   type NodeFilterFn,
   findDescendants,
@@ -30,6 +29,7 @@ import {
   excludeNode,
   filterAllMapping,
   filterAnyMapping,
+  filterClassNameDescendants,
   fromFigcaption,
 } from './Mapping.utils';
 import { filterFigureDescendants } from './Mapping.media';
@@ -295,32 +295,6 @@ function filterLivePostDescendants(
   };
 }
 
-/**
- * Build a node filter that matches elements carrying the given class name.
- *
- * @param {string} className
- * @returns {NodeFilterFn}
- */
-function filterClassNameDescendants(className: string): NodeFilterFn {
-  return (node: Node): boolean => {
-    const { type } = node;
-    /* v8 ignore next -- findDescendants only ever passes element nodes */
-    if (type !== 'element') return false;
-
-    const attributes = getAttributes(node.attributes);
-    const classNames = attributes.get('class');
-    if (!classNames) return false;
-    /* v8 ignore next -- attribute map values are always strings */
-    if (typeof classNames !== 'string') return false;
-    for (const name of classNames.split(' ')) {
-      if (name === className) {
-        return true;
-      }
-    }
-
-    return false;
-  };
-}
 
 /**
  * Transform an a tag into a Canvasflow LinkContainer Component
@@ -400,14 +374,13 @@ export function toFigureContainer(
     []
   );
 
-  // Remove the credit nodes from the children and find the figcaption node
-  let figcaptionNodes = node.children.reduce(
+  // Strip credit nodes from the tree, then collect figcaption elements from
+  // the pruned result so credit text is not included in the caption.
+  const prunedChildren = node.children.reduce(
     removeDescendants(creditFindFn),
     []
   );
-
-  // Find the figcaption node and extract the caption and credit from it
-  figcaptionNodes = figcaptionNodes.reduce(
+  const figcaptionNodes = prunedChildren.reduce(
     findDescendants('figcaption'),
     []
   );
@@ -454,7 +427,6 @@ export function toFigureContainer(
 
   return component;
 }
-
 
 /* ---------------------------------------------------------------------------
  * Button + link/figure container helpers (moved from Mapping.ts)
