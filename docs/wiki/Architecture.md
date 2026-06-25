@@ -57,7 +57,7 @@ XML attributes from the parser use the `@_` prefix convention (e.g. `@_url`, `@_
 | [`mapping/Mapping.text.ts`](../../src/component/mapping/Mapping.text.ts)           | `toText` (text components).                                                           |
 | [`mapping/Mapping.schema.ts`](../../src/component/mapping/Mapping.schema.ts)       | Zod schemas for `Params`, `Mapping`, and filters.                                     |
 | [`mapping/Mapping.constants.ts`](../../src/component/mapping/Mapping.constants.ts) | Tag / attribute allow-lists used during conversion.                                   |
-| [`mapping/Mapping.utils.ts`](../../src/component/mapping/Mapping.utils.ts)         | Leaf helpers (`sanitizeNode`, `sanitizeContentHtml`, `matchesPattern`, …).            |
+| [`mapping/Mapping.utils.ts`](../../src/component/mapping/Mapping.utils.ts)         | Shared helpers: `sanitizeNode`, `sanitizeContentHtml`, `matchesPattern`, `fromFigcaption`, `filterClassNameDescendants`, `processTextLinks`, `isEmpty`, and filter/exclude utilities. |
 | [`Component.ts`](../../src/component/Component.ts)                                 | `ComponentType` / `TextType` unions, component interfaces, and `is*` guards.          |
 | [`node/Node.ts`](../../src/component/node/Node.ts)                                 | himalaya AST node types and helpers (`getAttributes`, `findDescendants`, `removeDescendants`, `SetUtils`); exports `DescendantsReducer`, `FindFn`, `NodeFilterFn`. |
 | [`schema/Schema.ts`](../../src/component/schema/Schema.ts)                         | Zod schemas for recipe (JSON-LD) extraction.                                          |
@@ -67,7 +67,7 @@ XML attributes from the parser use the `@_` prefix convention (e.g. `@_url`, `@_
 `reduceComponents` walks the node tree and, for each element, evaluates (in order):
 
 1. **Exclusion** — `excludes` mappings or the `data-cf-ignore` attribute.
-2. **Built-in detection** — social embeds, `<table>`, `<video>`, `<audio>`, `<iframe>`, buttons, images, galleries.
+2. **Built-in detection** — social embeds, `<table>`, `<video>`, `<audio>`, `<iframe>`, buttons, images (`<img>`, `<picture>`), galleries, and `<figure>` (always routed to `toFigureContainer` → `FigureContainerComponent`).
 3. **Custom mappings** — each `mappings` entry in order; first match wins.
 4. **Default text rules** — the `h1→headline … p→body` table.
 5. **Descend** — otherwise ignore the element and evaluate its children.

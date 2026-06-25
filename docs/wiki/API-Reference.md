@@ -42,8 +42,9 @@ import { HTMLMapper } from '@canvasflow/feed';
 
 | Member           | Signature                                            | Description                                     |
 | ---------------- | ---------------------------------------------------- | ----------------------------------------------- |
-| `toComponents`   | `(html: string, params?: Params) => Component[]`     | Convert an HTML string into components.         |
-| `getRootElement` | `(html: string, mapping: Mapping) => string \| null` | Serialize the first element matching `mapping`. |
+| `toComponents`        | `(html: string, params?: Params) => Component[]`     | Convert an HTML string into components.                                                |
+| `getRootElement`      | `(html: string, mapping: Mapping) => string \| null` | Serialize the first element matching `mapping`.                                        |
+| `splitParagraphImages`| `(html: string, tag: string) => string`              | Split elements of the given tag that contain `<img>` so each image becomes its own block. |
 
 See [HTML Mapping](HTML-Mapping.md).
 

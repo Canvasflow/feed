@@ -44,7 +44,9 @@ Each kind has a typed interface extending `Component`, e.g.:
 | `TwitterComponent` / `InstagramComponent` / `InfogramComponent`                                                                                                                            | `twitter` / `instagram` / `infogram` |
 | `HTMLTableComponent`                                                                                                                                                                       | `htmltable`                          |
 | `ButtonComponent`                                                                                                                                                                          | `button`                             |
-| `ContainerComponent` / `ColumnsComponent` / `LiveContainerComponent` / `LivePostComponent` / `RecipeComponent` / `CustomComponent` / `FigureContainerComponent` / `LinkContainerComponent` | structural kinds                     |
+| `ContainerComponent` / `ColumnsComponent` / `LiveContainerComponent` / `LivePostComponent` / `RecipeComponent` / `CustomComponent` | `container` / `columns` / `live_container` / `live_post` / `recipe` / `custom` |
+| `FigureContainerComponent` | `container` with `type: 'figure'` — produced by every `<figure>` element; carries `caption?`, `credit?`, and a `components[]` of the nested media. |
+| `LinkContainerComponent` | `container` with `type: 'link'` — produced by an `<a>` wrapping mixed content; carries `link`, `attributes`, and a `components[]`. |
 | `SpacerComponent`                                                                                                                                                                          | `spacer`                             |
 
 ## Type guards
