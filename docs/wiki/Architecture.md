@@ -59,7 +59,7 @@ XML attributes from the parser use the `@_` prefix convention (e.g. `@_url`, `@_
 | [`mapping/Mapping.constants.ts`](../../src/component/mapping/Mapping.constants.ts) | Tag / attribute allow-lists used during conversion.                                   |
 | [`mapping/Mapping.utils.ts`](../../src/component/mapping/Mapping.utils.ts)         | Leaf helpers (`sanitizeNode`, `sanitizeContentHtml`, `matchesPattern`, …).            |
 | [`Component.ts`](../../src/component/Component.ts)                                 | `ComponentType` / `TextType` unions, component interfaces, and `is*` guards.          |
-| [`node/Node.ts`](../../src/component/node/Node.ts)                                 | himalaya AST node types and helpers (`getAttributes`, `findDescendants`, `SetUtils`). |
+| [`node/Node.ts`](../../src/component/node/Node.ts)                                 | himalaya AST node types and helpers (`getAttributes`, `findDescendants`, `removeDescendants`, `SetUtils`); exports `DescendantsReducer`, `FindFn`, `NodeFilterFn`. |
 | [`schema/Schema.ts`](../../src/component/schema/Schema.ts)                         | Zod schemas for recipe (JSON-LD) extraction.                                          |
 
 ### The detection engine

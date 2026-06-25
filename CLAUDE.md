@@ -85,6 +85,17 @@ The default HTML→Canvasflow component mapping is:
 
 Any text element's `role` attribute overrides the default mapping (e.g., `<p role="crosshead">` → `crosshead`). Styles and classes are stripped; only `href`/`target`/`rel` survive on `<a>` elements.
 
+### Node helpers (`src/component/node/Node.ts`)
+
+Provides the himalaya AST types (`Node`, `ElementNode`, `TextNode`, `CommentNode`, `Attribute`) and two tree-traversal reducers that share the `DescendantsReducer` type signature `(acc: Node[], node: Node) => Node[]`:
+
+- `findDescendants(findFn)` — collects matching element nodes into a flat list. When the `findFn` is a function and returns `true`, the matched node is included but its children are not recursed.
+- `removeDescendants(findFn)` — returns a **new array of nodes** where matching elements (and their subtrees) are removed. Non-matching elements are returned as new objects with their children recursively filtered; text/comment nodes pass through unchanged. **Does not mutate the originals.**
+
+`findFn` is `string | string[] | NodeFilterFn` (`FindFn`). Both reducers are used as the callback to `Array.prototype.reduce` over a `Node[]`.
+
+`getAttributes(attributes?)` converts an `Attribute[]` to a `Map<string, string>`. `SetUtils` provides `intersect`, `subset`, and `equal` for `Set<T>` operations.
+
 ### Component types (`src/component/Component.ts`)
 
 Defines all `ComponentType` variants (image, gallery, video, audio, twitter, instagram, youtube, tiktok, dailymotion, vimeo, infogram, recipe, htmltable, columns, container, live_container, live_post, etc.) and their interfaces. Use the `is*` type-guard functions to narrow components.

@@ -50,7 +50,7 @@ component/
 │   ├── Mapping.schema.ts   # Zod schemas: Params, Mapping, filters, component mappings
 │   └── Mapping.test.ts
 ├── node/
-│   ├── Node.ts             # himalaya AST node types + helpers (getAttributes, findDescendants, SetUtils)
+│   ├── Node.ts             # himalaya AST node types + helpers (getAttributes, findDescendants, removeDescendants, SetUtils; DescendantsReducer type)
 │   └── Node.test.ts
 └── schema/
     ├── Schema.ts           # Zod schemas for recipe (JSON-LD) extraction
