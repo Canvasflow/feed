@@ -46,7 +46,8 @@
     "coverage:ui": "VP_VERSION=4.1.8 vp test watch --coverage --ui --open",
     "commit": "cz",
     "format": "vp fmt .",
-    "changelog": "node scripts/update-changelog.mjs"
+    "changelog": "node scripts/update-changelog.mjs",
+    "prepare": "cp scripts/post-merge.sh .git/hooks/post-merge && chmod +x .git/hooks/post-merge"
   },
   "config": {
     "commitizen": {

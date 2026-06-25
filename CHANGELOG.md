@@ -1,5 +1,73 @@
 # CHANGELOG
 
+## 🏷️ 1.17.1
+
+_June 25, 2026_
+
+🐛 Fixed
+
+- (rss) Make date parsing timezone-independent ([`d2daf2a`](https://github.com/canvasflow/feed/commit/d2daf2a94baa810bbecb3d07b54feebc5505a6ec))
+
+## 🏷️ 1.17.0
+
+_June 25, 2026_
+
+✨ Features
+
+- (node) Implement removeDescendants as an immutable tree filter ([`473fb1c`](https://github.com/canvasflow/feed/commit/473fb1c2de296f769130439cc57b181fb8a4595d))
+- (rss) Auto-validate in build() and short-circuit on RSS-level errors ([`9c12d9e`](https://github.com/canvasflow/feed/commit/9c12d9e8ea762cd38542f0490ca432b0a6ba030d))
+
+🐛 Fixed
+
+- (mapping) Extend getCredit to recognise class="credit" nodes ([`527a8d4`](https://github.com/canvasflow/feed/commit/527a8d44bd1a8e92ff97dbcbc08efb10c0600dd9))
+- (mapping) Correct imports in Mapping.container and lift shared utilities ([`bde28e6`](https://github.com/canvasflow/feed/commit/bde28e6ed4e34f69f4759dce24dea09478975f92))
+- (rss) Coerce item.description to string before he.decode ([`f59e531`](https://github.com/canvasflow/feed/commit/f59e53105ee7075263ccf4004fd0a93b8e54a67d))
+- (mapping) Validate regex pattern in AttributePatternFilterSchema ([`2b408e8`](https://github.com/canvasflow/feed/commit/2b408e89654dc9814c8c637121510492f2930698))
+- (mapping) Preserve genuine protocol-relative URLs in processTextLinks ([`8ed54ba`](https://github.com/canvasflow/feed/commit/8ed54bad1741ade994bf693a5cd025e2cc2179aa))
+
+⚡️ Performance
+
+- Consolidate HTML pre-processing into a single linkedom pass ([`3d0d348`](https://github.com/canvasflow/feed/commit/3d0d34843d2106015b4b3210b2c6d82d6db4326f))
+- Cache filter.items Set per filter object in matchesFilter() ([`355df37`](https://github.com/canvasflow/feed/commit/355df37784bbf13153eee8a3af6223ae40541715))
+- Hoist textTagMapping to module-level constant TEXT_TAG_MAPPING ([`4e3fdd7`](https://github.com/canvasflow/feed/commit/4e3fdd7df46f5a90a6cd789700d8e58a7ef962ea))
+
+♻️ Refactor
+
+- (mapping) Replace derived allowedTags with explicit allowlist ([`da403ed`](https://github.com/canvasflow/feed/commit/da403ed6f1e4a7a2fc0815310a7dd1c65e392787))
+- Replace || '' with ?? '' for all string | undefined attribute access ([`26c4788`](https://github.com/canvasflow/feed/commit/26c4788519e68241ffd83cf0802f76a7bb817d4c))
+- (rss) Extract buildItem as exported function and fix CanvasflowBooleanTarget type ([`77d6f83`](https://github.com/canvasflow/feed/commit/77d6f83a99f6e0b4c274298f32da406e92d8dece))
+- (mapping) Extract CF_IGNORE_ATTR constant and use O(1) tag lookup ([`3745df8`](https://github.com/canvasflow/feed/commit/3745df873b69f4c7f641b43524af6b8f07865f40))
+- (section-2) Best-practice cleanups across RSS pipeline ([`8121bcb`](https://github.com/canvasflow/feed/commit/8121bcbbd2cc3cd88b8ee2cb5e229f7ca14c495e))
+- Extract buildCanvasflowFlags() from buildItem() ([`a81518f`](https://github.com/canvasflow/feed/commit/a81518ff0c0066803221fc36bfeb8cbed8920e09))
+- Extract buildThumbnail() from buildItem() ([`3e1bdfc`](https://github.com/canvasflow/feed/commit/3e1bdfce5ab61686d9400ab437cd59c665460174))
+- Remove empty Atom stub and misleading keyword ([`4e5e215`](https://github.com/canvasflow/feed/commit/4e5e21516ce3d2a4c2a8daa309a2f38eb948fce6))
+
+🧪 Tests
+
+- (html) Add unit tests for splitParagraphImages ([`44a2d12`](https://github.com/canvasflow/feed/commit/44a2d129fa29039d683700366e7dd9c849a4a9a0))
+- (html) Add property-based fuzz tests without fast-check ([`b5525dd`](https://github.com/canvasflow/feed/commit/b5525dd30cf55237ec033ec754f4078d6013ca5a))
+- (rss) Add full-pipeline snapshot tests for all fixture feeds ([`9bdb729`](https://github.com/canvasflow/feed/commit/9bdb729fe58ae766c7942115eecffae1c16ca2f3))
+- (rss) Add direct unit tests for buildItem ([`d5b969f`](https://github.com/canvasflow/feed/commit/d5b969fa560614a0e8a425392743e8f461addc50))
+- (html) Add live container and live post unit tests ([`f7a6e18`](https://github.com/canvasflow/feed/commit/f7a6e18f87f3a99d49347515d94cd337ea8d6418))
+- (mapping) Add AttributePatternFilterSchema regex validation tests ([`d85d114`](https://github.com/canvasflow/feed/commit/d85d1147a1ae94e27be5806494a251afd46246c7))
+- (html) Add processTextLinks regression tests and getAttributes edge cases ([`2dc1f5a`](https://github.com/canvasflow/feed/commit/2dc1f5a06c0312665894e331a9ff3504923c2c1b))
+- (section-3) Add pubDate normalization and getHtmlContent unit tests ([`b556185`](https://github.com/canvasflow/feed/commit/b5561852ee1af4d63cde04fbaaa593cd2f4570d2))
+
+🐳 CI
+
+- (deps) Bump actions/checkout from 6 to 7 ([`181bfd8`](https://github.com/canvasflow/feed/commit/181bfd826b0b308c77583f2b97ab49c2bb1337d2))
+
+📝 Docs
+
+- Update CLAUDE.md and wiki to reflect current codebase state ([`6f7065d`](https://github.com/canvasflow/feed/commit/6f7065d4340ff831c3f23fd224b7ce059cd0e7f0))
+- Update CLAUDE.md and wiki to reflect removeDescendants and DescendantsReducer ([`688c624`](https://github.com/canvasflow/feed/commit/688c6244b9d37b75e858ff4d8cc15243d34754f2))
+
+🧹 Chores
+
+- Pin himalaya to 1.1.1 and document the hand-written shim ([`4948ca1`](https://github.com/canvasflow/feed/commit/4948ca13749260b9c45c704cc2d6b5e6e4344c3d))
+- Add claude excludes ([`774e219`](https://github.com/canvasflow/feed/commit/774e2190eba7fc8e5fde3afd464f998cead4c270))
+- (deps-dev) Bump @commitlint/config-conventional ([`9733d95`](https://github.com/canvasflow/feed/commit/9733d95cd7c65ea5cb2ad3fe2a0691a6a8ab6842))
+
 ## 🏷️ 1.16.0
 
 _June 23, 2026_
