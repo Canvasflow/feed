@@ -74,6 +74,67 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ──────────────────────────────────────────────────────────────
+  # Changelog — updates CHANGELOG.md on develop after a successful
+  # publish. Uses the previous semver tag as the diff base so the
+  # section contains exactly the commits in this release.
+  # ──────────────────────────────────────────────────────────────
+  changelog:
+    name: 📝 Update CHANGELOG
+    runs-on: ubuntu-latest
+    needs: [release]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: develop
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Resolve tags
+        id: tags
+        env:
+          CURRENT_TAG: ${{ github.ref_name }}
+        run: |
+          VERSION="${CURRENT_TAG#v}"
+          # Find the semver tag immediately before the current one.
+          PREV_TAG=$(
+            git tag --sort=version:refname \
+              | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+              | grep -B1 "^${CURRENT_TAG}$" \
+              | grep -v "^${CURRENT_TAG}$" \
+              | tail -1
+          )
+          echo "version=$VERSION"      >> "$GITHUB_OUTPUT"
+          echo "current_tag=$CURRENT_TAG" >> "$GITHUB_OUTPUT"
+          echo "prev_tag=${PREV_TAG}"  >> "$GITHUB_OUTPUT"
+
+      - name: Generate changelog section
+        run: |
+          BASE="${{ steps.tags.outputs.prev_tag }}"
+          TIP="${{ steps.tags.outputs.current_tag }}"
+          VERSION="${{ steps.tags.outputs.version }}"
+          if [ -n "$BASE" ]; then
+            node scripts/update-changelog.mjs --base "$BASE" --tip "$TIP" --version "$VERSION"
+          else
+            node scripts/update-changelog.mjs --tip "$TIP" --version "$VERSION"
+          fi
+
+      - name: Commit and push
+        env:
+          CURRENT_TAG: ${{ steps.tags.outputs.current_tag }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git diff --cached --quiet && echo "CHANGELOG already up to date." && exit 0
+          git commit -m "docs(changelog): add ${CURRENT_TAG} release notes"
+          git push origin develop
+
+  # ──────────────────────────────────────────────────────────────
   # Wiki sync — runs on v* tags or manual dispatch, independent of
   # the test/release jobs.
   # ──────────────────────────────────────────────────────────────
