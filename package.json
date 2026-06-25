@@ -1,7 +1,7 @@
 {
   "name": "@canvasflow/feed",
   "description": "This is canvasflow utility for processing feeds",
-  "version": "1.16.0",
+  "version": "1.17.0",
   "type": "module",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^20.4.3",
-    "@commitlint/config-conventional": "^20.4.3",
+    "@commitlint/config-conventional": "^21.1.0",
     "@types/he": "^1.2.3",
     "@types/luxon": "^3.6.2",
     "@types/node": "^25.4.0",

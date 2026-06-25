@@ -1,5 +1,73 @@
 # CHANGELOG
 
+## 🏷️ 1.16.0
+
+_June 23, 2026_
+
+🐛 Fixed
+
+- (html) Derive buffer type instead of ambient ChildNode ([`dbedc7f`](https://github.com/Canvasflow/feed/commit/dbedc7f4c111c87c33405426f682d40da7405ce7))
+- (rss) Restore any-typed ParsedXml to fix type errors ([`68ea672`](https://github.com/Canvasflow/feed/commit/68ea6720330aaecd67d0de5764f5641c0ef560c9))
+
+♻️ Refactor
+
+- (mapping) Extract sanitizeContentHtml helper ([`52a0a8d`](https://github.com/Canvasflow/feed/commit/52a0a8d2930b505613c00f264cfe411060cc58ff))
+- (mapping) Split toHTMLTable/toCustom/toText into own modules ([`9b69e0f`](https://github.com/Canvasflow/feed/commit/9b69e0f8859dfa7f7b3fe76f5f420dc061f950ce))
+- (mapping) Move button/link-container helpers into Mapping.container ([`aa0688f`](https://github.com/Canvasflow/feed/commit/aa0688fa8c61848e0ad81a8a67b33c76dbe0515c))
+- (component) Move HTMLMapper files into html/ subdirectory ([`ba1a5c6`](https://github.com/Canvasflow/feed/commit/ba1a5c6e257bff0d0061bec7f1f863ef3ada3f19))
+- (rss) Type ParsedXml and split HTMLMapper test module ([`070ddba`](https://github.com/Canvasflow/feed/commit/070ddba5efe0185774b9e4734fc46e87b33574e8))
+- (mapping) Move twitter/iframe/figure builders into group modules ([`ae55d3b`](https://github.com/Canvasflow/feed/commit/ae55d3bfdc0d7084362fefed13eb8e25de2899d0))
+- (mapping) Split Mapping.ts by component group ([`a224826`](https://github.com/Canvasflow/feed/commit/a2248268da71abaae3bff83590f5027532510e08))
+- Drop no-explicit-any escape hatches at parser boundaries ([`aa06359`](https://github.com/Canvasflow/feed/commit/aa06359a8ad7a6b34e42b0001a3169b95450961b))
+
+🧪 Tests
+
+- (coverage) Add targeted tests and raise coverage thresholds ([`a11be4a`](https://github.com/Canvasflow/feed/commit/a11be4a673058224e370d6930e13d3623891bd28))
+
+🐳 CI
+
+- Add Dependabot for npm and GitHub Actions ([`b1fcf1c`](https://github.com/Canvasflow/feed/commit/b1fcf1c2e988eb0712cb1257d490a93b85c115a8))
+- (publish) Pin publish registry, gate lint/build, add node matrix ([`5d9c916`](https://github.com/Canvasflow/feed/commit/5d9c916a8e9e4a462b30884452ba533ca4c33dd6))
+
+📝 Docs
+
+- Update wiki, README, and CLAUDE for the html/ + mapping module layout ([`328d8e2`](https://github.com/Canvasflow/feed/commit/328d8e20fb227a233579aa634b37525d0e45b7c4))
+- (jsdoc) Add missing JSDoc and fix incorrect comments ([`85114f6`](https://github.com/Canvasflow/feed/commit/85114f6f622ed64fe69b9abd54098b27ec6c0434))
+- Record HTMLMapper/Mapping module refactors in RECOMENDATIONS ([`4b6d943`](https://github.com/Canvasflow/feed/commit/4b6d94309e66ad5ec3c5efde41d4c625fcf133b7))
+- Add root SECURITY.md and CONTRIBUTING.md ([`4d1533b`](https://github.com/Canvasflow/feed/commit/4d1533b6d313ac14fd3a94b9ad65be3a71e29163))
+- Prune implemented items from RECOMENDATIONS.md ([`ea88f19`](https://github.com/Canvasflow/feed/commit/ea88f19b92feef20a88677b782657b87fd211265))
+- Fix stale CLAUDE.md commands and document skipped-tag opt-in ([`bc299c0`](https://github.com/Canvasflow/feed/commit/bc299c0f9f516ec328cc7cdf8f04512161d1c698))
+
+🧹 Chores
+
+- Add recomentations to .gitignore ([`4db0ce7`](https://github.com/Canvasflow/feed/commit/4db0ce773d1bd08cc39b9282baa82a25e8ea1295))
+
+## 🏷️ 1.15.8
+
+_June 22, 2026_
+
+♻️ Refactor
+
+- (component) Group modules into mapping/node/schema folders ([`3781043`](https://github.com/Canvasflow/feed/commit/3781043a71007e9a5e1e170f9e3ef2559a053140))
+- (mapping) Split Mapping.ts into focused modules ([`6f933ad`](https://github.com/Canvasflow/feed/commit/6f933ad1c528b12e23d0829e646ec4211a0b8f0a))
+- Dedupe filter logic, centralize sanitize, add himalaya types ([`1239512`](https://github.com/Canvasflow/feed/commit/12395126781cc43c5ca1808b0b0a6ce48a724fdf))
+- Harden validation, encapsulate raw data, guard pattern filters ([`70df820`](https://github.com/Canvasflow/feed/commit/70df820de525f1efafcfc33d6bba749b808ef005))
+
+📝 Docs
+
+- (wiki) Drop references to removed docs/*.md files ([`39a8730`](https://github.com/Canvasflow/feed/commit/39a87301e5f055296bedf051c6e109d019295f49))
+- Rewrite README as intro pointing to the wiki; drop docs/*.md ([`55b95aa`](https://github.com/Canvasflow/feed/commit/55b95aabefbc5b02af2010dc2f826a8c8ac3e325))
+- (wiki) Add GitHub Wiki pages and a wiki-sync publish job ([`7d738bc`](https://github.com/Canvasflow/feed/commit/7d738bc7c846b00d2fefa8955be3ba5aad9a3c5e))
+
+🎨 Style
+
+- (docs) Align README documentation table ([`a168349`](https://github.com/Canvasflow/feed/commit/a168349c944e224df2fd2e5045569f8588b83afa))
+- (wiki) Apply formatter table alignment ([`aa38ed6`](https://github.com/Canvasflow/feed/commit/aa38ed6643481b7b08a3a58154dbc60326869f35))
+
+🧹 Chores
+
+- Drop emoji comment and align repository URLs casing ([`28b4464`](https://github.com/Canvasflow/feed/commit/28b4464df3c1243b89ce5c09cfeb4228a5724a4c))
+
 ## 🏷️ 1.15.7
 
 _June 22, 2026_

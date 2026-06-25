@@ -21,6 +21,7 @@ import {
   type NodeFilterFn,
   findDescendants,
   getAttributes,
+  removeDescendants,
 } from '../node/Node';
 import {
   sanitizeNode,
@@ -28,6 +29,7 @@ import {
   excludeNode,
   filterAllMapping,
   filterAnyMapping,
+  filterClassNameDescendants,
   fromFigcaption,
 } from './Mapping.utils';
 import { filterFigureDescendants } from './Mapping.media';
@@ -132,9 +134,9 @@ export function toColumns(
 
   const columnNodes: ElementNode[] = node.children
     ? node.children
-        .reduce(findDescendants(filterColumnsDescendants(mapping, params)), [])
-        .filter((node: Node) => node.type === 'element')
-    : /* v8 ignore next -- children is always defined on an element node */ [];
+      .reduce(findDescendants(filterColumnsDescendants(mapping, params)), [])
+      .filter((node: Node) => node.type === 'element')
+    : /* v8 ignore next -- children is always defined on an element node */[];
 
   if (!columnNodes.length) {
     errors.push('HTML node do not have children');
@@ -228,10 +230,10 @@ export function toLiveContainer(
 
   const posts: LivePostComponent[] = node.children
     ? node.children
-        .reduce(findDescendants(filterLivePostDescendants(mapping, params)), [])
-        .filter((node: Node) => node.type === 'element')
-        .map(mapLivePost(params))
-    : /* v8 ignore next -- children is always defined on an element node */ [];
+      .reduce(findDescendants(filterLivePostDescendants(mapping, params)), [])
+      .filter((node: Node) => node.type === 'element')
+      .map(mapLivePost(params))
+    : /* v8 ignore next -- children is always defined on an element node */[];
 
   if (!posts.length) {
     errors.push('HTML node do not have children');
@@ -293,32 +295,6 @@ function filterLivePostDescendants(
   };
 }
 
-/**
- * Build a node filter that matches elements carrying the given class name.
- *
- * @param {string} className
- * @returns {NodeFilterFn}
- */
-function filterClassNameDescendants(className: string): NodeFilterFn {
-  return (node: Node): boolean => {
-    const { type } = node;
-    /* v8 ignore next -- findDescendants only ever passes element nodes */
-    if (type !== 'element') return false;
-
-    const attributes = getAttributes(node.attributes);
-    const classNames = attributes.get('class');
-    if (!classNames) return false;
-    /* v8 ignore next -- attribute map values are always strings */
-    if (typeof classNames !== 'string') return false;
-    for (const name of classNames.split(' ')) {
-      if (name === className) {
-        return true;
-      }
-    }
-
-    return false;
-  };
-}
 
 /**
  * Transform an a tag into a Canvasflow LinkContainer Component
@@ -342,9 +318,9 @@ export function toLinkContainer(
 
   const containerParams: Params = params
     ? structuredClone({
-        ...params,
-        ignoreParagraphWrap: true,
-      })
+      ...params,
+      ignoreParagraphWrap: true,
+    })
     : { ignoreParagraphWrap: true };
 
   const components: Array<Component> = node.children.length
@@ -390,11 +366,26 @@ export function toFigureContainer(
   let caption = '';
   let credit = '';
 
-  // Get the figcaption section
-  const figcaptionNodes = node.children.reduce(
+  const creditFindFn = filterClassNameDescendants('credit');
+
+  // Find the credit node and extract the credit from it
+  const creditNodes = node.children.reduce(
+    findDescendants(creditFindFn),
+    []
+  );
+
+  // Strip credit nodes from the tree, then collect figcaption elements from
+  // the pruned result so credit text is not included in the caption.
+  const prunedChildren = node.children.reduce(
+    removeDescendants(creditFindFn),
+    []
+  );
+  const figcaptionNodes = prunedChildren.reduce(
     findDescendants('figcaption'),
     []
   );
+
+  // If we have a figcaption node, we will extract the caption and credit from it
   if (figcaptionNodes.length) {
     const figcaptionNode = figcaptionNodes.shift() as ElementNode;
     const ficaptionResponse = fromFigcaption(figcaptionNode);
@@ -404,11 +395,8 @@ export function toFigureContainer(
     }
   }
 
-  const creditNodes = node.children.reduce(
-    findDescendants(filterClassNameDescendants('credit')),
-    []
-  );
-
+  // If we have a credit node, we will extract the credit from it and override 
+  // the credit from the figcaption node
   if (creditNodes.length) {
     const creditNode = creditNodes.shift() as ElementNode;
     credit = sanitizeNode(creditNode, {

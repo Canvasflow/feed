@@ -69,7 +69,7 @@ An optional `Params` (from `mapping/Mapping.ts`) can be passed to `RSSFeed` to c
 - `Mapping.embeds.ts` — Instagram / TikTok / YouTube / Vimeo / Dailymotion / Infogram
 - `Mapping.container.ts` — container / columns / live_container / link & figure containers / buttons
 - `Mapping.table.ts` (`toHTMLTable`), `Mapping.custom.ts` (`toCustom`), `Mapping.text.ts` (`toText`)
-- `Mapping.utils.ts` (leaf helpers), `Mapping.constants.ts` (allow-lists), `Mapping.schema.ts` (Zod schemas)
+- `Mapping.utils.ts` (shared helpers: `sanitizeNode`, `sanitizeContentHtml`, `matchesPattern`, `fromFigcaption`, `filterClassNameDescendants`, `processTextLinks`, `isEmpty`, filter/exclude utilities), `Mapping.constants.ts` (allow-lists), `Mapping.schema.ts` (Zod schemas)
 
 The default HTML→Canvasflow component mapping is:
 
@@ -84,6 +84,19 @@ The default HTML→Canvasflow component mapping is:
 | `footer`     | `footer`       |
 
 Any text element's `role` attribute overrides the default mapping (e.g., `<p role="crosshead">` → `crosshead`). Styles and classes are stripped; only `href`/`target`/`rel` survive on `<a>` elements.
+
+All `<figure>` elements are routed to `toFigureContainer` (in `Mapping.container.ts`) and produce a `FigureContainerComponent` (`component: 'container'`, `type: 'figure'`), never a bare `ImageComponent`. Caption and credit are extracted from `<figcaption>`; credit nodes are matched by the `<small>` tag, `role="credit"`, or `class="credit"`.
+
+### Node helpers (`src/component/node/Node.ts`)
+
+Provides the himalaya AST types (`Node`, `ElementNode`, `TextNode`, `CommentNode`, `Attribute`) and two tree-traversal reducers that share the `DescendantsReducer` type signature `(acc: Node[], node: Node) => Node[]`:
+
+- `findDescendants(findFn)` — collects matching element nodes into a flat list. When the `findFn` is a function and returns `true`, the matched node is included but its children are not recursed.
+- `removeDescendants(findFn)` — returns a **new array of nodes** where matching elements (and their subtrees) are removed. Non-matching elements are returned as new objects with their children recursively filtered; text/comment nodes pass through unchanged. **Does not mutate the originals.**
+
+`findFn` is `string | string[] | NodeFilterFn` (`FindFn`). Both reducers are used as the callback to `Array.prototype.reduce` over a `Node[]`.
+
+`getAttributes(attributes?)` converts an `Attribute[]` to a `Map<string, string>`. `SetUtils` provides `intersect`, `subset`, and `equal` for `Set<T>` operations.
 
 ### Component types (`src/component/Component.ts`)
 

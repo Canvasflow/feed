@@ -14,9 +14,11 @@ import {
   toVimeo,
   toDailymotion,
 } from './Mapping.embeds';
-import { toButton, toAnchorButton } from './Mapping.container';
+import { toImage, toApplePodcast } from './Mapping.media';
+import { toButton, toAnchorButton, toFigureContainer } from './Mapping.container';
 import {
   type ButtonComponent,
+  type FigureContainerComponent,
   type GalleryComponent,
   type ImageComponent,
   type AudioComponent,
@@ -416,5 +418,124 @@ describe('AttributePatternFilterSchema regex validation', () => {
         ],
       })
     ).toBe(true);
+  });
+});
+
+describe('Media direct-call error paths', () => {
+  const el = (
+    tagName: string,
+    children: ElementNode['children'] = [],
+    attrs: { key: string; value: string }[] = []
+  ): ElementNode => ({
+    type: 'element',
+    tagName,
+    children,
+    attributes: attrs,
+  });
+
+  test('toImage figure with multiple pictures warns', tags, () => {
+    const node = el('figure', [
+      el('picture', [el('img', [], [{ key: 'src', value: 'a.jpg' }])]),
+      el('picture', [el('img', [], [{ key: 'src', value: 'b.jpg' }])]),
+    ]);
+    const c = toImage(node) as ImageComponent;
+    expect(c.warnings).toContain('Only one picture tag per figure tag is valid');
+  });
+
+  test('toImage figure with anchor img missing src records an error', tags, () => {
+    const node = el('figure', [
+      el(
+        'a',
+        [el('img', [], [{ key: 'alt', value: 'x' }])],
+        [{ key: 'href', value: 'https://example.com' }]
+      ),
+    ]);
+    const c = toImage(node) as ImageComponent;
+    expect(c.errors).toContain('Image src attribute is missing');
+  });
+
+  test('toImage figure with anchor missing href warns', tags, () => {
+    const node = el('figure', [
+      el('a', [el('img', [], [{ key: 'src', value: 'a.jpg' }])]),
+    ]);
+    const c = toImage(node) as ImageComponent;
+    expect(c.warnings).toContain('Image link is empty');
+  });
+
+  test('toApplePodcast without src records an error', tags, () => {
+    const node = el('iframe');
+    const c = toApplePodcast(node);
+    expect(c.errors).toContain('src is required');
+  });
+
+  test('toImage figure with class-credit in figcaption extracts credit', tags, () => {
+    const node = el('figure', [
+      el('img', [], [
+        { key: 'src', value: 'a.jpg' },
+        { key: 'alt', value: 'A photo' },
+      ]),
+      el('figcaption', [
+        el(
+          'div',
+          [{ type: 'text', content: 'Photo credit' }],
+          [{ key: 'class', value: 'credit' }]
+        ),
+      ]),
+    ]);
+    const c = toImage(node) as ImageComponent;
+    expect(c.credit).toContain('Photo credit');
+    expect(c.caption).toBeUndefined();
+  });
+});
+
+describe('toFigureContainer direct paths', () => {
+  const el = (
+    tagName: string,
+    children: ElementNode['children'] = [],
+    attrs: { key: string; value: string }[] = []
+  ): ElementNode => ({
+    type: 'element',
+    tagName,
+    children,
+    attributes: attrs,
+  });
+  const text = (content: string) => ({ type: 'text' as const, content });
+
+  test('extracts credit from class-credit node inside figcaption', tags, () => {
+    const node = el('figure', [
+      el('img', [], [{ key: 'src', value: 'a.jpg' }]),
+      el('figcaption', [
+        el('div', [text('Caption text')]),
+        el('div', [text('Credit text')], [{ key: 'class', value: 'credit' }]),
+      ]),
+    ]);
+    const c = toFigureContainer(node) as FigureContainerComponent;
+    expect(c.credit).toContain('Credit text');
+    expect(c.caption).not.toContain('Credit text');
+  });
+
+  test('extracts credit from class-credit sibling of figcaption', tags, () => {
+    const node = el('figure', [
+      el('img', [], [{ key: 'src', value: 'a.jpg' }]),
+      el('figcaption', [el('div', [text('Caption text')])]),
+      el('div', [text('Sibling credit')], [{ key: 'class', value: 'credit' }]),
+    ]);
+    const c = toFigureContainer(node) as FigureContainerComponent;
+    expect(c.credit).toContain('Sibling credit');
+  });
+
+  test('credit nested deeper than direct figcaption child is stripped', tags, () => {
+    const node = el('figure', [
+      el('img', [], [{ key: 'src', value: 'a.jpg' }]),
+      el('figcaption', [
+        el('div', [
+          el('span', [text('Caption')]),
+          el('div', [text('Deep credit')], [{ key: 'class', value: 'credit' }]),
+        ]),
+      ]),
+    ]);
+    const c = toFigureContainer(node) as FigureContainerComponent;
+    expect(c.credit).toContain('Deep credit');
+    expect(c.caption).not.toContain('Deep credit');
   });
 });
