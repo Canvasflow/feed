@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 🏷️ 1.17.2
+
+_June 26, 2026_
+
+🐛 Fixed
+
+- (text) Preserve whitespace between inline elements as regular space ([`3783b0e`](https://github.com/canvasflow/feed/commit/3783b0e6cc1f3efb33ab386896387b1aae324e6d))
+
+🧹 Chores
+
+- Add snapshot test npm scripts ([`e5eaea7`](https://github.com/canvasflow/feed/commit/e5eaea7e98ec669e67afab89f88be00eda0a3309))
+- (snapshots) Update snapshots to reflect regular space in inline elements ([`df54024`](https://github.com/canvasflow/feed/commit/df54024e12ddd54628ec8a58791e71a422947b44))
+
 ## 🏷️ 1.16.0
 
 _June 23, 2026_

@@ -254,7 +254,7 @@ describe('Text components', () => {
   );
 
   test(
-    'It should preserve whitespace between inline elements as a non-breaking space',
+    'It should preserve whitespace between inline elements as a empty space',
     { tags: ['unit', 'html'] },
     () => {
       const content = `<p><span>now $452</span> <span>at Amazon</span></p>`;
@@ -266,10 +266,8 @@ describe('Text components', () => {
       // The whitespace-only text node between the two spans is preserved as a
       // non-breaking space (U+00A0) instead of being collapsed to a regular
       // space, which downstream trimming could drop.
-      expect(component.text).toContain('\u00A0');
-      expect(component.text).not.toContain('</span> <span>');
       expect(component.text).toBe(
-        '<p><span>now $452</span>\u00A0<span>at Amazon</span></p>'
+        '<p><span>now $452</span> <span>at Amazon</span></p>'
       );
     }
   );

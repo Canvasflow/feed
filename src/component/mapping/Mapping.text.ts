@@ -22,7 +22,7 @@ function preserveInlineWhitespace(node: Node): void {
   if (node.type !== 'element' || !node.children) return;
   for (const child of node.children) {
     if (child.type === 'text' && /^\s+$/.test(child.content)) {
-      child.content = child.content.replace(/ /g, '&nbsp;');
+      child.content = child.content.replace(/ /g, ' ');
     } else {
       preserveInlineWhitespace(child);
     }
