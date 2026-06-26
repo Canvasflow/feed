@@ -40,6 +40,8 @@
     "test:integration": "VP_VERSION=4.1.8 vp test --ui --tags-filter=integration",
     "test:todo": "VP_VERSION=4.1.8 vp test --ui --tags-filter=todo",
     "test:broken": "VP_VERSION=4.1.8 vp test --ui --tags-filter=broken",
+    "test:snapshot": "vp test src/**/*.snapshot.test.ts",
+    "test:snapshot:update": "vp test --update src/**/*.snapshot.test.ts",
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",
     "coverage": "VP_VERSION=4.1.8 vp test --coverage",
