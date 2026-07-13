@@ -93,7 +93,12 @@ Groups matched child elements into a single container component. All children ar
 {
   "component": "container",
   "match": "all",
-  "filters": [{ "type": "tag", "items": ["section"] }]
+  "filters": [
+    { 
+      "type": "tag", 
+      "items": ["section"] 
+    }
+  ]
 }
 ```
 
@@ -120,7 +125,13 @@ Marks the matched element as a recipe container. The page at the item's `url` is
 {
   "component": "recipe",
   "match": "all",
-  "filters": [{ "type": "class", "match": "any", "items": ["recipe-block"] }]
+  "filters": [
+    { 
+      "type": "class", 
+      "match": "any", 
+      "items": ["recipe-block"] 
+    }
+  ]
 }
 ```
 
@@ -154,10 +165,22 @@ Splits a matched wrapper element into a multi-column layout. The required `colum
 {
   "component": "columns",
   "match": "all",
-  "filters": [{ "type": "class", "match": "any", "items": ["columns-wrapper"] }],
+  "filters": [
+    { 
+      "type": "class", 
+      "match": "any", 
+      "items": ["columns-wrapper"] 
+    }
+  ],
   "column": {
     "match": "any",
-    "filters": [{ "type": "class", "match": "any", "items": ["column"] }]
+    "filters": [
+      { 
+        "type": "class", 
+        "match": "any", 
+        "items": ["column"] 
+      }
+    ]
   }
 }
 ```
@@ -195,10 +218,22 @@ Identifies a live-blog wrapper and its individual posts. The required `post` sub
 {
   "component": "live_container",
   "match": "all",
-  "filters": [{ "type": "class", "match": "any", "items": ["live-blog"] }],
+  "filters": [
+    { 
+      "type": "class", 
+      "match": "any", 
+      "items": ["live-blog"] 
+    }
+  ],
   "post": {
     "match": "any",
-    "filters": [{ "type": "class", "match": "any", "items": ["live-post"] }]
+    "filters": [
+      { 
+        "type": "class", 
+        "match": "any", 
+        "items": ["live-post"] 
+      }
+    ]
   }
 }
 ```
@@ -234,10 +269,22 @@ Identifies an image gallery wrapper and its individual slides. The required `sli
 {
   "component": "gallery",
   "match": "all",
-  "filters": [{ "type": "class", "match": "any", "items": ["image-gallery"] }],
+  "filters": [
+    { 
+      "type": "class", 
+      "match": "any", 
+      "items": ["image-gallery"] 
+    }
+  ],
   "slide": {
     "match": "any",
-    "filters": [{ "type": "class", "match": "any", "items": ["gallery-slide"] }]
+    "filters": [
+      { 
+        "type": "class", 
+        "match": "any", 
+        "items": ["gallery-slide"] 
+      }
+    ]
   }
 }
 ```
@@ -265,7 +312,13 @@ Preserves the matched element as sanitized raw HTML rather than recursing into i
 {
   "component": "custom",
   "match": "all",
-  "filters": [{ "type": "class", "match": "any", "items": ["third-party-embed"] }]
+  "filters": [
+    { 
+      "type": "class", 
+      "match": "any", 
+      "items": ["third-party-embed"] 
+    }
+  ]
 }
 ```
 
@@ -295,7 +348,13 @@ Numbered slots: `text1` through `text60`.
 {
   "component": "crosshead",
   "match": "all",
-  "filters": [{ "type": "class", "match": "any", "items": ["section-heading"] }]
+  "filters": [
+    { 
+      "type": "class", 
+      "match": "any", 
+      "items": ["section-heading"] 
+    }
+  ]
 }
 ```
 
@@ -325,4 +384,4 @@ Numbered slots: `text1` through `text60`.
 
 ## Validation
 
-`Params`/`Mapping` are validated with Zod schemas ([`mapping/Mapping.schema.ts`](../../src/component/mapping/Mapping.schema.ts)). The exported helpers `isValidParams()`, `isValidMapping()`, and `validateParams()` (and the static `RSSFeed.validateParams()`) reuse those schemas. See [API Reference](API-Reference.md).
+`Params`/`Mapping` are validated with Zod schemas ([`mapping/Mapping.schema.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/Mapping.schema.ts)). The exported helpers `isValidParams()`, `isValidMapping()`, and `validateParams()` (and the static `RSSFeed.validateParams()`) reuse those schemas. See [API Reference](API-Reference.md).
