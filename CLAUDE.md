@@ -113,3 +113,21 @@ Tests are tagged via `{ tags: [...] }` in vitest options. `integration` and `rec
 ## Commit convention
 
 Commits must follow Conventional Commits. Use `npm run commit` (commitizen) or write messages manually as `type(scope): subject`.
+
+## Improvement plan (`improvements/`)
+
+There is an ongoing, multi-session improvement effort documented in
+`improvements/`:
+
+- `improvements/PLAN.md` — entry point; sections sorted by impact.
+- `improvements/01-*.md` … `07-*.md` — one document per topic (overview,
+  files to review, study resources, actionable plan).
+- `improvements/DASHBOARD.md` — **the cross-session state file.** When asked
+  to work on or review improvement work: read `DASHBOARD.md` first, work on
+  the relevant section, and check off items **only after verifying them
+  against the actual repo state** (run tests/tools, read the code) — never
+  from conversation memory alone. Study items are checked when the human
+  confirms them. Mark a section heading with ✅ when all its items are done.
+
+Sections are tackled one at a time, in order. The snapshot "safety net" item
+in Section 6 is a prerequisite before starting Sections 1 and 2.
