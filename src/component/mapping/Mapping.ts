@@ -375,22 +375,6 @@ export function fromNode(
     params?.mappings
   );
 
-  if (tagName === 'figure') {
-    return toFigureContainer(node, params, properties);
-  }
-
-  if (tagName === 'a') {
-    return toLinkContainer(node, params, properties);
-  }
-
-  if (tagName === 'img') {
-    return toImg(node);
-  }
-
-  if (tagName === 'picture') {
-    return toImage(node);
-  }
-
   if (mappedComponent && mapping) {
     if (mappedComponent === 'recipe' || mappedComponent === 'container') {
       return toContainer(mappedComponent, node, params, properties);
@@ -419,6 +403,23 @@ export function fromNode(
     }
 
     return toText(node, mappedComponent, properties);
+  }
+
+
+  if (tagName === 'figure') {
+    return toFigureContainer(node, params, properties);
+  }
+
+  if (tagName === 'a') {
+    return toLinkContainer(node, params, properties);
+  }
+
+  if (tagName === 'img') {
+    return toImg(node);
+  }
+
+  if (tagName === 'picture') {
+    return toImage(node);
   }
 
   // This section validates text tags
@@ -565,13 +566,13 @@ function getMappingComponent(
 
 interface MappingComponentResponse {
   mappedComponent?:
-    | TextType
-    | 'recipe'
-    | 'container'
-    | 'columns'
-    | 'live_container'
-    | 'gallery'
-    | 'custom';
+  | TextType
+  | 'recipe'
+  | 'container'
+  | 'columns'
+  | 'live_container'
+  | 'gallery'
+  | 'custom';
   properties?: Record<string, unknown>;
   mapping?: ComponentMapping;
 }
