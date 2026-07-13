@@ -645,10 +645,10 @@ describe('Live container component', () => {
   const liveMapping: LiveContainerMapping = {
     component: 'live_container',
     match: 'any',
-    filters: [{ type: 'class', items: ['live-blog'] }],
+    filters: [{ type: 'class', match: 'any', items: ['live-blog'] }],
     post: {
       match: 'any',
-      filters: [{ type: 'class', items: ['live-post'] }],
+      filters: [{ type: 'class', match: 'any', items: ['live-post'] }],
     },
   };
   const params = { mappings: [liveMapping] };
@@ -728,7 +728,7 @@ describe('Live container component', () => {
       const containerMapping: ComponentMapping = {
         component: 'container',
         match: 'any',
-        filters: [{ type: 'class', items: ['wrapper'] }],
+        filters: [{ type: 'class', match: 'any', items: ['wrapper'] }],
       };
       const nestedParams = { mappings: [containerMapping, liveMapping] };
       const html = `
