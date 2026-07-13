@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 🏷️ 1.17.3
+
+_July 13, 2026_
+
+✨ Features
+
+- (mapping) Honour custom mappings on anchor elements ([`af33b1b`](https://github.com/canvasflow/feed/commit/af33b1b68f1b68b8c392d1bae3b4bb90999832f4))
+
+📝 Docs
+
+- (wiki) Add per-type subsections to Custom-Mappings ([`d0589d9`](https://github.com/canvasflow/feed/commit/d0589d92a11f71b6ad67f934db96924e5f779485))
+
 ## 🏷️ 1.17.2
 
 _June 26, 2026_
