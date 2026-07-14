@@ -19,12 +19,12 @@ Domain and project terms used throughout `@canvasflow/feed` and this wiki.
 | **Filter**                       | A `tag`, `class`, or `attribute` matcher inside a mapping. The attribute filter has an exact-value and a regex `pattern` form.                                     |
 | **`match`**                      | How many of a mapping's filters must match: `any` or `all` (class filters also allow `equal`).                                                                     |
 | **Excludes**                     | Base mappings whose matches (and children) are removed before conversion; also `data-cf-ignore`.                                                                   |
-| **Node**                         | A himalaya AST node (`element` / `text` / `comment`). Helpers live in [`node/Node.ts`](../../src/component/node/Node.ts).                                          |
+| **Node**                         | A himalaya AST node (`element` / `text` / `comment`). Helpers live in [`node/Node.ts`](https://github.com/canvasflow/feed/blob/main/src/component/node/Node.ts).                                          |
 | **himalaya**                     | The HTML-to-JSON parser used to build the AST that the engine reduces.                                                                                             |
 | **fast-xml-parser**              | The XML parser behind `RSSFeed`; exposes attributes with the `@_` prefix.                                                                                          |
 | **sanitize-html**                | Sanitizes serialized nodes to an allowed tag/attribute set when building components.                                                                               |
 | **`cf:` namespace**              | Canvasflow RSS extensions (`cf:isSponsored`, `cf:isPaid`, `cf:thumbnail`, …).                                                                                      |
-| **Recipe**                       | A JSON-LD recipe extracted from a page by `RSSFeed.getRecipeFromUrl`; schema in [`schema/Schema.ts`](../../src/component/schema/Schema.ts).                        |
+| **Recipe**                       | A JSON-LD recipe extracted from a page by `RSSFeed.getRecipeFromUrl`; schema in [`schema/Schema.ts`](https://github.com/canvasflow/feed/blob/main/src/component/schema/Schema.ts).                        |
 | **Vite+ / `vp`**                 | The unified toolchain (`@voidzero-dev/vite-plus-*`) for build, test, lint, and format.                                                                             |
 | **GitHub Packages**              | The registry the package is published to, under the `@canvasflow` scope.                                                                                           |
 

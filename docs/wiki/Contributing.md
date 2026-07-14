@@ -16,7 +16,7 @@ Coverage is threshold-gated (see [Testing](Testing.md)). A pre-commit hook also 
 
 ## Coding style
 
-Formatting is enforced by Vite+ (`vp fmt`), configured under `fmt` in [`vite.config.ts`](../../vite.config.ts):
+Formatting is enforced by Vite+ (`vp fmt`), configured under `fmt` in [`vite.config.ts`](https://github.com/canvasflow/feed/blob/main/vite.config.ts):
 
 - `semi: true`, `singleQuote: true`, `trailingComma: 'es5'`, `printWidth: 80`.
 - `npm run lint` (and `npm run lint:fix`) lint the source; `npm run format` formats the project.

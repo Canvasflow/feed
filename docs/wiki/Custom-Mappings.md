@@ -32,13 +32,20 @@ Three filter types are available.
 ### Tag filter
 
 ```json
-{ "type": "tag", "items": ["section"] }
+{ 
+  "type": "tag", 
+  "items": ["section"] 
+}
 ```
 
 ### Class filter
 
 ```json
-{ "type": "class", "match": "any", "items": ["cf-columns"] }
+{ 
+  "type": "class", 
+  "match": "any", 
+  "items": ["cf-columns"] 
+}
 ```
 
 `match` is one of `any` (at least one class present), `all` (every class present, any order), or `equal` (exactly those classes and nothing else, order-independent).
@@ -50,13 +57,21 @@ The attribute filter has two forms, both keyed by `type: "attribute"`:
 **Exact-value** — matches when the attribute equals `value` (use `null` for valueless boolean attributes):
 
 ```json
-{ "type": "attribute", "key": "data-component", "value": "gallery" }
+{ 
+  "type": "attribute", 
+  "key": "data-component", 
+  "value": "gallery" 
+}
 ```
 
 **Pattern** — matches when the attribute is present and its value matches a regular expression (when `pattern` is present, `value` is ignored). An invalid pattern is treated as a non-match rather than throwing:
 
 ```json
-{ "type": "attribute", "key": "id", "pattern": "^article-body-\\d+$" }
+{ 
+  "type": "attribute", 
+  "key": "id", 
+  "pattern": "^article-body-\\d+$" 
+}
 ```
 
 ## Match modes

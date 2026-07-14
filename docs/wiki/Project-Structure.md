@@ -61,11 +61,11 @@ component/
 
 ## Test fixtures
 
-Real RSS feeds and HTML snippets live under `src/support/` (`feeds/` and `html/`). [`setupTests.ts`](../../src/setupTests.ts) exposes `process.env.SUPPORT_PATH` and `process.env.FEEDS_PATH` so tests read fixtures without hardcoded paths. See [Testing](Testing.md).
+Real RSS feeds and HTML snippets live under `src/support/` (`feeds/` and `html/`). [`setupTests.ts`](https://github.com/canvasflow/feed/blob/main/src/setupTests.ts) exposes `process.env.SUPPORT_PATH` and `process.env.FEEDS_PATH` so tests read fixtures without hardcoded paths. See [Testing](Testing.md).
 
 ## Build output
 
-`npm run build` (`vp pack`) compiles `src/index.ts` into `dist/` as **unbundled ESM** modules plus `.d.mts` declarations (configured under the `pack` key in [`vite.config.ts`](../../vite.config.ts)). Only `dist/` is published.
+`npm run build` (`vp pack`) compiles `src/index.ts` into `dist/` as **unbundled ESM** modules plus `.d.mts` declarations (configured under the `pack` key in [`vite.config.ts`](https://github.com/canvasflow/feed/blob/main/vite.config.ts)). Only `dist/` is published.
 
 ## Naming conventions
 
