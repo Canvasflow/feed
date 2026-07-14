@@ -39,6 +39,7 @@ import {
   toDailymotion,
   toVimeo,
   isTikTokNode,
+  isInstagramNode,
 } from './Mapping.embeds';
 import {
   type GalleryMapping,
@@ -1029,6 +1030,10 @@ export function filterFigureDescendants(params?: Params): NodeFilterFn {
     }
 
     if (isTikTokNode(node)) {
+      return true;
+    }
+
+    if(isInstagramNode(node)) {
       return true;
     }
 

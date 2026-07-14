@@ -10,7 +10,7 @@ How `@canvasflow/feed` is built, published to GitHub Packages, and how this wiki
 npm run build      # vp pack → dist/
 ```
 
-The build is configured under the `pack` key in [`vite.config.ts`](../../vite.config.ts):
+The build is configured under the `pack` key in [`vite.config.ts`](https://github.com/canvasflow/feed/blob/main/vite.config.ts):
 
 - `entry: ['src/index.ts']` — the single public entry point.
 - `format: ['esm']` — **ESM only**.
@@ -22,7 +22,7 @@ Only `dist/` is published (`files` in `package.json`). The package exposes `./di
 
 ## Publishing
 
-Publishing is automated by the **🚀 Publish** workflow ([`.github/workflows/publish.yml`](../../.github/workflows/publish.yml)), triggered when a `v*` tag is pushed.
+Publishing is automated by the **🚀 Publish** workflow ([`.github/workflows/publish.yml`](https://github.com/canvasflow/feed/blob/main/.github/workflows/publish.yml)), triggered when a `v*` tag is pushed.
 
 | Job              | Trigger            | What it does                                                                                                |
 | ---------------- | ------------------ | ----------------------------------------------------------------------------------------------------------- |

@@ -1,6 +1,6 @@
 # API Reference
 
-The public surface re-exported from [`src/index.ts`](../../src/index.ts). The two classes you will use most are `RSSFeed` and `HTMLMapper`.
+The public surface re-exported from [`src/index.ts`](https://github.com/canvasflow/feed/blob/main/src/index.ts). The two classes you will use most are `RSSFeed` and `HTMLMapper`.
 
 ← Back to [Home](Home.md) · Related: [RSS Feeds](RSS-Feeds.md) · [HTML Mapping](HTML-Mapping.md) · [Component Types](Component-Types.md)
 
@@ -78,4 +78,4 @@ The `is*` component guards (e.g. `isImageComponent`, `isVideoComponent`) and `is
 | Components         | `Component`, `ComponentType`, `TextType`, and every `*Component` interface                                                                                      |
 | Schema             | `Recipe` and related schema types                                                                                                                               |
 
-> Exact signatures are the source of truth — see [`src/index.ts`](../../src/index.ts) and the files it re-exports.
+> Exact signatures are the source of truth — see [`src/index.ts`](https://github.com/canvasflow/feed/blob/main/src/index.ts) and the files it re-exports.

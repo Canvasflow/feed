@@ -25,7 +25,7 @@ Static helpers: `RSSFeed.validateParams(params?, root?)`, `RSSFeed.toJSON(rss)`,
 
 ## Validation rules
 
-Validation is driven by allow-lists in [`Tag.ts`](../../src/rss/Tag.ts). Anything **required** that is missing becomes an error; anything **not in the valid set** becomes a warning (`Invalid property "<name>"`). Nothing throws.
+Validation is driven by allow-lists in [`Tag.ts`](https://github.com/canvasflow/feed/blob/main/src/rss/Tag.ts). Anything **required** that is missing becomes an error; anything **not in the valid set** becomes a warning (`Invalid property "<name>"`). Nothing throws.
 
 | Level     | Required                   | A few of the valid tags                                                                                                             |
 | --------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
