@@ -65,7 +65,7 @@ Real RSS feeds and HTML snippets live under `src/support/` (`feeds/` and `html/`
 
 ## Build output
 
-`npm run build` (`vp pack`) compiles `src/index.ts` into `dist/` as **unbundled ESM** modules plus `.d.mts` declarations (configured under the `pack` key in [`vite.config.ts`](../../vite.config.ts)). Only `dist/` is published.
+`npm run build` (`vp pack`) compiles `src/index.ts` into `dist/` as **unbundled ESM** modules plus `.d.mts` declarations (configured under the `pack` key in [`vite.config.ts`](https://github.com/canvasflow/feed/blob/main/vite.config.ts)). Only `dist/` is published.
 
 ## Naming conventions
 

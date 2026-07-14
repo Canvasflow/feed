@@ -1,6 +1,6 @@
 # Testing
 
-Tests run on **Vitest** via the Vite+ runner (`vp test`). Configuration is in [`vite.config.ts`](../../vite.config.ts) under the `test` key.
+Tests run on **Vitest** via the Vite+ runner (`vp test`). Configuration is in [`vite.config.ts`](https://github.com/canvasflow/feed/blob/main/vite.config.ts) under the `test` key.
 
 ← Back to [Home](Home.md) · Related: [Contributing](Contributing.md) · [Build & Publishing](Build-and-Publishing.md)
 

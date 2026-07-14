@@ -10,7 +10,7 @@ How `@canvasflow/feed` is built, published to GitHub Packages, and how this wiki
 npm run build      # vp pack → dist/
 ```
 
-The build is configured under the `pack` key in [`vite.config.ts`](../../vite.config.ts):
+The build is configured under the `pack` key in [`vite.config.ts`](https://github.com/canvasflow/feed/blob/main/vite.config.ts):
 
 - `entry: ['src/index.ts']` — the single public entry point.
 - `format: ['esm']` — **ESM only**.
