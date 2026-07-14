@@ -61,7 +61,7 @@ component/
 
 ## Test fixtures
 
-Real RSS feeds and HTML snippets live under `src/support/` (`feeds/` and `html/`). [`setupTests.ts`](../../src/setupTests.ts) exposes `process.env.SUPPORT_PATH` and `process.env.FEEDS_PATH` so tests read fixtures without hardcoded paths. See [Testing](Testing.md).
+Real RSS feeds and HTML snippets live under `src/support/` (`feeds/` and `html/`). [`setupTests.ts`](https://github.com/canvasflow/feed/blob/main/src/setupTests.ts) exposes `process.env.SUPPORT_PATH` and `process.env.FEEDS_PATH` so tests read fixtures without hardcoded paths. See [Testing](Testing.md).
 
 ## Build output
 

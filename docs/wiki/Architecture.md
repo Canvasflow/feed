@@ -26,16 +26,16 @@ The feed pipeline **drives** the HTML pipeline: `build()` runs each item's `cont
 
 | File                                           | Responsibility                                                           |
 | ---------------------------------------------- | ------------------------------------------------------------------------ |
-| [`RSSFeed.ts`](../../src/rss/RSSFeed.ts)       | Parses XML with `fast-xml-parser`; exposes `validate()` and `build()`.   |
-| [`RSS.ts`](../../src/rss/RSS.ts)               | The typed `RSS` / `Channel` / `Item` interfaces.                         |
-| [`ParsedXml.ts`](../../src/rss/ParsedXml.ts)   | Typed view of the raw `fast-xml-parser` output read by `build()`.        |
-| [`Tag.ts`](../../src/rss/Tag.ts)               | Required-tag and valid-tag allow-lists per level (rss / channel / item). |
-| [`Attributes.ts`](../../src/rss/Attributes.ts) | Helpers for the parser's attribute conventions.                          |
+| [`RSSFeed.ts`](https://github.com/canvasflow/feed/blob/main/src/rss/RSSFeed.ts)       | Parses XML with `fast-xml-parser`; exposes `validate()` and `build()`.   |
+| [`RSS.ts`](https://github.com/canvasflow/feed/blob/main/src/rss/RSS.ts)               | The typed `RSS` / `Channel` / `Item` interfaces.                         |
+| [`ParsedXml.ts`](https://github.com/canvasflow/feed/blob/main/src/rss/ParsedXml.ts)   | Typed view of the raw `fast-xml-parser` output read by `build()`.        |
+| [`Tag.ts`](https://github.com/canvasflow/feed/blob/main/src/rss/Tag.ts)               | Required-tag and valid-tag allow-lists per level (rss / channel / item). |
+| [`Attributes.ts`](https://github.com/canvasflow/feed/blob/main/src/rss/Attributes.ts) | Helpers for the parser's attribute conventions.                          |
 
 - **`validate()`** checks required tags against the `Tag.ts` allow-lists and populates `errors`/`warnings` arrays on the RSS, channel, and item objects.
 - **`build()`** constructs the typed `RSS` object and converts each item's `content:encoded` into a `components` array.
 
-XML attributes from the parser use the `@_` prefix convention (e.g. `@_url`, `@_type`). Canvasflow extensions use the `cf:` namespace. The raw parser output is kept **private** (`RSSFeed.data`, typed via [`ParsedXml`](../../src/rss/ParsedXml.ts)); consumers read the typed `rss` property. See [RSS Feeds](RSS-Feeds.md).
+XML attributes from the parser use the `@_` prefix convention (e.g. `@_url`, `@_type`). Canvasflow extensions use the `cf:` namespace. The raw parser output is kept **private** (`RSSFeed.data`, typed via [`ParsedXml`](https://github.com/canvasflow/feed/blob/main/src/rss/ParsedXml.ts)); consumers read the typed `rss` property. See [RSS Feeds](RSS-Feeds.md).
 
 ## HTML pipeline (`src/component/`)
 
@@ -47,20 +47,20 @@ XML attributes from the parser use the `@_` prefix convention (e.g. `@_url`, `@_
 
 | File / folder                                                                      | Responsibility                                                                        |
 | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| [`html/HTMLMapper.ts`](../../src/component/html/HTMLMapper.ts)                     | Public entry: `toComponents()` and `getRootElement()`; HTML pre-processing.           |
-| [`mapping/Mapping.ts`](../../src/component/mapping/Mapping.ts)                     | The `reduceComponents` reducer and the recursive element-detection engine.            |
-| [`mapping/Mapping.media.ts`](../../src/component/mapping/Mapping.media.ts)         | image / picture / figure / video / audio / gallery / iframe / twitter converters.     |
-| [`mapping/Mapping.embeds.ts`](../../src/component/mapping/Mapping.embeds.ts)       | Self-contained social-embed converters/detectors.                                     |
-| [`mapping/Mapping.container.ts`](../../src/component/mapping/Mapping.container.ts) | container / columns / live container / link & figure containers / buttons.            |
-| [`mapping/Mapping.table.ts`](../../src/component/mapping/Mapping.table.ts)         | `toHTMLTable` (`<table>` → `htmltable`).                                              |
-| [`mapping/Mapping.custom.ts`](../../src/component/mapping/Mapping.custom.ts)       | `toCustom` (custom component).                                                        |
-| [`mapping/Mapping.text.ts`](../../src/component/mapping/Mapping.text.ts)           | `toText` (text components).                                                           |
-| [`mapping/Mapping.schema.ts`](../../src/component/mapping/Mapping.schema.ts)       | Zod schemas for `Params`, `Mapping`, and filters.                                     |
-| [`mapping/Mapping.constants.ts`](../../src/component/mapping/Mapping.constants.ts) | Tag / attribute allow-lists used during conversion.                                   |
-| [`mapping/Mapping.utils.ts`](../../src/component/mapping/Mapping.utils.ts)         | Shared helpers: `sanitizeNode`, `sanitizeContentHtml`, `matchesPattern`, `fromFigcaption`, `filterClassNameDescendants`, `processTextLinks`, `isEmpty`, and filter/exclude utilities. |
-| [`Component.ts`](../../src/component/Component.ts)                                 | `ComponentType` / `TextType` unions, component interfaces, and `is*` guards.          |
-| [`node/Node.ts`](../../src/component/node/Node.ts)                                 | himalaya AST node types and helpers (`getAttributes`, `findDescendants`, `removeDescendants`, `SetUtils`); exports `DescendantsReducer`, `FindFn`, `NodeFilterFn`. |
-| [`schema/Schema.ts`](../../src/component/schema/Schema.ts)                         | Zod schemas for recipe (JSON-LD) extraction.                                          |
+| [`html/HTMLMapper.ts`](https://github.com/canvasflow/feed/blob/main/src/component/html/HTMLMapper.ts)                     | Public entry: `toComponents()` and `getRootElement()`; HTML pre-processing.           |
+| [`mapping/Mapping.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/Mapping.ts)                     | The `reduceComponents` reducer and the recursive element-detection engine.            |
+| [`mapping/Mapping.media.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/Mapping.media.ts)         | image / picture / figure / video / audio / gallery / iframe / twitter converters.     |
+| [`mapping/Mapping.embeds.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/Mapping.embeds.ts)       | Self-contained social-embed converters/detectors.                                     |
+| [`mapping/Mapping.container.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/Mapping.container.ts) | container / columns / live container / link & figure containers / buttons.            |
+| [`mapping/Mapping.table.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/Mapping.table.ts)         | `toHTMLTable` (`<table>` → `htmltable`).                                              |
+| [`mapping/Mapping.custom.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/Mapping.custom.ts)       | `toCustom` (custom component).                                                        |
+| [`mapping/Mapping.text.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/Mapping.text.ts)           | `toText` (text components).                                                           |
+| [`mapping/Mapping.schema.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/Mapping.schema.ts)       | Zod schemas for `Params`, `Mapping`, and filters.                                     |
+| [`mapping/Mapping.constants.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/Mapping.constants.ts) | Tag / attribute allow-lists used during conversion.                                   |
+| [`mapping/Mapping.utils.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/Mapping.utils.ts)         | Shared helpers: `sanitizeNode`, `sanitizeContentHtml`, `matchesPattern`, `fromFigcaption`, `filterClassNameDescendants`, `processTextLinks`, `isEmpty`, and filter/exclude utilities. |
+| [`Component.ts`](https://github.com/canvasflow/feed/blob/main/src/component/Component.ts)                                 | `ComponentType` / `TextType` unions, component interfaces, and `is*` guards.          |
+| [`node/Node.ts`](https://github.com/canvasflow/feed/blob/main/src/component/node/Node.ts)                                 | himalaya AST node types and helpers (`getAttributes`, `findDescendants`, `removeDescendants`, `SetUtils`); exports `DescendantsReducer`, `FindFn`, `NodeFilterFn`. |
+| [`schema/Schema.ts`](https://github.com/canvasflow/feed/blob/main/src/component/schema/Schema.ts)                         | Zod schemas for recipe (JSON-LD) extraction.                                          |
 
 ### The detection engine
 
@@ -80,7 +80,7 @@ The library does not throw for malformed feeds. Instead, `validate()`/`build()` 
 
 ## Public surface
 
-Everything consumers use is re-exported from [`src/index.ts`](../../src/index.ts):
+Everything consumers use is re-exported from [`src/index.ts`](https://github.com/canvasflow/feed/blob/main/src/index.ts):
 
 ```ts
 export * from './rss/RSSFeed';

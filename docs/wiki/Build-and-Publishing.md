@@ -22,7 +22,7 @@ Only `dist/` is published (`files` in `package.json`). The package exposes `./di
 
 ## Publishing
 
-Publishing is automated by the **🚀 Publish** workflow ([`.github/workflows/publish.yml`](../../.github/workflows/publish.yml)), triggered when a `v*` tag is pushed.
+Publishing is automated by the **🚀 Publish** workflow ([`.github/workflows/publish.yml`](https://github.com/canvasflow/feed/blob/main/.github/workflows/publish.yml)), triggered when a `v*` tag is pushed.
 
 | Job              | Trigger            | What it does                                                                                                |
 | ---------------- | ------------------ | ----------------------------------------------------------------------------------------------------------- |

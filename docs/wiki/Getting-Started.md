@@ -6,7 +6,7 @@ This page takes a consumer from zero to parsing a feed, and a contributor from a
 
 ## Requirements
 
-- **Node.js** `>=20.19.2` (enforced via the `engines` field in [`package.json`](../../package.json)).
+- **Node.js** `>=20.19.2` (enforced via the `engines` field in [`package.json`](https://github.com/canvasflow/feed/blob/main/package.json)).
 - **npm** (the project uses the committed `package-lock.json`).
 - For installation: access to the `@canvasflow` scope on **GitHub Packages**.
 
@@ -88,7 +88,7 @@ npm install
 | `npm run commit`                    | Create a Conventional Commit interactively (commitizen).                    |
 | `npm run changelog`                 | Refresh `CHANGELOG.md` from recent commits.                                 |
 
-A fuller table — including the tag-filtered test scripts — is in the [README](../../README.md#scripts) and on the [Testing](Testing.md) page.
+A fuller table — including the tag-filtered test scripts — is in the [README](https://github.com/canvasflow/feed/blob/main/README.md#scripts) and on the [Testing](Testing.md) page.
 
 ### Run a single test file
 

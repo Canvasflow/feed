@@ -25,7 +25,7 @@ src/
 > `component/html/` (text, embeds, media, table, container, mapping). The
 > `*.coverage.test.ts` files target otherwise-uncovered branches.
 
-`setupFiles` runs [`src/setupTests.ts`](../../src/setupTests.ts), which exposes `process.env.SUPPORT_PATH` and `process.env.FEEDS_PATH` so tests read fixtures (under `src/support/`) without hardcoded paths.
+`setupFiles` runs [`src/setupTests.ts`](https://github.com/canvasflow/feed/blob/main/src/setupTests.ts), which exposes `process.env.SUPPORT_PATH` and `process.env.FEEDS_PATH` so tests read fixtures (under `src/support/`) without hardcoded paths.
 
 ## Running tests
 
