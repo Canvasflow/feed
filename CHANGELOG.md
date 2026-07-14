@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## 🏷️ 1.17.4
+
+_July 14, 2026_
+
+✨ Features
+
+- (mapping) Support Instagram embeds inside figure containers ([`7b5e25f`](https://github.com/canvasflow/feed/commit/7b5e25f030b65958c79ba67715f8c40afac7a5e0))
+
+🧪 Tests
+
+- (html) Add Instagram post component wrapped in a figure test ([`c76bc3e`](https://github.com/canvasflow/feed/commit/c76bc3eb4bdb84e416c150cfacdad3b6b4c23f00))
+
+📝 Docs
+
+- (wiki) Replace remaining relative vite.config.ts links with absolute GitHub URLs ([`e2935da`](https://github.com/canvasflow/feed/commit/e2935daa186cf2eecc454f95837fee8848b04a5d))
+- (wiki) Replace relative src paths with absolute GitHub URLs ([`4bebe9e`](https://github.com/canvasflow/feed/commit/4bebe9e7d926fc26aaf39a895850a6475daf9534))
+
 ## 🏷️ 1.17.3
 
 _July 13, 2026_
