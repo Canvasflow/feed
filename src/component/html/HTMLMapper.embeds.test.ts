@@ -152,18 +152,18 @@ describe('Instagram component', () => {
     () => {
       const components = HTMLMapper.toComponents(
         `<figure id="elk-DZLZWtZyL-e">
-    <div class="instagram-embed">
-        <blockquote class="instagram-media" data-instgrm-captioned="" data-instgrm-version="6"
-            style="width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);">
-            <p><a href="https://www.instagram.com/p/DZLZWtZyL-e/" target="_blank"
-                    data-url="https://www.instagram.com/p/DZLZWtZyL-e/" referrerpolicy="no-referrer-when-downgrade"
-                    data-hl-processed="none">A post shared by Odyssey Movie (@theodysseymovie)</a></p>
-            <figcaption><cite>
-                    <p>A photo posted by on </p>
-                </cite></figcaption>
-        </blockquote>
-    </div>
-</figure>`
+            <div class="instagram-embed">
+                <blockquote class="instagram-media" data-instgrm-captioned="" data-instgrm-version="6"
+                    style="width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);">
+                    <p><a href="https://www.instagram.com/p/DZLZWtZyL-e/" target="_blank"
+                            data-url="https://www.instagram.com/p/DZLZWtZyL-e/" referrerpolicy="no-referrer-when-downgrade"
+                            data-hl-processed="none">A post shared by Odyssey Movie (@theodysseymovie)</a></p>
+                    <figcaption><cite>
+                            <p>A photo posted by on </p>
+                        </cite></figcaption>
+                </blockquote>
+            </div>
+        </figure>`
       );
       expect(components.length).toBe(1);
       const component = components.pop() as InstagramComponent;
