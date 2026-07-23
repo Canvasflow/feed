@@ -8,6 +8,7 @@ import {
   validateParams,
   processTextLinks,
 } from '../mapping';
+import type { GalleryComponent } from '../../component';
 
 const tags = { tags: ['unit', 'html'] };
 
@@ -388,8 +389,10 @@ describe('Mapping — user mappings', () => {
       ],
     };
     const html = `<div class="gal"><div class="slide"><img src="https://x/1.jpg"/></div><div class="slide"><img src="https://x/2.jpg"/></div></div>`;
-    const c = find(html, 'gallery', params);
+    const c = find(html, 'gallery', params) as GalleryComponent;
+
     expect(c).toBeDefined();
+    expect(c.images.length).toBe(2);
   });
 
   test('container mapping', tags, () => {
