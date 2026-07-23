@@ -1,0 +1,32 @@
+// This project doesn't depend on `vitest` directly — it's aliased under
+// package.json's "overrides" to `@voidzero-dev/vite-plus-test` and only
+// exposes a `vp` binary (see CLAUDE.md). Zed's built-in test-runner
+// detection only looks for a literal "vitest" dependency key, so it falls
+// back to offering `node --test`. These tasks are tagged the same way
+// Zed's built-in vitest tasks are (js-test/ts-test/tsx-test), so they show
+// up as extra options on the inline play button next to describe()/test().
+//
+// "shell" is pinned to zsh (macOS's default shell) regardless of your
+// default terminal shell (nushell here) — nushell parses unquoted
+// parentheses in a test name like "youtube iframe (direct origin)" as a
+// sub-expression and errors instead of passing it through as a literal
+// string.
+[
+  {
+    "label": "vitest test $ZED_SYMBOL",
+    "command": "node",
+    "args": ["scripts/zed-run-test.mjs", "\"$ZED_SYMBOL\"", "$ZED_RELATIVE_FILE"],
+    "tags": ["js-test", "ts-test", "tsx-test"],
+    "shell": {
+      "program": "/bin/zsh"
+    }
+  },
+  {
+    "label": "vitest file test",
+    "command": "npx",
+    "args": ["vp", "test", "run", "--no-file-parallelism", "$ZED_RELATIVE_FILE"],
+    "shell": {
+      "program": "/bin/zsh"
+    }
+  }
+]
