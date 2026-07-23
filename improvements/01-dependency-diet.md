@@ -22,15 +22,15 @@ rest.
 
 Current assessment:
 
-| Dependency | Used for | Verdict to validate |
-|---|---|---|
-| `fast-xml-parser` | RSS XML → JS object (`RSSFeed` constructor) | **Keep.** Actively maintained, zero-dep, exactly the edge-case absorber you want. |
-| `himalaya` `1.1.1` (exact pin) | HTML → JSON AST for the mapping engine | **Remove.** Last released ~2019, unmaintained, ships no types (hand-written shim in `src/himalaya.d.ts` with a warning that upgrades silently break). Highest-risk dependency in the tree. |
-| `linkedom` | DOM pre-processing in `HTMLMapper`, JSON-LD scraping in `getRecipeFromUrl` | **Candidate to become the single parser** — or be replaced together with himalaya by `htmlparser2`/`parse5` (see 02 for the trade-off analysis). |
-| `sanitize-html` | Stripping tags/attrs to produce component `html` fields | **Re-evaluate.** It drags in `htmlparser2`, `postcss`, `deepmerge`, `parse-srcset` — a third parser in the tree. Once the pipeline owns a single AST, "sanitizing" becomes *serializing an allow-listed subtree*, which you can do yourself in ~100 lines against your own `Node` type (see 02). |
-| `he` | Entity decoding (`he.decode`) in `RSSFeed` | **Remove.** Any surviving HTML parser already decodes entities; for the few non-HTML fields (titles), a tiny decode table or the parser's `decodeEntities` option covers it. |
-| `luxon` | `parseDate()` in `rss-feed.ts` — RFC 2822 → ISO → `new Date` fallback, zone-preserving | **Remove.** This is the only usage. RFC 2822 date grammar is small and frozen; a ~60-line parser + tests removes a ~4 MB install. |
-| `zod` (v4) | Validating `Params`/`Mapping` config in `mapping.schema.ts` | **Slim down.** Validation of *customer-supplied config* is worth keeping declarative, but `zod/mini` (tree-shakable, much smaller) covers this use. |
+| Dependency                     | Used for                                                                               | Verdict to validate                                                                                                                                                                                                                                                                              |
+| ------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `fast-xml-parser`              | RSS XML → JS object (`RSSFeed` constructor)                                            | **Keep.** Actively maintained, zero-dep, exactly the edge-case absorber you want.                                                                                                                                                                                                                |
+| `himalaya` `1.1.1` (exact pin) | HTML → JSON AST for the mapping engine                                                 | **Remove.** Last released ~2019, unmaintained, ships no types (hand-written shim in `src/himalaya.d.ts` with a warning that upgrades silently break). Highest-risk dependency in the tree.                                                                                                       |
+| `linkedom`                     | DOM pre-processing in `HTMLMapper`, JSON-LD scraping in `getRecipeFromUrl`             | **Candidate to become the single parser** — or be replaced together with himalaya by `htmlparser2`/`parse5` (see 02 for the trade-off analysis).                                                                                                                                                 |
+| `sanitize-html`                | Stripping tags/attrs to produce component `html` fields                                | **Re-evaluate.** It drags in `htmlparser2`, `postcss`, `deepmerge`, `parse-srcset` — a third parser in the tree. Once the pipeline owns a single AST, "sanitizing" becomes _serializing an allow-listed subtree_, which you can do yourself in ~100 lines against your own `Node` type (see 02). |
+| `he`                           | Entity decoding (`he.decode`) in `RSSFeed`                                             | **Remove.** Any surviving HTML parser already decodes entities; for the few non-HTML fields (titles), a tiny decode table or the parser's `decodeEntities` option covers it.                                                                                                                     |
+| `luxon`                        | `parseDate()` in `rss-feed.ts` — RFC 2822 → ISO → `new Date` fallback, zone-preserving | **Remove.** This is the only usage. RFC 2822 date grammar is small and frozen; a ~60-line parser + tests removes a ~4 MB install.                                                                                                                                                                |
+| `zod` (v4)                     | Validating `Params`/`Mapping` config in `mapping.schema.ts`                            | **Slim down.** Validation of _customer-supplied config_ is worth keeping declarative, but `zod/mini` (tree-shakable, much smaller) covers this use.                                                                                                                                              |
 
 Also in scope: add a CI guard so dependencies cannot creep back in silently.
 
@@ -41,20 +41,20 @@ Re-checked the table above against the actual code and live npm registry data
 Two corrections and one new finding:
 
 - **`zod` is more deeply embedded than "config validation."** It is also the
-  type-derivation mechanism for the *entire public component type system* —
+  type-derivation mechanism for the _entire public component type system_ —
   every `ComponentType` interface in `component.ts` (`ImageComponent`,
   `GalleryComponent`, `ContainerComponent`, …) is `z.infer<typeof
-  XSchema>`, and every one of those `*Schema` objects is re-exported through
+XSchema>`, and every one of those `*Schema` objects is re-exported through
   `src/index.ts` (`export * from './component/component'`). **Full removal
   is off the table** — it would delete public exports consumers may call
   `.safeParse()` on directly, which is a breaking API change, not an
-  internal refactor. The `zod/mini` migration is still viable *if* the
+  internal refactor. The `zod/mini` migration is still viable _if_ the
   rewritten schemas remain real `ZodType` instances with the same
   `.safeParse()`/`.parse()` surface (zod v4's functional API — `z.optional(z.string())`
   instead of `z.string().optional()` — preserves this), so it stays the
   right target. One caveat: `zod/mini` is a subpath of the same `zod`
   package, so it does **not** shrink `npm install` weight for this repo —
-  it only helps *consumers who bundle* (tree-shaking drops the unused
+  it only helps _consumers who bundle_ (tree-shaking drops the unused
   method-chaining API). Since `transformer` presumably bundles this
   library, that's still a real win, just not an install-size one.
 - **`sanitize-html` transitively pulls in a second date library.** Its
@@ -63,7 +63,7 @@ Two corrections and one new finding:
   `luxon` (≈4.6 MB) we're trying to remove. This wasn't called out in the
   original table and is an extra argument for dropping `sanitize-html` once
   the single-AST serializer lands (see 02): it removes `sanitize-html`
-  itself (~70 KB) *and* `postcss` (~336 KB) *and* `deepmerge`/`parse-srcset`/`launder`/`dayjs`
+  itself (~70 KB) _and_ `postcss` (~336 KB) _and_ `deepmerge`/`parse-srcset`/`launder`/`dayjs`
   (~2 MB combined) — none of which are otherwise in the tree.
 - **`himalaya` usage is wider than one file.** It's imported directly in
   `mapping.custom.ts`, `mapping.table.ts`, `mapping.text.ts`, and
@@ -74,12 +74,12 @@ Two corrections and one new finding:
 
 Measured baseline (`npm ls --all --omit=dev`, `du -sh`, current lockfile):
 
-| Metric | Value |
-|---|---|
-| `node_modules` weight of the 7 runtime deps + their transitive tree | ≈ 22 MB |
-| Single largest packages | `zod` 6.3 MB, `luxon` 4.5 MB, `linkedom` 2.5 MB, `dayjs` 1.9 MB (transitive via `sanitize-html`) |
-| `himalaya` last real release | `1.1.1`, published 2019 (npm's `time.modified` shows a 2025-04-04 registry metadata touch, not a code release — confirmed via `npm view himalaya versions`, unchanged since 1.1.1) |
-| `npm pack` size today | 37.9 kB tarball / 205.9 kB unpacked (this is `dist/` only — the dependency weight shown above is what a *consumer's* `npm install` pays, not what ships in the package itself) |
+| Metric                                                              | Value                                                                                                                                                                              |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node_modules` weight of the 7 runtime deps + their transitive tree | ≈ 22 MB                                                                                                                                                                            |
+| Single largest packages                                             | `zod` 6.3 MB, `luxon` 4.5 MB, `linkedom` 2.5 MB, `dayjs` 1.9 MB (transitive via `sanitize-html`)                                                                                   |
+| `himalaya` last real release                                        | `1.1.1`, published 2019 (npm's `time.modified` shows a 2025-04-04 registry metadata touch, not a code release — confirmed via `npm view himalaya versions`, unchanged since 1.1.1) |
+| `npm pack` size today                                               | 37.9 kB tarball / 205.9 kB unpacked (this is `dist/` only — the dependency weight shown above is what a _consumer's_ `npm install` pays, not what ships in the package itself)     |
 
 Revised priority order by (size saved × risk × independence from Section 2):
 
@@ -98,13 +98,13 @@ Revised priority order by (size saved × risk × independence from Section 2):
    swaps — see 02-html-pipeline.md. Do this as a unit.
 4. **`he` → re-evaluate, don't just delete.** At 132 KB unpacked it's
    already the smallest dependency in the tree, so the size win is
-   negligible. It exists because it correctly decodes the *entire* HTML5
+   negligible. It exists because it correctly decodes the _entire_ HTML5
    named-character-reference table (2000+ entities), and feed titles come
    from arbitrary publishers — a hand-rolled "~5 common entities" table (as
    originally proposed above) would silently mis-render any publisher using
    an entity outside that set. Recommend keeping `he` unless/until the
    Section 2 parser replaces its call sites naturally (a full HTML parser
-   already decodes entities during parsing, making a *separate* decode step
+   already decodes entities during parsing, making a _separate_ decode step
    redundant for HTML fields — but the plain-text fields, like titles, still
    need something that decodes entities, and `he` is the cheapest correct
    tool for that already in the tree).
@@ -143,13 +143,13 @@ happen to exercise. Add that before touching `himalaya`/`linkedom`.
 
 **Videos**
 
-- "Dependency hell and how to escape it" — any recent talk from ViteConf/JSNation on lean packages (search: *e18e ViteConf*)
+- "Dependency hell and how to escape it" — any recent talk from ViteConf/JSNation on lean packages (search: _e18e ViteConf_)
 - Anthony Fu — "Epoch of ESM" / talks on shipping lean ESM libraries
 
 **Books**
 
-- *Working Effectively with Legacy Code* (Feathers) — ch. on seams; you need a seam around the parser before swapping it
-- *The Pragmatic Programmer* — "Orthogonality" and third-party code guidance
+- _Working Effectively with Legacy Code_ (Feathers) — ch. on seams; you need a seam around the parser before swapping it
+- _The Pragmatic Programmer_ — "Orthogonality" and third-party code guidance
 
 ## Study guide
 
@@ -159,7 +159,7 @@ happen to exercise. Add that before touching `himalaya`/`linkedom`.
 2. **Learn the candidates (1 day).** Read the `htmlparser2` and `linkedom`
    READMEs and skim their source for: spec compliance (parse5 = full WHATWG,
    htmlparser2 = fast/forgiving, linkedom = DOM API on top), entity handling,
-   and serialization guarantees. Understand *why* the choice matters for
+   and serialization guarantees. Understand _why_ the choice matters for
    malformed publisher HTML — write 5 nasty HTML snippets and compare outputs.
 3. **RFC 2822 dates (½ day).** Read §3.3 of the RFC and the WHATWG
    `Date.parse` caveats. List the date formats present in the fixture feeds
@@ -179,12 +179,12 @@ happen to exercise. Add that before touching `himalaya`/`linkedom`.
    hypothesis. The parser ADR is shared with section 02 — do that analysis
    there and reference it.
 2. **Drop `luxon`.** Implement `src/rss/date.ts` with `parseFeedDate(str):
-   { iso: string } | null` — RFC 2822 first, then ISO 8601 (both
+{ iso: string } | null` — RFC 2822 first, then ISO 8601 (both
    zone-preserving), then `new Date` as a last resort exactly like today.
    Port the behavior of `parseDate()` including invalid-date warnings. Test
    against every `pubDate`/`lastBuildDate` string found in the fixtures plus
    edge cases (2-digit years, obsolete zone names `EST`/`GMT`, missing
-   seconds). TypeScript tip: return a *result object or `null`*, never an
+   seconds). TypeScript tip: return a _result object or `null`_, never an
    invalid sentinel like luxon's `isValid` — make invalid states
    unrepresentable.
 3. **Drop `he`.** Replace `he.decode` call sites: for `content:encoded`, the
@@ -208,5 +208,5 @@ happen to exercise. Add that before touching `himalaya`/`linkedom`.
    `package.json` changes without a matching ADR file in the same PR (a
    10-line script), and add a `size-limit` budget (see 07).
 8. **Measure & record** before/after: `npm pack --dry-run` size, `du -sh
-   node_modules` in a fresh consumer install, dependency count. Put the
+node_modules` in a fresh consumer install, dependency count. Put the
    numbers at the top of this file's checklist when done.

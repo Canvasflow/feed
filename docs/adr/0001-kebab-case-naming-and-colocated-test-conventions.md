@@ -63,11 +63,11 @@ lowercase of their old name, to avoid a directory/file basename collision**
 — the same case-insensitive-filesystem hazard called out in the
 `canvasflow-app-graphql` ADR:
 
-| Old path | Mechanical kebab-case | Actual rename | Why |
-| --- | --- | --- | --- |
-| `src/component/node/Node.ts` | `src/component/node/node.ts` | `src/component/node/node-helpers.ts` | Directory is already named `node/`; a file also named `node.ts` inside it is a same-name collision on macOS/Windows. |
+| Old path                         | Mechanical kebab-case            | Actual rename                           | Why                                                                                                                                                                                                                                                                                            |
+| -------------------------------- | -------------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/component/node/Node.ts`     | `src/component/node/node.ts`     | `src/component/node/node-helpers.ts`    | Directory is already named `node/`; a file also named `node.ts` inside it is a same-name collision on macOS/Windows.                                                                                                                                                                           |
 | `src/component/schema/Schema.ts` | `src/component/schema/schema.ts` | `src/component/schema/recipe-schema.ts` | Same collision against the `schema/` directory; the new name also documents what the file actually contains — Zod schemas for JSON-LD `Recipe` extraction — vs. `src/component/mapping/Mapping.schema.ts` (the RSS `Params`/`Mapping` validation schemas), which is a different file entirely. |
-| `src/rss/RSS.ts` | `src/rss/rss.ts` | `src/rss/rss-types.ts` | Same collision against the `rss/` directory; `RSS.ts` held the `RSS`/`Channel`/`Item` type definitions, which `rss-types.ts` names accurately. |
+| `src/rss/RSS.ts`                 | `src/rss/rss.ts`                 | `src/rss/rss-types.ts`                  | Same collision against the `rss/` directory; `RSS.ts` held the `RSS`/`Channel`/`Item` type definitions, which `rss-types.ts` names accurately.                                                                                                                                                 |
 
 Their corresponding test files (`Node.test.ts`, `Schema.test.ts`) follow the
 renamed source: `node-helpers.test.ts`, `recipe-schema.test.ts`.

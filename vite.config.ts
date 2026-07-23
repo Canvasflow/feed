@@ -13,9 +13,7 @@ export default defineConfig({
     ignorePatterns: ['**/*.html'],
   },
   lint: {
-    jsPlugins: [
-      { name: 'vite-plus', specifier: 'vite-plus/oxlint-plugin' },
-    ],
+    jsPlugins: [{ name: 'vite-plus', specifier: 'vite-plus/oxlint-plugin' }],
     rules: {
       // Enforce the project-wide kebab-case file naming convention (see
       // docs/adr/0001-kebab-case-naming-and-colocated-test-conventions.md).

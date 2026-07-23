@@ -17,7 +17,7 @@ tagged tests). This section has two jobs:
 
 1. **Enable the refactors.** Sections 01/02 rewrite the engine's plumbing while
    promising unchanged output. The only way to keep that promise cheaply is a
-   *complete* characterization-test layer: snapshot every fixture's full
+   _complete_ characterization-test layer: snapshot every fixture's full
    output **before** touching anything, so every diff during the refactor is a
    conscious decision. Today `RSSFeed.snapshot.test.ts` is only 24 lines —
    coverage of the fixture corpus is partial.
@@ -43,8 +43,8 @@ tagged tests). This section has two jobs:
 
 **Articles / blog posts**
 
-- "Characterization tests" (Michael Feathers' term — search *Working Effectively with Legacy Code characterization test*); also Approval Tests intro by Llewellyn Falco: <https://approvaltests.com>
-- fast-check docs, esp. *Arbitraries* and the "detect bugs, then shrink" workflow: <https://fast-check.dev>
+- "Characterization tests" (Michael Feathers' term — search _Working Effectively with Legacy Code characterization test_); also Approval Tests intro by Llewellyn Falco: <https://approvaltests.com>
+- fast-check docs, esp. _Arbitraries_ and the "detect bugs, then shrink" workflow: <https://fast-check.dev>
 - "Property-based testing for JavaScript developers" (fast-check's own tutorial series)
 - undici `MockAgent` docs: <https://undici.nodejs.org/#/docs/api/MockAgent> (Node's native-fetch mocking — no extra dep if you use undici's, which ships in Node)
 - msw docs (<https://mswjs.io>) — alternative if you want request-handler ergonomics
@@ -53,13 +53,13 @@ tagged tests). This section has two jobs:
 
 **Videos**
 
-- John Hughes — *"Testing the Hard Stuff and Staying Sane"* (the QuickCheck talk; the single best property-testing intro)
+- John Hughes — _"Testing the Hard Stuff and Staying Sane"_ (the QuickCheck talk; the single best property-testing intro)
 - "Property-based testing in JavaScript with fast-check" (various conference recordings)
 
 **Books**
 
-- *Working Effectively with Legacy Code* (Feathers) — characterization testing
-- *Property-Based Testing with PropEr, Erlang, and Elixir* (Hebert) — language-agnostic PBT strategy chapters are excellent
+- _Working Effectively with Legacy Code_ (Feathers) — characterization testing
+- _Property-Based Testing with PropEr, Erlang, and Elixir_ (Hebert) — language-agnostic PBT strategy chapters are excellent
 
 ## Study guide
 
@@ -68,7 +68,7 @@ tagged tests). This section has two jobs:
    question, not a failure) and how to keep snapshots reviewable (stable
    ordering, formatted JSON).
 2. **fast-check (1 day).** Do the official tutorial; then design arbitraries
-   for *this* domain: mutated-XML strings (tag swaps, truncation, entity
+   for _this_ domain: mutated-XML strings (tag swaps, truncation, entity
    garbage), HTML-ish strings (unclosed tags, nested depth), and `Params`
    objects derived from `mapping.schema.ts` (zod schema → arbitrary; look at
    `zod-fast-check` for inspiration even if you hand-roll).

@@ -16,7 +16,7 @@ The codebase is already `strict: true` with good discipline, but the
 XML-boundary code works against `Record<string, unknown>` with scattered
 inline casts (`item.guid as { '#text'?: unknown }`,
 `item['cf:thumbnail'] as {...}`, `mapping as ColumnsMapping`), and several
-helpers *mutate their inputs* to coerce shapes (`item.enclosure =
+helpers _mutate their inputs_ to coerce shapes (`item.enclosure =
 [item.enclosure]`, `delete channel[key]`, `item['dc:creator'] = ...join()`).
 Mutation of half-typed data is where "works on this feed, breaks on that one"
 bugs come from.
@@ -49,27 +49,27 @@ Goals:
 
 **Articles / blog posts**
 
-- Matt Pocock — *TSConfig cheat sheet*: <https://www.totaltypescript.com/tsconfig-cheat-sheet> (library section: `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `verbatimModuleSyntax` — you already have the last)
+- Matt Pocock — _TSConfig cheat sheet_: <https://www.totaltypescript.com/tsconfig-cheat-sheet> (library section: `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `verbatimModuleSyntax` — you already have the last)
 - "Parse, don't validate" (again — the typing half): <https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/>
-- TypeScript handbook — *Narrowing* and *Discriminated Unions* chapters
+- TypeScript handbook — _Narrowing_ and _Discriminated Unions_ chapters
 - "The `satisfies` operator" (TS 4.9 release notes) — for the mapping tables like `TEXT_TAG_MAPPING`
 - api-extractor docs: <https://api-extractor.com> (API report workflow); alternative: `@arethetypeswrong/cli` + a checked-in `.d.mts` diff
 - Effect/ts-reset discussions on `JSON.parse`/index-access unsoundness (context for `noUncheckedIndexedAccess`)
 
 **Videos**
 
-- Total TypeScript workshops (Matt Pocock) — *Type Transformations* and *Advanced TypeScript Patterns* (branded types, builder for narrowing)
-- "TypeScript Berlin" talks on publishing typed libraries (search: *publishing TypeScript libraries dts*)
+- Total TypeScript workshops (Matt Pocock) — _Type Transformations_ and _Advanced TypeScript Patterns_ (branded types, builder for narrowing)
+- "TypeScript Berlin" talks on publishing typed libraries (search: _publishing TypeScript libraries dts_)
 
 **Books**
 
-- *Effective TypeScript*, 2nd ed. (Vanderkam) — the single best fit; items on `unknown`, structural typing at boundaries, and publishing types
-- *Programming TypeScript* (Cherny) — ch. 6–7 for advanced narrowing
+- _Effective TypeScript_, 2nd ed. (Vanderkam) — the single best fit; items on `unknown`, structural typing at boundaries, and publishing types
+- _Programming TypeScript_ (Cherny) — ch. 6–7 for advanced narrowing
 
 ## Study guide
 
 1. **Compiler flags (½ day).** Read the docs for `noUncheckedIndexedAccess`
-   and `exactOptionalPropertyTypes`; turn them on locally and *count* the
+   and `exactOptionalPropertyTypes`; turn them on locally and _count_ the
    errors per file — that's your work map. Understand the difference between
    `field?: string` and `field: string | undefined` under
    `exactOptionalPropertyTypes` before deciding public type shapes.
@@ -95,7 +95,7 @@ Goals:
    `isArray` predicate for `item`, `enclosure`, `media:content`,
    `media:group`, `category`, `dc:creator` so the "maybe array" unions and
    their coercing mutations disappear from `buildItem`/`getEnclosure`/etc.
-   This deletes code *and* casts.
+   This deletes code _and_ casts.
 3. **Boundary narrowing module.** Create `src/rss/narrow.ts` with tiny helpers
    (`textOf(x): string | undefined` for `#text` wrappers, `recordOf`,
    `stringOf`) and replace every inline `as` in `rss-feed.ts`. Rule of thumb to

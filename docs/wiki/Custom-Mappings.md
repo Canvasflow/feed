@@ -32,19 +32,19 @@ Three filter types are available.
 ### Tag filter
 
 ```json
-{ 
-  "type": "tag", 
-  "items": ["section"] 
+{
+  "type": "tag",
+  "items": ["section"]
 }
 ```
 
 ### Class filter
 
 ```json
-{ 
-  "type": "class", 
-  "match": "any", 
-  "items": ["cf-columns"] 
+{
+  "type": "class",
+  "match": "any",
+  "items": ["cf-columns"]
 }
 ```
 
@@ -57,20 +57,20 @@ The attribute filter has two forms, both keyed by `type: "attribute"`:
 **Exact-value** — matches when the attribute equals `value` (use `null` for valueless boolean attributes):
 
 ```json
-{ 
-  "type": "attribute", 
-  "key": "data-component", 
-  "value": "gallery" 
+{
+  "type": "attribute",
+  "key": "data-component",
+  "value": "gallery"
 }
 ```
 
 **Pattern** — matches when the attribute is present and its value matches a regular expression (when `pattern` is present, `value` is ignored). An invalid pattern is treated as a non-match rather than throwing:
 
 ```json
-{ 
-  "type": "attribute", 
-  "key": "id", 
-  "pattern": "^article-body-\\d+$" 
+{
+  "type": "attribute",
+  "key": "id",
+  "pattern": "^article-body-\\d+$"
 }
 ```
 
@@ -96,22 +96,22 @@ Each component mapping extends the base mapping with a `component` field. Some t
 
 Groups matched child elements into a single container component. All children are converted normally and nested inside the resulting component.
 
-| Field      | Required | Description                         |
-| ---------- | -------- | ----------------------------------- |
-| `component`| Yes      | Must be `"container"`.              |
-| `match`    | Yes      | `"any"` or `"all"`.                 |
-| `filters`  | Yes      | Filters identifying the container element. |
-| `name`     | No       | Optional label for identification.  |
-| `properties` | No     | Arbitrary object copied onto the component. |
+| Field        | Required | Description                                 |
+| ------------ | -------- | ------------------------------------------- |
+| `component`  | Yes      | Must be `"container"`.                      |
+| `match`      | Yes      | `"any"` or `"all"`.                         |
+| `filters`    | Yes      | Filters identifying the container element.  |
+| `name`       | No       | Optional label for identification.          |
+| `properties` | No       | Arbitrary object copied onto the component. |
 
 ```json
 {
   "component": "container",
   "match": "all",
   "filters": [
-    { 
-      "type": "tag", 
-      "items": ["section"] 
+    {
+      "type": "tag",
+      "items": ["section"]
     }
   ]
 }
@@ -128,23 +128,23 @@ Groups matched child elements into a single container component. All children ar
 
 Marks the matched element as a recipe container. The page at the item's `url` is expected to expose LD+JSON recipe structured data. Children are converted the same way as `container`.
 
-| Field      | Required | Description                         |
-| ---------- | -------- | ----------------------------------- |
-| `component`| Yes      | Must be `"recipe"`.                 |
-| `match`    | Yes      | `"any"` or `"all"`.                 |
-| `filters`  | Yes      | Filters identifying the recipe element. |
-| `name`     | No       | Optional label for identification.  |
-| `properties` | No     | Arbitrary object copied onto the component. |
+| Field        | Required | Description                                 |
+| ------------ | -------- | ------------------------------------------- |
+| `component`  | Yes      | Must be `"recipe"`.                         |
+| `match`      | Yes      | `"any"` or `"all"`.                         |
+| `filters`    | Yes      | Filters identifying the recipe element.     |
+| `name`       | No       | Optional label for identification.          |
+| `properties` | No       | Arbitrary object copied onto the component. |
 
 ```json
 {
   "component": "recipe",
   "match": "all",
   "filters": [
-    { 
-      "type": "class", 
-      "match": "any", 
-      "items": ["recipe-block"] 
+    {
+      "type": "class",
+      "match": "any",
+      "items": ["recipe-block"]
     }
   ]
 }
@@ -160,40 +160,40 @@ Marks the matched element as a recipe container. The page at the item's `url` is
 
 Splits a matched wrapper element into a multi-column layout. The required `column` sub-mapping identifies which direct children become individual columns.
 
-| Field      | Required | Description                                                 |
-| ---------- | -------- | ----------------------------------------------------------- |
-| `component`| Yes      | Must be `"columns"`.                                        |
-| `match`    | Yes      | `"any"` or `"all"` — applied to the outer wrapper.         |
-| `filters`  | Yes      | Filters identifying the wrapper element.                    |
-| `column`   | Yes      | Sub-mapping (`match` + `filters`) that selects each column child. |
-| `name`     | No       | Optional label for identification.                          |
-| `properties` | No     | Arbitrary object copied onto the component.                 |
+| Field        | Required | Description                                                       |
+| ------------ | -------- | ----------------------------------------------------------------- |
+| `component`  | Yes      | Must be `"columns"`.                                              |
+| `match`      | Yes      | `"any"` or `"all"` — applied to the outer wrapper.                |
+| `filters`    | Yes      | Filters identifying the wrapper element.                          |
+| `column`     | Yes      | Sub-mapping (`match` + `filters`) that selects each column child. |
+| `name`       | No       | Optional label for identification.                                |
+| `properties` | No       | Arbitrary object copied onto the component.                       |
 
 `column` sub-mapping fields:
 
-| Field     | Required | Description                                          |
-| --------- | -------- | ---------------------------------------------------- |
+| Field     | Required | Description                                           |
+| --------- | -------- | ----------------------------------------------------- |
 | `match`   | Yes      | `"any"` or `"all"` — applied to each candidate child. |
-| `filters` | Yes      | Filters identifying a column child.                  |
+| `filters` | Yes      | Filters identifying a column child.                   |
 
 ```json
 {
   "component": "columns",
   "match": "all",
   "filters": [
-    { 
-      "type": "class", 
-      "match": "any", 
-      "items": ["columns-wrapper"] 
+    {
+      "type": "class",
+      "match": "any",
+      "items": ["columns-wrapper"]
     }
   ],
   "column": {
     "match": "any",
     "filters": [
-      { 
-        "type": "class", 
-        "match": "any", 
-        "items": ["column"] 
+      {
+        "type": "class",
+        "match": "any",
+        "items": ["column"]
       }
     ]
   }
@@ -211,14 +211,14 @@ Splits a matched wrapper element into a multi-column layout. The required `colum
 
 Identifies a live-blog wrapper and its individual posts. The required `post` sub-mapping selects which children become `live_post` components inside the container.
 
-| Field      | Required | Description                                                    |
-| ---------- | -------- | -------------------------------------------------------------- |
-| `component`| Yes      | Must be `"live_container"`.                                    |
-| `match`    | Yes      | `"any"` or `"all"` — applied to the outer wrapper.            |
-| `filters`  | Yes      | Filters identifying the wrapper element.                       |
-| `post`     | Yes      | Sub-mapping (`match` + `filters`) that selects each post child. |
-| `name`     | No       | Optional label for identification.                             |
-| `properties` | No     | Arbitrary object copied onto the component.                    |
+| Field        | Required | Description                                                     |
+| ------------ | -------- | --------------------------------------------------------------- |
+| `component`  | Yes      | Must be `"live_container"`.                                     |
+| `match`      | Yes      | `"any"` or `"all"` — applied to the outer wrapper.              |
+| `filters`    | Yes      | Filters identifying the wrapper element.                        |
+| `post`       | Yes      | Sub-mapping (`match` + `filters`) that selects each post child. |
+| `name`       | No       | Optional label for identification.                              |
+| `properties` | No       | Arbitrary object copied onto the component.                     |
 
 `post` sub-mapping fields:
 
@@ -234,19 +234,19 @@ Identifies a live-blog wrapper and its individual posts. The required `post` sub
   "component": "live_container",
   "match": "all",
   "filters": [
-    { 
-      "type": "class", 
-      "match": "any", 
-      "items": ["live-blog"] 
+    {
+      "type": "class",
+      "match": "any",
+      "items": ["live-blog"]
     }
   ],
   "post": {
     "match": "any",
     "filters": [
-      { 
-        "type": "class", 
-        "match": "any", 
-        "items": ["live-post"] 
+      {
+        "type": "class",
+        "match": "any",
+        "items": ["live-post"]
       }
     ]
   }
@@ -264,14 +264,14 @@ Identifies a live-blog wrapper and its individual posts. The required `post` sub
 
 Identifies an image gallery wrapper and its individual slides. The required `slide` sub-mapping selects which children become slide items. Only children that contain a valid image are kept; non-image slides are silently discarded.
 
-| Field      | Required | Description                                                     |
-| ---------- | -------- | --------------------------------------------------------------- |
-| `component`| Yes      | Must be `"gallery"`.                                            |
-| `match`    | Yes      | `"any"` or `"all"` — applied to the outer wrapper.             |
-| `filters`  | Yes      | Filters identifying the wrapper element.                        |
-| `slide`    | Yes      | Sub-mapping (`match` + `filters`) that selects each slide child. |
-| `name`     | No       | Optional label for identification.                              |
-| `properties` | No     | Arbitrary object copied onto the component.                     |
+| Field        | Required | Description                                                      |
+| ------------ | -------- | ---------------------------------------------------------------- |
+| `component`  | Yes      | Must be `"gallery"`.                                             |
+| `match`      | Yes      | `"any"` or `"all"` — applied to the outer wrapper.               |
+| `filters`    | Yes      | Filters identifying the wrapper element.                         |
+| `slide`      | Yes      | Sub-mapping (`match` + `filters`) that selects each slide child. |
+| `name`       | No       | Optional label for identification.                               |
+| `properties` | No       | Arbitrary object copied onto the component.                      |
 
 `slide` sub-mapping fields:
 
@@ -285,19 +285,19 @@ Identifies an image gallery wrapper and its individual slides. The required `sli
   "component": "gallery",
   "match": "all",
   "filters": [
-    { 
-      "type": "class", 
-      "match": "any", 
-      "items": ["image-gallery"] 
+    {
+      "type": "class",
+      "match": "any",
+      "items": ["image-gallery"]
     }
   ],
   "slide": {
     "match": "any",
     "filters": [
-      { 
-        "type": "class", 
-        "match": "any", 
-        "items": ["gallery-slide"] 
+      {
+        "type": "class",
+        "match": "any",
+        "items": ["gallery-slide"]
       }
     ]
   }
@@ -306,8 +306,12 @@ Identifies an image gallery wrapper and its individual slides. The required `sli
 
 ```html
 <div class="image-gallery">
-  <div class="gallery-slide"><img src="https://example.com/photo1.jpg" alt="Photo 1"/></div>
-  <div class="gallery-slide"><img src="https://example.com/photo2.jpg" alt="Photo 2"/></div>
+  <div class="gallery-slide">
+    <img src="https://example.com/photo1.jpg" alt="Photo 1" />
+  </div>
+  <div class="gallery-slide">
+    <img src="https://example.com/photo2.jpg" alt="Photo 2" />
+  </div>
 </div>
 ```
 
@@ -315,23 +319,23 @@ Identifies an image gallery wrapper and its individual slides. The required `sli
 
 Preserves the matched element as sanitized raw HTML rather than recursing into its children. Useful for embeds, ads, or any block whose internal markup should be kept verbatim.
 
-| Field      | Required | Description                          |
-| ---------- | -------- | ------------------------------------ |
-| `component`| Yes      | Must be `"custom"`.                  |
-| `match`    | Yes      | `"any"` or `"all"`.                  |
-| `filters`  | Yes      | Filters identifying the element.     |
-| `name`     | No       | Optional label for identification.   |
-| `properties` | No     | Arbitrary object copied onto the component. |
+| Field        | Required | Description                                 |
+| ------------ | -------- | ------------------------------------------- |
+| `component`  | Yes      | Must be `"custom"`.                         |
+| `match`      | Yes      | `"any"` or `"all"`.                         |
+| `filters`    | Yes      | Filters identifying the element.            |
+| `name`       | No       | Optional label for identification.          |
+| `properties` | No       | Arbitrary object copied onto the component. |
 
 ```json
 {
   "component": "custom",
   "match": "all",
   "filters": [
-    { 
-      "type": "class", 
-      "match": "any", 
-      "items": ["third-party-embed"] 
+    {
+      "type": "class",
+      "match": "any",
+      "items": ["third-party-embed"]
     }
   ]
 }
@@ -351,23 +355,23 @@ Named types: `headline`, `title`, `subtitle`, `intro`, `body`, `crosshead`, `byl
 
 Numbered slots: `text1` through `text60`.
 
-| Field      | Required | Description                                          |
-| ---------- | -------- | ---------------------------------------------------- |
-| `component`| Yes      | Any valid `TextType` (see list above).               |
-| `match`    | Yes      | `"any"` or `"all"`.                                  |
-| `filters`  | Yes      | Filters identifying the element.                     |
-| `name`     | No       | Optional label for identification.                   |
-| `properties` | No     | Arbitrary object copied onto the component.          |
+| Field        | Required | Description                                 |
+| ------------ | -------- | ------------------------------------------- |
+| `component`  | Yes      | Any valid `TextType` (see list above).      |
+| `match`      | Yes      | `"any"` or `"all"`.                         |
+| `filters`    | Yes      | Filters identifying the element.            |
+| `name`       | No       | Optional label for identification.          |
+| `properties` | No       | Arbitrary object copied onto the component. |
 
 ```json
 {
   "component": "crosshead",
   "match": "all",
   "filters": [
-    { 
-      "type": "class", 
-      "match": "any", 
-      "items": ["section-heading"] 
+    {
+      "type": "class",
+      "match": "any",
+      "items": ["section-heading"]
     }
   ]
 }

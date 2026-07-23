@@ -58,15 +58,15 @@ Text components keep only [phrasing content](https://developer.mozilla.org/en-US
 
 ## Built-in element detection (summary)
 
-| Content | Detected from                                                                                            |
-| ------- | -------------------------------------------------------------------------------------------------------- |
-| Image   | `<img>`, `<picture>` (uses the fallback `<img>`).                                                        |
+| Content | Detected from                                                                                                                                                                                                                                                                                                                               |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Image   | `<img>`, `<picture>` (uses the fallback `<img>`).                                                                                                                                                                                                                                                                                           |
 | Figure  | `<figure>` — always produces a `FigureContainerComponent` (`component: 'container'`, `type: 'figure'`). Caption and credit are extracted from a `<figcaption>`; credit nodes are identified by the `<small>` tag, `role="credit"`, or `class="credit"`. The contained media components (image, video, audio) are nested under `components`. |
-| Gallery | `role="gallery"`/`role="mosaic"` container, or a custom gallery mapping.                                 |
-| Video   | `<video>` (`src` or first `<source>`); YouTube/Vimeo/Dailymotion via `<iframe>`.                         |
-| Audio   | `<audio>`; Apple Podcasts via `<iframe>`.                                                                |
-| Social  | `blockquote`/`a` markers for Instagram, Twitter/X, TikTok.                                               |
-| Table   | `<table>` → `htmltable` (restricted tag allow-list).                                                     |
-| Button  | `<a role="button">` or `<button><a></button>`.                                                           |
+| Gallery | `role="gallery"`/`role="mosaic"` container, or a custom gallery mapping.                                                                                                                                                                                                                                                                    |
+| Video   | `<video>` (`src` or first `<source>`); YouTube/Vimeo/Dailymotion via `<iframe>`.                                                                                                                                                                                                                                                            |
+| Audio   | `<audio>`; Apple Podcasts via `<iframe>`.                                                                                                                                                                                                                                                                                                   |
+| Social  | `blockquote`/`a` markers for Instagram, Twitter/X, TikTok.                                                                                                                                                                                                                                                                                  |
+| Table   | `<table>` → `htmltable` (restricted tag allow-list).                                                                                                                                                                                                                                                                                        |
+| Button  | `<a role="button">` or `<button><a></button>`.                                                                                                                                                                                                                                                                                              |
 
 To recognise content that does not follow these conventions, define a [custom mapping](Custom-Mappings.md).

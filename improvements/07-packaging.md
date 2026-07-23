@@ -5,7 +5,7 @@
 - [ ] `publint` and `@arethetypeswrong/cli` pass and run in CI on every PR (not just on tag).
 - [ ] `"sideEffects": false` is declared (after verifying no module has import-time side effects) so consumers' bundlers can tree-shake.
 - [ ] `package.json` metadata is exports-first: `exports` is the single source of truth; legacy `main`/`module`/`types` either removed or kept deliberately with a comment/ADR (they currently duplicate `exports`).
-- [ ] CI runs tests on PRs/pushes to `develop` — today the full test job only runs on `v*` tag push, i.e. *after* the release decision.
+- [ ] CI runs tests on PRs/pushes to `develop` — today the full test job only runs on `v*` tag push, i.e. _after_ the release decision.
 - [ ] A size budget (`size-limit` or `npm pack` byte check) is enforced in CI, with the current baseline recorded.
 - [ ] npm provenance (`npm publish --provenance`) is enabled in the publish workflow.
 - [ ] A `CHANGELOG`-visible deprecation/versioning policy exists (what constitutes breaking for types, error strings, component output shapes).
@@ -51,7 +51,7 @@ class of "package looks fine locally, breaks in the consumer" bugs:
 - publint: <https://publint.dev> (paste the packed tarball; also the CLI docs)
 - Are The Types Wrong: <https://arethetypeswrong.github.io> + CLI README
 - "Ship ESM & CJS in a single package" (Anthony Fu) — even though you're ESM-only, the pitfalls list is the canonical reference: <https://antfu.me/posts/publish-esm-and-cjs>
-- Node.js docs — *Packages* (`exports`, conditions, dual-package hazard): <https://nodejs.org/api/packages.html>
+- Node.js docs — _Packages_ (`exports`, conditions, dual-package hazard): <https://nodejs.org/api/packages.html>
 - webpack docs on `sideEffects`: <https://webpack.js.org/guides/tree-shaking/>
 - npm provenance / SLSA: <https://docs.npmjs.com/generating-provenance-statements> (verify GitHub Packages support status when implementing)
 - size-limit: <https://github.com/ai/size-limit>
@@ -64,7 +64,7 @@ class of "package looks fine locally, breaks in the consumer" bugs:
 
 **Books**
 
-- No book needed here; the Node *Packages* doc + semver-ts are the canonical texts. (*Software Engineering at Google*, ch. on "Dependency Management", is good background for the versioning-policy discussion.)
+- No book needed here; the Node _Packages_ doc + semver-ts are the canonical texts. (_Software Engineering at Google_, ch. on "Dependency Management", is good background for the versioning-policy discussion.)
 
 ## Study guide
 
