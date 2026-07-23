@@ -15,7 +15,11 @@
   {
     "label": "vitest test $ZED_SYMBOL",
     "command": "node",
-    "args": ["scripts/zed-run-test.mjs", "\"$ZED_SYMBOL\"", "$ZED_RELATIVE_FILE"],
+    "args": [
+      "scripts/zed-run-test.mjs",
+      "\"$ZED_SYMBOL\"",
+      "$ZED_RELATIVE_FILE"
+    ],
     "tags": ["js-test", "ts-test", "tsx-test"],
     "shell": {
       "program": "/bin/zsh"
@@ -24,7 +28,14 @@
   {
     "label": "vitest file test",
     "command": "npx",
-    "args": ["vp", "test", "run", "--no-file-parallelism", "$ZED_RELATIVE_FILE"],
+    "args": [
+      "vp",
+      "test",
+      "run",
+      "--no-file-parallelism",
+      "--hideSkippedTests",
+      "$ZED_RELATIVE_FILE"
+    ],
     "shell": {
       "program": "/bin/zsh"
     }

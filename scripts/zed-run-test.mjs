@@ -30,6 +30,7 @@ process.argv = [
   'run',
   '--no-file-parallelism',
   '--pool=threads',
+  '--hideSkippedTests',
   '-t',
   escapedSymbol,
   file,

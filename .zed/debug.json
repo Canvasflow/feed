@@ -29,7 +29,14 @@
     "type": "node",
     "request": "launch",
     "program": "$ZED_WORKTREE_ROOT/node_modules/vite-plus/bin/vp",
-    "args": ["test", "run", "--no-file-parallelism", "--pool=threads", "$ZED_RELATIVE_FILE"],
+    "args": [
+      "test",
+      "run",
+      "--no-file-parallelism",
+      "--pool=threads",
+      "--hideSkippedTests",
+      "$ZED_RELATIVE_FILE"
+    ],
     "cwd": "$ZED_WORKTREE_ROOT",
     "skipFiles": ["<node_internals>/**"]
   },
