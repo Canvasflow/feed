@@ -33,15 +33,15 @@ self-service customer-facing project, so the two guiding goals are:
 
 ## Sections (highest impact first)
 
-| # | Section | Why it matters | Document |
-|---|---------|----------------|----------|
-| 1 | **Dependency diet** | Directly serves the "lightweight + least deps" goal. Removes the unmaintained pinned `himalaya`, and evaluates dropping `he` and `luxon` outright. Every other section gets easier once the parser story is unified. | [01-dependency-diet.md](01-dependency-diet.md) |
-| 2 | **HTML pipeline unification** | The core value of the library. Today one item's HTML is parsed and re-serialized 5+ times across 3 parsers — the biggest source of subtle bugs, perf cost, and edge-case drift. Parse once, transform a single tree, serialize once. | [02-html-pipeline.md](02-html-pipeline.md) |
-| 3 | **API robustness & error model** | Consumers are external customers (self-service). The library must have a documented no-throw contract, a consistent error/warning model, and no hidden network I/O. Today the constructor and `build()` can throw, invalid params are silently dropped, and `fetch` lives inside the parser class. | [03-api-robustness.md](03-api-robustness.md) |
-| 4 | **Type safety & TS library practices** | Eliminates `as` casts and mutation of raw parser output, tightens `tsconfig`, and locks the public type surface so consumers never see accidental breaking changes. | [04-type-safety.md](04-type-safety.md) |
-| 5 | **Performance & memory** | Establish benchmarks (fixtures like `forbes-large.rss` already exist), then fix the known hot spots: per-node sanitize round-trips, per-recursion closure allocation, unbounded caches. | [05-performance.md](05-performance.md) |
-| 6 | **Testing strategy** | Protects every refactor above. Add property-based tests, make the skipped integration/recipe tests runnable offline via HTTP mocking, and add differential snapshots over all fixture feeds before touching the pipeline. | [06-testing.md](06-testing.md) |
-| 7 | **Packaging, publishing & DX** | Correct ESM packaging metadata (`sideEffects`, exports hygiene), automated package linting (`publint`, `arethetypeswrong`), size budgets in CI, and npm provenance. Low effort, permanent payoff. | [07-packaging.md](07-packaging.md) |
+| #   | Section                                | Why it matters                                                                                                                                                                                                                                                                                     | Document                                       |
+| --- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 1   | **Dependency diet**                    | Directly serves the "lightweight + least deps" goal. Removes the unmaintained pinned `himalaya`, and evaluates dropping `he` and `luxon` outright. Every other section gets easier once the parser story is unified.                                                                               | [01-dependency-diet.md](01-dependency-diet.md) |
+| 2   | **HTML pipeline unification**          | The core value of the library. Today one item's HTML is parsed and re-serialized 5+ times across 3 parsers — the biggest source of subtle bugs, perf cost, and edge-case drift. Parse once, transform a single tree, serialize once.                                                               | [02-html-pipeline.md](02-html-pipeline.md)     |
+| 3   | **API robustness & error model**       | Consumers are external customers (self-service). The library must have a documented no-throw contract, a consistent error/warning model, and no hidden network I/O. Today the constructor and `build()` can throw, invalid params are silently dropped, and `fetch` lives inside the parser class. | [03-api-robustness.md](03-api-robustness.md)   |
+| 4   | **Type safety & TS library practices** | Eliminates `as` casts and mutation of raw parser output, tightens `tsconfig`, and locks the public type surface so consumers never see accidental breaking changes.                                                                                                                                | [04-type-safety.md](04-type-safety.md)         |
+| 5   | **Performance & memory**               | Establish benchmarks (fixtures like `forbes-large.rss` already exist), then fix the known hot spots: per-node sanitize round-trips, per-recursion closure allocation, unbounded caches.                                                                                                            | [05-performance.md](05-performance.md)         |
+| 6   | **Testing strategy**                   | Protects every refactor above. Add property-based tests, make the skipped integration/recipe tests runnable offline via HTTP mocking, and add differential snapshots over all fixture feeds before touching the pipeline.                                                                          | [06-testing.md](06-testing.md)                 |
+| 7   | **Packaging, publishing & DX**         | Correct ESM packaging metadata (`sideEffects`, exports hygiene), automated package linting (`publint`, `arethetypeswrong`), size budgets in CI, and npm provenance. Low effort, permanent payoff.                                                                                                  | [07-packaging.md](07-packaging.md)             |
 
 ## Recommended order of execution
 
@@ -61,5 +61,5 @@ self-service customer-facing project, so the two guiding goals are:
   implementation steps). It is the **single source of truth across Claude Code
   sessions**: when a work session finishes part of a section, ask Claude Code
   to review the work and check off the finished items.
-- A section is *done* when every item in its checklist in `DASHBOARD.md` is
+- A section is _done_ when every item in its checklist in `DASHBOARD.md` is
   checked, and the checklist at the top of its own document is satisfied.

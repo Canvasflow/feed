@@ -51,20 +51,20 @@ and after it.
 
 ## Files to review
 
-- `src/component/html/HTMLMapper.ts` — the whole pre-processing gauntlet
-- `src/component/mapping/Mapping.ts` — `reduceEmptyTextNode`, `getRootElement`, `reduceComponents`
-- `src/component/mapping/Mapping.utils.ts` — `sanitizeNode`, `sanitizeContentHtml`, `fromFigcaption`, `getCredit` (in-place mutation), `processTextLinks`
-- `src/component/mapping/Mapping.media.ts`, `Mapping.container.ts`, `Mapping.text.ts`, `Mapping.table.ts` — every `sanitizeNode`/`stringify` call site (~22 across the mapping modules)
-- `src/component/node/Node.ts` — the AST + traversal reducers the new passes build on
-- `src/component/mapping/Mapping.constants.ts` — the three sanitization allow-lists
-- `src/rss/RSSFeed.ts` — `buildItem`'s `getRootElement` string round-trip
+- `src/component/html/html-mapper.ts` — the whole pre-processing gauntlet
+- `src/component/mapping/mapping.ts` — `reduceEmptyTextNode`, `getRootElement`, `reduceComponents`
+- `src/component/mapping/mapping.utils.ts` — `sanitizeNode`, `sanitizeContentHtml`, `fromFigcaption`, `getCredit` (in-place mutation), `processTextLinks`
+- `src/component/mapping/mapping.media.ts`, `mapping.container.ts`, `mapping.text.ts`, `mapping.table.ts` — every `sanitizeNode`/`stringify` call site (~22 across the mapping modules)
+- `src/component/node/node-helpers.ts` — the AST + traversal reducers the new passes build on
+- `src/component/mapping/mapping.constants.ts` — the three sanitization allow-lists
+- `src/rss/rss-feed.ts` — `buildItem`'s `getRootElement` string round-trip
 - Fixtures: `src/support/html/*.html`, `src/support/feeds/toms.html`, `theenglishhome.html`
 
 ## Resources
 
 **Articles / blog posts**
 
-- WHATWG HTML parsing spec, §13.2 (tokenizer + tree construction, error recovery): <https://html.spec.whatwg.org/multipage/parsing.html> — skim to understand *why* different parsers disagree on malformed input
+- WHATWG HTML parsing spec, §13.2 (tokenizer + tree construction, error recovery): <https://html.spec.whatwg.org/multipage/parsing.html> — skim to understand _why_ different parsers disagree on malformed input
 - `htmlparser2` docs + `domhandler`/`domutils`/`dom-serializer` ecosystem: <https://github.com/fb55/htmlparser2> (this trio is how you parse→transform→serialize with one parser)
 - linkedom design write-up (Andrea Giammarchi): "linkedom: A JSDOM Alternative" <https://webreflection.medium.com/linkedom-a-jsdom-alternative-53dd8f699311>
 - parse5 docs (the reference-quality WHATWG parser used by jsdom): <https://parse5.js.org>
@@ -74,12 +74,12 @@ and after it.
 **Videos**
 
 - "How Browsers Work: parsing" (any recent Chrome University / HTTP 203 episode on the HTML parser)
-- Babel/AST transform talks — *"Master the Art of the AST"* (Yonatan Mevorach) is a good conceptual match even though it's JS ASTs
+- Babel/AST transform talks — _"Master the Art of the AST"_ (Yonatan Mevorach) is a good conceptual match even though it's JS ASTs
 
 **Books**
 
-- *Crafting Interpreters* (Nystrom) — ch. on scanning/parsing/visitors; the visitor/transform mindset maps directly to node passes
-- *Refactoring* (Fowler) — "Split Phase" is precisely this refactor
+- _Crafting Interpreters_ (Nystrom) — ch. on scanning/parsing/visitors; the visitor/transform mindset maps directly to node passes
+- _Refactoring_ (Fowler) — "Split Phase" is precisely this refactor
 
 ## Study guide
 
@@ -92,7 +92,7 @@ and after it.
    diff their serialized output and measure time/memory. Decision criteria:
    (a) closest to current himalaya behavior on your real fixtures,
    (b) maintained, (c) install weight, (d) ease of mapping to the existing
-   `Node` type. *Note:* htmlparser2's forgiving mode is closest in spirit to
+   `Node` type. _Note:_ htmlparser2's forgiving mode is closest in spirit to
    himalaya; parse5 is the most spec-correct; linkedom you already ship.
 3. **AST transform patterns (½ day).** Read the Babel handbook transform
    chapter. Learn: passes as pure `Node[] → Node[]` functions, structural
@@ -111,7 +111,7 @@ and after it.
 1. **Write the parser ADR** using the bake-off data (study step 2).
 2. **Introduce an adapter seam.** Create `src/component/html/parser.ts`
    exposing `parseHtml(html: string): Node[]` and `serialize(nodes: Node[]):
-   string`, implemented first with the *current* himalaya so all call sites
+string`, implemented first with the _current_ himalaya so all call sites
    move to the seam with zero behavior change. TS practice: this is the only
    module allowed to import the parser package — enforce with an ESLint
    `no-restricted-imports` rule.
@@ -129,7 +129,7 @@ and after it.
    its shim; fix snapshot diffs one by one (each diff is a real behavioral
    decision — record intentional changes).
 5. **Replace sanitize round-trips.** Implement `serializeSanitized` against
-   the `Node` AST with the three existing policies from `Mapping.constants.ts`
+   the `Node` AST with the three existing policies from `mapping.constants.ts`
    (+ the `transformTags.a` link-rewriting behavior of `processTextLinks` as a
    pre-pass). Migrate the ~22 `sanitizeNode`/`sanitizeContentHtml`/
    `processTextLinks` call sites, then drop `sanitize-html` (see 01).

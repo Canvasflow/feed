@@ -165,8 +165,8 @@ _June 22, 2026_
 
 📝 Docs
 
-- (wiki) Drop references to removed docs/*.md files ([`39a8730`](https://github.com/Canvasflow/feed/commit/39a87301e5f055296bedf051c6e109d019295f49))
-- Rewrite README as intro pointing to the wiki; drop docs/*.md ([`55b95aa`](https://github.com/Canvasflow/feed/commit/55b95aabefbc5b02af2010dc2f826a8c8ac3e325))
+- (wiki) Drop references to removed docs/\*.md files ([`39a8730`](https://github.com/Canvasflow/feed/commit/39a87301e5f055296bedf051c6e109d019295f49))
+- Rewrite README as intro pointing to the wiki; drop docs/\*.md ([`55b95aa`](https://github.com/Canvasflow/feed/commit/55b95aabefbc5b02af2010dc2f826a8c8ac3e325))
 - (wiki) Add GitHub Wiki pages and a wiki-sync publish job ([`7d738bc`](https://github.com/Canvasflow/feed/commit/7d738bc7c846b00d2fefa8955be3ba5aad9a3c5e))
 
 🎨 Style

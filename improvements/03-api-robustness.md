@@ -15,17 +15,17 @@
 
 This library ingests **hostile input** (arbitrary publisher feeds, customer
 mapping configs) and is consumed by self-service customers. The single most
-valuable stability guarantee it can offer is: *give me any string and any
+valuable stability guarantee it can offer is: _give me any string and any
 config, and I will always give you back an `RSS` object with structured
 errors — I will never throw, hang, or make a network call you didn't ask
-for.* Today that guarantee has holes:
+for._ Today that guarantee has holes:
 
 - `new RSSFeed(garbage)` → `fast-xml-parser` can throw on malformed XML,
   before any error model exists.
 - `build()` → `new URL(channel.link)` throws on an invalid link (common in
   real feeds).
 - Constructor silently ignores invalid `params` (`isValidParams` check), but
-  `build()` *reports* invalid params into `rss.errors` — two different
+  `build()` _reports_ invalid params into `rss.errors` — two different
   behaviors for the same mistake, one of them invisible.
 - `rss.errors` receives both `string`s and raw zod issue objects
   (`paramsErrors` is `Array<unknown>` spread into it) — consumers cannot
@@ -41,18 +41,18 @@ for.* Today that guarantee has holes:
   and untestable offline (these are exactly the tests skipped in CI).
 
 Error-model design decision to make deliberately: keep the current
-*accumulate-on-the-object* style (errors/warnings arrays on rss/channel/item —
+_accumulate-on-the-object_ style (errors/warnings arrays on rss/channel/item —
 good for feed QA UIs) but make every entry a typed
 `FeedIssue { code, severity, message, path? }`. String-compatibility can be
 kept for one major version via `toString()`.
 
 ## Files to review
 
-- `src/rss/RSSFeed.ts` — constructor, `validate()`, `build()`, `validateRSS/Channel/Item` (mutation via `delete`), `getRecipeFromUrl`, `getHtmlContent`, `validateParams`
-- `src/rss/RSS.ts` — `errors`/`warnings` field types, `replaceErrors`
-- `src/rss/ParsedXml.ts` — what shapes the parser can actually produce
-- `src/component/mapping/Mapping.ts` — `isValidParams`, `validateParams` (throwing variant)
-- `src/component/html/HTMLMapper.ts` — confirm `toComponents` is total (never throws) for arbitrary strings
+- `src/rss/rss-feed.ts` — constructor, `validate()`, `build()`, `validateRSS/Channel/Item` (mutation via `delete`), `getRecipeFromUrl`, `getHtmlContent`, `validateParams`
+- `src/rss/rss-types.ts` — `errors`/`warnings` field types, `replaceErrors`
+- `src/rss/parsed-xml.ts` — what shapes the parser can actually produce
+- `src/component/mapping/mapping.ts` — `isValidParams`, `validateParams` (throwing variant)
+- `src/component/html/html-mapper.ts` — confirm `toComponents` is total (never throws) for arbitrary strings
 - `src/component/html/HTMLMapper.fuzz.test.ts` — extend into the no-throw proof
 - `docs/wiki/API-Reference.md`, `docs/wiki/RSS-Feeds.md` — contract documentation
 - Consumers: how `transformer` calls this library (check error handling expectations before changing shapes)
@@ -62,7 +62,7 @@ kept for one major version via `toString()`.
 **Articles / blog posts**
 
 - "Parse, don't validate" (Alexis King) — <https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/> — the foundational piece for the boundary design here
-- "Errors as values" — Go/Rust-style result handling in TS: search *"neverthrow"* docs and *Matt Pocock — Result types in TypeScript*
+- "Errors as values" — Go/Rust-style result handling in TS: search _"neverthrow"_ docs and _Matt Pocock — Result types in TypeScript_
 - Postel's law and its critics ("be conservative in what you accept" debate) — relevant to how lenient `validate()` should be
 - Node.js `fetch`/undici docs on `AbortSignal.timeout` and body size limits
 - Semver spec <https://semver.org> — you will ship breaking changes; plan the major
@@ -75,8 +75,8 @@ kept for one major version via `toString()`.
 
 **Books**
 
-- *Effective TypeScript* (Vanderkam), 2nd ed. — items on designing types for APIs and on `unknown` at boundaries
-- *A Philosophy of Software Design* (Ousterhout) — ch. "Define Errors Out of Existence"
+- _Effective TypeScript_ (Vanderkam), 2nd ed. — items on designing types for APIs and on `unknown` at boundaries
+- _A Philosophy of Software Design_ (Ousterhout) — ch. "Define Errors Out of Existence"
 
 ## Study guide
 
@@ -85,7 +85,7 @@ kept for one major version via `toString()`.
    (`XMLParser.parse`, `parse()` from the HTML parser). Write the list into
    the ADR. Fuzz `new RSSFeed` with 1k mutated fixture strings to confirm.
 2. **Read "Parse, don't validate" (½ day)** and map it onto this codebase:
-   `ParsedXml` (untrusted) → `RSS` (trusted) should be the *only* boundary;
+   `ParsedXml` (untrusted) → `RSS` (trusted) should be the _only_ boundary;
    after `build()`, no code should ever re-check shapes.
 3. **Error taxonomy (½ day).** Enumerate every error/warning string currently
    produced (grep `errors.push` / `warnings.push`), group them into stable
@@ -103,7 +103,7 @@ kept for one major version via `toString()`.
    `parseInt` (always pass radix, check `Number.isNaN` — some already do).
 2. **Introduce `FeedIssue`.** Define the discriminated
    `{ code: FeedIssueCode; severity: 'error' | 'warning'; message: string;
-   path?: string }` type in `RSS.ts`; migrate `errors: string[]` →
+path?: string }` type in `rss-types.ts`; migrate `errors: string[]` →
    `FeedIssue[]` (TS practice: export the union type and a `const` array of
    codes so consumers can exhaustively switch). Convert zod issues from
    `validateParams` into `FeedIssue`s instead of pushing raw objects.
@@ -115,7 +115,7 @@ kept for one major version via `toString()`.
 4. **De-async or justify.** Make `validate()`/`build()` sync internally and
    ship them as sync in the next major (keep `async` wrappers during
    deprecation if consumers already `await`). Remove the `_validated` implicit
-   coupling by making `build()` call validation on a *copy* — stop `delete`-ing
+   coupling by making `build()` call validation on a _copy_ — stop `delete`-ing
    keys from `this.data` (return sanitized views instead of mutating input).
 5. **Extract network I/O.** Move `getRecipeFromUrl`/`getHtmlContent` to a
    separate export (`@canvasflow/feed/recipe` subpath or a standalone module)

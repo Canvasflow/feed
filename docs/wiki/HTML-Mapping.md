@@ -26,7 +26,7 @@ const root = HTMLMapper.getRootElement(html, rootMapping); // string | null
    - lift `<a>` wrappers around images out of `<p>`/heading tags;
    - split `<p>`/`h1`–`h6` tags that contain `<img>` so the image becomes its own block.
 2. **Parse** with `himalaya` into a `Node[]` AST.
-3. **Reduce** the AST via `reduceComponents(params)` from `mapping/Mapping.ts` into `Component[]`.
+3. **Reduce** the AST via `reduceComponents(params)` from `mapping/mapping.ts` into `Component[]`.
 
 ## Evaluation order
 
@@ -58,15 +58,15 @@ Text components keep only [phrasing content](https://developer.mozilla.org/en-US
 
 ## Built-in element detection (summary)
 
-| Content | Detected from                                                                                            |
-| ------- | -------------------------------------------------------------------------------------------------------- |
-| Image   | `<img>`, `<picture>` (uses the fallback `<img>`).                                                        |
+| Content | Detected from                                                                                                                                                                                                                                                                                                                               |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Image   | `<img>`, `<picture>` (uses the fallback `<img>`).                                                                                                                                                                                                                                                                                           |
 | Figure  | `<figure>` — always produces a `FigureContainerComponent` (`component: 'container'`, `type: 'figure'`). Caption and credit are extracted from a `<figcaption>`; credit nodes are identified by the `<small>` tag, `role="credit"`, or `class="credit"`. The contained media components (image, video, audio) are nested under `components`. |
-| Gallery | `role="gallery"`/`role="mosaic"` container, or a custom gallery mapping.                                 |
-| Video   | `<video>` (`src` or first `<source>`); YouTube/Vimeo/Dailymotion via `<iframe>`.                         |
-| Audio   | `<audio>`; Apple Podcasts via `<iframe>`.                                                                |
-| Social  | `blockquote`/`a` markers for Instagram, Twitter/X, TikTok.                                               |
-| Table   | `<table>` → `htmltable` (restricted tag allow-list).                                                     |
-| Button  | `<a role="button">` or `<button><a></button>`.                                                           |
+| Gallery | `role="gallery"`/`role="mosaic"` container, or a custom gallery mapping.                                                                                                                                                                                                                                                                    |
+| Video   | `<video>` (`src` or first `<source>`); YouTube/Vimeo/Dailymotion via `<iframe>`.                                                                                                                                                                                                                                                            |
+| Audio   | `<audio>`; Apple Podcasts via `<iframe>`.                                                                                                                                                                                                                                                                                                   |
+| Social  | `blockquote`/`a` markers for Instagram, Twitter/X, TikTok.                                                                                                                                                                                                                                                                                  |
+| Table   | `<table>` → `htmltable` (restricted tag allow-list).                                                                                                                                                                                                                                                                                        |
+| Button  | `<a role="button">` or `<button><a></button>`.                                                                                                                                                                                                                                                                                              |
 
 To recognise content that does not follow these conventions, define a [custom mapping](Custom-Mappings.md).

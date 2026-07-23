@@ -1,8 +1,8 @@
-export * from './rss/RSSFeed';
-export * from './rss/RSS';
-export * from './component/Component';
+export * from './rss/rss-feed';
+export * from './rss/rss-types';
+export * from './component/component';
 
-export * from './component/schema/Schema';
+export * from './component/schema/recipe-schema';
 
-export * from './component/html/HTMLMapper';
-export * from './component/mapping/Mapping';
+export * from './component/html/html-mapper';
+export * from './component/mapping/mapping';
