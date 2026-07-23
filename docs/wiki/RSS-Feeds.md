@@ -17,7 +17,7 @@ const rss = await feed.build(); // typed RSS, items include components
 | Method                          | Returns         | Purpose                                                                                                                  |
 | ------------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `new RSSFeed(content, params?)` | —               | Parse the XML (`fast-xml-parser`) and store the raw tree privately. An optional `Params` configures HTML conversion.     |
-| `validate()`                    | `Promise<void>` | Check required tags against the `Tag.ts` allow-lists; fill `errors`/`warnings` on the `rss`, `channel`, and each `item`. |
+| `validate()`                    | `Promise<void>` | Check required tags against the `tag.ts` allow-lists; fill `errors`/`warnings` on the `rss`, `channel`, and each `item`. |
 | `build()`                       | `Promise<RSS>`  | Build the typed `RSS`; convert each item's `content:encoded` HTML into `components` via `HTMLMapper`.                    |
 | `set root(mapping)`             | —               | Scope content extraction to a sub-element (a `Mapping`) before conversion.                                               |
 
@@ -25,7 +25,7 @@ Static helpers: `RSSFeed.validateParams(params?, root?)`, `RSSFeed.toJSON(rss)`,
 
 ## Validation rules
 
-Validation is driven by allow-lists in [`Tag.ts`](https://github.com/canvasflow/feed/blob/main/src/rss/Tag.ts). Anything **required** that is missing becomes an error; anything **not in the valid set** becomes a warning (`Invalid property "<name>"`). Nothing throws.
+Validation is driven by allow-lists in [`tag.ts`](https://github.com/canvasflow/feed/blob/main/src/rss/tag.ts). Anything **required** that is missing becomes an error; anything **not in the valid set** becomes a warning (`Invalid property "<name>"`). Nothing throws.
 
 | Level     | Required                   | A few of the valid tags                                                                                                             |
 | --------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |

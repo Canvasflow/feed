@@ -46,12 +46,12 @@ This is a TypeScript library (`@canvasflow/feed`) that processes RSS/Atom feeds 
 
 `RSSFeed` wraps `fast-xml-parser` to parse XML. The two main methods are:
 
-- `validate()` — checks required tags against `Tag.ts` allow-lists; populates `errors`/`warnings` arrays on the RSS, channel, and item objects.
+- `validate()` — checks required tags against `tag.ts` allow-lists; populates `errors`/`warnings` arrays on the RSS, channel, and item objects.
 - `build()` — constructs a typed `RSS` object. Items have their `content:encoded` HTML field automatically converted to a `components` array via `HTMLMapper.toComponents()`.
 
-XML attributes from the parser use the `@_` prefix convention (e.g., `@_url`, `@_type`). Canvasflow-specific RSS extensions use the `cf:` namespace (`cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`). The raw parser output is kept private (`RSSFeed.data`) and typed via `src/rss/ParsedXml.ts`; consumers read the typed `rss` property.
+XML attributes from the parser use the `@_` prefix convention (e.g., `@_url`, `@_type`). Canvasflow-specific RSS extensions use the `cf:` namespace (`cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`). The raw parser output is kept private (`RSSFeed.data`) and typed via `src/rss/parsed-xml.ts`; consumers read the typed `rss` property.
 
-An optional `Params` (from `mapping/Mapping.ts`) can be passed to `RSSFeed` to configure how HTML is converted. An optional `root` setter accepts a `Mapping` to scope content extraction to a sub-element before conversion.
+An optional `Params` (from `mapping/mapping.ts`) can be passed to `RSSFeed` to configure how HTML is converted. An optional `root` setter accepts a `Mapping` to scope content extraction to a sub-element before conversion.
 
 ### HTMLMapper (`src/component/html/`)
 
@@ -59,17 +59,17 @@ An optional `Params` (from `mapping/Mapping.ts`) can be passed to `RSSFeed` to c
 
 1. Pre-processes the HTML string (removes breaklines, sanitizes invalid hrefs, extracts `<a>` wrappers around images, splits `<p>` tags containing `<img>` elements).
 2. Parses with `himalaya` into a `Node[]` AST.
-3. Reduces the node tree via `reduceComponents(params)` from `mapping/Mapping.ts` into `Component[]`.
+3. Reduces the node tree via `reduceComponents(params)` from `mapping/mapping.ts` into `Component[]`.
 
 ### Mapping (`src/component/mapping/`)
 
-`Mapping.ts` contains the `reduceComponents` reducer and the recursive element-matching engine (`fromNode`). The per-family converters are split into sibling modules that `Mapping.ts` imports and re-exports (so the public API is unchanged):
+`mapping.ts` contains the `reduceComponents` reducer and the recursive element-matching engine (`fromNode`). The per-family converters are split into sibling modules that `mapping.ts` imports and re-exports (so the public API is unchanged):
 
-- `Mapping.media.ts` — image / picture / figure / video / audio / gallery / iframe / twitter
-- `Mapping.embeds.ts` — Instagram / TikTok / YouTube / Vimeo / Dailymotion / Infogram
-- `Mapping.container.ts` — container / columns / live_container / link & figure containers / buttons
-- `Mapping.table.ts` (`toHTMLTable`), `Mapping.custom.ts` (`toCustom`), `Mapping.text.ts` (`toText`)
-- `Mapping.utils.ts` (shared helpers: `sanitizeNode`, `sanitizeContentHtml`, `matchesPattern`, `fromFigcaption`, `filterClassNameDescendants`, `processTextLinks`, `isEmpty`, filter/exclude utilities), `Mapping.constants.ts` (allow-lists), `Mapping.schema.ts` (Zod schemas)
+- `mapping.media.ts` — image / picture / figure / video / audio / gallery / iframe / twitter
+- `mapping.embeds.ts` — Instagram / TikTok / YouTube / Vimeo / Dailymotion / Infogram
+- `mapping.container.ts` — container / columns / live_container / link & figure containers / buttons
+- `mapping.table.ts` (`toHTMLTable`), `mapping.custom.ts` (`toCustom`), `mapping.text.ts` (`toText`)
+- `mapping.utils.ts` (shared helpers: `sanitizeNode`, `sanitizeContentHtml`, `matchesPattern`, `fromFigcaption`, `filterClassNameDescendants`, `processTextLinks`, `isEmpty`, filter/exclude utilities), `mapping.constants.ts` (allow-lists), `mapping.schema.ts` (Zod schemas)
 
 The default HTML→Canvasflow component mapping is:
 
@@ -85,9 +85,9 @@ The default HTML→Canvasflow component mapping is:
 
 Any text element's `role` attribute overrides the default mapping (e.g., `<p role="crosshead">` → `crosshead`). Styles and classes are stripped; only `href`/`target`/`rel` survive on `<a>` elements.
 
-All `<figure>` elements are routed to `toFigureContainer` (in `Mapping.container.ts`) and produce a `FigureContainerComponent` (`component: 'container'`, `type: 'figure'`), never a bare `ImageComponent`. Caption and credit are extracted from `<figcaption>`; credit nodes are matched by the `<small>` tag, `role="credit"`, or `class="credit"`.
+All `<figure>` elements are routed to `toFigureContainer` (in `mapping.container.ts`) and produce a `FigureContainerComponent` (`component: 'container'`, `type: 'figure'`), never a bare `ImageComponent`. Caption and credit are extracted from `<figcaption>`; credit nodes are matched by the `<small>` tag, `role="credit"`, or `class="credit"`.
 
-### Node helpers (`src/component/node/Node.ts`)
+### Node helpers (`src/component/node/node-helpers.ts`)
 
 Provides the himalaya AST types (`Node`, `ElementNode`, `TextNode`, `CommentNode`, `Attribute`) and two tree-traversal reducers that share the `DescendantsReducer` type signature `(acc: Node[], node: Node) => Node[]`:
 
@@ -98,13 +98,13 @@ Provides the himalaya AST types (`Node`, `ElementNode`, `TextNode`, `CommentNode
 
 `getAttributes(attributes?)` converts an `Attribute[]` to a `Map<string, string>`. `SetUtils` provides `intersect`, `subset`, and `equal` for `Set<T>` operations.
 
-### Component types (`src/component/Component.ts`)
+### Component types (`src/component/component.ts`)
 
 Defines all `ComponentType` variants (image, gallery, video, audio, twitter, instagram, youtube, tiktok, dailymotion, vimeo, infogram, recipe, htmltable, columns, container, live_container, live_post, etc.) and their interfaces. Use the `is*` type-guard functions to narrow components.
 
 ### Test fixtures
 
-Real RSS feeds and HTML snippets live in `src/support/feeds/` and `src/support/html/`. `setupTests.ts` exposes `process.env.SUPPORT_PATH` and `process.env.FEEDS_PATH` so tests can read fixtures without hardcoded paths.
+Real RSS feeds and HTML snippets live in `src/support/feeds/` and `src/support/html/`. `setup-tests.ts` exposes `process.env.SUPPORT_PATH` and `process.env.FEEDS_PATH` so tests can read fixtures without hardcoded paths.
 
 ### Test tags
 

@@ -6,26 +6,28 @@ Tests run on **Vitest** via the Vite+ runner (`vp test`). Configuration is in [`
 
 ## Layout
 
-Tests are colocated with the code they cover as `*.test.ts`:
+Tests are colocated with the code they cover in a sibling `__tests__/` folder, as `*.test.ts`:
 
 ```
 src/
-├── rss/RSSFeed.test.ts
-├── rss/RSSFeed.coverage.test.ts
-├── component/Component.test.ts
-├── component/html/HTMLMapper.{text,embeds,media,table,container,mapping}.test.ts
-├── component/html/HTMLMapper.coverage.test.ts
-├── component/mapping/Mapping.test.ts
-├── component/mapping/Mapping.coverage.test.ts
-├── component/node/Node.test.ts
-└── component/schema/Schema.test.ts
+├── rss/__tests__/rss-feed.test.ts
+├── rss/__tests__/rss-feed.coverage.test.ts
+├── component/__tests__/component.test.ts
+├── component/html/__tests__/html-mapper.{text,embeds,media,table,container,mapping}.test.ts
+├── component/html/__tests__/html-mapper.coverage.test.ts
+├── component/mapping/__tests__/mapping.test.ts
+├── component/mapping/__tests__/mapping.coverage.test.ts
+├── component/node/__tests__/node-helpers.test.ts
+└── component/schema/__tests__/recipe-schema.test.ts
 ```
 
 > The large `HTMLMapper` suite is split into per-component-family files under
-> `component/html/` (text, embeds, media, table, container, mapping). The
-> `*.coverage.test.ts` files target otherwise-uncovered branches.
+> `component/html/__tests__/` (text, embeds, media, table, container, mapping). The
+> `*.coverage.test.ts` files target otherwise-uncovered branches. File names are
+> kebab-case, enforced by `unicorn/filename-case` in `vite.config.ts` — see
+> [ADR-0001](https://github.com/canvasflow/feed/blob/main/docs/adr/0001-kebab-case-naming-and-colocated-test-conventions.md).
 
-`setupFiles` runs [`src/setupTests.ts`](https://github.com/canvasflow/feed/blob/main/src/setupTests.ts), which exposes `process.env.SUPPORT_PATH` and `process.env.FEEDS_PATH` so tests read fixtures (under `src/support/`) without hardcoded paths.
+`setupFiles` runs [`src/setup-tests.ts`](https://github.com/canvasflow/feed/blob/main/src/setup-tests.ts), which exposes `process.env.SUPPORT_PATH` and `process.env.FEEDS_PATH` so tests read fixtures (under `src/support/`) without hardcoded paths.
 
 ## Running tests
 
@@ -40,7 +42,7 @@ src/
 Run a single file:
 
 ```bash
-npx vitest run src/rss/RSSFeed.test.ts
+npx vitest run src/rss/__tests__/rss-feed.test.ts
 ```
 
 ## Test tags

@@ -81,7 +81,7 @@
 
 **Study**
 - [ ] `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` enabled locally; error counts per file mapped
-- [ ] Raw `fast-xml-parser` output shapes documented against `ParsedXml.ts`; `isArray`/parser options evaluated
+- [ ] Raw `fast-xml-parser` output shapes documented against `parsed-xml.ts`; `isArray`/parser options evaluated
 - [ ] Narrowing-pattern practice done (rewrote one cast-heavy function without `as`)
 - [ ] api-extractor / attw report run once and understood
 
@@ -138,7 +138,7 @@
 
 **Study**
 - [ ] Node `exports`/conditions doc read; attw matrix interpreted once against the built package
-- [ ] Side-effect audit of all modules (module-level caches in `Mapping.utils.ts` confirmed safe)
+- [ ] Side-effect audit of all modules (module-level caches in `mapping.utils.ts` confirmed safe)
 - [ ] semver-ts "what is breaking" tables read; draft policy written
 - [ ] Scratch-consumer exercise done (pack → install → compile under node16 + bundler → run)
 

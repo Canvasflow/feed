@@ -36,12 +36,12 @@ Goals:
 
 ## Files to review
 
-- `src/rss/RSSFeed.ts` — every `as` cast, `Record<string, unknown>` params, input mutation in `getEnclosure`/`getMediaGroup`/`getMediaContent`/`buildItem`/`validateItem`
-- `src/rss/ParsedXml.ts` — how faithfully it models `fast-xml-parser` output (single-vs-array, `#text` objects, string-vs-number coercion)
-- `src/rss/RSS.ts`, `src/rss/Attributes.ts` — public types, optionality choices
-- `src/component/Component.ts` — the union + `is*` guards; check exhaustiveness
-- `src/component/mapping/Mapping.ts` — `mapping as ColumnsMapping` style casts after `getMappingComponent`; `MappingComponentResponse` design (returning the mapping unnarrowed forces casts downstream)
-- `src/component/mapping/Mapping.schema.ts` — schemas as the source of types (good pattern; keep)
+- `src/rss/rss-feed.ts` — every `as` cast, `Record<string, unknown>` params, input mutation in `getEnclosure`/`getMediaGroup`/`getMediaContent`/`buildItem`/`validateItem`
+- `src/rss/parsed-xml.ts` — how faithfully it models `fast-xml-parser` output (single-vs-array, `#text` objects, string-vs-number coercion)
+- `src/rss/rss-types.ts`, `src/rss/attributes.ts` — public types, optionality choices
+- `src/component/component.ts` — the union + `is*` guards; check exhaustiveness
+- `src/component/mapping/mapping.ts` — `mapping as ColumnsMapping` style casts after `getMappingComponent`; `MappingComponentResponse` design (returning the mapping unnarrowed forces casts downstream)
+- `src/component/mapping/mapping.schema.ts` — schemas as the source of types (good pattern; keep)
 - `src/index.ts` — `export *` re-exports (surface control)
 - `tsconfig.json`, `vite.config.ts` (`pack.dts`)
 
@@ -76,7 +76,7 @@ Goals:
 2. **fast-xml-parser output model (½ day).** Write a scratch script that
    parses 5 fixture feeds and `console.dir`s the raw output. Document the real
    shapes (when does it produce arrays? numbers? `#text` wrappers?) and
-   compare with `ParsedXml.ts`. Consider parser options
+   compare with `parsed-xml.ts`. Consider parser options
    (`isArray` callback, `parseTagValue`) that eliminate whole categories of
    "single or array?" code.
 3. **Narrowing patterns (1 day).** Effective TypeScript items on type guards;
@@ -98,7 +98,7 @@ Goals:
    This deletes code *and* casts.
 3. **Boundary narrowing module.** Create `src/rss/narrow.ts` with tiny helpers
    (`textOf(x): string | undefined` for `#text` wrappers, `recordOf`,
-   `stringOf`) and replace every inline `as` in `RSSFeed.ts`. Rule of thumb to
+   `stringOf`) and replace every inline `as` in `rss-feed.ts`. Rule of thumb to
    enforce via review: `as` only appears in this file (and `as const`
    anywhere).
 4. **Immutability.** Change validator/builder signatures to take

@@ -32,8 +32,8 @@ tagged tests). This section has two jobs:
 
 - `src/rss/RSSFeed.snapshot.test.ts` + `__snapshots__/` — the pattern to extend
 - `src/component/html/HTMLMapper.fuzz.test.ts` — existing fuzz approach (seed corpus, mutations) to upgrade to fast-check
-- `vite.config.ts` — tags (`integration`, `recipe` skipped; `todo`, `broken`), coverage thresholds, `setupTests.ts` env paths
-- `src/setupTests.ts` — `SUPPORT_PATH`/`FEEDS_PATH` convention
+- `vite.config.ts` — tags (`integration`, `recipe` skipped; `todo`, `broken`), coverage thresholds, `setup-tests.ts` env paths
+- `src/setup-tests.ts` — `SUPPORT_PATH`/`FEEDS_PATH` convention
 - All `*.coverage.test.ts` files — tests written to satisfy thresholds; candidates to convert into meaningful cases
 - `src/rss/RSSFeed.test.ts` (2 222 lines) — structure/duplication review; find which fixtures it exercises vs which exist
 - Grep `tags:.*integration|recipe|broken|todo` to inventory skipped/broken tests
@@ -70,7 +70,7 @@ tagged tests). This section has two jobs:
 2. **fast-check (1 day).** Do the official tutorial; then design arbitraries
    for *this* domain: mutated-XML strings (tag swaps, truncation, entity
    garbage), HTML-ish strings (unclosed tags, nested depth), and `Params`
-   objects derived from `Mapping.schema.ts` (zod schema → arbitrary; look at
+   objects derived from `mapping.schema.ts` (zod schema → arbitrary; look at
    `zod-fast-check` for inspiration even if you hand-roll).
 3. **HTTP mocking in Node (½ day).** Learn undici `MockAgent` +
    `setGlobalDispatcher`; note the interaction with 03's injected-fetch
@@ -93,7 +93,7 @@ tagged tests). This section has two jobs:
    known `code`.
 3. **Engine invariant properties** (pairs with 02): e.g. output components
    never contain disallowed tags in `html` fields (parse the output and check
-   against `Mapping.constants.ts` allow-lists); `toComponents` is idempotent
+   against `mapping.constants.ts` allow-lists); `toComponents` is idempotent
    on its own serialized output where meaningful; filter laws (`all` implies
    `any` for the same filters).
 4. **Un-skip integration tests.** After 03 extracts/injects fetch: convert

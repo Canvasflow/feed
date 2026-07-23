@@ -26,7 +26,7 @@ const root = HTMLMapper.getRootElement(html, rootMapping); // string | null
    - lift `<a>` wrappers around images out of `<p>`/heading tags;
    - split `<p>`/`h1`–`h6` tags that contain `<img>` so the image becomes its own block.
 2. **Parse** with `himalaya` into a `Node[]` AST.
-3. **Reduce** the AST via `reduceComponents(params)` from `mapping/Mapping.ts` into `Component[]`.
+3. **Reduce** the AST via `reduceComponents(params)` from `mapping/mapping.ts` into `Component[]`.
 
 ## Evaluation order
 

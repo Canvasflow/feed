@@ -399,4 +399,4 @@ Numbered slots: `text1` through `text60`.
 
 ## Validation
 
-`Params`/`Mapping` are validated with Zod schemas ([`mapping/Mapping.schema.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/Mapping.schema.ts)). The exported helpers `isValidParams()`, `isValidMapping()`, and `validateParams()` (and the static `RSSFeed.validateParams()`) reuse those schemas. See [API Reference](API-Reference.md).
+`Params`/`Mapping` are validated with Zod schemas ([`mapping/mapping.schema.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/mapping.schema.ts)). The exported helpers `isValidParams()`, `isValidMapping()`, and `validateParams()` (and the static `RSSFeed.validateParams()`) reuse those schemas. See [API Reference](API-Reference.md).

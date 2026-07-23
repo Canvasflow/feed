@@ -1,6 +1,6 @@
 # Component Types
 
-Every conversion produces `Component[]`. This page lists the component union, the shared shape, and the type guards used to narrow them. All of these are defined in [`Component.ts`](https://github.com/canvasflow/feed/blob/main/src/component/Component.ts) and re-exported from the package root.
+Every conversion produces `Component[]`. This page lists the component union, the shared shape, and the type guards used to narrow them. All of these are defined in [`component.ts`](https://github.com/canvasflow/feed/blob/main/src/component/component.ts) and re-exported from the package root.
 
 ← Back to [Home](Home.md) · Related: [HTML Mapping](HTML-Mapping.md) · [API Reference](API-Reference.md)
 
@@ -80,4 +80,4 @@ isValidTextRole
 
 ## Runtime schemas
 
-For validation, `Component.ts` also exports Zod schemas (`ComponentSchema`, `ComponentTypeSchema`, `TextTypeSchema`, and per-kind schemas such as `ImageComponentSchema`). Recipe extraction has its own schemas in [`schema/Schema.ts`](https://github.com/canvasflow/feed/blob/main/src/component/schema/Schema.ts).
+For validation, `component.ts` also exports Zod schemas (`ComponentSchema`, `ComponentTypeSchema`, `TextTypeSchema`, and per-kind schemas such as `ImageComponentSchema`). Recipe extraction has its own schemas in [`schema/Schema.ts`](https://github.com/canvasflow/feed/blob/main/src/component/schema/recipe-schema.ts).

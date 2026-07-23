@@ -48,11 +48,11 @@ kept for one major version via `toString()`.
 
 ## Files to review
 
-- `src/rss/RSSFeed.ts` — constructor, `validate()`, `build()`, `validateRSS/Channel/Item` (mutation via `delete`), `getRecipeFromUrl`, `getHtmlContent`, `validateParams`
-- `src/rss/RSS.ts` — `errors`/`warnings` field types, `replaceErrors`
-- `src/rss/ParsedXml.ts` — what shapes the parser can actually produce
-- `src/component/mapping/Mapping.ts` — `isValidParams`, `validateParams` (throwing variant)
-- `src/component/html/HTMLMapper.ts` — confirm `toComponents` is total (never throws) for arbitrary strings
+- `src/rss/rss-feed.ts` — constructor, `validate()`, `build()`, `validateRSS/Channel/Item` (mutation via `delete`), `getRecipeFromUrl`, `getHtmlContent`, `validateParams`
+- `src/rss/rss-types.ts` — `errors`/`warnings` field types, `replaceErrors`
+- `src/rss/parsed-xml.ts` — what shapes the parser can actually produce
+- `src/component/mapping/mapping.ts` — `isValidParams`, `validateParams` (throwing variant)
+- `src/component/html/html-mapper.ts` — confirm `toComponents` is total (never throws) for arbitrary strings
 - `src/component/html/HTMLMapper.fuzz.test.ts` — extend into the no-throw proof
 - `docs/wiki/API-Reference.md`, `docs/wiki/RSS-Feeds.md` — contract documentation
 - Consumers: how `transformer` calls this library (check error handling expectations before changing shapes)
@@ -103,7 +103,7 @@ kept for one major version via `toString()`.
    `parseInt` (always pass radix, check `Number.isNaN` — some already do).
 2. **Introduce `FeedIssue`.** Define the discriminated
    `{ code: FeedIssueCode; severity: 'error' | 'warning'; message: string;
-   path?: string }` type in `RSS.ts`; migrate `errors: string[]` →
+   path?: string }` type in `rss-types.ts`; migrate `errors: string[]` →
    `FeedIssue[]` (TS practice: export the union type and a `const` array of
    codes so consumers can exhaustively switch). Convert zod issues from
    `validateParams` into `FeedIssue`s instead of pushing raw objects.

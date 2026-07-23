@@ -27,9 +27,9 @@ Match the surrounding code: existing naming (`*Component`, `is*Component`, `Mapp
 
 - Keep the library **pure**: no I/O beyond the explicit `fetch` helpers on `RSSFeed`.
 - Don't throw for malformed input — accumulate `errors`/`warnings` so one bad element never aborts a conversion. See [Architecture](Architecture.md).
-- Reuse the Zod schemas in `mapping/Mapping.schema.ts` for validation rather than re-deriving shapes.
-- Keep `Mapping.ts` for the recursive detection engine; put leaf concerns (constants, pure utilities, embeds) in the sibling `Mapping.*` modules and re-export them so the public API is unchanged.
-- Add type guards (`is*Component`) alongside new component kinds in `Component.ts`.
+- Reuse the Zod schemas in `mapping/mapping.schema.ts` for validation rather than re-deriving shapes.
+- Keep `mapping.ts` for the recursive detection engine; put leaf concerns (constants, pure utilities, embeds) in the sibling `Mapping.*` modules and re-export them so the public API is unchanged.
+- Add type guards (`is*Component`) alongside new component kinds in `component.ts`.
 
 ## Tests
 

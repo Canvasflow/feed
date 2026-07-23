@@ -7,7 +7,7 @@
 - [ ] The parse-once pipeline (02) is measured: ≥2× throughput on `build()` for `forbes-large.rss` vs baseline (adjust target after baseline is known).
 - [ ] Per-recursion closure allocation in `findDescendants`/`removeDescendants` is eliminated (reducer created once, not per tree level).
 - [ ] `getAttributes` maps are not rebuilt repeatedly for the same node within one pipeline run (memoized or computed once per node).
-- [ ] The unbounded module-level `patternCache` in `Mapping.utils.ts` is bounded or scoped per-conversion (long-lived process safety in `transformer`).
+- [ ] The unbounded module-level `patternCache` in `mapping.utils.ts` is bounded or scoped per-conversion (long-lived process safety in `transformer`).
 - [ ] Memory profile of a large-feed `build()` captured once (heap snapshot); no retained document-sized strings/trees after build resolves.
 - [ ] A performance note exists in the wiki (what's O(what), expected throughput, how to run benches).
 
@@ -29,7 +29,7 @@ afterwards are the known micro-issues:
   (allocating a `Map`) for every node × every mapping/exclude check;
   `fromNode` builds the same map again.
 - `patternCache` (compiled regexes) and `filterItemsCache` (WeakMap — fine)
-  in `Mapping.utils.ts`: the pattern cache is keyed by pattern string and
+  in `mapping.utils.ts`: the pattern cache is keyed by pattern string and
   never evicted — customer-supplied mappings in a self-service context can
   grow it without bound in a long-lived process.
 - `reduceComponents` / `fromNode` recursion is fine for article-sized HTML but
@@ -43,11 +43,11 @@ on them before touching code.
 
 ## Files to review
 
-- `src/component/node/Node.ts` — the recursive reducers
-- `src/component/mapping/Mapping.utils.ts` — `patternCache`, `filterItemsCache`, `getAttributes` call frequency, `matchesFilter`
-- `src/component/mapping/Mapping.ts` — `fromNode` recursion, `getMappingComponent` (linear scan per node — fine, but measure with many mappings)
-- `src/component/html/HTMLMapper.ts` — the pre-processing passes (post-02 versions)
-- `src/rss/RSSFeed.ts` — `build()` loop over items; `removeHTMLTags` (sanitize-html call per description)
+- `src/component/node/node-helpers.ts` — the recursive reducers
+- `src/component/mapping/mapping.utils.ts` — `patternCache`, `filterItemsCache`, `getAttributes` call frequency, `matchesFilter`
+- `src/component/mapping/mapping.ts` — `fromNode` recursion, `getMappingComponent` (linear scan per node — fine, but measure with many mappings)
+- `src/component/html/html-mapper.ts` — the pre-processing passes (post-02 versions)
+- `src/rss/rss-feed.ts` — `build()` loop over items; `removeHTMLTags` (sanitize-html call per description)
 - `src/support/feeds/forbes-large.rss` and the larger HTML fixtures — benchmark corpus
 - `vite.config.ts` — where a `bench` config would live
 

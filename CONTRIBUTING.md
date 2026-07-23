@@ -38,7 +38,7 @@ comment density.
   `RSSFeed`.
 - Don't throw for malformed input — accumulate `errors` / `warnings` so one bad
   element never aborts a conversion.
-- Reuse the Zod schemas in `mapping/Mapping.schema.ts` rather than re-deriving
+- Reuse the Zod schemas in `mapping/mapping.schema.ts` rather than re-deriving
   shapes, and add type guards (`is*Component`) alongside new component kinds.
 
 ## Commits

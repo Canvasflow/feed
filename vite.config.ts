@@ -12,8 +12,18 @@ export default defineConfig({
     sortPackageJson: false,
     ignorePatterns: ['**/*.html'],
   },
+  lint: {
+    jsPlugins: [
+      { name: 'vite-plus', specifier: 'vite-plus/oxlint-plugin' },
+    ],
+    rules: {
+      // Enforce the project-wide kebab-case file naming convention (see
+      // docs/adr/0001-kebab-case-naming-and-colocated-test-conventions.md).
+      'unicorn/filename-case': ['error', { case: 'kebabCase' }],
+    },
+  },
   test: {
-    setupFiles: ['src/setupTests.ts'],
+    setupFiles: ['src/setup-tests.ts'],
     tags: [
       {
         name: 'integration',

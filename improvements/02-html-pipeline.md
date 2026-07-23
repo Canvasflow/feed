@@ -51,13 +51,13 @@ and after it.
 
 ## Files to review
 
-- `src/component/html/HTMLMapper.ts` — the whole pre-processing gauntlet
-- `src/component/mapping/Mapping.ts` — `reduceEmptyTextNode`, `getRootElement`, `reduceComponents`
-- `src/component/mapping/Mapping.utils.ts` — `sanitizeNode`, `sanitizeContentHtml`, `fromFigcaption`, `getCredit` (in-place mutation), `processTextLinks`
-- `src/component/mapping/Mapping.media.ts`, `Mapping.container.ts`, `Mapping.text.ts`, `Mapping.table.ts` — every `sanitizeNode`/`stringify` call site (~22 across the mapping modules)
-- `src/component/node/Node.ts` — the AST + traversal reducers the new passes build on
-- `src/component/mapping/Mapping.constants.ts` — the three sanitization allow-lists
-- `src/rss/RSSFeed.ts` — `buildItem`'s `getRootElement` string round-trip
+- `src/component/html/html-mapper.ts` — the whole pre-processing gauntlet
+- `src/component/mapping/mapping.ts` — `reduceEmptyTextNode`, `getRootElement`, `reduceComponents`
+- `src/component/mapping/mapping.utils.ts` — `sanitizeNode`, `sanitizeContentHtml`, `fromFigcaption`, `getCredit` (in-place mutation), `processTextLinks`
+- `src/component/mapping/mapping.media.ts`, `mapping.container.ts`, `mapping.text.ts`, `mapping.table.ts` — every `sanitizeNode`/`stringify` call site (~22 across the mapping modules)
+- `src/component/node/node-helpers.ts` — the AST + traversal reducers the new passes build on
+- `src/component/mapping/mapping.constants.ts` — the three sanitization allow-lists
+- `src/rss/rss-feed.ts` — `buildItem`'s `getRootElement` string round-trip
 - Fixtures: `src/support/html/*.html`, `src/support/feeds/toms.html`, `theenglishhome.html`
 
 ## Resources
@@ -129,7 +129,7 @@ and after it.
    its shim; fix snapshot diffs one by one (each diff is a real behavioral
    decision — record intentional changes).
 5. **Replace sanitize round-trips.** Implement `serializeSanitized` against
-   the `Node` AST with the three existing policies from `Mapping.constants.ts`
+   the `Node` AST with the three existing policies from `mapping.constants.ts`
    (+ the `transformTags.a` link-rewriting behavior of `processTextLinks` as a
    pre-pass). Migrate the ~22 `sanitizeNode`/`sanitizeContentHtml`/
    `processTextLinks` call sites, then drop `sanitize-html` (see 01).

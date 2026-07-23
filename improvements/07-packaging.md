@@ -74,7 +74,7 @@ class of "package looks fine locally, breaks in the consumer" bugs:
    / node16-esm / bundler).
 2. **Tree-shaking semantics (½ day).** Understand what counts as a side
    effect (top-level mutation, module-level caches?) — note
-   `Mapping.utils.ts` has module-level caches: confirm they are
+   `mapping.utils.ts` has module-level caches: confirm they are
    initialization-only and safe under `sideEffects: false`.
 3. **semver-ts (½ day).** Read the spec's "what is breaking" tables; draft
    this repo's policy (component output shapes and issue codes are API too —
