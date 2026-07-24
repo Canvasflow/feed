@@ -28,11 +28,11 @@ himalaya-shaped `Node` AST contract so every downstream consumer
 
 ### Maintenance (verified against the npm registry, not memory)
 
-| Package | Latest version | Last release | Deprecated? |
-|---|---|---|---|
-| linkedom | 0.18.13 | 2026-07-07 | No |
-| htmlparser2 | 12.0.0 | 2026-03-20 | No |
-| himalaya | 1.1.1 | 2019 | No (just abandoned) |
+| Package     | Latest version | Last release | Deprecated?         |
+| ----------- | -------------- | ------------ | ------------------- |
+| linkedom    | 0.18.13        | 2026-07-07   | No                  |
+| htmlparser2 | 12.0.0         | 2026-03-20   | No                  |
+| himalaya    | 1.1.1          | 2019         | No (just abandoned) |
 
 linkedom ships regular releases (6+ in the last 12 months) with no
 deprecation flag. It is a single-maintainer project (Andrea Giammarchi /
@@ -54,11 +54,11 @@ htmlparser2's favor:
 
 ### Performance (2.7 MB real fixture, 5-iteration average)
 
-| Parser | ms/iter |
-|---|---|
-| htmlparser2 | 11.8 |
-| linkedom | 25.6 |
-| himalaya | 36.7 |
+| Parser      | ms/iter |
+| ----------- | ------- |
+| htmlparser2 | 11.8    |
+| linkedom    | 25.6    |
+| himalaya    | 36.7    |
 
 htmlparser2 is ~2.2x faster than linkedom. This is real but not decisive:
 parsing a 2.7 MB article in 25 ms is not a bottleneck for a feed-ingestion
@@ -70,7 +70,7 @@ library (not a hot request path).
    pre-processing passes (`sanitizeInvalidAnchorHrefs`,
    `extractAnchorsWithImagesDOM`, `splitParagraphImagesDOM`) already use
    linkedom's real DOM API (`querySelectorAll`, `cloneNode`,
-   `insertBefore`). htmlparser2 only offers a DOM-*like* tree via
+   `insertBefore`). htmlparser2 only offers a DOM-_like_ tree via
    `domhandler`; adopting it as the primary parser would mean maintaining
    two different tree APIs mid-migration instead of one.
 2. **One parser, one adapter.** linkedom's `Document`/`Element`/`Node` map
@@ -139,7 +139,7 @@ quotes sitting inside an already-quoted attribute — before either parser
 ever sees it.
 
 Both parsers produce garbage for this malformed input; they simply produce
-*different* garbage:
+_different_ garbage:
 
 - himalaya's char-level, quote-toggling tokenizer happens to glob the
   mess into one oddly-named attribute (undefined behavior that was never
