@@ -29,7 +29,11 @@ export class HTMLMapper {
     const nodes: Array<Node> = parse(html).reduce(reduceEmptyTextNode, []);
     const rootNode = getRootElement(nodes, rootMapping);
     return rootNode
-      ? stringify([rootNode]).replace(/=('([^']*)')/g, '="$2"')
+      ? stringify([rootNode]).replace(
+          /=('([^']*)')/g,
+          (_match, _quoted, inner: string) =>
+            `="${inner.replace(/"/g, '&quot;')}"`
+        )
       : null;
   }
 
