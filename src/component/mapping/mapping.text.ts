@@ -1,5 +1,3 @@
-import sanitizeHtml from 'sanitize-html';
-
 import {
   type TextComponent,
   type TextType,
@@ -12,6 +10,7 @@ import {
   getAttributes,
 } from '../node/node-helpers';
 import { textAllowedTags, textAllowedAttributes } from './mapping.constants';
+import { sanitizeHTML as sanitizeHtml } from '../html/sanitize-html';
 
 /**
  * Preserve whitespace that sits between inline elements inside a text

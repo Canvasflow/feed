@@ -1,6 +1,5 @@
 import { DateTime } from 'luxon';
 import he from 'he';
-import sanitizeHtml from 'sanitize-html';
 import { XMLParser } from 'fast-xml-parser';
 import { parseHTML } from 'linkedom';
 
@@ -27,6 +26,7 @@ import {
   MappingSchema,
   ParamsSchema,
 } from '../component/mapping/mapping.schema';
+import { sanitizeHTML as sanitizeHtml } from '../component/html/sanitize-html';
 import type { ParsedXml, ParsedItem } from './parsed-xml';
 
 // ---------------------------------------------------------------------------

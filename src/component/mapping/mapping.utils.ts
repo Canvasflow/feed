@@ -1,6 +1,5 @@
-import sanitizeHtml from 'sanitize-html';
-
 import { stringify } from '../html/parser';
+import { sanitizeHTML, type SanitizeHTMLOptions } from '../html/sanitize-html';
 import {
   type ElementNode,
   type Node,
@@ -20,14 +19,11 @@ import type { Filter, Mapping } from './mapping';
  * Serialize a node back to HTML and sanitize it with the given options.
  *
  * @param {Node} node
- * @param {Parameters<typeof sanitizeHtml>[1]} options
+ * @param {SanitizeHTMLOptions} options
  * @returns {string}
  */
-export function sanitizeNode(
-  node: Node,
-  options: Parameters<typeof sanitizeHtml>[1]
-): string {
-  return sanitizeHtml(stringify([node]), options);
+export function sanitizeNode(node: Node, options: SanitizeHTMLOptions): string {
+  return sanitizeHTML(stringify([node]), options);
 }
 
 /**
@@ -99,7 +95,7 @@ export function processTextLinks(html: string, link: string = '/'): string {
   const allowedTags = textAllowedTags;
   const allowedAttributes = textAllowedAttributes;
   const isRelative = (url: string) => !URL.canParse(url);
-  return sanitizeHtml(html, {
+  return sanitizeHTML(html, {
     allowedTags,
     allowedAttributes,
     transformTags: {
@@ -418,7 +414,7 @@ export function fromFigcaption(node: ElementNode): FigcaptionResponse {
   for (const n of figcaptionNodes) {
     credit = getCredit(n as ElementNode);
     const html = stringify([n]);
-    caption = sanitizeHtml(html, {
+    caption = sanitizeHTML(html, {
       allowedTags: allowedFigcaptionTags,
     });
     break;
