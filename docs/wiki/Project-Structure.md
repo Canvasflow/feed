@@ -10,7 +10,6 @@ A map of `src/` and where to find things. The design rationale is on the [Archit
 src/
 ├── index.ts            # Public entry point — re-exports the whole API
 ├── setup-tests.ts      # Vitest global setup (exposes SUPPORT_PATH / FEEDS_PATH)
-├── himalaya.d.ts       # Ambient types for himalaya (ships no types)
 ├── rss/                # Feed parsing pipeline
 └── component/          # HTML → component pipeline
 ```
@@ -41,6 +40,8 @@ component/
 │   └── component.test.ts
 ├── html/
 │   ├── html-mapper.ts        # Public entry: toComponents(), getRootElement(), pre-processing
+│   ├── parser.ts             # parse(html)/stringify(nodes) — linkedom-backed Node[] adapter
+│   ├── sanitize-html.ts      # Inline sanitize-html implementation (replaces npm package)
 │   └── __tests__/
 │       └── html-mapper.*.test.ts # Tests split by component family (text/embeds/media/table/container/mapping)
 ├── mapping/
@@ -58,7 +59,7 @@ component/
 │       ├── mapping.test.ts
 │       └── mapping.coverage.test.ts
 ├── node/
-│   ├── node-helpers.ts        # himalaya AST node types + helpers (getAttributes, findDescendants, removeDescendants, SetUtils; DescendantsReducer type)
+│   ├── node-helpers.ts        # AST node types + helpers (getAttributes, findDescendants, removeDescendants, SetUtils; DescendantsReducer type)
 │   └── __tests__/
 │       └── node-helpers.test.ts
 └── schema/
@@ -67,7 +68,7 @@ component/
         └── recipe-schema.test.ts
 ```
 
-> The `component/` sources are grouped into per-concern folders (`html/`, `mapping/`, `node/`, `schema/`) with their tests colocated in a sibling `__tests__/` folder. `mapping.ts` holds the recursive detection engine (`reduceComponents`/`fromNode`); the per-family converters are extracted into the sibling `mapping.*.ts` modules and re-exported so the public API is unchanged. `node/node-helpers.ts` and `schema/recipe-schema.ts` are named to avoid colliding with their own directory name (`node/node.ts`, `schema/schema.ts`) — see [ADR-0001](https://github.com/canvasflow/feed/blob/main/docs/adr/0001-kebab-case-naming-and-colocated-test-conventions.md).
+> The `component/` sources are grouped into per-concern folders (`html/`, `mapping/`, `node/`, `schema/`) with their tests colocated in a sibling `__tests__/` folder. `mapping.ts` holds the recursive detection engine (`reduceComponents`/`fromNode`); the per-family converters are extracted into the sibling `mapping.*.ts` modules and re-exported so the public API is unchanged. `node/node-helpers.ts` and `schema/recipe-schema.ts` are named to avoid colliding with their own directory name (`node/node.ts`, `schema/schema.ts`) — see [ADR-0001](https://github.com/canvasflow/feed/blob/main/docs/adr/0001-kebab-case-naming-and-colocated-test-conventions.md). `linkedom` is the single HTML parser — `parser.ts` wraps it into the `Node[]` AST shape the mapping layer consumes, and `sanitize-html.ts` is an inline implementation that replaced the `sanitize-html` npm package — see [ADR-0002](https://github.com/canvasflow/feed/blob/main/docs/adr/0002-replace-himalaya-and-sanitize-html-with-linkedom-parser-and-inline-sanitization.md).
 
 ## Test fixtures
 
