@@ -1,4 +1,3 @@
-import { stringify } from 'himalaya';
 import sanitizeHtml from 'sanitize-html';
 
 import {
@@ -6,6 +5,7 @@ import {
   type TextType,
   isValidTextRole,
 } from '../component';
+import { stringify } from '../html/parser';
 import {
   type ElementNode,
   type Node,

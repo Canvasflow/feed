@@ -1,4 +1,4 @@
-import { stringify } from 'himalaya';
+import { stringify } from '../html/parser';
 
 import { type CustomComponent } from '../component';
 import { type ElementNode, getAttributes } from '../node/node-helpers';

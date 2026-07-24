@@ -1,5 +1,6 @@
-import { parse, stringify } from 'himalaya';
 import { parseHTML } from 'linkedom';
+
+import { parse, stringify } from './parser';
 
 import type { Component } from '../component';
 import type { Node } from '../node/node-helpers';

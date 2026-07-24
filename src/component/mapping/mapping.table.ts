@@ -1,5 +1,6 @@
-import { stringify } from 'himalaya';
 import sanitizeHtml from 'sanitize-html';
+
+import { stringify } from '../html/parser';
 
 import { type HTMLTableComponent } from '../component';
 import { type ElementNode, getAttributes } from '../node/node-helpers';

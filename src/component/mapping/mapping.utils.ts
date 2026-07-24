@@ -1,6 +1,6 @@
-import { stringify } from 'himalaya';
 import sanitizeHtml from 'sanitize-html';
 
+import { stringify } from '../html/parser';
 import {
   type ElementNode,
   type Node,
@@ -203,7 +203,32 @@ function removeProtocol(url: string): string {
  * @returns {boolean}
  */
 export function isEmpty(content: string): boolean {
-  return content.replace(/[\r\n\t]/g, '').trim().length === 0;
+  return trimAsciiWhitespace(content.replace(/[\r\n\t]/g, '')).length === 0;
+}
+
+/**
+ * Trim leading/trailing ASCII whitespace only. Unlike `String.trim()`, this
+ * does not strip U+00A0 (non-breaking space) — a decoded `&nbsp;`/`&#160;`
+ * at a text node boundary is meaningful, visible content, not insignificant
+ * whitespace to discard.
+ *
+ * @param {string} value
+ * @returns {string}
+ */
+export function trimAsciiWhitespace(value: string): string {
+  return value.replace(/^[ \t\n\r\f\v]+|[ \t\n\r\f\v]+$/g, '');
+}
+
+/**
+ * Collapse runs of 2+ ASCII whitespace characters into a single space.
+ * Unlike a plain `/\s\s+/` replace, this leaves U+00A0 (non-breaking space)
+ * alone so decoded `&nbsp;`/`&#160;` sequences aren't silently merged away.
+ *
+ * @param {string} value
+ * @returns {string}
+ */
+export function collapseAsciiWhitespace(value: string): string {
+  return value.replace(/[ \t\n\r\f\v]{2,}/g, ' ');
 }
 
 export interface FigcaptionResponse {
