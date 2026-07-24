@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 🏷️ 1.17.5
+
+_July 24, 2026_
+
+🐛 Fixed
+
+- (html) Escape embedded double quotes when rewriting root element attributes ([`f53255c`](https://github.com/Canvasflow/feed/commit/f53255cd78c96226d5f99335532eb88a6b9c6313))
+
 ## 🏷️ 1.17.4
 
 _July 14, 2026_

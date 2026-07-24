@@ -270,7 +270,7 @@ export class RSSFeed {
     if (channel.lastBuildDate) {
       const lastBuildDateTime = parseDate(`${channel.lastBuildDate}`);
       if (lastBuildDateTime.isValid) {
-        lastBuildDate = lastBuildDateTime.toISO();
+        lastBuildDate = lastBuildDateTime.toISO() ?? undefined;
       }
     }
 
@@ -278,7 +278,7 @@ export class RSSFeed {
     if (channel.pubDate) {
       const pubDateTime = parseDate(`${channel.pubDate}`);
       if (pubDateTime.isValid) {
-        pubDate = pubDateTime.toISO();
+        pubDate = pubDateTime.toISO() ?? undefined;
       }
     }
 

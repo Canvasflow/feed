@@ -28,13 +28,10 @@ describe('Invalid RSS', () => {
   );
 
   test(
-    `It should throw error because channel is missing in rss`,
+    `It should build rss that fails`,
     { tags: ['unit', 'rss'] },
     async () => {
-      const filePath = path.join(
-        `${process.env.FEEDS_PATH}`,
-        `invalid-channel.rss`
-      );
+      const filePath = path.join(`${process.env.FEEDS_PATH}`, `invalid.rss`);
       const content = readFileSync(filePath, 'utf-8');
       const feed = new RSSFeed(content);
       await feed.validate();

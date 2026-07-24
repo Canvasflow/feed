@@ -5,7 +5,11 @@ import {
   type Mapping,
   processTextLinks,
 } from '../mapping/Mapping';
-import { type TextComponent, type CustomComponent } from '../Component';
+import {
+  type TextComponent,
+  type CustomComponent,
+  type ImageComponent,
+} from '../Component';
 
 describe('Root Element', () => {
   test(
@@ -176,6 +180,40 @@ describe('Root Element', () => {
       `;
       const rootContent = HTMLMapper.getRootElement(content, rootMapping);
       expect(rootContent).toBe(rootElement);
+    }
+  );
+
+  test(
+    'It should escape a literal double quote inside an attribute value instead of corrupting the tag',
+    { tags: ['unit', 'html'] },
+    () => {
+      const rootMapping: Mapping = {
+        match: 'all',
+        filters: [
+          {
+            type: 'tag',
+            items: ['main'],
+          },
+        ],
+      };
+      // himalaya emits single-quoted attributes by default, so a value
+      // containing a literal `"` (e.g. from a decoded `&quot;` entity)
+      // survives parsing this way. getRootElement() then converts the
+      // attribute to double quotes for the returned string; if it does not
+      // escape the embedded `"`, that quote closes the attribute early and
+      // the remaining words get reparsed as bogus attributes.
+      const content = `<main><img alt='Amazon Ember 43" 4-Series' src="logo.png"></main>`;
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(
+        `<main><img alt="Amazon Ember 43&quot; 4-Series" src="logo.png"></main>`
+      );
+
+      const components = HTMLMapper.toComponents(`${rootContent}`);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component.component).toBe('image');
+      expect(component.alt).toBe('Amazon Ember 43&quot; 4-Series');
+      expect(component.imageurl).toBe('logo.png');
     }
   );
 
