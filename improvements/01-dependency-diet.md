@@ -2,9 +2,9 @@
 
 ## Completion checklist
 
-- [ ] A written decision record exists for **each** runtime dependency: keep / replace / remove, with rationale.
-- [ ] `himalaya` (pinned 1.1.1, unmaintained) is removed and `src/himalaya.d.ts` is deleted.
-- [ ] The library uses **one** HTML parser end-to-end (no document is ever handled by more than one parser).
+- [x] A written decision record exists for **each** runtime dependency: keep / replace / remove, with rationale. _(ADR-0002 covers himalaya + sanitize-html; remaining deps assessed in the table below)_
+- [x] `himalaya` (pinned 1.1.1, unmaintained) is removed and `src/himalaya.d.ts` is deleted. _(replaced by `src/component/html/parser.ts`, a linkedom-backed adapter — see ADR-0002)_
+- [x] The library uses **one** HTML parser end-to-end (no document is ever handled by more than one parser). _(`linkedom` is now the single parser for pre-processing, root scoping, and the mapping pass)_
 - [ ] `he` is removed (entity decoding handled by the surviving parser or a scoped utility).
 - [ ] `luxon` is removed and replaced by a small internal RFC 2822 / ISO 8601 date parser with its own tests.
 - [ ] `zod` usage is either migrated to `zod/mini` (or a hand-rolled validator) or a decision record justifies keeping full zod.
@@ -25,9 +25,9 @@ Current assessment:
 | Dependency                     | Used for                                                                               | Verdict to validate                                                                                                                                                                                                                                                                              |
 | ------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `fast-xml-parser`              | RSS XML → JS object (`RSSFeed` constructor)                                            | **Keep.** Actively maintained, zero-dep, exactly the edge-case absorber you want.                                                                                                                                                                                                                |
-| `himalaya` `1.1.1` (exact pin) | HTML → JSON AST for the mapping engine                                                 | **Remove.** Last released ~2019, unmaintained, ships no types (hand-written shim in `src/himalaya.d.ts` with a warning that upgrades silently break). Highest-risk dependency in the tree.                                                                                                       |
-| `linkedom`                     | DOM pre-processing in `HTMLMapper`, JSON-LD scraping in `getRecipeFromUrl`             | **Candidate to become the single parser** — or be replaced together with himalaya by `htmlparser2`/`parse5` (see 02 for the trade-off analysis).                                                                                                                                                 |
-| `sanitize-html`                | Stripping tags/attrs to produce component `html` fields                                | **Re-evaluate.** It drags in `htmlparser2`, `postcss`, `deepmerge`, `parse-srcset` — a third parser in the tree. Once the pipeline owns a single AST, "sanitizing" becomes _serializing an allow-listed subtree_, which you can do yourself in ~100 lines against your own `Node` type (see 02). |
+| ~~`himalaya` `1.1.1` (exact pin)~~ | ~~HTML → JSON AST for the mapping engine~~ | **Removed ✅.** Replaced by `src/component/html/parser.ts` — a `linkedom`-backed adapter that emits the same `Node[]` AST shape. `src/himalaya.d.ts` deleted. See ADR-0002. |
+| `linkedom`                     | DOM pre-processing in `HTMLMapper`, JSON-LD scraping in `getRecipeFromUrl`             | **Single parser ✅.** Now covers the full pipeline (pre-processing, root scoping, and the mapping pass via `parser.ts`). No dual-parser path remains.                                                                                                                                             |
+| ~~`sanitize-html`~~            | ~~Stripping tags/attrs to produce component `html` fields~~                            | **Removed ✅.** Replaced by `src/component/html/sanitize-html.ts` — an inline allow-list sanitizer over the `Node[]` AST. Removed `postcss`, `deepmerge`, `parse-srcset`, `launder`, and `dayjs` as transitive deps. See ADR-0002.                                                              |
 | `he`                           | Entity decoding (`he.decode`) in `RSSFeed`                                             | **Remove.** Any surviving HTML parser already decodes entities; for the few non-HTML fields (titles), a tiny decode table or the parser's `decodeEntities` option covers it.                                                                                                                     |
 | `luxon`                        | `parseDate()` in `rss-feed.ts` — RFC 2822 → ISO → `new Date` fallback, zone-preserving | **Remove.** This is the only usage. RFC 2822 date grammar is small and frozen; a ~60-line parser + tests removes a ~4 MB install.                                                                                                                                                                |
 | `zod` (v4)                     | Validating `Params`/`Mapping` config in `mapping.schema.ts`                            | **Slim down.** Validation of _customer-supplied config_ is worth keeping declarative, but `zod/mini` (tree-shakable, much smaller) covers this use.                                                                                                                                              |
@@ -195,12 +195,11 @@ happen to exercise. Add that before touching `himalaya`/`linkedom`.
    **double-decode** behavior in `buildItem` (`he.decode` on already-decoded
    description) — decide deliberately whether to preserve it (snapshot will
    tell you).
-4. **Remove `himalaya` + unify parser** — executed via section 02's plan;
-   afterwards delete `src/himalaya.d.ts` and the exact-version pin.
-5. **Re-evaluate `sanitize-html`** — after 02, sanitization is an
-   allow-list-filtered serialization of your own AST; implement
-   `serializeSanitized(node, policy)` in the mapping layer and remove
-   `sanitize-html` + `@types/sanitize-html`.
+4. ~~**Remove `himalaya` + unify parser**~~ **Done ✅** — `parser.ts` wraps
+   `linkedom`; `himalaya.d.ts` deleted; exact-version pin gone. See ADR-0002.
+5. ~~**Re-evaluate `sanitize-html`**~~ **Done ✅** — `src/component/html/sanitize-html.ts`
+   is an inline allow-list sanitizer over the `Node[]` AST. `sanitize-html`
+   and `@types/sanitize-html` removed from `package.json`. See ADR-0002.
 6. **Migrate zod → `zod/mini`.** Mechanical rewrite of `mapping.schema.ts`;
    the inferred types (`z.infer`) in `mapping.ts` are unchanged. Verify the
    published `.d.mts` still inlines/re-exports the types correctly (see 07).
