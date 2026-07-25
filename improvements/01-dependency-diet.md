@@ -7,7 +7,7 @@
 - [x] The library uses **one** HTML parser end-to-end (no document is ever handled by more than one parser). _(`linkedom` is now the single parser for pre-processing, root scoping, and the mapping pass)_
 - [x] `he` is wrapped behind `decodeEntities()` in `src/rss/entities.ts` with its own test suite. See [ADR-0003](https://github.com/canvasflow/feed/blob/main/docs/adr/0003-keep-he-wrapped-behind-decodeEntities.md).
 - [x] `luxon` is wrapped behind `parseDate()` in `src/rss/date.ts` with its own test suite. See [ADR-0005](https://github.com/canvasflow/feed/blob/main/docs/adr/0005-keep-luxon-wrapped-behind-parseDate.md).
-- [ ] `zod` usage is either migrated to `zod/mini` (or a hand-rolled validator) or a decision record justifies keeping full zod.
+- [x] `zod` usage is either migrated to `zod/mini` (or a hand-rolled validator) or a decision record justifies keeping full zod. See [ADR-0006](https://github.com/canvasflow/feed/blob/main/docs/adr/0006-keep-zod-over-zod-mini.md).
 - [ ] Install size and bundle size are measured before/after and recorded (target: ≥50 % reduction in `node_modules` weight for consumers).
 - [ ] All existing tests pass and the differential snapshots (see 06) show no unexplained output change.
 
