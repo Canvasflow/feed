@@ -13,10 +13,10 @@ const components = HTMLMapper.toComponents(html, params, root /* optional */);
 const scopedHtml = HTMLMapper.getRootElement(html, rootMapping); // string | null
 ```
 
-| Method                               | Returns          | Purpose                                                                      |
-| ------------------------------------ | ---------------- | ---------------------------------------------------------------------------- |
-| `toComponents(html, params?, root?)` | `Component[]`    | The full HTML → components conversion, with optional root-element scoping.   |
-| `getRootElement(html, mapping)`      | `string \| null` | Serialize the first element matching `mapping` (used to scope extraction).   |
+| Method                               | Returns          | Purpose                                                                    |
+| ------------------------------------ | ---------------- | -------------------------------------------------------------------------- |
+| `toComponents(html, params?, root?)` | `Component[]`    | The full HTML → components conversion, with optional root-element scoping. |
+| `getRootElement(html, mapping)`      | `string \| null` | Serialize the first element matching `mapping` (used to scope extraction). |
 
 ## The pipeline
 
