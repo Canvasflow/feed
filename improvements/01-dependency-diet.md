@@ -5,7 +5,7 @@
 - [x] A written decision record exists for **each** runtime dependency: keep / replace / remove, with rationale. _(ADR-0002 covers himalaya + sanitize-html; remaining deps assessed in the table below)_
 - [x] `himalaya` (pinned 1.1.1, unmaintained) is removed and `src/himalaya.d.ts` is deleted. _(replaced by `src/component/html/parser.ts`, a linkedom-backed adapter — see ADR-0002)_
 - [x] The library uses **one** HTML parser end-to-end (no document is ever handled by more than one parser). _(`linkedom` is now the single parser for pre-processing, root scoping, and the mapping pass)_
-- [x] `he` is wrapped behind `decodeEntities()` in `src/rss/entities.ts` with its own test suite. Removal is deferred — at 132 KB it is the smallest dep in the tree and covers the full HTML5 named-character-reference table; a hand-rolled replacement would silently mis-render the long tail of named entities that appear in real publisher feeds. The abstraction seam is in place for when removal becomes worth it.
+- [x] `he` is wrapped behind `decodeEntities()` in `src/rss/entities.ts` with its own test suite. See [ADR-0003](https://github.com/canvasflow/feed/blob/main/docs/adr/0003-keep-he-wrapped-behind-decodeEntities.md).
 - [ ] `luxon` is removed and replaced by a small internal RFC 2822 / ISO 8601 date parser with its own tests.
 - [ ] `zod` usage is either migrated to `zod/mini` (or a hand-rolled validator) or a decision record justifies keeping full zod.
 - [ ] Install size and bundle size are measured before/after and recorded (target: ≥50 % reduction in `node_modules` weight for consumers).
