@@ -1,5 +1,5 @@
-import { DateTime } from 'luxon';
-import { decodeEntities } from './entities';
+import { decodeEntities } from '../utils/entities';
+import { parseDate } from '../utils/date';
 import { XMLParser } from 'fast-xml-parser';
 import { parseHTML } from 'linkedom';
 
@@ -268,18 +268,12 @@ export class RSSFeed {
 
     let lastBuildDate: undefined | string;
     if (channel.lastBuildDate) {
-      const lastBuildDateTime = parseDate(`${channel.lastBuildDate}`);
-      if (lastBuildDateTime.isValid) {
-        lastBuildDate = lastBuildDateTime.toISO() ?? undefined;
-      }
+      lastBuildDate = parseDate(`${channel.lastBuildDate}`) ?? undefined;
     }
 
     let pubDate: undefined | string;
     if (channel.pubDate) {
-      const pubDateTime = parseDate(`${channel.pubDate}`);
-      if (pubDateTime.isValid) {
-        pubDate = pubDateTime.toISO() ?? undefined;
-      }
+      pubDate = parseDate(`${channel.pubDate}`) ?? undefined;
     }
 
     this.rss.channel.title = decodeEntities(title);
@@ -470,22 +464,6 @@ export class RSSFeed {
  * @returns {Item}
  */
 
-/**
- * Parse a date string using RFC 2822, ISO 8601, or JavaScript Date as a
- * fallback, in that order. The original timezone offset is preserved so the
- * output is deterministic regardless of the system timezone.
- *
- * @param {string} str
- * @returns {DateTime}
- */
-function parseDate(str: string): DateTime {
-  let dt = DateTime.fromRFC2822(str, { setZone: true });
-  if (dt.isValid) return dt;
-  dt = DateTime.fromISO(str, { setZone: true });
-  if (dt.isValid) return dt;
-  return DateTime.fromJSDate(new Date(str), { zone: 'utc' });
-}
-
 export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
   const { origin, root, params } = ctx;
 
@@ -519,9 +497,9 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
 
   let pubDate: string | undefined;
   if (item.pubDate) {
-    const pubDateTime = parseDate(item.pubDate);
-    if (pubDateTime.isValid) {
-      pubDate = pubDateTime.toISO() ?? undefined;
+    const parsedPubDate = parseDate(item.pubDate);
+    if (parsedPubDate) {
+      pubDate = parsedPubDate;
     } else {
       pubDate = item.pubDate;
       warnings.push(`Unable to parse pubDate: "${item.pubDate}"`);
