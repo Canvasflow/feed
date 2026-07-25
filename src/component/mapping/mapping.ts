@@ -160,26 +160,27 @@ export function reduceEmptyTextNode(nodes: Node[], node: Node): Node[] {
   if (node.type === 'comment') return nodes;
 
   if (node.type === 'text') {
-    let { content } = node;
+    let content = node.content;
     if (content) {
       content = collapseAsciiWhitespace(content);
-      node.content = content;
     }
 
     if (content.length >= 1 && !trimAsciiWhitespace(content).length) {
-      node.content = ' ';
-      nodes.push(node);
+      nodes.push(content === node.content ? node : { ...node, content: ' ' });
       return nodes;
     }
-    if (!isEmpty(node.content)) {
-      nodes.push(node);
+    if (!isEmpty(content)) {
+      nodes.push(content === node.content ? node : { ...node, content });
     }
     return nodes;
   }
 
   if (node.type === 'element' && node.children) {
-    node.children = node.children.reduce(reduceEmptyTextNode, []);
+    const newChildren = node.children.reduce(reduceEmptyTextNode, []);
+    nodes.push({ ...node, children: newChildren });
+    return nodes;
   }
+
   nodes.push(node);
   return nodes;
 }

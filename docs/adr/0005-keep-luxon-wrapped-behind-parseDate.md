@@ -59,7 +59,7 @@ API, eliminating the `.isValid` / `.toISO()` pattern from the calling code.
   offsets, ISO 8601 with `Z`/milliseconds/`+0000`, invalid input, and empty
   string — directly from the formats seen in the real fixture feeds.
 - ✅ The three call sites in `rss-feed.ts` are simpler: `parseDate(str) ??
-  undefined` replaces the `DateTime` dance.
+undefined` replaces the `DateTime` dance.
 
 **Negative / Trade-offs**
 

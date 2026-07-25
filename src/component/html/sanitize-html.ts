@@ -145,20 +145,17 @@ const DEFAULT_VOID_TAGS = new Set([
 ]);
 
 /**
- * Allow-list HTML sanitizer over the library's own `Node` AST — a drop-in
- * replacement for `sanitize-html`'s default export covering the subset of
- * its API this codebase actually uses (`allowedTags`, `allowedAttributes`,
- * `transformTags`). Unlike a naive implementation, a disallowed tag is
- * *unwrapped* (its children are kept, in place) rather than dropped with its
- * subtree — matching `sanitize-html`'s default `disallowedTagsMode:
- * 'discard'` behavior, not a "delete the whole node" one.
+ * Allow-list sanitizer that runs directly over an already-parsed `Node[]`
+ * tree — no string-to-parse round-trip. A disallowed tag is *unwrapped*
+ * (its children are kept) rather than dropped with its subtree, matching
+ * `sanitize-html`'s default `disallowedTagsMode: 'discard'` behaviour.
  *
- * @param {string} html
+ * @param {Node[]} nodes
  * @param {SanitizeHTMLOptions} [options]
  * @returns {string}
  */
-export function sanitizeHTML(
-  html: string,
+export function sanitizeNodes(
+  nodes: Node[],
   options: SanitizeHTMLOptions = {}
 ): string {
   const allowedTagSet = new Set(options.allowedTags ?? DEFAULT_ALLOWED_TAGS);
@@ -168,7 +165,7 @@ export function sanitizeHTML(
       : (options.allowedAttributes ?? DEFAULT_ALLOWED_ATTRIBUTES);
   const transformTags = options.transformTags ?? {};
 
-  return parse(html)
+  return nodes
     .map((node) =>
       renderSanitizedNode(
         node,
@@ -178,6 +175,23 @@ export function sanitizeHTML(
       )
     )
     .join('');
+}
+
+/**
+ * Allow-list HTML sanitizer over the library's own `Node` AST — a drop-in
+ * replacement for `sanitize-html`'s default export covering the subset of
+ * its API this codebase actually uses (`allowedTags`, `allowedAttributes`,
+ * `transformTags`). Parses `html` and delegates to `sanitizeNodes`.
+ *
+ * @param {string} html
+ * @param {SanitizeHTMLOptions} [options]
+ * @returns {string}
+ */
+export function sanitizeHTML(
+  html: string,
+  options: SanitizeHTMLOptions = {}
+): string {
+  return sanitizeNodes(parse(html), options);
 }
 
 function renderSanitizedNode(

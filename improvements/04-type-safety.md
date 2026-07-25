@@ -4,7 +4,7 @@
 
 - [ ] Zero `as X` type assertions in `src/` outside of `*.test.ts` and a single documented boundary module (casts at the untrusted-XML boundary are replaced by narrowing functions or schema parsing).
 - [ ] `tsconfig.json` enables `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` (and the code compiles).
-- [ ] Raw parser output (`ParsedXml`, himalaya/`Node` trees) is never mutated; functions that used to mutate (`validateItem`, `getEnclosure`, `getMediaGroup`, `getCredit`, `dc:creator` rewrite in `buildItem`) take readonly inputs and return new values.
+- [ ] Raw parser output (`ParsedXml`, the linkedom-backed `Node` trees from `src/component/html/parser.ts` — see [02-html-pipeline.md](02-html-pipeline.md)) is never mutated; functions that used to mutate (`validateItem`, `getEnclosure`, `getMediaGroup`, `getCredit`, `dc:creator` rewrite in `buildItem`) take readonly inputs and return new values. _(`getCredit` in `mapping.utils.ts` still mutates `node.children` in place as of Section 1 — himalaya is gone, but this item isn't done.)_
 - [ ] Public API types are explicit exports (no leaking of internal helper types); `Readonly`/`readonly` modifiers applied to public-facing arrays/objects that consumers must not mutate.
 - [ ] The public type surface is snapshotted (api-extractor report or `expect-type` tests) so accidental breaking changes fail CI.
 - [ ] `Component` narrowing relies on the `is*` guards everywhere (no `as SomethingComponent` in mapping modules).

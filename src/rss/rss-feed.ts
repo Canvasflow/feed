@@ -578,7 +578,7 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
   );
 
   if (contentEncoded) {
-    response.components = HTMLMapper.toComponents(contentEncoded, params);
+    response.components = HTMLMapper.toComponents(contentEncoded, params, root);
   }
 
   return response;

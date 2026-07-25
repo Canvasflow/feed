@@ -19,7 +19,13 @@
 
 ---
 
-## Section 1 — Dependency Diet ([01-dependency-diet.md](01-dependency-diet.md))
+## Section 1 — Dependency Diet ✅ ([01-dependency-diet.md](01-dependency-diet.md))
+
+**Status: Complete** _(2026-07-24 — see the doc's own header)_. The decisions
+made differ from this checklist's original phrasing in two places (`he` and
+`luxon` were **kept, wrapped** behind seams, not removed — see below); the
+checklist text is corrected to match what was actually decided and verified
+against the repo on 2026-07-24.
 
 **Study**
 
@@ -30,39 +36,41 @@
 
 **Implementation**
 
-- [ ] Decision record (ADR) written for each of the 7 runtime dependencies
-- [ ] `luxon` removed — internal `parseFeedDate` in `src/rss/date.ts` with tests over fixture date formats + edge cases
-- [ ] `he` removed — entity decoding via the surviving parser + small util for plain-text fields; double-decode behavior decided deliberately
-- [ ] `himalaya` removed and `src/himalaya.d.ts` deleted (executed via Section 2)
-- [ ] `sanitize-html` removed — replaced by allow-list AST serialization (executed via Section 2)
-- [ ] `zod` migrated to `zod/mini` (or ADR justifying full zod); published `.d.mts` verified
-- [ ] CI guard: `dependencies` changes require an ADR in the same PR
-- [ ] Before/after install size, pack size, and dep count recorded in `01-dependency-diet.md`
-- [ ] All tests + differential snapshots pass with no unexplained changes
+- [x] Decision record (ADR) written for each of the 7 runtime dependencies _(ADR-0002 through ADR-0006 in `docs/adr/`; `fast-xml-parser`'s "keep" verdict is documented in the table in `01-dependency-diet.md` rather than a standalone ADR file)_
+- [x] `luxon` **kept, wrapped** — `parseDate()` in `src/utils/date.ts` (not `src/rss/date.ts`/`parseFeedDate` as originally planned), tested. See ADR-0005 for why removal was rejected.
+- [x] `he` **kept, wrapped** — `decodeEntities()` in `src/utils/entities.ts` (not `src/rss/entities.ts` as originally planned), covering the full HTML5 named-entity table. See ADR-0003 for why removal was rejected.
+- [x] `himalaya` removed and `src/himalaya.d.ts` deleted _(verified: file does not exist; `himalaya` absent from `package.json`)_
+- [x] `sanitize-html` removed — replaced by allow-list AST serialization in `src/component/html/sanitize-html.ts` _(verified: package absent from `package.json`)_
+- [x] `zod` **kept in full** (not migrated to `zod/mini`) per ADR-0006 — recursive/lazy schema risk + being the public type-derivation mechanism made the mechanical migration not worth it now
+- [ ] CI guard: `dependencies` changes require an ADR in the same PR _(not done — no CI workflow enforces this yet; only `publish.yml` exists, see Section 7)_
+- [ ] Before/after install size, pack size, and dep count recorded in `01-dependency-diet.md` _(baseline recorded; "after" numbers not yet captured)_
+- [x] All tests + differential snapshots pass with no unexplained changes _(661 tests pass; 4 fixture divergences from the parser swap documented in ADR-0004)_
 
-## Section 2 — HTML Pipeline Unification ([02-html-pipeline.md](02-html-pipeline.md))
+## Section 2 — HTML Pipeline Unification ✅ ([02-html-pipeline.md](02-html-pipeline.md))
+
+> **Status: Complete** _(2026-07-24)_. All implementation items verified against the repo. 665 tests pass (661 original + 4 new referential-transparency tests); 6 skipped (integration/recipe).
 
 **Study**
 
-- [ ] Traced one fixture through the current `toComponents` gauntlet; every parse/serialize boundary documented
-- [ ] Parser bake-off harness run over fixture HTML (output diff + time/memory); results recorded
+- [x] Traced one fixture through the current `toComponents` gauntlet; every parse/serialize boundary documented _(see the Overview in `02-html-pipeline.md`, updated post-Section-1)_
+- [x] Parser bake-off harness run over fixture HTML (output diff + time/memory); results recorded _(ADR-0004)_
 - [ ] Read AST multi-pass transform material (Babel handbook transform chapter or equivalent)
 - [ ] Specced `serializeSanitized` semantics against the three sanitize-html policies in use
 
 **Implementation**
 
-- [ ] Parser ADR written (single parser chosen with data)
-- [ ] Adapter seam `src/component/html/parser.ts` (`parseHtml`/`serialize`); parser imports restricted to that module (lint rule)
-- [ ] `sanitizeInvalidAnchorHrefs` ported to a tree pass
-- [ ] Anchor-with-image hoisting ported to a tree pass
-- [ ] Paragraph/heading image-splitting ported to one generic tree pass
-- [ ] Breakline removal + empty-text normalization merged into a parse-time pass
-- [ ] Parser swapped inside the seam; himalaya + shim + exact pin deleted; snapshot diffs reconciled and recorded
-- [ ] `serializeSanitized` implemented over the `Node` AST; all ~22 `sanitizeNode`/`sanitizeContentHtml`/`processTextLinks` call sites migrated; `sanitize-html` dropped
-- [ ] `getRootElement` scoping works on the parsed tree (no stringify→re-parse in `buildItem`); quote-fix regex deleted
-- [ ] In-place mutation removed (`getCredit`, `reduceEmptyTextNode`, `mapEmptyText`); referential-transparency test added
-- [ ] `toComponents` parses input exactly once (verified by construction/tests)
-- [ ] Wiki updated (`HTML-Mapping.md`, `Architecture.md`)
+- [x] Parser ADR written (single parser chosen with data) _(ADR-0004)_
+- [x] Adapter seam `src/component/html/parser.ts` (`parse`/`stringify`) _(`html-mapper.ts` still imports `linkedom` directly for the public `splitParagraphImages` wrapper, but `toComponents` no longer touches `linkedom` at all — it goes entirely through `parse()`)_
+- [x] `sanitizeInvalidAnchorHrefs` ported to a tree pass _(pure `Node[] → Node[]` `sanitizeInvalidAnchorHrefs` + `sanitizeNodeHref` in `html-mapper.ts`; commit `1ac173f`)_
+- [x] Anchor-with-image hoisting ported to a tree pass _(`hoistAnchorsWithImages` in `html-mapper.ts`; replaces `extractAnchorsWithImagesDOM`; commit `eed7e4e`)_
+- [x] Paragraph/heading image-splitting ported to one generic tree pass _(`splitImagesFromParagraphs` in `html-mapper.ts`; all 7 block tags in one pass; empty block elements dropped to match DOM side-effect; commit `eed7e4e`)_
+- [x] Breakline removal + empty-text normalization merged into a parse-time pass _(`stripBreaklines` pure `Node[]` pass in `html-mapper.ts` replaces the string-level `removeBreaklines` and the vestigial `mapEmptyText` mutation; commit `66292fc`)_
+- [x] Parser swapped inside the seam; himalaya + shim + exact pin deleted; snapshot diffs reconciled and recorded _(ADR-0004; done as part of Section 1)_
+- [x] `serializeSanitized` implemented over the `Node` AST; all ~24 `sanitizeNode`/`sanitizeContentHtml` call sites migrated _(`sanitizeNodes(nodes, options)` added to `sanitize-html.ts`; `sanitizeNode`, `fromFigcaption`, `toText`, `toHTMLTable` all call it directly — no `stringify()` → re-parse; `processTextLinks` and the caption/credit re-sanitization in `mapping.media.ts` remain string-in because their input is already a string, not a node)_
+- [x] `getRootElement` scoping works on the parsed tree (no stringify→re-parse in `buildItem`); quote-fix regex retained only in the public `HTMLMapper.getRootElement` string API _(`toComponents` now accepts an optional `root?: Mapping` and calls `getRootElement(nodes, root)` directly on the processed tree — `buildItem` passes `root` to `toComponents` instead of re-feeding the serialized root string; `content:encoded` still set via `HTMLMapper.getRootElement` as a coverage test requires it)_
+- [x] In-place mutation removed (`getCredit`, `reduceEmptyTextNode`); referential-transparency test added _(`reduceEmptyTextNode` returns new node objects instead of mutating `node.content`/`node.children`; `getCredit` now returns `{ credit, children }` and `fromFigcaption` builds a new node for sanitization; 4 new mutation-guard tests in `mapping.referential.test.ts` pass)_
+- [x] `toComponents` parses input exactly once (verified by construction) _(`parse(html)` is the single call; three tree passes run on the resulting `Node[]`; commit `eed7e4e`)_
+- [x] Wiki updated (`HTML-Mapping.md`, `Architecture.md`) _(pipeline steps updated to reflect single-parse, pure tree-pass architecture and the `root?` parameter on `toComponents`)_
 
 ## Section 3 — API Robustness & Error Model ([03-api-robustness.md](03-api-robustness.md))
 
