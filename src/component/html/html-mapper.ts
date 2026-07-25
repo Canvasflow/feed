@@ -47,11 +47,10 @@ export class HTMLMapper {
    */
   static toComponents(html: string, params?: Params): Component[] {
     html = removeBreaklines(html);
-    html = preprocessHTML(html);
 
-    const parsedContent = sanitizeInvalidAnchorHrefs(parse(html)).map(
-      mapEmptyText
-    );
+    const parsedContent = sanitizeInvalidAnchorHrefs(
+      splitImagesFromParagraphs(hoistAnchorsWithImages(parse(html)))
+    ).map(mapEmptyText);
 
     const nodes: Array<Node> = parsedContent.filter(filterEmptyTextNode);
 
@@ -59,51 +58,87 @@ export class HTMLMapper {
   }
 }
 
-/**
- * Run all DOM-based pre-processing mutations in a single linkedom pass and
- * return the serialized result. Replaces the previous pattern of calling
- * extractAnchorsWithImages + splitParagraphImages×7, each of which re-parsed
- * the HTML from scratch.
- *
- * @param {string} html
- * @returns {string}
- */
-function preprocessHTML(html: string): string {
-  if (!html.includes('<')) return html;
+const BLOCK_TAGS = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
 
-  const { document } = parseHTML(html);
-  extractAnchorsWithImagesDOM(document);
-  const tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-  for (const tag of tags) {
-    splitParagraphImagesDOM(document, tag);
-  }
-  return document.toString().trim();
+/**
+ * Walk a `Node[]` tree and hoist any `<a>` element that (a) is a direct
+ * child of a `p/h1–h6` and (b) contains an `<img>` descendant, replacing
+ * the entire block element with the `<a>`. Matches the behaviour of the
+ * former `extractAnchorsWithImagesDOM` pass.
+ *
+ * @param {Node[]} nodes
+ * @returns {Node[]}
+ */
+function hoistAnchorsWithImages(nodes: Node[]): Node[] {
+  return nodes.flatMap((node) => {
+    if (node.type !== 'element') return [node];
+
+    const children = hoistAnchorsWithImages(node.children);
+
+    if (BLOCK_TAGS.has(node.tagName)) {
+      const hoistable = children.filter(
+        (c) => c.type === 'element' && c.tagName === 'a' && hasImgDescendant(c)
+      );
+      if (hoistable.length > 0) return hoistable;
+    }
+
+    return [{ ...node, children }];
+  });
+}
+
+function hasImgDescendant(node: Node): boolean {
+  if (node.type !== 'element') return false;
+  if (node.tagName === 'img') return true;
+  return node.children.some(hasImgDescendant);
 }
 
 /**
- * Perform the anchor-extraction mutations on an already-parsed document.
- * Anchors containing <img> that are direct children of p/h1–h6 are hoisted
- * out of their parent element.
+ * Walk a `Node[]` tree and split `p/h1–h6` elements that have `<img>`
+ * direct children into sibling nodes — buffered non-image children become
+ * new copies of the block tag; each `<img>` is hoisted as a sibling.
+ * Handles all seven block tags in one pass. Matches the former
+ * `splitParagraphImagesDOM` behaviour.
  *
- * @param {Document} document
+ * @param {Node[]} nodes
+ * @returns {Node[]}
  */
-function extractAnchorsWithImagesDOM(document: Document): void {
-  const REMOVABLE_PARENTS = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
+function splitImagesFromParagraphs(nodes: Node[]): Node[] {
+  return nodes.flatMap((node) => {
+    if (node.type !== 'element') return [node];
 
-  const anchors = Array.from(document.querySelectorAll('a'));
+    const children = splitImagesFromParagraphs(node.children);
 
-  for (const anchor of anchors) {
-    if (!anchor.querySelector('img')) continue;
+    if (!BLOCK_TAGS.has(node.tagName)) return [{ ...node, children }];
 
-    const parent = anchor.parentElement;
-    if (!parent) continue;
+    // Empty block elements are silently dropped — matching the DOM behaviour of
+    // splitParagraphImagesDOM, which always calls removeChild(p) and only
+    // re-inserts content via flushBuffer (a no-op when buffer is empty).
+    if (children.length === 0) return [];
 
-    if (!REMOVABLE_PARENTS.has(parent.tagName.toLowerCase())) continue;
+    const hasDirectImg = children.some(
+      (c) => c.type === 'element' && c.tagName === 'img'
+    );
+    if (!hasDirectImg) return [{ ...node, children }];
 
-    // Clone before replacing to avoid a linkedom bug.
-    const clonedAnchor = anchor.cloneNode(true) as HTMLElement;
-    parent.replaceWith(clonedAnchor);
-  }
+    const result: Node[] = [];
+    let buffer: Node[] = [];
+
+    for (const child of children) {
+      if (child.type === 'element' && child.tagName === 'img') {
+        if (buffer.length > 0) {
+          result.push({ ...node, children: buffer });
+          buffer = [];
+        }
+        result.push(child);
+      } else {
+        buffer.push(child);
+      }
+    }
+
+    if (buffer.length > 0) result.push({ ...node, children: buffer });
+
+    return result;
+  });
 }
 
 /**
@@ -167,9 +202,9 @@ function splitParagraphImagesDOM(document: Document, tag: string): void {
 }
 
 /**
- * Split paragraphs that have image inside.
- * Public wrapper kept for backwards compatibility — internal code uses
- * splitParagraphImagesDOM on a shared document via preprocessHTML.
+ * Split paragraphs that have an image inside — public string wrapper for
+ * external callers. Internal `toComponents` uses `splitImagesFromParagraphs`
+ * (the `Node[]` tree pass) instead.
  *
  * @param {string} html
  * @param {string} tag
