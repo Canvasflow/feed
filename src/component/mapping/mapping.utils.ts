@@ -1,5 +1,8 @@
-import { stringify } from '../html/parser';
-import { sanitizeHTML, type SanitizeHTMLOptions } from '../html/sanitize-html';
+import {
+  sanitizeHTML,
+  sanitizeNodes,
+  type SanitizeHTMLOptions,
+} from '../html/sanitize-html';
 import {
   type ElementNode,
   type Node,
@@ -23,7 +26,7 @@ import type { Filter, Mapping } from './mapping';
  * @returns {string}
  */
 export function sanitizeNode(node: Node, options: SanitizeHTMLOptions): string {
-  return sanitizeHTML(stringify([node]), options);
+  return sanitizeNodes([node], options);
 }
 
 /**
@@ -413,8 +416,7 @@ export function fromFigcaption(node: ElementNode): FigcaptionResponse {
         );
   for (const n of figcaptionNodes) {
     credit = getCredit(n as ElementNode);
-    const html = stringify([n]);
-    caption = sanitizeHTML(html, {
+    caption = sanitizeNodes([n], {
       allowedTags: allowedFigcaptionTags,
     });
     break;

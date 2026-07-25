@@ -1,21 +1,21 @@
 # 02 — HTML Pipeline Unification (parse once, transform one tree)
 
 > **Status: partially done.** Section 1 completed the parser swap
-> (himalaya + sanitize-html → linkedom, ADR-0002 / ADR-0004). Section 2 work
-> has since ported all three `toComponents` pre-processing steps to pure
-> `Node[]` tree passes (`sanitizeInvalidAnchorHrefs`, `hoistAnchorsWithImages`,
-> `splitImagesFromParagraphs` — commits `1ac173f`, `eed7e4e`), achieving the
-> "parse exactly once" goal for `toComponents`. What remains: the
-> `serializeSanitized` round-trip removal, `getRootElement` scoping, and
-> in-place mutation cleanup.
+> (himalaya + sanitize-html → linkedom, ADR-0002 / ADR-0004). Section 2 has
+> since: ported all three `toComponents` pre-processing steps to pure `Node[]`
+> passes (`1ac173f`, `eed7e4e`); merged `removeBreaklines` into a tree pass
+> (`stripBreaklines`, `66292fc`); and eliminated the `stringify([node]) →
+> sanitizeHTML()` round-trips at all ~24 mapping call sites via `sanitizeNodes`
+> in `sanitize-html.ts`. What remains: `getRootElement` scoping and in-place
+> mutation cleanup.
 
 ## Completion checklist
 
 - [x] An ADR exists choosing the single HTML parser (linkedom vs htmlparser2 vs parse5) with benchmark + malformed-input comparison data. _(ADR-0004)_
 - [x] `himalaya` and `sanitize-html` are gone; `linkedom` is the single parser end-to-end. _(ADR-0002; `html-mapper.ts` still imports `linkedom` directly for the public `splitParagraphImages` wrapper, but `toComponents` no longer touches `linkedom` — it goes entirely through `parse()`.)_
 - [x] `HTMLMapper.toComponents()` parses the input HTML **exactly once**; all pre-processing operates on that one tree. _(`parse(html)` is the single call; three pure `Node[]` passes run on its output: `hoistAnchorsWithImages` → `splitImagesFromParagraphs` → `sanitizeInvalidAnchorHrefs`. Commits `1ac173f`, `eed7e4e`.)_
-- [ ] No converter serializes a node back to an HTML string only to re-parse it. _(Not done — `sanitizeNode` in `mapping.utils.ts` still does `stringify([node])` → `sanitizeHTML()`, and `sanitizeHTML` re-parses that string via `parse()`. ~24 call sites across the mapping modules.)_
-- [ ] Sanitization is implemented as allow-list serialization directly over the internal `Node` AST (no intermediate string), with the same policies as today (`allowedTags`, `textAllowedTags`+attrs, `allowedFigcaptionTags`). _(`src/component/html/sanitize-html.ts` is AST-driven internally, but its public signature is still `(html: string) => string` — callers hand it a string from `stringify()`, keeping the round trip alive.)_
+- [x] No converter serializes a node back to an HTML string only to re-parse it. _(`sanitizeNodes(nodes, options)` added to `sanitize-html.ts`; `sanitizeNode`, `fromFigcaption` (`mapping.utils.ts`), `toText` (`mapping.text.ts`), and `toHTMLTable` (`mapping.table.ts`) call it directly — no `stringify()` → re-parse. `sanitizeHTML(html, options)` is now a thin wrapper around `sanitizeNodes(parse(html), options)`, used only where the input is genuinely a string.)_
+- [x] Sanitization is implemented as allow-list serialization directly over the internal `Node` AST (no intermediate string), with the same policies as today (`allowedTags`, `textAllowedTags`+attrs, `allowedFigcaptionTags`). _(`sanitizeNodes` in `sanitize-html.ts` runs `renderSanitizedNode` directly on the `Node[]` — no intermediate string. All ~24 component-builder call sites now reach it via `sanitizeContentHtml(node)` → `sanitizeNode(node, opts)` → `sanitizeNodes([node], opts)`.)_
 - [ ] `getRootElement` scoping works on the already-parsed tree instead of re-stringifying the root and re-parsing it in `buildItem`. _(Not done — `HTMLMapper.getRootElement` still returns a `string`; `buildItem` in `rss-feed.ts` substitutes it back into `contentEncoded`, which `toComponents` then re-parses.)_
 - [ ] Tree transforms no longer mutate shared nodes in place (or an ADR documents why controlled mutation is safe). _(Not done — `getCredit` (`mapping.utils.ts:363`) still does `node.children = node.children.reduce(...)` in place; `mapEmptyText` (`html-mapper.ts`) mutates `node.children`; `reduceEmptyTextNode` (`mapping.ts`) mutates `node.content`.)_
 - [x] Differential snapshots over all fixture feeds show no unexplained component output changes. _(661 tests pass throughout; the 4 fixture divergences from the Section 1 parser swap are documented in ADR-0004.)_
@@ -37,20 +37,19 @@ steps to pure `Node[] → Node[]` passes. `toComponents` now achieves the
 
 ```
 string
- → regex removeBreaklines                        (HTMLMapper.toComponents)
- → linkedom parse (via parser.ts)                (single parse)
+ → linkedom parse (via parser.ts)                (single parse — no string pre-processing)
+ → stripBreaklines(Node[]) → Node[]              (pure tree pass)
  → hoistAnchorsWithImages(Node[]) → Node[]       (pure tree pass)
  → splitImagesFromParagraphs(Node[]) → Node[]    (pure tree pass)
  → sanitizeInvalidAnchorHrefs(Node[]) → Node[]   (pure tree pass)
  → reduceComponents                              (existing engine, unchanged)
+     → per node: sanitizeNodes(node, policy)     (AST-direct, no stringify → re-parse)
 ```
 
-The remaining serialize→re-parse boundaries are **outside** `toComponents`:
+The only remaining serialize→re-parse boundary is **outside** `toComponents`:
 
 ```
- → decodeEntities (he)                           (RSSFeed.buildItem)
  → linkedom parse (via parser.ts) → stringify     (getRootElement, if root mapping) + regex quote-fix
- → per node: stringify → sanitizeHTML (parse) → string   (~24 call sites in mapping modules)
 ```
 
 The `getRootElement` round trip and the per-node sanitize round trips are

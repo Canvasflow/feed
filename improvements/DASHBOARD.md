@@ -49,11 +49,11 @@ against the repo on 2026-07-24.
 ## Section 2 — HTML Pipeline Unification ([02-html-pipeline.md](02-html-pipeline.md))
 
 > Partially done. Section 1 completed the parser swap (himalaya/sanitize-html
-> → linkedom). Section 2 work has ported all three pre-processing steps to pure
-> `Node[]` tree passes and achieved the "parse once" goal for `toComponents`.
-> Remaining work: `breakline/empty-text` normalization pass, `serializeSanitized`
-> to remove the `stringify`→re-parse round trips, `getRootElement` scoping, and
-> in-place mutation removal.
+> → linkedom). Section 2 has: ported all three pre-processing steps to pure
+> `Node[]` passes; merged `removeBreaklines` into a tree pass (`stripBreaklines`);
+> and eliminated the `stringify([node]) → sanitizeHTML()` round-trips across all
+> ~24 mapping call sites via `sanitizeNodes`. Remaining work: `getRootElement`
+> scoping, in-place mutation removal, and wiki update.
 
 **Study**
 
@@ -69,11 +69,11 @@ against the repo on 2026-07-24.
 - [x] `sanitizeInvalidAnchorHrefs` ported to a tree pass _(pure `Node[] → Node[]` `sanitizeInvalidAnchorHrefs` + `sanitizeNodeHref` in `html-mapper.ts`; commit `1ac173f`)_
 - [x] Anchor-with-image hoisting ported to a tree pass _(`hoistAnchorsWithImages` in `html-mapper.ts`; replaces `extractAnchorsWithImagesDOM`; commit `eed7e4e`)_
 - [x] Paragraph/heading image-splitting ported to one generic tree pass _(`splitImagesFromParagraphs` in `html-mapper.ts`; all 7 block tags in one pass; empty block elements dropped to match DOM side-effect; commit `eed7e4e`)_
-- [ ] Breakline removal + empty-text normalization merged into a parse-time pass
+- [x] Breakline removal + empty-text normalization merged into a parse-time pass _(`stripBreaklines` pure `Node[]` pass in `html-mapper.ts` replaces the string-level `removeBreaklines` and the vestigial `mapEmptyText` mutation; commit `66292fc`)_
 - [x] Parser swapped inside the seam; himalaya + shim + exact pin deleted; snapshot diffs reconciled and recorded _(ADR-0004; done as part of Section 1)_
-- [ ] `serializeSanitized` implemented over the `Node` AST; all ~24 `sanitizeNode`/`sanitizeContentHtml`/`processTextLinks` call sites migrated _(internal `sanitizeHTML()` is still string-in/string-out; `sanitizeNode` still does `stringify()` → re-parse)_
+- [x] `serializeSanitized` implemented over the `Node` AST; all ~24 `sanitizeNode`/`sanitizeContentHtml` call sites migrated _(`sanitizeNodes(nodes, options)` added to `sanitize-html.ts`; `sanitizeNode`, `fromFigcaption`, `toText`, `toHTMLTable` all call it directly — no `stringify()` → re-parse; `processTextLinks` and the caption/credit re-sanitization in `mapping.media.ts` remain string-in because their input is already a string, not a node)_
 - [ ] `getRootElement` scoping works on the parsed tree (no stringify→re-parse in `buildItem`); quote-fix regex deleted _(regex still present at `html-mapper.ts:33-37`)_
-- [ ] In-place mutation removed (`getCredit`, `reduceEmptyTextNode`, `mapEmptyText`); referential-transparency test added
+- [ ] In-place mutation removed (`getCredit`, `reduceEmptyTextNode`); referential-transparency test added
 - [x] `toComponents` parses input exactly once (verified by construction) _(`parse(html)` is the single call; three tree passes run on the resulting `Node[]`; commit `eed7e4e`)_
 - [ ] Wiki updated (`HTML-Mapping.md`, `Architecture.md`)
 
