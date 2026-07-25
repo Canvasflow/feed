@@ -48,10 +48,12 @@ against the repo on 2026-07-24.
 
 ## Section 2 — HTML Pipeline Unification ([02-html-pipeline.md](02-html-pipeline.md))
 
-> Partially done — the parser swap (himalaya/sanitize-html → linkedom)
-> shipped as part of Section 1 since the two efforts shared a seam. What's
-> left is collapsing the pipeline to one parse pass; see the doc's own
-> checklist for the verified detail, mirrored below.
+> Partially done. Section 1 completed the parser swap (himalaya/sanitize-html
+> → linkedom). Section 2 work has ported all three pre-processing steps to pure
+> `Node[]` tree passes and achieved the "parse once" goal for `toComponents`.
+> Remaining work: `breakline/empty-text` normalization pass, `serializeSanitized`
+> to remove the `stringify`→re-parse round trips, `getRootElement` scoping, and
+> in-place mutation removal.
 
 **Study**
 
@@ -63,16 +65,16 @@ against the repo on 2026-07-24.
 **Implementation**
 
 - [x] Parser ADR written (single parser chosen with data) _(ADR-0004)_
-- [x] Adapter seam `src/component/html/parser.ts` (`parse`/`stringify`) _(no `no-restricted-imports` lint rule yet restricting `linkedom` imports to this module — `html-mapper.ts` also imports `linkedom` directly for DOM pre-processing)_
-- [x] `sanitizeInvalidAnchorHrefs` ported to a tree pass _(pure `Node[] → Node[]` pass `sanitizeInvalidAnchorHrefs` + `sanitizeNodeHref` in `html-mapper.ts`; runs after `parse()`, no longer has its own `linkedom` `parseHTML` call)_
-- [ ] Anchor-with-image hoisting ported to a tree pass _(same — part of `preprocessHTML`'s `linkedom` DOM pass)_
-- [ ] Paragraph/heading image-splitting ported to one generic tree pass _(consolidated into one shared `linkedom` document pass in `preprocessHTML`, but still loops per tag and isn't on the internal `Node` AST)_
+- [x] Adapter seam `src/component/html/parser.ts` (`parse`/`stringify`) _(`html-mapper.ts` still imports `linkedom` directly for the public `splitParagraphImages` wrapper, but `toComponents` no longer touches `linkedom` at all — it goes entirely through `parse()`)_
+- [x] `sanitizeInvalidAnchorHrefs` ported to a tree pass _(pure `Node[] → Node[]` `sanitizeInvalidAnchorHrefs` + `sanitizeNodeHref` in `html-mapper.ts`; commit `1ac173f`)_
+- [x] Anchor-with-image hoisting ported to a tree pass _(`hoistAnchorsWithImages` in `html-mapper.ts`; replaces `extractAnchorsWithImagesDOM`; commit `eed7e4e`)_
+- [x] Paragraph/heading image-splitting ported to one generic tree pass _(`splitImagesFromParagraphs` in `html-mapper.ts`; all 7 block tags in one pass; empty block elements dropped to match DOM side-effect; commit `eed7e4e`)_
 - [ ] Breakline removal + empty-text normalization merged into a parse-time pass
 - [x] Parser swapped inside the seam; himalaya + shim + exact pin deleted; snapshot diffs reconciled and recorded _(ADR-0004; done as part of Section 1)_
-- [ ] `serializeSanitized` implemented over the `Node` AST; all ~24 `sanitizeNode`/`sanitizeContentHtml`/`processTextLinks` call sites migrated; `sanitize-html` dropped _(`sanitize-html` the npm package is dropped, but the internal `sanitizeHTML()` is still string-in/string-out, so `sanitizeNode` still does `stringify()` → re-parse)_
+- [ ] `serializeSanitized` implemented over the `Node` AST; all ~24 `sanitizeNode`/`sanitizeContentHtml`/`processTextLinks` call sites migrated _(internal `sanitizeHTML()` is still string-in/string-out; `sanitizeNode` still does `stringify()` → re-parse)_
 - [ ] `getRootElement` scoping works on the parsed tree (no stringify→re-parse in `buildItem`); quote-fix regex deleted _(regex still present at `html-mapper.ts:33-37`)_
 - [ ] In-place mutation removed (`getCredit`, `reduceEmptyTextNode`, `mapEmptyText`); referential-transparency test added
-- [ ] `toComponents` parses input exactly once (verified by construction/tests) _(currently 3 separate `linkedom` parses per call)_
+- [x] `toComponents` parses input exactly once (verified by construction) _(`parse(html)` is the single call; three tree passes run on the resulting `Node[]`; commit `eed7e4e`)_
 - [ ] Wiki updated (`HTML-Mapping.md`, `Architecture.md`)
 
 ## Section 3 — API Robustness & Error Model ([03-api-robustness.md](03-api-robustness.md))
