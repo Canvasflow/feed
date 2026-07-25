@@ -142,7 +142,7 @@ string`. It is the only module that imports `linkedom` for the AST path
    `toComponents` pre-processing steps are now pure `Node[] → Node[]` passes;
    `preprocessHTML` and `extractAnchorsWithImagesDOM` are deleted; commits
    `1ac173f` (sanitizeInvalidAnchorHrefs) and `eed7e4e` (hoistAnchorsWithImages
-   + splitImagesFromParagraphs). `toComponents` now calls `parse()` exactly once.
+   - splitImagesFromParagraphs). `toComponents` now calls `parse()` exactly once.
 4. ~~**Swap the parser inside the seam** to the ADR winner; delete himalaya
    and its shim.~~ **Done** — himalaya, `sanitize-html`, and
    `src/himalaya.d.ts` are gone; the 4 snapshot divergences from the swap

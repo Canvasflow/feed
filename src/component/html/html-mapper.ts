@@ -46,13 +46,11 @@ export class HTMLMapper {
    * @returns {Component[]}
    */
   static toComponents(html: string, params?: Params): Component[] {
-    html = removeBreaklines(html);
-
-    const parsedContent = sanitizeInvalidAnchorHrefs(
-      splitImagesFromParagraphs(hoistAnchorsWithImages(parse(html)))
-    ).map(mapEmptyText);
-
-    const nodes: Array<Node> = parsedContent.filter(filterEmptyTextNode);
+    const nodes = sanitizeInvalidAnchorHrefs(
+      splitImagesFromParagraphs(
+        hoistAnchorsWithImages(stripBreaklines(parse(html)))
+      )
+    ).filter(filterEmptyTextNode);
 
     return nodes.reduce(reduceComponents(params), []).filter((i) => !!i);
   }
@@ -290,28 +288,32 @@ function isValidHref(href: string): boolean {
 }
 
 /**
- * Remove the breaklines in the string
+ * Walk a `Node[]` tree and strip `\r\n`, `\n`, and `\r` from text node
+ * content. Text nodes that become empty (zero-length) after stripping are
+ * dropped — this lets `splitImagesFromParagraphs` see block elements left
+ * childless by the strip and discard them, matching the old `removeBreaklines`
+ * string pre-processor behaviour. Pure — returns new node objects only where
+ * content or children change; unchanged nodes preserve referential equality.
  *
- * @param {string | undefined} value
- * @returns {string}
+ * @param {Node[]} nodes
+ * @returns {Node[]}
  */
-function removeBreaklines(value: string | undefined): string {
-  if (!value) return '';
-  return value.replace(/(\r\n|\n|\r)/gm, '');
-}
-
-/**
- * Recursively walk a parsed node tree. Comment and text nodes are returned
- * as-is; element nodes have their children mapped through the same function.
- *
- * @param {Node} node
- * @returns {Node}
- */
-function mapEmptyText(node: Node): Node {
-  if (node.type === 'comment') return node;
-  if (node.type === 'element' && node.children) {
-    node.children = node.children.map(mapEmptyText);
-  }
-
-  return node;
+function stripBreaklines(nodes: Node[]): Node[] {
+  return nodes.flatMap<Node>((node) => {
+    if (node.type === 'comment') return [node];
+    if (node.type === 'text') {
+      const content = node.content.replace(/(\r\n|\n|\r)/g, '');
+      if (content.length === 0) return [];
+      return [
+        content === node.content ? node : { type: 'text' as const, content },
+      ];
+    }
+    const attributes = node.attributes?.map((attr) => {
+      if (!attr.value) return attr;
+      const value = attr.value.replace(/(\r\n|\n|\r)/g, '');
+      return value === attr.value ? attr : { ...attr, value };
+    });
+    const children = stripBreaklines(node.children);
+    return [{ ...node, attributes, children }];
+  });
 }
