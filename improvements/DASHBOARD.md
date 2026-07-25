@@ -76,14 +76,14 @@ against the repo on 2026-07-24.
 
 **Study**
 
-- [ ] Throw-surface inventory completed (all throwing calls listed in an ADR)
+- [x] Throw-surface inventory completed (all throwing calls listed in an ADR) _(ADR-0007 in `docs/adr/`; 8 sites classified — 2 critical/high in `RSSFeed`, 3 medium in the HTML pipeline, 2 low, 1 intentional; guarded sites confirmed safe; parseInt NaN risks documented)_
 - [ ] Read "Parse, don't validate" and mapped the `ParsedXml` → `RSS` boundary
 - [ ] Error taxonomy drafted: every current error/warning string grouped into stable codes
 - [ ] Consumer audit: how `transformer` + self-service project use errors/warnings and async
 
 **Implementation**
 
-- [ ] Constructor never throws on malformed XML (captured as parse-error issue)
+- [x] Constructor never throws on malformed XML (captured as parse-error issue) _(`this.rss` initialised before `XMLParser.parse`; parse wrapped in `try/catch`; error stored in both `feed.errors` and `rss.errors` as `"XML parse error: …"`; 8 new tests in `rss-feed.test.ts` pass; 673 total tests green)_
 - [ ] `build()` never throws (`URL.canParse` guard on channel link; date + `parseInt` audits)
 - [ ] `FeedIssue { code, severity, message, path? }` type introduced; `errors`/`warnings` migrated; zod issues converted (no raw `unknown` in `rss.errors`)
 - [ ] Single, documented behavior for invalid `params` (no silent drop)

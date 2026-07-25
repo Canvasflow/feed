@@ -88,14 +88,6 @@ export class RSSFeed {
    */
   constructor(content: string, params?: Params) {
     this.content = content;
-    const parser = new XMLParser({
-      ignoreAttributes: false,
-      processEntities: false,
-    });
-    this.data = parser.parse(content);
-    if (params && isValidParams(params)) {
-      this.params = params;
-    }
 
     this.rss = {
       errors: [],
@@ -106,6 +98,26 @@ export class RSSFeed {
         warnings: [],
       },
     };
+
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      processEntities: false,
+    });
+
+    try {
+      this.data = parser.parse(content);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      this.data = {} as unknown as ParsedXml;
+      const error = `XML parse error: ${message}`;
+      this.errors.push(error);
+      this.rss.errors.push(error);
+      return;
+    }
+
+    if (params && isValidParams(params)) {
+      this.params = params;
+    }
   }
 
   set root(rootMapping: Mapping | undefined) {

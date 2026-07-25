@@ -41,6 +41,57 @@ describe('Invalid RSS', () => {
   );
 });
 
+describe('Malformed XML — constructor never throws', () => {
+  const malformedInputs: Array<[string, string]> = [
+    ['unclosed tag', '<unclosed'],
+    ['double opening bracket', '<<double'],
+    ['empty string', ''],
+    ['random garbage', 'not xml at all %%$#'],
+    ['null bytes', '\x00\x01\x02'],
+  ];
+
+  for (const [label, content] of malformedInputs) {
+    test(
+      `constructor does not throw on: ${label}`,
+      { tags: ['unit', 'rss'] },
+      () => {
+        expect(() => new RSSFeed(content)).not.toThrow();
+      }
+    );
+  }
+
+  test(
+    'malformed XML that triggers fast-xml-parser error surfaces in rss.errors',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed('<unclosed');
+      expect(feed.rss.errors.length).toBeGreaterThan(0);
+      expect(feed.rss.errors[0]).toMatch(/XML parse error/);
+    }
+  );
+
+  test(
+    'malformed XML error is also present on feed.errors',
+    { tags: ['unit', 'rss'] },
+    () => {
+      const feed = new RSSFeed('<<double');
+      expect(feed.errors.length).toBeGreaterThan(0);
+      expect(feed.errors[0]).toMatch(/XML parse error/);
+    }
+  );
+
+  test(
+    'build() on malformed XML returns rss with errors and does not throw',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed('<unclosed');
+      const rss = await feed.build();
+      expect(rss).toBeDefined();
+      expect(rss.errors.length).toBeGreaterThan(0);
+    }
+  );
+});
+
 describe('Validate Params', () => {
   test(
     `It should have errors because of the wrong roo but correct paramst`,
