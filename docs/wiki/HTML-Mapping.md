@@ -9,24 +9,26 @@
 ```ts
 import { HTMLMapper } from '@canvasflow/feed';
 
-const components = HTMLMapper.toComponents(html, params /* optional */);
-const root = HTMLMapper.getRootElement(html, rootMapping); // string | null
+const components = HTMLMapper.toComponents(html, params, root /* optional */);
+const scopedHtml = HTMLMapper.getRootElement(html, rootMapping); // string | null
 ```
 
-| Method                          | Returns          | Purpose                                                                    |
-| ------------------------------- | ---------------- | -------------------------------------------------------------------------- |
-| `toComponents(html, params?)`   | `Component[]`    | The full HTML → components conversion.                                     |
-| `getRootElement(html, mapping)` | `string \| null` | Serialize the first element matching `mapping` (used to scope extraction). |
+| Method                               | Returns          | Purpose                                                                      |
+| ------------------------------------ | ---------------- | ---------------------------------------------------------------------------- |
+| `toComponents(html, params?, root?)` | `Component[]`    | The full HTML → components conversion, with optional root-element scoping.   |
+| `getRootElement(html, mapping)`      | `string \| null` | Serialize the first element matching `mapping` (used to scope extraction).   |
 
 ## The pipeline
 
-1. **Pre-process the HTML string:**
-   - remove breaklines;
-   - sanitize invalid `href`s (replace with `#`);
-   - lift `<a>` wrappers around images out of `<p>`/heading tags;
-   - split `<p>`/`h1`–`h6` tags that contain `<img>` so the image becomes its own block.
-2. **Parse** with `himalaya` into a `Node[]` AST.
-3. **Reduce** the AST via `reduceComponents(params)` from `mapping/mapping.ts` into `Component[]`.
+The HTML pipeline parses the input **exactly once** and applies all transformations as pure `Node[]` passes on that single tree:
+
+1. **Parse** with `linkedom` (via `parser.ts`) into a `Node[]` AST.
+2. **`stripBreaklines`** — strips `\r\n`/`\n`/`\r` from text content and attribute values; drops text nodes that become empty.
+3. **`hoistAnchorsWithImages`** — lifts `<a>` elements containing `<img>` descendants out of enclosing `<p>`/heading blocks.
+4. **`splitImagesFromParagraphs`** — splits `<p>`/`h1`–`h6` elements that have `<img>` direct children so each image becomes a sibling block.
+5. **`sanitizeInvalidAnchorHrefs`** — rewrites `<a href>` values that fail URL validation to `href="#"`.
+6. **Root scoping** (optional) — if a `root` mapping is passed, `getRootElement` locates the matching subtree in the processed tree and narrows to `[rootNode]` before reduction.
+7. **`reduceComponents(params)`** — walks the node tree and emits `Component[]`; each node is serialized to HTML inline via `sanitizeNodes()` (no re-parse).
 
 ## Evaluation order
 

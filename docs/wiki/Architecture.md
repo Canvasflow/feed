@@ -39,13 +39,17 @@ XML attributes from the parser use the `@_` prefix convention (e.g. `@_url`, `@_
 
 ## HTML pipeline (`src/component/`)
 
-`HTMLMapper.toComponents(html, params?)` is the core HTML → component pipeline:
+`HTMLMapper.toComponents(html, params?, root?)` is the core HTML → component pipeline. It parses the input **exactly once** and applies all transformations as pure `Node[] → Node[]` passes on that single tree:
 
-1. **Pre-process** the HTML string — remove breaklines, sanitize invalid `href`s, lift `<a>` wrappers around images, and split `<p>`/heading tags that contain `<img>` elements. All DOM mutations run in a single `linkedom` pass via `preprocessHTML`.
-2. **Parse** with `parser.ts` (a `linkedom`-backed adapter) into a `Node[]` AST.
-3. **Reduce** the node tree via `reduceComponents(params)` into `Component[]`.
+1. **Parse** with `parser.ts` (a `linkedom`-backed adapter) into a `Node[]` AST.
+2. **`stripBreaklines`** — strips newlines from text content and attribute values; drops zero-length text nodes.
+3. **`hoistAnchorsWithImages`** — lifts `<a>` elements wrapping images out of `<p>`/heading blocks.
+4. **`splitImagesFromParagraphs`** — splits block elements that contain `<img>` direct children.
+5. **`sanitizeInvalidAnchorHrefs`** — rewrites invalid `href` values to `"#"`.
+6. **Root scoping** (optional) — if a `root` mapping is passed, locates the matching subtree and reduces to `[rootNode]`.
+7. **`reduceComponents(params)`** — walks the node tree and emits `Component[]`; sanitization of each node's HTML is done inline via `sanitizeNodes()` with no intermediate string re-parse.
 
-`linkedom` is the **single HTML parser** used end-to-end — pre-processing, root-element scoping, and the mapping pass all operate on the same DOM surface. There is no dual-parser path.
+`linkedom` is the **single HTML parser** used end-to-end. There is no dual-parser path and no stringify→re-parse round-trip inside the component pipeline.
 
 | File / folder                                                                                                             | Responsibility                                                                                                                                                                                                                                                      |
 | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

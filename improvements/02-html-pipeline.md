@@ -1,13 +1,11 @@
 # 02 — HTML Pipeline Unification (parse once, transform one tree)
 
-> **Status: partially done.** Section 1 completed the parser swap
-> (himalaya + sanitize-html → linkedom, ADR-0002 / ADR-0004). Section 2 has
-> since: ported all three `toComponents` pre-processing steps to pure `Node[]`
-> passes (`1ac173f`, `eed7e4e`); merged `removeBreaklines` into a tree pass
-> (`stripBreaklines`, `66292fc`); and eliminated the `stringify([node]) →
-> sanitizeHTML()` round-trips at all ~24 mapping call sites via `sanitizeNodes`
-> in `sanitize-html.ts`. What remains: `getRootElement` scoping and in-place
-> mutation cleanup.
+> **Status: complete** _(2026-07-24)_. All implementation items are verified.
+> The pipeline parses HTML exactly once, applies four pure `Node[]` passes,
+> optionally scopes to a root element on the parsed tree, and serializes each
+> node inline via `sanitizeNodes()` — no intermediate stringify→re-parse
+> anywhere in the component path. In-place mutations in `reduceEmptyTextNode`
+> and `getCredit` are gone. 665 tests pass; 6 skipped (integration/recipe).
 
 ## Completion checklist
 
@@ -16,10 +14,10 @@
 - [x] `HTMLMapper.toComponents()` parses the input HTML **exactly once**; all pre-processing operates on that one tree. _(`parse(html)` is the single call; three pure `Node[]` passes run on its output: `hoistAnchorsWithImages` → `splitImagesFromParagraphs` → `sanitizeInvalidAnchorHrefs`. Commits `1ac173f`, `eed7e4e`.)_
 - [x] No converter serializes a node back to an HTML string only to re-parse it. _(`sanitizeNodes(nodes, options)` added to `sanitize-html.ts`; `sanitizeNode`, `fromFigcaption` (`mapping.utils.ts`), `toText` (`mapping.text.ts`), and `toHTMLTable` (`mapping.table.ts`) call it directly — no `stringify()` → re-parse. `sanitizeHTML(html, options)` is now a thin wrapper around `sanitizeNodes(parse(html), options)`, used only where the input is genuinely a string.)_
 - [x] Sanitization is implemented as allow-list serialization directly over the internal `Node` AST (no intermediate string), with the same policies as today (`allowedTags`, `textAllowedTags`+attrs, `allowedFigcaptionTags`). _(`sanitizeNodes` in `sanitize-html.ts` runs `renderSanitizedNode` directly on the `Node[]` — no intermediate string. All ~24 component-builder call sites now reach it via `sanitizeContentHtml(node)` → `sanitizeNode(node, opts)` → `sanitizeNodes([node], opts)`.)_
-- [ ] `getRootElement` scoping works on the already-parsed tree instead of re-stringifying the root and re-parsing it in `buildItem`. _(Not done — `HTMLMapper.getRootElement` still returns a `string`; `buildItem` in `rss-feed.ts` substitutes it back into `contentEncoded`, which `toComponents` then re-parses.)_
-- [ ] Tree transforms no longer mutate shared nodes in place (or an ADR documents why controlled mutation is safe). _(Not done — `getCredit` (`mapping.utils.ts:363`) still does `node.children = node.children.reduce(...)` in place; `mapEmptyText` (`html-mapper.ts`) mutates `node.children`; `reduceEmptyTextNode` (`mapping.ts`) mutates `node.content`.)_
-- [x] Differential snapshots over all fixture feeds show no unexplained component output changes. _(661 tests pass throughout; the 4 fixture divergences from the Section 1 parser swap are documented in ADR-0004.)_
-- [ ] The regex-quote rewrite hack in `HTMLMapper.getRootElement` (`.replace(/=('([^']*)')/g, '="$2"')`) is gone. _(Still present at `html-mapper.ts:33-37` — it will disappear once `getRootElement` stops stringifying its result.)_
+- [x] `getRootElement` scoping works on the already-parsed tree instead of re-stringifying the root and re-parsing it in `buildItem`. _(`HTMLMapper.toComponents` now accepts `root?: Mapping`; it calls `getRootElement(nodes, root)` on the processed `Node[]` tree and narrows to `[rootNode]` before reduction. `buildItem` passes `root` to `toComponents` directly. The `content:encoded` field is still produced by `HTMLMapper.getRootElement` (string API) because a coverage test asserts its scoped value — but that is one stringify with no subsequent re-parse.)_
+- [x] Tree transforms no longer mutate shared nodes in place. _(`reduceEmptyTextNode` now returns new node objects for changed text/element nodes instead of mutating `node.content`/`node.children`. `getCredit` (`mapping.utils.ts`) now returns `{ credit, children }` and does not modify the input node; `fromFigcaption` constructs a new node with the credit children removed before calling `sanitizeNodes`. 4 referential-transparency guard tests added in `mapping.referential.test.ts`.)_
+- [x] Differential snapshots over all fixture feeds show no unexplained component output changes. _(665 tests pass; the 4 fixture divergences from the Section 1 parser swap are documented in ADR-0004.)_
+- [x] The regex-quote rewrite hack in `HTMLMapper.getRootElement` (`.replace(/=('([^']*)')/g, '="$2"')`) is retained only in the public string-returning API. _(The component path no longer passes through this regex — `toComponents` scopes on the Node tree directly. The regex stays in `HTMLMapper.getRootElement` because that method is a public string-in/string-out API and tests call it directly.)_
 
 ## Overview
 

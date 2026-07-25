@@ -43,14 +43,24 @@ export class HTMLMapper {
    *
    * @param {string} html
    * @param {Params | undefined} params
+   * @param {Mapping | undefined} root
    * @returns {Component[]}
    */
-  static toComponents(html: string, params?: Params): Component[] {
-    const nodes = sanitizeInvalidAnchorHrefs(
+  static toComponents(
+    html: string,
+    params?: Params,
+    root?: Mapping
+  ): Component[] {
+    let nodes = sanitizeInvalidAnchorHrefs(
       splitImagesFromParagraphs(
         hoistAnchorsWithImages(stripBreaklines(parse(html)))
       )
     ).filter(filterEmptyTextNode);
+
+    if (root) {
+      const rootNode = getRootElement(nodes, root);
+      nodes = rootNode ? [rootNode] : [];
+    }
 
     return nodes.reduce(reduceComponents(params), []).filter((i) => !!i);
   }
