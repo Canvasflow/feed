@@ -23,6 +23,7 @@ import {
   getAttributes,
   removeDescendants,
 } from '../node/node-helpers';
+import { escapeText } from '../html/parser';
 import {
   sanitizeNode,
   sanitizeContentHtml,
@@ -31,6 +32,7 @@ import {
   filterAnyMapping,
   filterClassNameDescendants,
   fromFigcaption,
+  trimAsciiWhitespace,
 } from './mapping.utils';
 import { filterFigureDescendants } from './mapping.media';
 import {
@@ -478,6 +480,26 @@ export function appendFigureContainerComponents(
 }
 
 /**
+ * Join a node's direct text-child content into a single trimmed, HTML-safe
+ * string. Text node `content` is decoded (unlike the previous himalaya-based
+ * parser's raw passthrough), so it needs re-escaping wherever it's
+ * interpolated directly rather than run through `stringify()`.
+ *
+ * @param {Node[]} nodes
+ * @returns {string}
+ */
+function textContent(nodes: Node[]): string {
+  return trimAsciiWhitespace(
+    escapeText(
+      nodes
+        .filter((n) => n.type === 'text')
+        .map((n) => n.content)
+        .join(' ')
+    )
+  );
+}
+
+/**
  * Transform an html component to Canvasflow Button Component
  *
  * @param {ElementNode} node
@@ -495,11 +517,7 @@ export function toAnchorButton(node: ElementNode): ButtonComponent {
   if (buttonsNode.length > 0) {
     const button = buttonsNode[0] as ElementNode;
 
-    text = button.children
-      .filter((n) => n.type === 'text')
-      .map((n) => n.content)
-      .join(' ')
-      .trim();
+    text = textContent(button.children);
   }
   if (!text) {
     errors.push('Button text is required');
@@ -538,11 +556,7 @@ export function toButton(node: ElementNode): ButtonComponent {
   // Process from a tag with role button
   if (node.tagName === 'a') {
     link = attributes.get('href');
-    text = node.children
-      .filter((n) => n.type === 'text')
-      .map((n) => n.content)
-      .join(' ')
-      .trim();
+    text = textContent(node.children);
     if (!text) {
       errors.push('Button text is required');
     }
@@ -555,20 +569,12 @@ export function toButton(node: ElementNode): ButtonComponent {
       if (!link) {
         errors.push('href attribute is required in a button link');
       }
-      text = aNode.children
-        .filter((n) => n.type === 'text')
-        .map((n) => n.content)
-        .join(' ')
-        .trim();
+      text = textContent(aNode.children);
       if (!text) {
         errors.push('Button text is required');
       }
     } else {
-      text = node.children
-        .filter((n) => n.type === 'text')
-        .map((n) => n.content)
-        .join(' ')
-        .trim();
+      text = textContent(node.children);
       if (!text) {
         errors.push('Button text is required');
       }

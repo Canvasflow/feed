@@ -1,5 +1,4 @@
-import { stringify } from 'himalaya';
-import sanitizeHtml from 'sanitize-html';
+import { stringify } from '../html/parser';
 
 import { type HTMLTableComponent } from '../component';
 import { type ElementNode, getAttributes } from '../node/node-helpers';
@@ -7,6 +6,7 @@ import {
   htmlTableAllowedTags,
   textAllowedAttributes,
 } from './mapping.constants';
+import { sanitizeHTML as sanitizeHtml } from '../html/sanitize-html';
 
 /**
  * Transform an html table component to Canvasflow HTMLTable Component

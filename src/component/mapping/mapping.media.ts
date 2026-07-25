@@ -1,5 +1,3 @@
-import sanitizeHtml from 'sanitize-html';
-
 import {
   type AudioComponent,
   type Component,
@@ -24,6 +22,7 @@ import {
   findDescendants,
   getAttributes,
 } from '../node/node-helpers';
+import { sanitizeHTML as sanitizeHtml } from '../html/sanitize-html';
 import { imageTags, allowedCaptionTags } from './mapping.constants';
 import {
   sanitizeContentHtml,

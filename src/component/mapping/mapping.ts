@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { escapeText } from '../html/parser';
 import {
   type Component,
   type TextComponent,
@@ -46,6 +47,8 @@ import {
   excludeNode,
   filterAllMapping,
   filterAnyMapping,
+  trimAsciiWhitespace,
+  collapseAsciiWhitespace,
 } from './mapping.utils';
 import {
   toInstagram,
@@ -159,11 +162,11 @@ export function reduceEmptyTextNode(nodes: Node[], node: Node): Node[] {
   if (node.type === 'text') {
     let { content } = node;
     if (content) {
-      content = content.replace(/\s\s+/g, ' ');
+      content = collapseAsciiWhitespace(content);
       node.content = content;
     }
 
-    if (content.length >= 1 && !content.trim().length) {
+    if (content.length >= 1 && !trimAsciiWhitespace(content).length) {
       node.content = ' ';
       nodes.push(node);
       return nodes;
@@ -266,13 +269,12 @@ export function fromNode(
 
   // If the node is a text, it get's wrapped in a p tag
   if (node.type === 'text') {
-    if (!node.content.trim().length) {
+    if (!trimAsciiWhitespace(node.content).length) {
       return null;
     }
 
-    const text = params?.ignoreParagraphWrap
-      ? node.content.trim()
-      : `<p>${node.content.trim()}</p>`;
+    const trimmed = escapeText(trimAsciiWhitespace(node.content));
+    const text = params?.ignoreParagraphWrap ? trimmed : `<p>${trimmed}</p>`;
 
     return {
       component: 'body',

@@ -5,7 +5,11 @@ import {
   type Mapping,
   processTextLinks,
 } from '../../mapping/mapping';
-import { type TextComponent, type CustomComponent } from '../../component';
+import {
+  type TextComponent,
+  type CustomComponent,
+  type ImageComponent,
+} from '../../component';
 
 describe('Root Element', () => {
   test(
@@ -120,6 +124,44 @@ describe('Root Element', () => {
       `;
       const rootContent = HTMLMapper.getRootElement(content, rootMapping);
       expect(rootContent).toBe(rootElement);
+    }
+  );
+
+  test(
+    'It should not corrupt an attribute value that contains a literal double quote',
+    { tags: ['unit', 'html'] },
+    () => {
+      const rootMapping: Mapping = {
+        match: 'all',
+        filters: [
+          {
+            type: 'tag',
+            items: ['main'],
+          },
+        ],
+      };
+      // Regression test for a himalaya-era bug (fixed on hotfix/1.17.5):
+      // getRootElement() used to rewrite single-quoted attributes to
+      // double-quoted ones with a naive regex that didn't escape an
+      // embedded `"` (e.g. from a decoded `&quot;` entity), which closed
+      // the attribute early and corrupted the rest of the tag. The
+      // linkedom-backed parser (parser.ts) always round-trips attribute
+      // values through `element.outerHTML`, which already escapes an
+      // embedded `"` to `&quot;` before this code ever sees it, so the
+      // corruption should not be reproducible here — this test guards
+      // against that invariant regressing.
+      const content = `<main><img alt='Amazon Ember 43" 4-Series' src="logo.png"></main>`;
+      const rootContent = HTMLMapper.getRootElement(content, rootMapping);
+      expect(rootContent).toBe(
+        `<main><img alt="Amazon Ember 43&quot; 4-Series" src="logo.png"></main>`
+      );
+
+      const components = HTMLMapper.toComponents(`${rootContent}`);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component.component).toBe('image');
+      expect(component.alt).toBe('Amazon Ember 43&quot; 4-Series');
+      expect(component.imageurl).toBe('logo.png');
     }
   );
 

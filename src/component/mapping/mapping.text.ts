@@ -1,17 +1,16 @@
-import { stringify } from 'himalaya';
-import sanitizeHtml from 'sanitize-html';
-
 import {
   type TextComponent,
   type TextType,
   isValidTextRole,
 } from '../component';
+import { stringify } from '../html/parser';
 import {
   type ElementNode,
   type Node,
   getAttributes,
 } from '../node/node-helpers';
 import { textAllowedTags, textAllowedAttributes } from './mapping.constants';
+import { sanitizeHTML as sanitizeHtml } from '../html/sanitize-html';
 
 /**
  * Preserve whitespace that sits between inline elements inside a text

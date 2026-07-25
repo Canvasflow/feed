@@ -41,13 +41,17 @@ XML attributes from the parser use the `@_` prefix convention (e.g. `@_url`, `@_
 
 `HTMLMapper.toComponents(html, params?)` is the core HTML → component pipeline:
 
-1. **Pre-process** the HTML string — remove breaklines, sanitize invalid `href`s, lift `<a>` wrappers around images, and split `<p>`/heading tags that contain `<img>` elements.
-2. **Parse** with `himalaya` into a `Node[]` AST.
+1. **Pre-process** the HTML string — remove breaklines, sanitize invalid `href`s, lift `<a>` wrappers around images, and split `<p>`/heading tags that contain `<img>` elements. All DOM mutations run in a single `linkedom` pass via `preprocessHTML`.
+2. **Parse** with `parser.ts` (a `linkedom`-backed adapter) into a `Node[]` AST.
 3. **Reduce** the node tree via `reduceComponents(params)` into `Component[]`.
+
+`linkedom` is the **single HTML parser** used end-to-end — pre-processing, root-element scoping, and the mapping pass all operate on the same DOM surface. There is no dual-parser path.
 
 | File / folder                                                                                                             | Responsibility                                                                                                                                                                        |
 | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`html/html-mapper.ts`](https://github.com/canvasflow/feed/blob/main/src/component/html/html-mapper.ts)                   | Public entry: `toComponents()` and `getRootElement()`; HTML pre-processing.                                                                                                           |
+| [`html/parser.ts`](https://github.com/canvasflow/feed/blob/main/src/component/html/parser.ts)                             | `parse(html)` / `stringify(nodes)` — wraps `linkedom` and emits the same `Node[]` AST shape the mapping layer consumes. Reads attribute values from `element.outerHTML` so embedded `"` characters are always `&quot;`-escaped. |
+| [`html/sanitize-html.ts`](https://github.com/canvasflow/feed/blob/main/src/component/html/sanitize-html.ts)               | Inline implementation of the `sanitize-html` API subset used by this library — walks the `Node[]` AST, keeps allowed tags/attributes, strips or unwraps the rest. Replaces the npm package and its transitive dependencies (`postcss`, `deepmerge`, `dayjs`, etc.). |
 | [`mapping/mapping.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/mapping.ts)                     | The `reduceComponents` reducer and the recursive element-detection engine.                                                                                                            |
 | [`mapping/mapping.media.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/mapping.media.ts)         | image / picture / figure / video / audio / gallery / iframe / twitter converters.                                                                                                     |
 | [`mapping/mapping.embeds.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/mapping.embeds.ts)       | Self-contained social-embed converters/detectors.                                                                                                                                     |
@@ -59,8 +63,8 @@ XML attributes from the parser use the `@_` prefix convention (e.g. `@_url`, `@_
 | [`mapping/mapping.constants.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/mapping.constants.ts) | Tag / attribute allow-lists used during conversion.                                                                                                                                   |
 | [`mapping/mapping.utils.ts`](https://github.com/canvasflow/feed/blob/main/src/component/mapping/mapping.utils.ts)         | Shared helpers: `sanitizeNode`, `sanitizeContentHtml`, `matchesPattern`, `fromFigcaption`, `filterClassNameDescendants`, `processTextLinks`, `isEmpty`, and filter/exclude utilities. |
 | [`component.ts`](https://github.com/canvasflow/feed/blob/main/src/component/component.ts)                                 | `ComponentType` / `TextType` unions, component interfaces, and `is*` guards.                                                                                                          |
-| [`node/node-helpers.ts`](https://github.com/canvasflow/feed/blob/main/src/component/node/node-helpers.ts)                 | himalaya AST node types and helpers (`getAttributes`, `findDescendants`, `removeDescendants`, `SetUtils`); exports `DescendantsReducer`, `FindFn`, `NodeFilterFn`.                    |
-| [`schema/Schema.ts`](https://github.com/canvasflow/feed/blob/main/src/component/schema/recipe-schema.ts)                  | Zod schemas for recipe (JSON-LD) extraction.                                                                                                                                          |
+| [`node/node-helpers.ts`](https://github.com/canvasflow/feed/blob/main/src/component/node/node-helpers.ts)                 | AST node types (`Node`, `ElementNode`, `TextNode`, `CommentNode`, `Attribute`) and helpers (`getAttributes`, `findDescendants`, `removeDescendants`, `SetUtils`); exports `DescendantsReducer`, `FindFn`, `NodeFilterFn`. |
+| [`schema/recipe-schema.ts`](https://github.com/canvasflow/feed/blob/main/src/component/schema/recipe-schema.ts)           | Zod schemas for recipe (JSON-LD) extraction.                                                                                                                                          |
 
 ### The detection engine
 

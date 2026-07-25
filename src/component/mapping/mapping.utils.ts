@@ -1,6 +1,5 @@
-import { stringify } from 'himalaya';
-import sanitizeHtml from 'sanitize-html';
-
+import { stringify } from '../html/parser';
+import { sanitizeHTML, type SanitizeHTMLOptions } from '../html/sanitize-html';
 import {
   type ElementNode,
   type Node,
@@ -20,14 +19,11 @@ import type { Filter, Mapping } from './mapping';
  * Serialize a node back to HTML and sanitize it with the given options.
  *
  * @param {Node} node
- * @param {Parameters<typeof sanitizeHtml>[1]} options
+ * @param {SanitizeHTMLOptions} options
  * @returns {string}
  */
-export function sanitizeNode(
-  node: Node,
-  options: Parameters<typeof sanitizeHtml>[1]
-): string {
-  return sanitizeHtml(stringify([node]), options);
+export function sanitizeNode(node: Node, options: SanitizeHTMLOptions): string {
+  return sanitizeHTML(stringify([node]), options);
 }
 
 /**
@@ -99,7 +95,7 @@ export function processTextLinks(html: string, link: string = '/'): string {
   const allowedTags = textAllowedTags;
   const allowedAttributes = textAllowedAttributes;
   const isRelative = (url: string) => !URL.canParse(url);
-  return sanitizeHtml(html, {
+  return sanitizeHTML(html, {
     allowedTags,
     allowedAttributes,
     transformTags: {
@@ -203,7 +199,32 @@ function removeProtocol(url: string): string {
  * @returns {boolean}
  */
 export function isEmpty(content: string): boolean {
-  return content.replace(/[\r\n\t]/g, '').trim().length === 0;
+  return trimAsciiWhitespace(content.replace(/[\r\n\t]/g, '')).length === 0;
+}
+
+/**
+ * Trim leading/trailing ASCII whitespace only. Unlike `String.trim()`, this
+ * does not strip U+00A0 (non-breaking space) — a decoded `&nbsp;`/`&#160;`
+ * at a text node boundary is meaningful, visible content, not insignificant
+ * whitespace to discard.
+ *
+ * @param {string} value
+ * @returns {string}
+ */
+export function trimAsciiWhitespace(value: string): string {
+  return value.replace(/^[ \t\n\r\f\v]+|[ \t\n\r\f\v]+$/g, '');
+}
+
+/**
+ * Collapse runs of 2+ ASCII whitespace characters into a single space.
+ * Unlike a plain `/\s\s+/` replace, this leaves U+00A0 (non-breaking space)
+ * alone so decoded `&nbsp;`/`&#160;` sequences aren't silently merged away.
+ *
+ * @param {string} value
+ * @returns {string}
+ */
+export function collapseAsciiWhitespace(value: string): string {
+  return value.replace(/[ \t\n\r\f\v]{2,}/g, ' ');
 }
 
 export interface FigcaptionResponse {
@@ -393,7 +414,7 @@ export function fromFigcaption(node: ElementNode): FigcaptionResponse {
   for (const n of figcaptionNodes) {
     credit = getCredit(n as ElementNode);
     const html = stringify([n]);
-    caption = sanitizeHtml(html, {
+    caption = sanitizeHTML(html, {
       allowedTags: allowedFigcaptionTags,
     });
     break;
