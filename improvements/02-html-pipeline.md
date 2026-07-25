@@ -2,7 +2,7 @@
 
 ## Completion checklist
 
-- [ ] An ADR exists choosing the single HTML parser (linkedom vs htmlparser2 vs parse5) with benchmark + malformed-input comparison data.
+- [x] An ADR exists choosing the single HTML parser (linkedom vs htmlparser2 vs parse5) with benchmark + malformed-input comparison data. _(ADR-0004: benchmark table ms/iter for all three parsers; 12 synthetic malformed-HTML cases + real fixture verification)_
 - [ ] `HTMLMapper.toComponents()` parses the input HTML **exactly once**; all pre-processing (anchor extraction, paragraph splitting, href sanitization, breakline removal) operates on that one tree.
 - [ ] No converter serializes a node back to an HTML string only to re-parse it (today: `sanitizeNode` = himalaya `stringify` → sanitize-html re-parse, ×22 call sites).
 - [ ] Sanitization is implemented as allow-list serialization over the internal `Node` AST (`serializeSanitized`), with the same policies as today (`allowedTags`, `textAllowedTags`+attrs, `allowedFigcaptionTags`).

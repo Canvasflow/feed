@@ -11,7 +11,7 @@
 - [x] `luxon` is wrapped behind `parseDate()` in `src/rss/date.ts` with its own test suite. See [ADR-0005](https://github.com/canvasflow/feed/blob/main/docs/adr/0005-keep-luxon-wrapped-behind-parseDate.md).
 - [x] `zod` usage is either migrated to `zod/mini` (or a hand-rolled validator) or a decision record justifies keeping full zod. See [ADR-0006](https://github.com/canvasflow/feed/blob/main/docs/adr/0006-keep-zod-over-zod-mini.md).
 - [ ] Install size and bundle size are measured before/after and recorded (target: ≥50 % reduction in `node_modules` weight for consumers).
-- [ ] All existing tests pass and the differential snapshots (see 06) show no unexplained output change.
+- [x] All existing tests pass and the differential snapshots (see 06) show no unexplained output change. _(661 tests pass; the 4 fixture divergences from the parser swap are documented and explained in ADR-0004 — no unexplained regressions)_
 
 ## Overview
 
