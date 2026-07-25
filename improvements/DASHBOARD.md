@@ -64,7 +64,7 @@ against the repo on 2026-07-24.
 
 - [x] Parser ADR written (single parser chosen with data) _(ADR-0004)_
 - [x] Adapter seam `src/component/html/parser.ts` (`parse`/`stringify`) _(no `no-restricted-imports` lint rule yet restricting `linkedom` imports to this module — `html-mapper.ts` also imports `linkedom` directly for DOM pre-processing)_
-- [ ] `sanitizeInvalidAnchorHrefs` ported to a tree pass _(still a separate `linkedom` `parseHTML`→mutate→`toString()` round trip)_
+- [x] `sanitizeInvalidAnchorHrefs` ported to a tree pass _(pure `Node[] → Node[]` pass `sanitizeInvalidAnchorHrefs` + `sanitizeNodeHref` in `html-mapper.ts`; runs after `parse()`, no longer has its own `linkedom` `parseHTML` call)_
 - [ ] Anchor-with-image hoisting ported to a tree pass _(same — part of `preprocessHTML`'s `linkedom` DOM pass)_
 - [ ] Paragraph/heading image-splitting ported to one generic tree pass _(consolidated into one shared `linkedom` document pass in `preprocessHTML`, but still loops per tag and isn't on the internal `Node` AST)_
 - [ ] Breakline removal + empty-text normalization merged into a parse-time pass

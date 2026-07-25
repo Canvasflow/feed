@@ -3,7 +3,7 @@ import { parseHTML } from 'linkedom';
 import { parse, stringify } from './parser';
 
 import type { Component } from '../component';
-import type { Node } from '../node/node-helpers';
+import type { Attribute, Node } from '../node/node-helpers';
 import {
   type Mapping,
   type Params,
@@ -47,10 +47,11 @@ export class HTMLMapper {
    */
   static toComponents(html: string, params?: Params): Component[] {
     html = removeBreaklines(html);
-    html = sanitizeInvalidAnchorHrefs(html);
     html = preprocessHTML(html);
 
-    const parsedContent = parse(html).map(mapEmptyText);
+    const parsedContent = sanitizeInvalidAnchorHrefs(parse(html)).map(
+      mapEmptyText
+    );
 
     const nodes: Array<Node> = parsedContent.filter(filterEmptyTextNode);
 
@@ -185,28 +186,33 @@ export function splitParagraphImages(html: string, tag: string): string {
 }
 
 /**
- * Detect invalid anchor hrefs and replace them with '#'
+ * Walk a `Node[]` tree and rewrite any `<a href="…">` where the href fails
+ * `isValidHref` to `href="#"`. Pure — returns new node objects where changed,
+ * leaves unchanged nodes untouched (referential equality preserved for
+ * unaffected subtrees).
  *
- * @param {string} html
- * @returns {string}
+ * @param {Node[]} nodes
+ * @returns {Node[]}
  */
-function sanitizeInvalidAnchorHrefs(html: string): string {
-  const { document } = parseHTML(html);
+function sanitizeInvalidAnchorHrefs(nodes: Node[]): Node[] {
+  return nodes.map(sanitizeNodeHref);
+}
 
-  const anchors = document.querySelectorAll('a[href]');
+function sanitizeNodeHref(node: Node): Node {
+  if (node.type !== 'element') return node;
 
-  for (const anchor of anchors) {
-    const href = anchor.getAttribute('href');
+  const children = node.children.map(sanitizeNodeHref);
+  let { attributes } = node;
 
-    if (href && !isValidHref(href)) {
-      anchor.setAttribute('href', '#');
+  if (node.tagName === 'a' && attributes) {
+    const hrefIdx = attributes.findIndex((a: Attribute) => a.key === 'href');
+    if (hrefIdx !== -1 && !isValidHref(attributes[hrefIdx].value)) {
+      attributes = [...attributes];
+      attributes[hrefIdx] = { key: 'href', value: '#' };
     }
   }
 
-  const response = document.toString();
-
-  // linkedom preserves the original markup structure as much as possible
-  return response;
+  return { ...node, attributes, children };
 }
 
 /**
