@@ -47,7 +47,7 @@ on them before touching code.
 - `src/component/mapping/mapping.utils.ts` — `patternCache`, `filterItemsCache`, `getAttributes` call frequency, `matchesFilter`
 - `src/component/mapping/mapping.ts` — `fromNode` recursion, `getMappingComponent` (linear scan per node — fine, but measure with many mappings)
 - `src/component/html/html-mapper.ts` — the pre-processing passes (post-02 versions)
-- `src/rss/rss-feed.ts` — `build()` loop over items; `removeHTMLTags` (sanitize-html call per description)
+- `src/rss/rss-feed.ts` — `build()` loop over items; `removeHTMLTags` (calls the internal `sanitizeHTML` in `src/component/html/sanitize-html.ts` per description — the npm `sanitize-html` package itself was removed in Section 1)
 - `src/support/feeds/forbes-large.rss` and the larger HTML fixtures — benchmark corpus
 - `vite.config.ts` — where a `bench` config would live
 

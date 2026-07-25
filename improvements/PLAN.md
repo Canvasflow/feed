@@ -20,7 +20,7 @@ self-service customer-facing project, so the two guiding goals are:
    never throw unexpectedly, never behave differently across environments, and
    keep a stable public API for its two consumers.
 
-## Current state (baseline)
+## Current state (original baseline, before Section 1)
 
 - 7 runtime dependencies: `fast-xml-parser`, `he`, `himalaya` (pinned `1.1.1`,
   unmaintained, hand-written type shim), `linkedom`, `luxon`, `sanitize-html`,
@@ -30,6 +30,15 @@ self-service customer-facing project, so the two guiding goals are:
   times per item.
 - Strong foundations already in place: 99/95 coverage thresholds, fuzz +
   snapshot tests, CI matrix (Node 20/22/24), conventional commits, wiki docs.
+
+**Since this baseline, Section 1 has completed** ([01-dependency-diet.md](01-dependency-diet.md)):
+`himalaya` and `sanitize-html` are removed; `linkedom` is now the single HTML
+parser end-to-end via the `src/component/html/parser.ts` adapter and the
+inline `src/component/html/sanitize-html.ts` serializer (ADR-0002, ADR-0004);
+`he` and `luxon` are kept but wrapped behind seams (ADR-0003, ADR-0005); `zod`
+is kept in full (ADR-0006). The pipeline is now **one parser, several parses**
+— collapsing it to **one parse** is the remaining work, tracked in
+[02-html-pipeline.md](02-html-pipeline.md).
 
 ## Sections (highest impact first)
 

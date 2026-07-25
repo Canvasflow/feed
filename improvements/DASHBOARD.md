@@ -19,7 +19,13 @@
 
 ---
 
-## Section 1 — Dependency Diet ([01-dependency-diet.md](01-dependency-diet.md))
+## Section 1 — Dependency Diet ✅ ([01-dependency-diet.md](01-dependency-diet.md))
+
+**Status: Complete** _(2026-07-24 — see the doc's own header)_. The decisions
+made differ from this checklist's original phrasing in two places (`he` and
+`luxon` were **kept, wrapped** behind seams, not removed — see below); the
+checklist text is corrected to match what was actually decided and verified
+against the repo on 2026-07-24.
 
 **Study**
 
@@ -30,38 +36,43 @@
 
 **Implementation**
 
-- [ ] Decision record (ADR) written for each of the 7 runtime dependencies
-- [ ] `luxon` removed — internal `parseFeedDate` in `src/rss/date.ts` with tests over fixture date formats + edge cases
-- [ ] `he` removed — entity decoding via the surviving parser + small util for plain-text fields; double-decode behavior decided deliberately
-- [ ] `himalaya` removed and `src/himalaya.d.ts` deleted (executed via Section 2)
-- [ ] `sanitize-html` removed — replaced by allow-list AST serialization (executed via Section 2)
-- [ ] `zod` migrated to `zod/mini` (or ADR justifying full zod); published `.d.mts` verified
-- [ ] CI guard: `dependencies` changes require an ADR in the same PR
-- [ ] Before/after install size, pack size, and dep count recorded in `01-dependency-diet.md`
-- [ ] All tests + differential snapshots pass with no unexplained changes
+- [x] Decision record (ADR) written for each of the 7 runtime dependencies _(ADR-0002 through ADR-0006 in `docs/adr/`; `fast-xml-parser`'s "keep" verdict is documented in the table in `01-dependency-diet.md` rather than a standalone ADR file)_
+- [x] `luxon` **kept, wrapped** — `parseDate()` in `src/utils/date.ts` (not `src/rss/date.ts`/`parseFeedDate` as originally planned), tested. See ADR-0005 for why removal was rejected.
+- [x] `he` **kept, wrapped** — `decodeEntities()` in `src/utils/entities.ts` (not `src/rss/entities.ts` as originally planned), covering the full HTML5 named-entity table. See ADR-0003 for why removal was rejected.
+- [x] `himalaya` removed and `src/himalaya.d.ts` deleted _(verified: file does not exist; `himalaya` absent from `package.json`)_
+- [x] `sanitize-html` removed — replaced by allow-list AST serialization in `src/component/html/sanitize-html.ts` _(verified: package absent from `package.json`)_
+- [x] `zod` **kept in full** (not migrated to `zod/mini`) per ADR-0006 — recursive/lazy schema risk + being the public type-derivation mechanism made the mechanical migration not worth it now
+- [ ] CI guard: `dependencies` changes require an ADR in the same PR _(not done — no CI workflow enforces this yet; only `publish.yml` exists, see Section 7)_
+- [ ] Before/after install size, pack size, and dep count recorded in `01-dependency-diet.md` _(baseline recorded; "after" numbers not yet captured)_
+- [x] All tests + differential snapshots pass with no unexplained changes _(661 tests pass; 4 fixture divergences from the parser swap documented in ADR-0004)_
 
 ## Section 2 — HTML Pipeline Unification ([02-html-pipeline.md](02-html-pipeline.md))
 
+> Partially done — the parser swap (himalaya/sanitize-html → linkedom)
+> shipped as part of Section 1 since the two efforts shared a seam. What's
+> left is collapsing the pipeline to one parse pass; see the doc's own
+> checklist for the verified detail, mirrored below.
+
 **Study**
 
-- [ ] Traced one fixture through the current `toComponents` gauntlet; every parse/serialize boundary documented
-- [ ] Parser bake-off harness run over fixture HTML (output diff + time/memory); results recorded
+- [x] Traced one fixture through the current `toComponents` gauntlet; every parse/serialize boundary documented _(see the Overview in `02-html-pipeline.md`, updated post-Section-1)_
+- [x] Parser bake-off harness run over fixture HTML (output diff + time/memory); results recorded _(ADR-0004)_
 - [ ] Read AST multi-pass transform material (Babel handbook transform chapter or equivalent)
 - [ ] Specced `serializeSanitized` semantics against the three sanitize-html policies in use
 
 **Implementation**
 
-- [ ] Parser ADR written (single parser chosen with data)
-- [ ] Adapter seam `src/component/html/parser.ts` (`parseHtml`/`serialize`); parser imports restricted to that module (lint rule)
-- [ ] `sanitizeInvalidAnchorHrefs` ported to a tree pass
-- [ ] Anchor-with-image hoisting ported to a tree pass
-- [ ] Paragraph/heading image-splitting ported to one generic tree pass
+- [x] Parser ADR written (single parser chosen with data) _(ADR-0004)_
+- [x] Adapter seam `src/component/html/parser.ts` (`parse`/`stringify`) _(no `no-restricted-imports` lint rule yet restricting `linkedom` imports to this module — `html-mapper.ts` also imports `linkedom` directly for DOM pre-processing)_
+- [ ] `sanitizeInvalidAnchorHrefs` ported to a tree pass _(still a separate `linkedom` `parseHTML`→mutate→`toString()` round trip)_
+- [ ] Anchor-with-image hoisting ported to a tree pass _(same — part of `preprocessHTML`'s `linkedom` DOM pass)_
+- [ ] Paragraph/heading image-splitting ported to one generic tree pass _(consolidated into one shared `linkedom` document pass in `preprocessHTML`, but still loops per tag and isn't on the internal `Node` AST)_
 - [ ] Breakline removal + empty-text normalization merged into a parse-time pass
-- [ ] Parser swapped inside the seam; himalaya + shim + exact pin deleted; snapshot diffs reconciled and recorded
-- [ ] `serializeSanitized` implemented over the `Node` AST; all ~22 `sanitizeNode`/`sanitizeContentHtml`/`processTextLinks` call sites migrated; `sanitize-html` dropped
-- [ ] `getRootElement` scoping works on the parsed tree (no stringify→re-parse in `buildItem`); quote-fix regex deleted
+- [x] Parser swapped inside the seam; himalaya + shim + exact pin deleted; snapshot diffs reconciled and recorded _(ADR-0004; done as part of Section 1)_
+- [ ] `serializeSanitized` implemented over the `Node` AST; all ~24 `sanitizeNode`/`sanitizeContentHtml`/`processTextLinks` call sites migrated; `sanitize-html` dropped _(`sanitize-html` the npm package is dropped, but the internal `sanitizeHTML()` is still string-in/string-out, so `sanitizeNode` still does `stringify()` → re-parse)_
+- [ ] `getRootElement` scoping works on the parsed tree (no stringify→re-parse in `buildItem`); quote-fix regex deleted _(regex still present at `html-mapper.ts:33-37`)_
 - [ ] In-place mutation removed (`getCredit`, `reduceEmptyTextNode`, `mapEmptyText`); referential-transparency test added
-- [ ] `toComponents` parses input exactly once (verified by construction/tests)
+- [ ] `toComponents` parses input exactly once (verified by construction/tests) _(currently 3 separate `linkedom` parses per call)_
 - [ ] Wiki updated (`HTML-Mapping.md`, `Architecture.md`)
 
 ## Section 3 — API Robustness & Error Model ([03-api-robustness.md](03-api-robustness.md))
