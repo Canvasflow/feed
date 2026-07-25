@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import he from 'he';
+import { decodeEntities } from './entities';
 import { XMLParser } from 'fast-xml-parser';
 import { parseHTML } from 'linkedom';
 
@@ -282,7 +282,7 @@ export class RSSFeed {
       }
     }
 
-    this.rss.channel.title = he.decode(title);
+    this.rss.channel.title = decodeEntities(title);
     if (this.rss.channel.title) {
       this.rss.channel.title = this.rss.channel.title.trim();
     }
@@ -295,7 +295,7 @@ export class RSSFeed {
     this.rss.channel.docs = docs;
     this.rss.channel.category = category;
     if (image?.title) {
-      image.title = he.decode(image.title);
+      image.title = decodeEntities(image.title);
     }
     this.rss.channel.image = image;
     this.rss.channel.ttl = ttl;
@@ -507,7 +507,7 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
       : '';
 
   const rawContent = `${contentEncoded}`;
-  contentEncoded = he.decode(rawContent);
+  contentEncoded = decodeEntities(rawContent);
   if (root && contentEncoded) {
     const rootElement = HTMLMapper.getRootElement(contentEncoded, root);
     if (rootElement) {
@@ -549,7 +549,7 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
 
   const response: Item = {
     guid,
-    title: title ? he.decode(title.trim()) : '',
+    title: title ? decodeEntities(title.trim()) : '',
     category: category
       .filter((i) => !!i)
       .map((c) => {
@@ -557,7 +557,7 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
         return c['#text'].trim();
       }),
     description: description
-      ? removeHTMLTags(he.decode(description))
+      ? removeHTMLTags(decodeEntities(description))
       : description,
     link,
     pubDate,
@@ -982,7 +982,7 @@ function isIterable(input: unknown): boolean {
  * @returns {string}
  */
 function removeHTMLTags(content: string): string {
-  return `${sanitizeHtml(he.decode(content), {
+  return `${sanitizeHtml(decodeEntities(content), {
     allowedTags: [], // Strips all HTML tags
     allowedAttributes: {}, // Strips all attributes
   })}`.trim();
