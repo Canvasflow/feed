@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { type Recipe, RecipeSchema } from './schema/recipe-schema';
+import { FeedIssueSchema, type FeedIssue } from '../feed-issue';
 
 export const MAX_TEXT = 60;
 
@@ -121,16 +122,18 @@ export const ComponentTypeSchema: z.ZodType<ComponentType> =
   );
 
 export type Component = {
-  id?: string;
+  id?: string | undefined;
   component: ComponentType;
-  properties?: Record<string, unknown>;
-  html?: string;
-  errors: string[];
-  warnings: string[];
-  element?: {
-    tag: string;
-    attributes?: Record<string, string>;
-  };
+  properties?: Record<string, unknown> | undefined;
+  html?: string | undefined;
+  errors: FeedIssue[];
+  warnings: FeedIssue[];
+  element?:
+    | {
+        tag: string;
+        attributes?: Record<string, string> | undefined;
+      }
+    | undefined;
 };
 
 // Kept as a ZodObject so .extend() works on all derived schemas below.
@@ -140,8 +143,8 @@ const baseComponentObject = z.object({
   component: ComponentTypeSchema,
   properties: z.record(z.string(), z.unknown()).optional(),
   html: z.string().optional(),
-  errors: z.array(z.string()),
-  warnings: z.array(z.string()),
+  errors: z.array(FeedIssueSchema),
+  warnings: z.array(FeedIssueSchema),
   element: z
     .object({
       tag: z.string(),
@@ -325,7 +328,7 @@ export const CustomComponentSchema = baseComponentObject.extend({
 // z.lazy() forces ZodType<T> annotation; .extend() is unavailable on ZodType,
 // so we spread baseComponentFields into z.object() instead.
 export const ContainerComponentSchema: z.ZodType<
-  Component & { type?: 'link' | 'figure'; components: Component[] }
+  Component & { type?: 'link' | 'figure' | undefined; components: Component[] }
 > = z.lazy(() =>
   z.object({
     ...baseComponentFields,
@@ -339,8 +342,8 @@ export const LinkContainerComponentSchema: z.ZodType<
   Component & {
     type: 'link';
     components: Component[];
-    link?: string;
-    attributes?: Map<string, string>;
+    link?: string | undefined;
+    attributes?: Map<string, string> | undefined;
   }
 > = z.lazy(() =>
   z.object({
@@ -360,8 +363,8 @@ export const FigureContainerComponentSchema: z.ZodType<
   Component & {
     type: 'figure';
     components: Component[];
-    caption?: string;
-    credit?: string;
+    caption?: string | undefined;
+    credit?: string | undefined;
   }
 > = z.lazy(() =>
   z.object({
@@ -405,7 +408,11 @@ export const ColumnsComponentSchema: z.ZodType<
 );
 
 export const RecipeComponentSchema: z.ZodType<
-  Component & { recipe?: Recipe; url?: string; components: Component[] }
+  Component & {
+    recipe?: Recipe | undefined;
+    url?: string | undefined;
+    components: Component[];
+  }
 > = z.lazy(() =>
   z.object({
     ...baseComponentFields,

@@ -3,8 +3,18 @@ import { test, expect, describe } from 'vite-plus/test';
 
 import { RSSFeed } from '../rss-feed';
 import type { Mapping } from '../../component/mapping/mapping';
+import type { FeedIssue } from '../../feed-issue';
 
 const tags = { tags: ['unit', 'rss'] };
+
+/**
+ * `true` when some issue in `issues` has exactly `message`. Test-only
+ * helper so assertions against `FeedIssue[]` read like the old
+ * `toContain('exact string')` checks against `string[]`.
+ */
+function hasMessage(issues: FeedIssue[], message: string): boolean {
+  return issues.some((issue) => issue.message === message);
+}
 
 const feedWith = (itemBody: string): string =>
   `<?xml version="1.0" encoding="UTF-8"?>
@@ -33,10 +43,13 @@ describe('RSSFeed build coverage', () => {
     );
     await feed.validate();
     const rss = await feed.build();
-    const item = rss.channel.items[0];
-    expect(item.warnings).toContain(
-      "Attributes are not allowed for the 'cf:isSponsored' property."
-    );
+    const item = rss.channel.items[0]!;
+    expect(
+      hasMessage(
+        item.warnings,
+        "Attributes are not allowed for the 'cf:isSponsored' property."
+      )
+    ).toBe(true);
   });
 
   test(
@@ -50,8 +63,8 @@ describe('RSSFeed build coverage', () => {
       );
       await feed.validate();
       const rss = await feed.build();
-      const item = rss.channel.items[0];
-      expect(item.mediaContent[0].isDefault).toBe(true);
+      const item = rss.channel.items[0]!;
+      expect(item.mediaContent[0]!.isDefault).toBe(true);
     }
   );
 
@@ -74,7 +87,7 @@ describe('RSSFeed build coverage', () => {
       const feed = new RSSFeed(raw);
       await feed.validate();
       const rss = await feed.build();
-      const item = rss.channel.items[0];
+      const item = rss.channel.items[0]!;
       expect(item.title).toBe('');
       expect(item.pubDate).toBeUndefined();
       expect(item['cf:thumbnail']?.url).toBe('https://example.com/thumb.jpg');
@@ -100,7 +113,7 @@ describe('RSSFeed build coverage', () => {
       feed.root = root;
       await feed.validate();
       const rss = await feed.build();
-      const item = rss.channel.items[0];
+      const item = rss.channel.items[0]!;
       expect(item['content:encoded']).toContain('<h1>Kept</h1>');
       expect(item['content:encoded']).not.toContain('skip');
     }

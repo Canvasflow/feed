@@ -5,6 +5,7 @@ import {
   textAllowedAttributes,
 } from './mapping.constants';
 import { sanitizeNodes } from '../html/sanitize-html';
+import { type FeedIssue } from '../../feed-issue';
 
 /**
  * Transform an html table component to Canvasflow HTMLTable Component
@@ -13,8 +14,8 @@ import { sanitizeNodes } from '../html/sanitize-html';
  * @returns {HTMLTableComponent}
  */
 export function toHTMLTable(node: ElementNode): HTMLTableComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
 
   const attributes = getAttributes(node.attributes);
 

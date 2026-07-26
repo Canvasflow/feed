@@ -280,11 +280,11 @@ describe('Image component', () => {
       const content = `<p>Hello <img src="a.jpg"> world <img src="b.jpg">!</p>`;
       const components = HTMLMapper.toComponents(content);
       expect(components.length).toBe(5);
-      expect(components[0].component).toBe('body');
-      expect(components[1].component).toBe('image');
-      expect(components[2].component).toBe('body');
-      expect(components[3].component).toBe('image');
-      expect(components[4].component).toBe('body');
+      expect(components[0]!.component).toBe('body');
+      expect(components[1]!.component).toBe('image');
+      expect(components[2]!.component).toBe('body');
+      expect(components[3]!.component).toBe('image');
+      expect(components[4]!.component).toBe('body');
     }
   );
 
@@ -297,7 +297,7 @@ describe('Image component', () => {
         const content = `<${header}><img decoding="async" class="alignnone size-full wp-image-1470895" src="https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-scaled.jpg" alt="Audi F1 2026 car livery with ring background" width="2560" height="1440" srcset="https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-scaled.jpg 2560w, https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-1024x576.jpg 1024w, https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-768x432.jpg 768w, https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-450x253.jpg 450w, https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-818x460.jpg 818w" sizes="(max-width: 2560px) 100vw, 2560px"></${header}>`;
         const components = HTMLMapper.toComponents(content);
         expect(components.length).toBe(1);
-        expect(components[0].component).toBe('image');
+        expect(components[0]!.component).toBe('image');
         const component = components.pop() as ImageComponent;
         expect(component.imageurl).toBe(
           'https://www.motorsportmagazine.com/wp-content/uploads/2025/11/Audi-F1-2026-car-livery-with-ring-background-scaled.jpg'

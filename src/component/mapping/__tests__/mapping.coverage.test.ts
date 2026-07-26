@@ -34,8 +34,18 @@ import {
   isButtonComponent,
 } from '../../component';
 import type { ElementNode } from '../../node/node-helpers';
+import type { FeedIssue } from '../../../feed-issue';
 
 const tags = { tags: ['unit', 'html'] };
+
+/**
+ * `true` when some issue in `issues` has exactly `message`. Test-only
+ * helper so assertions against `FeedIssue[]` read like the old
+ * `toContain('exact string')` checks against `string[]`.
+ */
+function hasMessage(issues: FeedIssue[], message: string): boolean {
+  return issues.some((issue) => issue.message === message);
+}
 
 describe('Embed URL builders', () => {
   test('toTikTok parses a valid video URL', tags, () => {
@@ -49,7 +59,7 @@ describe('Embed URL builders', () => {
 
   test('toTikTok rejects an invalid video URL', tags, () => {
     const c = toTikTok(new URL('https://www.tiktok.com/@someuser'));
-    expect(c.errors).toContain('Invalid TikTok video URL format.');
+    expect(hasMessage(c.errors, 'Invalid TikTok video URL format.')).toBe(true);
   });
 
   test('toInfogram extracts parent_url when present', tags, () => {
@@ -67,12 +77,14 @@ describe('Embed URL builders', () => {
 
   test('toYoutube rejects a non-youtube URL', tags, () => {
     const c = toYoutube(new URL('https://example.com/watchme'));
-    expect(c.errors).toContain('Invalid Youtube video URL format.');
+    expect(hasMessage(c.errors, 'Invalid Youtube video URL format.')).toBe(
+      true
+    );
   });
 
   test('toYoutube rejects an invalid video id', tags, () => {
     const c = toYoutube(new URL('https://youtu.be/short'));
-    expect(c.errors).toContain('Invalid YouTube video ID.');
+    expect(hasMessage(c.errors, 'Invalid YouTube video ID.')).toBe(true);
   });
 
   test('toVimeo accepts a valid vimeo URL', tags, () => {
@@ -109,7 +121,7 @@ describe('Button builder edge cases', () => {
 
   test('toButton flags an invalid implementation', tags, () => {
     const c = toButton(el('div'));
-    expect(c.errors).toContain('invalid button implementation');
+    expect(hasMessage(c.errors, 'invalid button implementation')).toBe(true);
   });
 
   test('toButton flags a button>a without text', tags, () => {
@@ -117,14 +129,16 @@ describe('Button builder edge cases', () => {
       el('a', [], [{ key: 'href', value: 'https://example.com' }]),
     ]);
     const c = toButton(node);
-    expect(c.errors).toContain('Button text is required');
+    expect(hasMessage(c.errors, 'Button text is required')).toBe(true);
     expect(c.link).toBe('https://example.com');
   });
 
   test('toButton flags a button>a without href', tags, () => {
     const node = el('button', [el('a', [text('Click')])]);
     const c = toButton(node);
-    expect(c.errors).toContain('href attribute is required in a button link');
+    expect(
+      hasMessage(c.errors, 'href attribute is required in a button link')
+    ).toBe(true);
   });
 
   test('toButton warns when a bare button has no link', tags, () => {
@@ -141,13 +155,13 @@ describe('Button builder edge cases', () => {
       [{ key: 'href', value: 'https://example.com' }]
     );
     const c = toAnchorButton(node);
-    expect(c.errors).toContain('Button text is required');
+    expect(hasMessage(c.errors, 'Button text is required')).toBe(true);
   });
 
   test('toAnchorButton flags a missing link', tags, () => {
     const node = el('a', [el('button', [text('Go')])]);
     const c = toAnchorButton(node);
-    expect(c.errors).toContain('Button link is required');
+    expect(hasMessage(c.errors, 'Button link is required')).toBe(true);
   });
 });
 
@@ -172,7 +186,9 @@ describe('Container/columns/live empty paths', () => {
     ];
     const content = `<article><div class="cmc-columns">no columns here</div></article>`;
     const [component] = HTMLMapper.toComponents(content, { mappings });
-    expect(component.errors).toContain('HTML node do not have children');
+    expect(
+      hasMessage(component!.errors, 'HTML node do not have children')
+    ).toBe(true);
   });
 
   test('live container mapping with no posts records an error', tags, () => {
@@ -189,7 +205,9 @@ describe('Container/columns/live empty paths', () => {
     ];
     const content = `<article><div class="live-container">no posts</div></article>`;
     const [component] = HTMLMapper.toComponents(content, { mappings });
-    expect(component.errors).toContain('HTML node do not have children');
+    expect(
+      hasMessage(component!.errors, 'HTML node do not have children')
+    ).toBe(true);
   });
 
   test('live post with no components records an error', tags, () => {
@@ -207,9 +225,11 @@ describe('Container/columns/live empty paths', () => {
     const content = `<article><div class="live-container"><div class="cmc-post"></div></div></article>`;
     const [component] = HTMLMapper.toComponents(content, { mappings });
     const live = component as unknown as {
-      posts: Array<{ errors: string[] }>;
+      posts: Array<{ errors: FeedIssue[] }>;
     };
-    expect(live.posts[0].errors).toContain('post do not have components');
+    expect(
+      hasMessage(live.posts[0]!.errors, 'post do not have components')
+    ).toBe(true);
   });
 
   test('container mapping still builds with only text content', tags, () => {
@@ -235,32 +255,37 @@ describe('Container/columns/live empty paths', () => {
     const content = `<div class="gal"><div class="slide"><h2>not an image</h2></div></div>`;
     const [component] = HTMLMapper.toComponents(content, { mappings });
     const gallery = component as GalleryComponent;
-    expect(gallery.errors).toContain('slides not found in the gallery');
+    expect(hasMessage(gallery.errors, 'slides not found in the gallery')).toBe(
+      true
+    );
   });
 });
 
 describe('Media error paths', () => {
   test('picture without an img src records an error', tags, () => {
     const [c] = HTMLMapper.toComponents(`<picture><img alt="x" /></picture>`);
-    expect((c as ImageComponent).errors).toContain(
-      'Image src attribute is missing'
-    );
+    expect(
+      hasMessage((c as ImageComponent).errors, 'Image src attribute is missing')
+    ).toBe(true);
   });
 
   test('picture with multiple imgs warns', tags, () => {
     const [c] = HTMLMapper.toComponents(
       `<picture><img src="a.jpg" /><img src="b.jpg" /></picture>`
     );
-    expect((c as ImageComponent).warnings).toContain(
-      'Only one img tag per picture tag is valid'
-    );
+    expect(
+      hasMessage(
+        (c as ImageComponent).warnings,
+        'Only one img tag per picture tag is valid'
+      )
+    ).toBe(true);
   });
 
   test('figure img without src records an error', tags, () => {
     const [c] = HTMLMapper.toComponents(`<figure><img alt="x" /></figure>`);
-    expect((c as ImageComponent).errors).toContain(
-      'Image src attribute is missing'
-    );
+    expect(
+      hasMessage((c as ImageComponent).errors, 'Image src attribute is missing')
+    ).toBe(true);
   });
 
   test('figure img width/height attributes are parsed', tags, () => {
@@ -276,9 +301,9 @@ describe('Media error paths', () => {
     const [c] = HTMLMapper.toComponents(
       `<a href="https://example.com"><img alt="x" /></a>`
     );
-    expect((c as ImageComponent).errors).toContain(
-      'Image src attribute is missing'
-    );
+    expect(
+      hasMessage((c as ImageComponent).errors, 'Image src attribute is missing')
+    ).toBe(true);
   });
 
   test('video without a source records an error', tags, () => {
@@ -447,9 +472,9 @@ describe('Media direct-call error paths', () => {
       el('picture', [el('img', [], [{ key: 'src', value: 'b.jpg' }])]),
     ]);
     const c = toImage(node) as ImageComponent;
-    expect(c.warnings).toContain(
-      'Only one picture tag per figure tag is valid'
-    );
+    expect(
+      hasMessage(c.warnings, 'Only one picture tag per figure tag is valid')
+    ).toBe(true);
   });
 
   test(
@@ -464,7 +489,7 @@ describe('Media direct-call error paths', () => {
         ),
       ]);
       const c = toImage(node) as ImageComponent;
-      expect(c.errors).toContain('Image src attribute is missing');
+      expect(hasMessage(c.errors, 'Image src attribute is missing')).toBe(true);
     }
   );
 
@@ -473,13 +498,13 @@ describe('Media direct-call error paths', () => {
       el('a', [el('img', [], [{ key: 'src', value: 'a.jpg' }])]),
     ]);
     const c = toImage(node) as ImageComponent;
-    expect(c.warnings).toContain('Image link is empty');
+    expect(hasMessage(c.warnings, 'Image link is empty')).toBe(true);
   });
 
   test('toApplePodcast without src records an error', tags, () => {
     const node = el('iframe');
     const c = toApplePodcast(node);
-    expect(c.errors).toContain('src is required');
+    expect(hasMessage(c.errors, 'src is required')).toBe(true);
   });
 
   test(

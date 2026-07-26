@@ -312,7 +312,8 @@ function isAllowedScheme(value: string): boolean {
   }
   const match = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(trimmed);
   if (!match) return true;
-  return DEFAULT_ALLOWED_SCHEMES.has(match[1].toLowerCase());
+  // Group 1 is a mandatory capture — always defined on a successful match.
+  return DEFAULT_ALLOWED_SCHEMES.has(match[1]!.toLowerCase());
 }
 
 function escapeSanitizedText(value: string): string {

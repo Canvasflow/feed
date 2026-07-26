@@ -72,7 +72,9 @@ against the repo on 2026-07-24.
 - [x] `toComponents` parses input exactly once (verified by construction) _(`parse(html)` is the single call; three tree passes run on the resulting `Node[]`; commit `eed7e4e`)_
 - [x] Wiki updated (`HTML-Mapping.md`, `Architecture.md`) _(pipeline steps updated to reflect single-parse, pure tree-pass architecture and the `root?` parameter on `toComponents`)_
 
-## Section 3 — API Robustness & Error Model ([03-api-robustness.md](03-api-robustness.md))
+## Section 3 — API Robustness & Error Model ✅ ([03-api-robustness.md](03-api-robustness.md))
+
+> **Status: Complete** _(2026-07-25)_. All Implementation items verified against the repo — full test suite green (962 passed, 6 skipped), `tsc --noEmit` clean, `vp lint` clean. The 3 remaining Study items (consumer audit, "Parse, don't validate" reading, error taxonomy write-up) are documentation/reading tasks, not code-verifiable — left for human confirmation per this file's own rules.
 
 **Study**
 
@@ -85,12 +87,12 @@ against the repo on 2026-07-24.
 
 - [x] Constructor never throws on malformed XML (captured as parse-error issue) _(`this.rss` initialised before `XMLParser.parse`; parse wrapped in `try/catch`; error stored in both `feed.errors` and `rss.errors` as `"XML parse error: …"`; 8 new tests in `rss-feed.test.ts` pass)_
 - [x] `build()` never throws _(`URL.canParse` guard on the channel link, plus every other unguarded `new URL(...)` reachable through `content:encoded`: `fromIframe` + its 5 searchParams branches, TikTok `cite`, `toYoutubeFromAnchor`, `mapMediaContent`'s relative-URL resolution — see ADR-0007's Resolution section. `parseInt`/date audits remain open as a separate correctness item — they don't throw, so were out of scope here.)_
-- [ ] `FeedIssue { code, severity, message, path? }` type introduced; `errors`/`warnings` migrated; zod issues converted (no raw `unknown` in `rss.errors`) _(Partially done by deliberate scope choice: the type exists and is used at the `params`/`root` boundary — `RSSFeed.validateParams` returns `FeedIssue[]`, `RSS.errors` is now `Array<string \| FeedIssue>` instead of `Array<unknown>`. Every other `errors`/`warnings: string[]` across RSS/channel/item and the mapping components is untouched — that's a major-version, high-blast-radius migration deferred on purpose, not silently skipped. See ADR-0008 for the plan to bundle it with the sync conversion.)_
+- [x] `FeedIssue { code, severity, message, path? }` type introduced; `errors`/`warnings` migrated; zod issues converted (no raw `unknown` in `rss.errors`) _(Full migration: `src/feed-issue.ts` defines `FeedIssue`/`FeedIssueCode` (~35 stable codes)/`FeedIssueSeverity` standalone to avoid a circular import, exported from `@canvasflow/feed`. Every `errors`/`warnings: string[]` in `rss-types.ts` (`RSS`, `Channel`, `Item`, `Enclosure`, `MediaGroup`, `MediaContent`) and `component.ts` (the shared `Component` base, so every derived component type inherits it) is now `FeedIssue[]`. `RSSFeed.validateParams` returns `FeedIssue[]` instead of raw `ZodIssue[]` blobs. ~30 fixture snapshots regenerated; diffed via `git diff` to confirm only the error/warning shape changed, no content/count regressions.)_
 - [x] Single, documented behavior for invalid `params` (no silent drop) _(constructor always stores `params` as given; `build()` is the one place that validates and reports them. Previously the constructor's `isValidParams` guard meant invalid params never reached `build()`'s validation at all — a real bug, not just a documented inconsistency. Test: "invalid params passed to the constructor are reported by build(), not silently dropped".)_
 - [x] `validate()`/`build()` sync (or ADR for async); `validate()` no longer mutates `this.data`; idempotent _(ADR-0008 justifies keeping async pending a consumer audit. `validateRSS`/`validateChannel`/`validateItem` no longer `delete` keys from parsed input. `validate()` resets its `rss`/`channel` error/warning accumulators at the top of the method — removing the `delete`-based dedup exposed a real duplicate-warning bug on repeated `validate()` calls, fixed by this explicit reset. Regression test added.)_
 - [x] Network I/O extracted from `RSSFeed` (injected fetch, timeout, status check, body cap; JSON-LD `JSON.parse` guarded) _(New `src/rss/recipe.ts`, exported from the package root; `RSSFeed.getRecipeFromUrl`/`getHtmlContent` are now thin `@deprecated` wrappers. `AbortSignal.timeout` default 10s, `response.ok` check, streamed body-size cap default 5MB, JSON-LD parse wrapped in try/catch. 8 new tests in `recipe.test.ts`.)_
 - [x] No-throw property tests passing (arbitrary strings + params) _(`src/rss/__tests__/rss-feed.fuzz.test.ts`: 267 tests — 17 hand-picked edge cases (including every throw site fixed above), 150 seeded-random XML-ish strings, 100 seeded-random `params`-shaped values — driven through the full constructor → `validate()` → `build()` lifecycle. All pass.)_
-- [ ] Wiki API reference documents the contract; migration guide in CHANGELOG for the major _(not done — only the `validateParams` signature line in `API-Reference.md` was touched, as a side effect of its return type changing)_
+- [x] Wiki API reference documents the contract; migration guide in CHANGELOG for the major _(`API-Reference.md` gained "No-throw contract", "Error model: FeedIssue", and lifecycle sections, plus a documented `src/rss/recipe.ts` network I/O table. `CHANGELOG.md` has a full migration guide with before/after code samples for the `string[]` → `FeedIssue[]` change.)_
 
 ## Section 4 — Type Safety & TS Library Practices ([04-type-safety.md](04-type-safety.md))
 
@@ -103,14 +105,14 @@ against the repo on 2026-07-24.
 
 **Implementation**
 
-- [ ] Both compiler flags enabled in `tsconfig.json`; code compiles
-- [ ] `fast-xml-parser` configured with `isArray` for item/enclosure/media/category/creator; "maybe array" coercions deleted
-- [ ] `src/rss/narrow.ts` boundary helpers; zero `as` casts outside the boundary module and tests
-- [ ] Validators/builders take readonly inputs; no `delete`/reassignment of parsed data
-- [ ] `getMappingComponent` returns a discriminated union; downstream casts in `fromNode` removed; `satisfies` on mapping tables
-- [ ] `src/index.ts` uses explicit named exports (public surface decided export-by-export)
-- [ ] API surface guard in CI (api-extractor report or expect-type tests)
-- [ ] JSDoc pass: redundant `{type}` annotations removed, prose kept accurate
+- [x] Both compiler flags enabled in `tsconfig.json`; code compiles _(`noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` both `true`. 202 resulting compile errors fixed across the whole codebase — see `04-type-safety.md` for the breakdown. `tsc --noEmit`, `vp lint`, and the full test suite (965 passed, 6 skipped) all green.)_
+- [ ] `fast-xml-parser` configured with `isArray` for item/enclosure/media/category/creator; "maybe array" coercions deleted _(not started — the "maybe array" ternaries in `getEnclosure`/`getMediaGroup`/`getMediaContent` still exist, just no longer mutate `item` to do it)_
+- [ ] `src/rss/narrow.ts` boundary helpers; zero `as` casts outside the boundary module and tests _(not started)_
+- [x] Validators/builders take readonly inputs; no `delete`/reassignment of parsed data _(partially, and verified: `getEnclosure`/`getMediaGroup` no longer reassign `item.enclosure`/`item['media:group']`; the `dc:creator` array-join no longer reassigns `item['dc:creator']`; `getCredit`/`fromFigcaption` were already non-mutating from Section 2. 3 new mutation-guard tests in `build-item.test.ts`. `validateItem` still writes `item.errors`/`item.warnings` onto the shared `ParsedItem` as intentional hand-off plumbing to `buildItem` — a real, understood mutation left as a deliberate tradeoff, not fixed.)_
+- [ ] `getMappingComponent` returns a discriminated union; downstream casts in `fromNode` removed; `satisfies` on mapping tables _(not started)_
+- [ ] `src/index.ts` uses explicit named exports (public surface decided export-by-export) _(not started — still 5 `export *` statements)_
+- [ ] API surface guard in CI (api-extractor report or expect-type tests) _(not started)_
+- [ ] JSDoc pass: redundant `{type}` annotations removed, prose kept accurate _(not started)_
 
 ## Section 5 — Performance & Memory ([05-performance.md](05-performance.md))
 

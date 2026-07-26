@@ -1,128 +1,114 @@
 import type { Component } from '../component/component';
+import type {
+  FeedIssue,
+  FeedIssueCode,
+  FeedIssueSeverity,
+} from '../feed-issue';
 
-/**
- * Stable, switchable codes for structured feed/config issues. Currently only
- * emitted at the `params`/`root` (Zod) validation boundary in
- * `RSSFeed.validateParams`; the rest of `errors`/`warnings` across this module
- * remain plain strings pending the full migration tracked in
- * improvements/03-api-robustness.md.
- */
-export type FeedIssueCode = 'invalid-params' | 'invalid-root-mapping';
-
-export type FeedIssueSeverity = 'error' | 'warning';
-
-export interface FeedIssue {
-  code: FeedIssueCode;
-  severity: FeedIssueSeverity;
-  message: string;
-  path?: string;
-}
+export type { FeedIssue, FeedIssueCode, FeedIssueSeverity };
 
 export interface RSS {
-  modules?: string[];
+  modules?: string[] | undefined;
   channel: Channel;
-  /**
-   * Mixed transitional shape: plain strings from XML/tag validation, plus
-   * structured `FeedIssue`s from `params`/`root` validation. See
-   * `FeedIssueCode` for why this isn't fully typed yet.
-   */
-  errors: Array<string | FeedIssue>;
-  warnings: string[];
+  errors: FeedIssue[];
+  warnings: FeedIssue[];
 }
 
 export interface Channel {
-  title?: string;
-  link?: string;
-  description?: string;
-  language?: string;
-  generator?: string;
-  lastBuildDate?: string;
-  docs?: string;
-  image?: ChannelImage;
-  pubDate?: string;
-  category?: string[];
+  title?: string | undefined;
+  link?: string | undefined;
+  description?: string | undefined;
+  language?: string | undefined;
+  generator?: string | undefined;
+  lastBuildDate?: string | undefined;
+  docs?: string | undefined;
+  image?: ChannelImage | undefined;
+  pubDate?: string | undefined;
+  category?: string[] | undefined;
   items: Item[];
-  ttl?: number;
-  errors: string[];
-  warnings: string[];
+  ttl?: number | undefined;
+  errors: FeedIssue[];
+  warnings: FeedIssue[];
   'atom:link'?: {
-    href?: string;
-    rel?: string;
-    type?: string;
+    href?: string | undefined;
+    rel?: string | undefined;
+    type?: string | undefined;
   };
-  'sy:updatePeriod'?: string;
+  'sy:updatePeriod'?: string | undefined;
   // `build()` normalises this to a number via parseInt when present, but the
   // untouched raw value flows through otherwise, so both shapes are valid.
-  'sy:updateFrequency'?: string | number;
-  'sy:updateBase'?: string;
+  'sy:updateFrequency'?: string | number | undefined;
+  'sy:updateBase'?: string | undefined;
 }
 
 export interface ChannelImage {
-  height?: number;
-  width?: number;
-  link?: string;
-  title?: string;
-  url?: string;
+  height?: number | undefined;
+  width?: number | undefined;
+  link?: string | undefined;
+  title?: string | undefined;
+  url?: string | undefined;
 }
 
 export interface Item {
-  guid?: string;
-  title?: string;
-  category?: string[];
-  link?: string;
-  description?: string;
+  guid?: string | undefined;
+  title?: string | undefined;
+  category?: string[] | undefined;
+  link?: string | undefined;
+  description?: string | undefined;
   enclosure: Enclosure[];
   mediaGroup: MediaGroup[];
   mediaContent: MediaContent[];
-  pubDate?: string;
-  errors: string[];
-  warnings: string[];
+  pubDate?: string | undefined;
+  errors: FeedIssue[];
+  warnings: FeedIssue[];
   components: Component[];
-  'content:encoded'?: string;
-  'cf:hasAffiliateLinks'?: boolean;
-  'cf:isSponsored'?: boolean;
-  'cf:isPaid'?: boolean;
-  'cf:liveCoverageState'?: null | 'live' | 'completed';
-  'cf:thumbnail'?: Thumbnail;
-  'dc:creator'?: string;
-  'dc:date'?: string;
-  'dc:language'?: string;
-  'dcterms:modified'?: string;
-  'atom:updated'?: string;
-  'atom:author'?: {
-    'atom:name'?: string;
-    'atom:uri'?: string;
-    'atom:email'?: string;
-  };
+  'content:encoded'?: string | undefined;
+  'cf:hasAffiliateLinks'?: boolean | undefined;
+  'cf:isSponsored'?: boolean | undefined;
+  'cf:isPaid'?: boolean | undefined;
+  'cf:liveCoverageState'?: null | 'live' | 'completed' | undefined;
+  'cf:thumbnail'?: Thumbnail | undefined;
+  'dc:creator'?: string | undefined;
+  'dc:date'?: string | undefined;
+  'dc:language'?: string | undefined;
+  'dcterms:modified'?: string | undefined;
+  'atom:updated'?: string | undefined;
+  'atom:author'?:
+    | {
+        'atom:name'?: string | undefined;
+        'atom:uri'?: string | undefined;
+        'atom:email'?: string | undefined;
+      }
+    | undefined;
 }
 
 export interface Thumbnail {
   url: string;
-  width?: number;
-  height?: number;
-  type?: string;
-  fileSize?: number;
+  width?: number | undefined;
+  height?: number | undefined;
+  type?: string | undefined;
+  fileSize?: number | undefined;
 }
 
 export interface Enclosure {
   length: number;
   type: string;
   url: string;
-  errors: string[];
-  warnings: string[];
+  errors: FeedIssue[];
+  warnings: FeedIssue[];
 }
 
 export interface MediaGroup {
-  title?: string;
-  mediaContent?: MediaContent[];
+  title?: string | undefined;
+  mediaContent?: MediaContent[] | undefined;
   /**
    * Array of errors from the media content
    */
-  errors: string[];
+  errors: FeedIssue[];
   /**
    * Array of warnings from the media content
    */
-  warnings: string[];
+  warnings: FeedIssue[];
 }
 
 /**
@@ -153,44 +139,44 @@ export interface MediaContent {
   /**
    * Number of bytes of the media object. (Optional)
    */
-  fileSize?: number;
+  fileSize?: number | undefined;
   /**
    * Is the standard MIME type of the object. (Optional)
    */
-  type?: string;
+  type?: string | undefined;
   /**
    * Is the type of object. (Optional)
    */
-  medium?: 'image' | 'audio' | 'video' | 'document' | 'executable';
+  medium?: 'image' | 'audio' | 'video' | 'document' | 'executable' | undefined;
   /**
    * Determines if this is the default object that should be
    * used for the <media:group>. (Optional)
    */
-  isDefault?: boolean;
+  isDefault?: boolean | undefined;
   /**
    * The title of the particular media object. (Optional)
    */
-  title?: string;
+  title?: string | undefined;
   /**
    * Short description describing the media object typically a sentence in length
    */
-  description?: string;
+  description?: string | undefined;
   /**
    * Allows particular images to be used as representative images
    * for the media object. (Optional)
    */
-  thumbnail?: string;
+  thumbnail?: string | undefined;
   /**
    * Notable entity and the contribution to the creation of the
    * media object. (Optional)
    */
-  credit?: string;
+  credit?: string | undefined;
   /**
    * Array of errors from the media content
    */
-  errors: string[];
+  errors: FeedIssue[];
   /**
    * Array of warnings from the media content
    */
-  warnings: string[];
+  warnings: FeedIssue[];
 }

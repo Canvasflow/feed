@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { TextTypeSchema } from '../component';
+import { FeedIssueSchema } from '../../feed-issue';
 
 // Primitives
 export const MatchTypeSchema = z.enum(['any', 'all']);
@@ -127,8 +128,8 @@ export const LinkResponseSchema = z.object({
   link: z.string(),
   imageurl: z.string(),
   alt: z.string(),
-  warnings: z.array(z.string()),
-  errors: z.array(z.string()),
+  warnings: z.array(FeedIssueSchema),
+  errors: z.array(FeedIssueSchema),
   width: z.number().optional(),
   height: z.number().optional(),
 });

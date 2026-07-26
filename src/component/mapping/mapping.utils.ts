@@ -231,8 +231,8 @@ export function collapseAsciiWhitespace(value: string): string {
 }
 
 export interface FigcaptionResponse {
-  caption?: string;
-  credit?: string;
+  caption?: string | undefined;
+  credit?: string | undefined;
 }
 
 // Cache the Set for each filter object so it is built at most once per

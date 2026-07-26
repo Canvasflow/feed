@@ -249,7 +249,8 @@ function sanitizeNodeHref(node: Node): Node {
 
   if (node.tagName === 'a' && attributes) {
     const hrefIdx = attributes.findIndex((a: Attribute) => a.key === 'href');
-    if (hrefIdx !== -1 && !isValidHref(attributes[hrefIdx].value)) {
+    // hrefIdx !== -1 guarantees attributes[hrefIdx] exists.
+    if (hrefIdx !== -1 && !isValidHref(attributes[hrefIdx]!.value)) {
       attributes = [...attributes];
       attributes[hrefIdx] = { key: 'href', value: '#' };
     }

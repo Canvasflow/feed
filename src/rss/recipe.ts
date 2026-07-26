@@ -13,12 +13,12 @@ import type { Recipe } from '../component/schema/recipe-schema';
  */
 export interface FetchOptions {
   /** Defaults to `globalThis.fetch`, resolved at call time. */
-  fetch?: typeof fetch;
-  headers?: HeadersInit;
+  fetch?: typeof fetch | undefined;
+  headers?: HeadersInit | undefined;
   /** Abort the request after this many milliseconds. Default: 10s. */
-  timeoutMs?: number;
+  timeoutMs?: number | undefined;
   /** Reject once the response body exceeds this many bytes. Default: 5MB. */
-  maxBytes?: number;
+  maxBytes?: number | undefined;
 }
 
 const DEFAULT_TIMEOUT_MS = 10_000;
@@ -45,7 +45,7 @@ export async function getHtmlContent(
 
   const response = await fetchImpl(url, {
     method: 'GET',
-    headers,
+    ...(headers ? { headers } : {}),
     signal: AbortSignal.timeout(timeoutMs),
   });
 

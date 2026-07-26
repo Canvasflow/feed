@@ -13,6 +13,7 @@ import {
   getAttributes,
 } from '../node/node-helpers';
 import { sanitizeContentHtml, isYoutubeUrl } from './mapping.utils';
+import { type FeedIssue, errorIssue } from '../../feed-issue';
 
 /**
  * Transform an html component to Canvasflow Instagram Component
@@ -21,8 +22,8 @@ import { sanitizeContentHtml, isYoutubeUrl } from './mapping.utils';
  * @returns {InstagramComponent}
  */
 export function toInstagram(node: ElementNode): InstagramComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   const component: InstagramComponent = {
     id: '',
     component: 'instagram',
@@ -42,7 +43,7 @@ export function toInstagram(node: ElementNode): InstagramComponent {
     attributes.get('data-instgrm-permalink') || getLegacyInstagramUrl(node);
 
   if (!url) {
-    errors.push('URL not found on node');
+    errors.push(errorIssue('MISSING_INSTAGRAM_URL', 'URL not found on node'));
     component.errors = errors;
     return component;
   }
@@ -53,14 +54,22 @@ export function toInstagram(node: ElementNode): InstagramComponent {
     const type = splitUrl[1] ? splitUrl[1].toLowerCase() : 'post';
 
     if (!splitUrl[1]) {
-      errors.push('URL does not contain a type.');
+      errors.push(
+        errorIssue(
+          'INVALID_INSTAGRAM_URL',
+          'URL does not contain a type.',
+          'type'
+        )
+      );
     }
 
     if (!splitUrl[2]) {
-      errors.push('URL does not contain an ID.');
+      errors.push(
+        errorIssue('INVALID_INSTAGRAM_URL', 'URL does not contain an ID.', 'id')
+      );
     }
 
-    component.id = splitUrl[2];
+    component.id = splitUrl[2] ?? '';
 
     switch (type) {
       case 'p':
@@ -73,7 +82,9 @@ export function toInstagram(node: ElementNode): InstagramComponent {
     }
   } catch (e: unknown) {
     const err = e as { message?: unknown; input?: unknown };
-    errors.push(`${err.message}: "${err.input}"`);
+    errors.push(
+      errorIssue('INVALID_INSTAGRAM_URL', `${err.message}: "${err.input}"`)
+    );
   }
 
   component.errors = errors;
@@ -126,8 +137,8 @@ function filterInstagramAnchor(node: Node): boolean {
  * @returns {TikTokComponent}
  */
 export function toTikTok(url: URL): TikTokComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
 
   const params = {
     username: '',
@@ -144,7 +155,9 @@ export function toTikTok(url: URL): TikTokComponent {
     params.username = match[1] || '';
     params.id = match[2] || '';
   } else {
-    errors.push('Invalid TikTok video URL format.');
+    errors.push(
+      errorIssue('INVALID_TIKTOK_URL', 'Invalid TikTok video URL format.')
+    );
   }
   const component: TikTokComponent = {
     component: 'video',
@@ -163,8 +176,8 @@ export function toTikTok(url: URL): TikTokComponent {
  * @returns {InfogramComponent}
  */
 export function toInfogram(url: URL): InfogramComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
 
   return {
     component: 'infogram',
@@ -185,14 +198,19 @@ export function toInfogram(url: URL): InfogramComponent {
  * @returns {DailymotionComponent}
  */
 export function toDailymotion(url: URL): DailymotionComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
 
   const regExp =
     /(?:dailymotion\.com\/(?:video|hub)|dai\.ly)\/([0-9a-z]+)(?:[-_0-9a-zA-Z]+#video=([a-z0-9]+))?/;
 
   if (!regExp.test(url.href)) {
-    errors.push('Invalid  Dailymotion video URL format.');
+    errors.push(
+      errorIssue(
+        'INVALID_DAILYMOTION_URL',
+        'Invalid  Dailymotion video URL format.'
+      )
+    );
   }
 
   const id = url.pathname.split('/').pop() as string;
@@ -224,7 +242,12 @@ export function toYoutubeFromAnchor(node: ElementNode): YoutubeComponent {
         component: 'video',
         vidtype: 'youtube',
         params: { id: '' },
-        errors: [`Invalid Youtube video URL: "${url}"`],
+        errors: [
+          errorIssue(
+            'INVALID_YOUTUBE_URL',
+            `Invalid Youtube video URL: "${url}"`
+          ),
+        ],
         warnings: [],
       };
   component.element = {
@@ -243,17 +266,19 @@ export function toYoutubeFromAnchor(node: ElementNode): YoutubeComponent {
  * @returns {YoutubeComponent}
  */
 export function toYoutube(url: URL): YoutubeComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
 
   if (!isYoutubeUrl(url.href)) {
-    errors.push('Invalid Youtube video URL format.');
+    errors.push(
+      errorIssue('INVALID_YOUTUBE_URL', 'Invalid Youtube video URL format.')
+    );
   }
 
   const id = url.pathname.split('/').pop() as string;
 
   if (!/^[a-zA-Z0-9_-]{11}$/.test(id)) {
-    errors.push('Invalid YouTube video ID.');
+    errors.push(errorIssue('INVALID_YOUTUBE_ID', 'Invalid YouTube video ID.'));
   }
 
   return {
@@ -274,11 +299,13 @@ export function toYoutube(url: URL): YoutubeComponent {
  * @returns {VimeoComponent}
  */
 export function toVimeo(url: URL): VimeoComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
 
   if (!url.toString().startsWith('https://vimeo.com')) {
-    errors.push('Invalid  Dailymotion video URL format.');
+    errors.push(
+      errorIssue('INVALID_VIMEO_URL', 'Invalid Vimeo video URL format.')
+    );
   }
 
   const id = url.pathname.split('/').pop() as string;

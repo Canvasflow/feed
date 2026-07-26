@@ -701,7 +701,9 @@ describe('TikTok Component', () => {
         username: '',
       });
       expect(component.errors.length).toBeGreaterThan(0);
-      expect(component.errors[0]).toBe('Invalid TikTok video URL format.');
+      expect(component.errors[0]?.message).toBe(
+        'Invalid TikTok video URL format.'
+      );
     }
   );
   test(
@@ -724,7 +726,7 @@ describe('TikTok Component', () => {
         username: '',
       });
       expect(component.errors.length).toBeGreaterThan(0);
-      expect(component.errors[0]).toBe('cite attribute is required');
+      expect(component.errors[0]?.message).toBe('cite attribute is required');
     }
   );
   test(

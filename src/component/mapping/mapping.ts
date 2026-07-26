@@ -83,6 +83,7 @@ import {
 import { toHTMLTable } from './mapping.table';
 import { toCustom } from './mapping.custom';
 import { toText } from './mapping.text';
+import { errorIssue } from '../../feed-issue';
 
 // Re-export the publicly consumed constants and helpers so the package surface
 // is unchanged.
@@ -340,7 +341,17 @@ export function fromNode(
         },
         warnings: [],
         errors: [
-          cite ? `Invalid cite URL: "${cite}"` : 'cite attribute is required',
+          cite
+            ? errorIssue(
+                'INVALID_TIKTOK_URL',
+                `Invalid cite URL: "${cite}"`,
+                'cite'
+              )
+            : errorIssue(
+                'INVALID_TIKTOK_URL',
+                'cite attribute is required',
+                'cite'
+              ),
         ],
       } as TikTokComponent;
     }
@@ -580,7 +591,8 @@ interface MappingComponentResponse {
     | 'columns'
     | 'live_container'
     | 'gallery'
-    | 'custom';
-  properties?: Record<string, unknown>;
-  mapping?: ComponentMapping;
+    | 'custom'
+    | undefined;
+  properties?: Record<string, unknown> | undefined;
+  mapping?: ComponentMapping | undefined;
 }

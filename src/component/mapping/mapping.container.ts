@@ -41,6 +41,7 @@ import {
   type Params,
   reduceComponents,
 } from './mapping';
+import { type FeedIssue, errorIssue, warningIssue } from '../../feed-issue';
 
 /**
  * It maps the live post inside a Live Container Component
@@ -50,15 +51,17 @@ import {
  */
 export function mapLivePost(params?: Params): MapLivePostComponentsFn {
   return (node: ElementNode): LivePostComponent => {
-    const errors: string[] = [];
-    const warnings: string[] = [];
+    const errors: FeedIssue[] = [];
+    const warnings: FeedIssue[] = [];
     const attributes = getAttributes(node.attributes);
     const id = attributes.get('id');
     const components: Array<Component> = node.children.length
       ? node.children.reduce(reduceComponents(params), [])
       : [];
     if (!components.length) {
-      errors.push('post do not have components');
+      errors.push(
+        errorIssue('MISSING_COMPONENTS', 'post do not have components')
+      );
     }
     return {
       id,
@@ -92,7 +95,7 @@ export function toContainer(
   params?: Params,
   properties?: Record<string, unknown>
 ): RecipeComponent | ContainerComponent {
-  const warnings: string[] = [];
+  const warnings: FeedIssue[] = [];
   const attributes = getAttributes(node.attributes);
   const id = attributes.get('id');
 
@@ -129,8 +132,8 @@ export function toColumns(
   params?: Params,
   properties?: Record<string, unknown>
 ): ColumnsComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   const attributes = getAttributes(node.attributes);
   const id = attributes.get('id');
 
@@ -141,17 +144,20 @@ export function toColumns(
     : /* v8 ignore next -- children is always defined on an element node */ [];
 
   if (!columnNodes.length) {
-    errors.push('HTML node do not have children');
+    errors.push(
+      errorIssue('MISSING_CHILDREN', 'HTML node do not have children')
+    );
   }
 
   const columns: Component[][] = columnNodes.map((node) =>
     node.children.reduce(reduceComponents(params), [])
   );
 
-  for (let i = 0; i < columns.length; i++) {
-    const column = columns[i];
+  for (const [i, column] of columns.entries()) {
     if (!column.length) {
-      warnings.push(`the column ${i} is empty`);
+      warnings.push(
+        warningIssue('EMPTY_COLUMN', `the column ${i} is empty`, `${i}`)
+      );
     }
   }
 
@@ -225,8 +231,8 @@ export function toLiveContainer(
   params?: Params,
   properties?: Record<string, unknown>
 ): LiveContainerComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   const attributes = getAttributes(node.attributes);
   const id = attributes.get('id');
 
@@ -238,7 +244,9 @@ export function toLiveContainer(
     : /* v8 ignore next -- children is always defined on an element node */ [];
 
   if (!posts.length) {
-    errors.push('HTML node do not have children');
+    errors.push(
+      errorIssue('MISSING_CHILDREN', 'HTML node do not have children')
+    );
   }
 
   return {
@@ -310,8 +318,8 @@ export function toLinkContainer(
   params?: Params,
   properties?: Record<string, unknown>
 ): LinkContainerComponent {
-  const warnings: string[] = [];
-  const errors: string[] = [];
+  const warnings: FeedIssue[] = [];
+  const errors: FeedIssue[] = [];
   const attributes = getAttributes(node.attributes);
   const id = attributes.get('id');
 
@@ -360,8 +368,8 @@ export function toFigureContainer(
   params?: Params,
   properties?: Record<string, unknown>
 ): FigureContainerComponent {
-  const warnings: string[] = [];
-  const errors: string[] = [];
+  const warnings: FeedIssue[] = [];
+  const errors: FeedIssue[] = [];
   const attributes = getAttributes(node.attributes);
   const id = attributes.get('id');
   let caption = '';
@@ -506,8 +514,8 @@ function textContent(nodes: Node[]): string {
  * @returns {ButtonComponent}
  */
 export function toAnchorButton(node: ElementNode): ButtonComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   const attributes = getAttributes(node.attributes);
   let text: string | undefined;
   const link: string | undefined = attributes.get('href');
@@ -520,11 +528,11 @@ export function toAnchorButton(node: ElementNode): ButtonComponent {
     text = textContent(button.children);
   }
   if (!text) {
-    errors.push('Button text is required');
+    errors.push(errorIssue('MISSING_BUTTON_TEXT', 'Button text is required'));
   }
 
   if (!link) {
-    errors.push('Button link is required');
+    errors.push(errorIssue('MISSING_BUTTON_LINK', 'Button link is required'));
   }
 
   return {
@@ -547,8 +555,8 @@ export function toAnchorButton(node: ElementNode): ButtonComponent {
  * @returns {ButtonComponent}
  */
 export function toButton(node: ElementNode): ButtonComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   const attributes = getAttributes(node.attributes);
   let text: string | undefined;
   let link: string | undefined;
@@ -558,7 +566,7 @@ export function toButton(node: ElementNode): ButtonComponent {
     link = attributes.get('href');
     text = textContent(node.children);
     if (!text) {
-      errors.push('Button text is required');
+      errors.push(errorIssue('MISSING_BUTTON_TEXT', 'Button text is required'));
     }
   } else if (node.tagName === 'button') {
     const anchorNodes = node.children.reduce(findDescendants('a'), []);
@@ -567,27 +575,44 @@ export function toButton(node: ElementNode): ButtonComponent {
       const aAttributes = getAttributes(aNode.attributes);
       link = aAttributes.get('href');
       if (!link) {
-        errors.push('href attribute is required in a button link');
+        errors.push(
+          errorIssue(
+            'MISSING_BUTTON_LINK',
+            'href attribute is required in a button link'
+          )
+        );
       }
       text = textContent(aNode.children);
       if (!text) {
-        errors.push('Button text is required');
+        errors.push(
+          errorIssue('MISSING_BUTTON_TEXT', 'Button text is required')
+        );
       }
     } else {
       text = textContent(node.children);
       if (!text) {
-        errors.push('Button text is required');
+        errors.push(
+          errorIssue('MISSING_BUTTON_TEXT', 'Button text is required')
+        );
       }
       warnings.push(
-        'button without a link is not clickable, consider using an a tag with role button'
+        warningIssue(
+          'MISSING_BUTTON_LINK',
+          'button without a link is not clickable, consider using an a tag with role button'
+        )
       );
     }
   } else {
-    errors.push('invalid button implementation');
+    errors.push(
+      errorIssue(
+        'INVALID_BUTTON_IMPLEMENTATION',
+        'invalid button implementation'
+      )
+    );
   }
 
   if (!link) {
-    errors.push('Button link is required');
+    errors.push(errorIssue('MISSING_BUTTON_LINK', 'Button link is required'));
   }
 
   return {
@@ -630,7 +655,7 @@ function reduceLinkContainerComponent(
   attributes?: Map<string, string>,
   element?: {
     tag: string;
-    attributes?: Record<string, string>;
+    attributes?: Record<string, string> | undefined;
   }
 ): (acc: Component[], item: Component) => Component[] {
   return (acc: Component[], component: Component): Component[] => {

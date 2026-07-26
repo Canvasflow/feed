@@ -124,7 +124,8 @@ function parseOpeningTagAttributes(outerHTML: string): Attribute[] {
   let match: RegExpExecArray | null;
   while ((match = attributePattern.exec(openTag))) {
     attributes.push({
-      key: match[1],
+      // Group 1 is a mandatory `+` capture — always defined on a successful match.
+      key: match[1]!,
       value: match[2] !== undefined ? match[2] : (null as unknown as string),
     });
   }

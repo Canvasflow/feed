@@ -12,6 +12,20 @@ import type {
   Mapping,
   Params,
 } from '../../component/mapping/mapping';
+import type { FeedIssue } from '../../feed-issue';
+import {
+  ParamsSchema,
+  MappingSchema,
+} from '../../component/mapping/mapping.schema';
+
+/**
+ * `true` when some issue in `issues` has exactly `message`. Test-only
+ * helper so assertions against `FeedIssue[]` read like the old
+ * `toContain('exact string')` checks against `string[]`.
+ */
+function hasMessage(issues: FeedIssue[], message: string): boolean {
+  return issues.some((issue) => issue.message === message);
+}
 
 describe('Invalid RSS', () => {
   test(
@@ -66,7 +80,8 @@ describe('Malformed XML — constructor never throws', () => {
     async () => {
       const feed = new RSSFeed('<unclosed');
       expect(feed.rss.errors.length).toBeGreaterThan(0);
-      expect(feed.rss.errors[0]).toMatch(/XML parse error/);
+      expect(feed.rss.errors[0]?.message).toMatch(/XML parse error/);
+      expect(feed.rss.errors[0]?.code).toBe('XML_PARSE_ERROR');
     }
   );
 
@@ -76,7 +91,7 @@ describe('Malformed XML — constructor never throws', () => {
     () => {
       const feed = new RSSFeed('<<double');
       expect(feed.errors.length).toBeGreaterThan(0);
-      expect(feed.errors[0]).toMatch(/XML parse error/);
+      expect(feed.errors[0]?.message).toMatch(/XML parse error/);
     }
   );
 
@@ -133,7 +148,7 @@ describe('Validate Params', () => {
       const errors = RSSFeed.validateParams(params, root);
       expect(errors.length).toBe(1);
       const error = errors.pop();
-      expect(error?.code).toBe('invalid-root-mapping');
+      expect(error?.code).toBe('INVALID_ROOT_MAPPING');
       expect(error?.severity).toBe('error');
       expect(error?.message.length).toBeGreaterThan(0);
     }
@@ -178,9 +193,50 @@ describe('Validate Params', () => {
       const errors = RSSFeed.validateParams(params, root);
       expect(errors.length).toBe(1);
       const error = errors.pop();
-      expect(error?.code).toBe('invalid-params');
+      expect(error?.code).toBe('INVALID_PARAMS');
       expect(error?.severity).toBe('error');
       expect(error?.message.length).toBeGreaterThan(0);
+    }
+  );
+
+  test(
+    'validateParams reports INVALID_PARAMS when ParamsSchema.safeParse itself throws',
+    { tags: ['unit', 'rss'] },
+    () => {
+      const original = ParamsSchema.safeParse;
+      ParamsSchema.safeParse = () => {
+        throw new Error('boom');
+      };
+      try {
+        const errors = RSSFeed.validateParams({ mappings: [] });
+        expect(errors.length).toBe(1);
+        expect(errors[0]?.code).toBe('INVALID_PARAMS');
+        expect(errors[0]?.message).toContain('boom');
+      } finally {
+        ParamsSchema.safeParse = original;
+      }
+    }
+  );
+
+  test(
+    'validateParams reports INVALID_ROOT_MAPPING when MappingSchema.safeParse itself throws',
+    { tags: ['unit', 'rss'] },
+    () => {
+      const original = MappingSchema.safeParse;
+      MappingSchema.safeParse = () => {
+        throw new Error('boom');
+      };
+      try {
+        const errors = RSSFeed.validateParams(undefined, {
+          match: 'all',
+          filters: [],
+        });
+        expect(errors.length).toBe(1);
+        expect(errors[0]?.code).toBe('INVALID_ROOT_MAPPING');
+        expect(errors[0]?.message).toContain('boom');
+      } finally {
+        MappingSchema.safeParse = original;
+      }
     }
   );
 
@@ -192,12 +248,7 @@ describe('Validate Params', () => {
       const feed = new RSSFeed(buildFeed(''), invalidParams);
       await feed.validate();
       const rss = await feed.build();
-      expect(
-        rss.errors.some(
-          (e) =>
-            typeof e === 'object' && e !== null && e.code === 'invalid-params'
-        )
-      ).toBe(true);
+      expect(rss.errors.some((e) => e.code === 'INVALID_PARAMS')).toBe(true);
     }
   );
 });
@@ -365,7 +416,7 @@ describe('Newsweek', () => {
       }
 
       expect(rss.channel?.title).toBe('Newsweek feed for VMG');
-      const item = rss.channel.items[0];
+      const item = rss.channel.items[0]!;
       expect(item).toBeDefined();
       expect(item['cf:hasAffiliateLinks']).toBe(true);
     }
@@ -387,7 +438,7 @@ describe('Newsweek', () => {
         );
       }
 
-      const item = rss.channel.items[0];
+      const item = rss.channel.items[0]!;
       expect(item).toBeDefined();
       expect(item['dc:language']).toBe('en-GB');
     }
@@ -410,7 +461,7 @@ describe('Newsweek', () => {
       }
 
       expect(rss.channel?.title).toBe('Newsweek feed for VMG');
-      const item = rss.channel.items[0];
+      const item = rss.channel.items[0]!;
       expect(item).toBeDefined();
       expect(item['cf:isSponsored']).toBe(true);
       expect(item['cf:isPaid']).toBe(true);
@@ -436,11 +487,11 @@ describe('Newsweek', () => {
       }
 
       expect(rss.channel?.title).toBe('Newsweek feed for VMG');
-      let item = rss.channel.items[0];
+      let item = rss.channel.items[0]!;
       expect(item).toBeDefined();
       if (!item) return;
       expect(item['dc:creator']).toBe('Drew VonScio');
-      item = rss.channel.items[1];
+      item = rss.channel.items[1]!;
       expect(item).toBeDefined();
       if (!item) return;
       expect(item['dc:creator']).toBe('Sonam Sheth, John Doe');
@@ -462,7 +513,7 @@ describe('Newsweek', () => {
     }
 
     expect(rss.channel?.title).toBe('Newsweek feed for VMG');
-    let item = rss.channel.items[0];
+    let item = rss.channel.items[0]!;
     expect(item).toBeDefined();
     if (!item) return;
     expect(item['cf:thumbnail']).toEqual({
@@ -473,7 +524,7 @@ describe('Newsweek', () => {
       fileSize: 1459000,
     });
     expect(item['dc:creator']).toBe('Drew VonScio');
-    item = rss.channel.items[1];
+    item = rss.channel.items[1]!;
     expect(item).toBeDefined();
     if (!item) return;
     expect(item['dc:creator']).toBe('Sonam Sheth, John Doe');
@@ -497,7 +548,7 @@ describe('Newsweek', () => {
       }
 
       expect(rss.channel?.title).toBe('Newsweek feed for VMG');
-      const item = rss.channel.items[1];
+      const item = rss.channel.items[1]!;
       expect(item).toBeDefined();
       if (!item) return;
       expect(item['cf:thumbnail']).toEqual({
@@ -578,10 +629,10 @@ describe('Motorsport', () => {
 
     expect(rss.channel?.title).toBe('Motorsport.com - All - Stories');
     expect(rss.channel?.items.length).toBe(50);
-    expect(rss.channel.items[0].title).toBe(
+    expect(rss.channel.items[0]!.title).toBe(
       'Aprilia stands firm over Jorge Martin contract saga'
     );
-    expect(rss.channel.items[0].components[0].component).toBe('subtitle');
+    expect(rss.channel.items[0]!.components[0]!.component).toBe('subtitle');
   });
 });
 
@@ -637,12 +688,12 @@ describe('Codrops', () => {
     const { items } = channel;
     expect(items.length).toBe(10);
 
-    expect(items[0].enclosure.length).toBe(12);
-    expect(items[0]['dc:creator']).toBe('Malvah Studio');
-    expect(items[0]['dc:language']).toBe('en');
+    expect(items[0]!.enclosure.length).toBe(12);
+    expect(items[0]!['dc:creator']).toBe('Malvah Studio');
+    expect(items[0]!['dc:language']).toBe('en');
     // expect(items[0]['dc:date']).toBe('2025-06-19T18:51:09÷00:00');
-    expect(items[1].enclosure.length).toBe(4);
-    expect(items[2].enclosure.length).toBe(1);
+    expect(items[1]!.enclosure.length).toBe(4);
+    expect(items[2]!.enclosure.length).toBe(1);
   });
 });
 
@@ -1195,7 +1246,11 @@ describe('T3', () => {
         for (const item of rss.channel.items) {
           if (!item.link) {
             item.components = [];
-            item.errors.push(`link missing in guid "${item.guid}"`);
+            item.errors.push({
+              code: 'MISSING_URL',
+              severity: 'error',
+              message: `link missing in guid "${item.guid}"`,
+            });
             continue;
           }
 
@@ -1217,7 +1272,11 @@ describe('T3', () => {
           } catch (e: unknown) {
             const error = e as Error;
             item.components = [];
-            item.errors.push(error.message);
+            item.errors.push({
+              code: 'MISSING_URL',
+              severity: 'error',
+              message: error.message,
+            });
           }
         }
       }
@@ -1336,7 +1395,7 @@ describe('Saga', () => {
     expect(item.mediaContent).toBeDefined();
     if (!item.mediaContent) return;
     expect(item.mediaContent.length).toBe(1);
-    const media = item.mediaContent[0];
+    const media = item.mediaContent[0]!;
     expect(media.url).toEqual(
       'https://www.saga.co.uk/helix-contentlibrary/saga/magazine/articles/2025/08aug/older-driver-gettyimages-523556820.jpg'
     );
@@ -1376,7 +1435,7 @@ describe('Cultured Magazine', () => {
     expect(title).toBe('Cultured Mag');
     expect(items.length).toBeGreaterThan(0);
     if (!items.length) return;
-    const item = items[9];
+    const item = items[9]!;
     expect(item).toBeDefined();
     if (!item) return;
     const imageComponent = item.components[15] as ImageComponent | undefined;
@@ -1421,7 +1480,7 @@ describe('The New World', () => {
     expect(title).toBe('The New World');
     expect(items.length).toBeGreaterThan(0);
     if (!items.length) return;
-    const item = items[0];
+    const item = items[0]!;
     expect(item).toBeDefined();
     if (!item) return;
     const { mediaContent } = item;
@@ -1559,7 +1618,11 @@ describe.skip('The English Home', () => {
       } catch (e: unknown) {
         const error = e as Error;
         item.components = [];
-        item.errors.push(error.message);
+        item.errors.push({
+          code: 'MISSING_URL',
+          severity: 'error',
+          message: error.message,
+        });
       }
     }
 
@@ -1593,7 +1656,7 @@ describe.skip('The English Home', () => {
       expect(rss.channel?.title).toBe(
         'https://www.theenglishhome.co.uk content'
       );
-      const item = rss.channel.items[0];
+      const item = rss.channel.items[0]!;
       expect(item).toBeDefined();
       expect(item['cf:hasAffiliateLinks']).toBe(false);
     }
@@ -1620,14 +1683,14 @@ describe('Motor', () => {
     const rss = await feed.build();
     expect(rss).toBeDefined();
     const { items } = rss.channel;
-    const item = items[0];
+    const item = items[0]!;
     const { title } = item;
     expect(title).toBe(
       'F1 2026 car launch dates: schedule for team and livery reveals'
     );
     expect(item['dc:creator']).toBe('Pablo Elizalde');
     expect(item['category']?.[0]).toBe('F1');
-    const mediaContentItem = item['mediaContent'][0];
+    const mediaContentItem = item['mediaContent'][0]!;
     expect(mediaContentItem.credit).toBe('Audi');
     expect(mediaContentItem.description).toBe(
       'Audi was first to reveal its 2026 F1 livery'
@@ -1851,8 +1914,9 @@ describe('RSSFeed validation branches', () => {
       await feed.validate();
       expect(feed.rss.channel.warnings).toEqual(firstWarnings);
       expect(
-        feed.rss.channel.warnings.filter((w) => w.includes('unknownChannelTag'))
-          .length
+        feed.rss.channel.warnings.filter((w) =>
+          w.message.includes('unknownChannelTag')
+        ).length
       ).toBe(1);
     }
   );
@@ -1873,8 +1937,12 @@ describe('RSSFeed validation branches', () => {
       const feed = new RSSFeed(content);
       await feed.validate();
       expect(feed.errors.length).toBeGreaterThan(0);
-      expect(feed.errors).toContain('Required property "guid" is missing');
-      expect(feed.errors).toContain('Required property "pubDate" is missing');
+      expect(
+        hasMessage(feed.errors, 'Required property "guid" is missing')
+      ).toBe(true);
+      expect(
+        hasMessage(feed.errors, 'Required property "pubDate" is missing')
+      ).toBe(true);
     }
   );
 
@@ -1901,9 +1969,12 @@ describe('RSSFeed validation branches', () => {
       );
       await feed.validate();
       const result = await feed.build();
-      expect(result.channel.warnings).toContain(
-        'Invalid value for property "link": "not a url"'
-      );
+      expect(
+        hasMessage(
+          result.channel.warnings,
+          'Invalid value for property "link": "not a url"'
+        )
+      ).toBe(true);
       expect(result.channel.link).toBe('not a url');
       expect(result.channel.items.length).toBe(1);
     }
@@ -1920,7 +1991,7 @@ describe('RSSFeed validation branches', () => {
       const rss = await feed.build();
       expect(
         rss.channel.warnings.some((w) =>
-          w.includes('Invalid value for property "link"')
+          w.message.includes('Invalid value for property "link"')
         )
       ).toBe(false);
       expect(rss.channel.link).toBe('https://example.com/feed');
@@ -1938,7 +2009,7 @@ describe('cf:liveCoverageState', () => {
       );
       await feed.validate();
       const rss = await feed.build();
-      const item = rss.channel.items[0];
+      const item = rss.channel.items[0]!;
       expect(item['cf:liveCoverageState']).toBe(null);
     }
   );
@@ -1956,7 +2027,7 @@ describe('cf:thumbnail branches', () => {
       );
       await feed.validate();
       const rss = await feed.build();
-      const item = rss.channel.items[0];
+      const item = rss.channel.items[0]!;
       const thumbnail = item['cf:thumbnail'];
       expect(thumbnail).toBeDefined();
       if (!thumbnail) return;
@@ -1966,9 +2037,12 @@ describe('cf:thumbnail branches', () => {
       expect(thumbnail.fileSize).toBeUndefined();
       // Unsupported mime type is dropped.
       expect(thumbnail.type).toBeUndefined();
-      expect(item.errors).toContain(
-        `Required property "url" is missing in 'cf:thumbnail'`
-      );
+      expect(
+        hasMessage(
+          item.errors,
+          `Required property "url" is missing in 'cf:thumbnail'`
+        )
+      ).toBe(true);
       expect(item.warnings.length).toBeGreaterThan(0);
     }
   );
@@ -1984,11 +2058,11 @@ describe('processCanvasflowBooleanTag branches', () => {
       );
       await feed.validate();
       const rss = await feed.build();
-      const item = rss.channel.items[0];
+      const item = rss.channel.items[0]!;
       expect(item['cf:isSponsored']).toBe(false);
       expect(
         item.errors.some((e) =>
-          `${e}`.includes("Invalid value for 'cf:isSponsored'")
+          e.message.includes("Invalid value for 'cf:isSponsored'")
         )
       ).toBe(true);
     }
@@ -2003,15 +2077,15 @@ describe('processCanvasflowBooleanTag branches', () => {
       );
       await feed.validate();
       const rss = await feed.build();
-      const item = rss.channel.items[0];
+      const item = rss.channel.items[0]!;
       expect(
         item.warnings.some((w) =>
-          `${w}`.includes("Attributes are not allowed for the 'cf:isPaid'")
+          w.message.includes("Attributes are not allowed for the 'cf:isPaid'")
         )
       ).toBe(true);
       expect(
         item.errors.some((e) =>
-          `${e}`.includes("Invalid value for 'cf:isPaid'")
+          e.message.includes("Invalid value for 'cf:isPaid'")
         )
       ).toBe(true);
     }
@@ -2026,7 +2100,7 @@ describe('processCanvasflowBooleanTag branches', () => {
       );
       await feed.validate();
       const rss = await feed.build();
-      const item = rss.channel.items[0];
+      const item = rss.channel.items[0]!;
       expect(item['cf:hasAffiliateLinks']).toBe(true);
     }
   );
@@ -2040,15 +2114,21 @@ describe('enclosure mapping', () => {
       const feed = new RSSFeed(buildFeed(`<enclosure other="x"/>`));
       await feed.validate();
       const rss = await feed.build();
-      const item = rss.channel.items[0];
+      const item = rss.channel.items[0]!;
       expect(item.enclosure.length).toBe(1);
-      const enclosure = item.enclosure[0];
+      const enclosure = item.enclosure[0]!;
       expect(enclosure.url).toBe('');
       expect(enclosure.type).toBe('');
       expect(enclosure.length).toBe(0);
-      expect(enclosure.errors).toContain('Required property "url" is missing');
-      expect(enclosure.warnings).toContain('Property "type" is suggested');
-      expect(enclosure.warnings).toContain('Property "length" is suggested');
+      expect(
+        hasMessage(enclosure.errors, 'Required property "url" is missing')
+      ).toBe(true);
+      expect(
+        hasMessage(enclosure.warnings, 'Property "type" is suggested')
+      ).toBe(true);
+      expect(
+        hasMessage(enclosure.warnings, 'Property "length" is suggested')
+      ).toBe(true);
     }
   );
 });
@@ -2065,14 +2145,14 @@ describe('media:group mapping', () => {
       );
       await feed.validate();
       const rss = await feed.build();
-      const item = rss.channel.items[0];
+      const item = rss.channel.items[0]!;
       expect(item.mediaGroup.length).toBe(1);
-      const group = item.mediaGroup[0];
+      const group = item.mediaGroup[0]!;
       expect(group).toBeDefined();
       if (!group) return;
-      expect(group.errors).toContain(
-        'Required property "media:content" is missing'
-      );
+      expect(
+        hasMessage(group.errors, 'Required property "media:content" is missing')
+      ).toBe(true);
       const { mediaContent } = group;
       expect(mediaContent).toBeDefined();
       if (!mediaContent) return;
@@ -2089,12 +2169,18 @@ describe('media:content mapping', () => {
       const feed = new RSSFeed(buildFeed(`<media:content other="x"/>`));
       await feed.validate();
       const rss = await feed.build();
-      const item = rss.channel.items[0];
-      const media = item.mediaContent[0];
+      const item = rss.channel.items[0]!;
+      const media = item.mediaContent[0]!;
       expect(media.url).toBe('');
-      expect(media.errors).toContain('Required property "url" is missing');
-      expect(media.warnings).toContain('Property "type" is suggested');
-      expect(media.warnings).toContain('Property "medium" is suggested');
+      expect(
+        hasMessage(media.errors, 'Required property "url" is missing')
+      ).toBe(true);
+      expect(hasMessage(media.warnings, 'Property "type" is suggested')).toBe(
+        true
+      );
+      expect(hasMessage(media.warnings, 'Property "medium" is suggested')).toBe(
+        true
+      );
     }
   );
 
@@ -2116,17 +2202,20 @@ describe('media:content mapping', () => {
       );
       await feed.validate();
       const rss = await feed.build();
-      const media = rss.channel.items[0].mediaContent[0];
+      const media = rss.channel.items[0]!.mediaContent[0]!;
       expect(media.credit).toBe('First');
       expect(media.thumbnail).toBe('https://example.com/t1.jpg');
       expect(media.title).toBe('A title');
       expect(media.description).toBe('A description');
-      expect(media.warnings).toContain(
-        'Only one "media:credit" element is allowed'
-      );
-      expect(media.warnings).toContain(
-        'Only one "media:thumbnail" element is allowed'
-      );
+      expect(
+        hasMessage(media.warnings, 'Only one "media:credit" element is allowed')
+      ).toBe(true);
+      expect(
+        hasMessage(
+          media.warnings,
+          'Only one "media:thumbnail" element is allowed'
+        )
+      ).toBe(true);
     }
   );
 
@@ -2143,7 +2232,7 @@ describe('media:content mapping', () => {
       );
       await feed.validate();
       const rss = await feed.build();
-      const media = rss.channel.items[0].mediaContent[0];
+      const media = rss.channel.items[0]!.mediaContent[0]!;
       expect(media.credit).toBe('Jane Doe');
     }
   );
@@ -2159,9 +2248,11 @@ describe('media:content mapping', () => {
       );
       await feed.validate();
       const rss = await feed.build();
-      const media = rss.channel.items[0].mediaContent[0];
+      const media = rss.channel.items[0]!.mediaContent[0]!;
       expect(media.url).toBe('https://example.com/images/a.jpg');
-      expect(media.warnings).toContain('Property "url" is not an absolute URL');
+      expect(
+        hasMessage(media.warnings, 'Property "url" is not an absolute URL')
+      ).toBe(true);
     }
   );
 });
@@ -2320,7 +2411,7 @@ describe('Item.pubDate normalization', () => {
       await feed.validate();
       const rss = await feed.build();
       // Verify it is a valid ISO 8601 string representing the same UTC moment
-      const pubDate = rss.channel.items[0].pubDate!;
+      const pubDate = rss.channel.items[0]!.pubDate!;
       expect(pubDate).toBeTruthy();
       expect(new Date(pubDate).toISOString()).toBe('2024-01-01T12:00:00.000Z');
     }
@@ -2339,8 +2430,8 @@ describe('Item.pubDate normalization', () => {
       const feed = new RSSFeed(xml);
       await feed.validate();
       const rss = await feed.build();
-      expect(rss.channel.items[0].pubDate).toBe('not-a-date');
-      expect(rss.channel.items[0].warnings.length).toBeGreaterThan(0);
+      expect(rss.channel.items[0]!.pubDate).toBe('not-a-date');
+      expect(rss.channel.items[0]!.warnings.length).toBeGreaterThan(0);
     }
   );
 });

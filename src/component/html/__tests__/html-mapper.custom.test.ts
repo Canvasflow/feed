@@ -169,7 +169,7 @@ describe('Custom component mapping', () => {
         const components = HTMLMapper.toComponents(html, { mappings });
 
         expect(components.length).toBe(1);
-        expect(components[0].component).toBe('custom');
+        expect(components[0]!.component).toBe('custom');
       }
     );
 
