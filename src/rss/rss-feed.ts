@@ -274,8 +274,13 @@ export class RSSFeed {
     }
 
     if (link) {
-      const url = new URL(link);
-      this.origin = url.origin;
+      if (URL.canParse(link)) {
+        this.origin = new URL(link).origin;
+      } else {
+        this.rss.channel.warnings.push(
+          `Invalid value for property "link": "${link}"`
+        );
+      }
     }
 
     let lastBuildDate: undefined | string;

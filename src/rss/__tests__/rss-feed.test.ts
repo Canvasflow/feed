@@ -1850,6 +1850,41 @@ describe('RSSFeed validation branches', () => {
       expect(rss.channel.items.length).toBe(0);
     }
   );
+
+  test(
+    'build() does not throw on an invalid channel link and records a warning',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed('', { channelExtra: '<link>not a url</link>' })
+      );
+      await feed.validate();
+      const result = await feed.build();
+      expect(result.channel.warnings).toContain(
+        'Invalid value for property "link": "not a url"'
+      );
+      expect(result.channel.link).toBe('not a url');
+      expect(result.channel.items.length).toBe(1);
+    }
+  );
+
+  test(
+    'build() resolves media origin from a valid channel link',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed('', { channelExtra: '<link>https://example.com/feed</link>' })
+      );
+      await feed.validate();
+      const rss = await feed.build();
+      expect(
+        rss.channel.warnings.some((w) =>
+          w.includes('Invalid value for property "link"')
+        )
+      ).toBe(false);
+      expect(rss.channel.link).toBe('https://example.com/feed');
+    }
+  );
 });
 
 describe('cf:liveCoverageState', () => {

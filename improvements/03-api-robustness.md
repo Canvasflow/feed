@@ -5,7 +5,7 @@
 > **Throw-surface inventory:** ADR-0007 (`docs/adr/0007-throw-surface-inventory.md`) lists every call site that can throw, classified by risk, with guarded sites confirmed safe. Use it as the reference for the fixes below.
 
 - [ ] A documented **no-throw contract**: for any string input, `new RSSFeed(...)`, `validate()`, and `build()` never throw — they report through the error model. Verified by fuzz tests.
-- [ ] The `RSSFeed` constructor no longer throws on malformed XML (`XMLParser.parse` failure is captured as an error).
+- [x] The `RSSFeed` constructor no longer throws on malformed XML (`XMLParser.parse` failure is captured as an error).
 - [ ] `build()` no longer throws on an invalid channel `<link>` (`new URL(link)` guarded).
 - [ ] Invalid `params` are never **silently dropped** (today the constructor discards them when `isValidParams` fails; `build()` reports them — one consistent behavior, documented).
 - [ ] Network I/O (`getRecipeFromUrl`, `getHtmlContent`) is removed from `RSSFeed` or clearly separated (injected fetch / separate entry point), with timeouts and response-status handling.
