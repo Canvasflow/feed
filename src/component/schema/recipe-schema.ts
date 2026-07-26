@@ -6,63 +6,63 @@ import { z } from 'zod';
 // is defined, so we declare the TypeScript types here and infer the rest.
 
 export type Thing = {
-  identifier?: string;
-  url?: string;
-  name?: string;
-  description?: string;
+  identifier?: string | undefined;
+  url?: string | undefined;
+  name?: string | undefined;
+  description?: string | undefined;
 };
 
 export type Person = {
   '@type': 'Person';
-  name?: string;
-  email?: string;
-  url?: string;
-  familyName?: string;
-  givenName?: string;
+  name?: string | undefined;
+  email?: string | undefined;
+  url?: string | undefined;
+  familyName?: string | undefined;
+  givenName?: string | undefined;
 };
 
 export type Organization = {
   '@type': 'Organization';
-  address?: string;
-  email?: string;
-  url?: string;
+  address?: string | undefined;
+  email?: string | undefined;
+  url?: string | undefined;
 };
 
 export type QuantitativeValue = {
   '@type': 'QuantitativeValue';
-  minValue?: number;
-  maxValue?: number;
-  unitCode?: string;
-  unitText?: string;
-  value?: string | boolean | number;
-  name?: string;
+  minValue?: number | undefined;
+  maxValue?: number | undefined;
+  unitCode?: string | undefined;
+  unitText?: string | undefined;
+  value?: string | boolean | number | undefined;
+  name?: string | undefined;
 };
 
 export type NutritionInformation = {
   '@type': 'NutritionInformation';
-  calories?: string;
-  carbohydrateContent?: string;
-  cholesterolContent?: string;
-  fatContent?: string;
-  fiberContent?: string;
-  proteinContent?: string;
-  saturatedFatContent?: string;
-  servingSize?: string;
-  sodiumContent?: string;
-  sugarContent?: string;
-  transFatContent?: string;
-  unsaturatedFatContent?: string;
+  calories?: string | undefined;
+  carbohydrateContent?: string | undefined;
+  cholesterolContent?: string | undefined;
+  fatContent?: string | undefined;
+  fiberContent?: string | undefined;
+  proteinContent?: string | undefined;
+  saturatedFatContent?: string | undefined;
+  servingSize?: string | undefined;
+  sodiumContent?: string | undefined;
+  sugarContent?: string | undefined;
+  transFatContent?: string | undefined;
+  unsaturatedFatContent?: string | undefined;
 };
 
 export type PropertyValue = Thing & {
   '@type': 'PropertyValue';
   name: string;
   value: string | number | boolean;
-  propertyID?: string;
-  maxValue?: number;
-  minValue?: number;
-  unitCode?: string;
-  unitText?: string;
+  propertyID?: string | undefined;
+  maxValue?: number | undefined;
+  minValue?: number | undefined;
+  unitCode?: string | undefined;
+  unitText?: string | undefined;
 };
 
 export type ListItem = Thing & {
@@ -72,57 +72,57 @@ export type ListItem = Thing & {
     | 'HowToTip'
     | 'HowToDirection'
     | 'HowToItem';
-  position?: number;
-  numberOfItems?: number;
-  text?: string;
-  itemListElement?: Array<ListItem>;
+  position?: number | undefined;
+  numberOfItems?: number | undefined;
+  text?: string | undefined;
+  itemListElement?: Array<ListItem> | undefined;
 };
 
 export type ItemList = Thing & {
   '@type': 'ItemList';
   name: string;
   itemListElement: Array<string | ListItem | PropertyValue>;
-  itemListOrder?: string;
-  numberOfItems?: number;
+  itemListOrder?: string | undefined;
+  numberOfItems?: number | undefined;
 };
 
 export type CreativeWork = Thing & {
-  author?: Person | Organization | { '@id': string };
-  thumbnail?: ImageObject;
-  thumbnailUrl?: string;
+  author?: Person | Organization | { '@id': string } | undefined;
+  thumbnail?: ImageObject | undefined;
+  thumbnailUrl?: string | undefined;
 };
 
 export type MediaObject = CreativeWork & {
-  bitrate?: string;
-  contentSize?: string;
-  contentUrl?: string;
-  embedUrl?: string;
+  bitrate?: string | undefined;
+  contentSize?: string | undefined;
+  contentUrl?: string | undefined;
+  embedUrl?: string | undefined;
 };
 
 export type ImageObject = MediaObject & {
-  caption?: MediaObject | string;
-  embeddedTextCaption?: string;
-  exifData?: string | PropertyValue;
-  representativeOfPage?: boolean;
+  caption?: MediaObject | string | undefined;
+  embeddedTextCaption?: string | undefined;
+  exifData?: string | PropertyValue | undefined;
+  representativeOfPage?: boolean | undefined;
 };
 
 export type Recipe = CreativeWork & {
   '@type': 'Recipe';
   '@id': string;
-  datePublished?: string;
-  image?: string | string[] | ImageObject;
-  recipeYield?: string | string[] | QuantitativeValue;
-  prepTime?: string;
-  cookTime?: string;
-  totalTime?: string;
-  recipeIngredient?: Array<string | ItemList | PropertyValue>;
-  recipeInstructions?: Array<ListItem>;
-  recipeCategory?: string[] | string;
-  recipeCuisine?: string[] | string;
-  keywords?: string;
-  nutrition?: NutritionInformation;
-  isPartOf?: { '@id': string };
-  mainEntityOfPage?: string;
+  datePublished?: string | undefined;
+  image?: string | string[] | ImageObject | undefined;
+  recipeYield?: string | string[] | QuantitativeValue | undefined;
+  prepTime?: string | undefined;
+  cookTime?: string | undefined;
+  totalTime?: string | undefined;
+  recipeIngredient?: Array<string | ItemList | PropertyValue> | undefined;
+  recipeInstructions?: Array<ListItem> | undefined;
+  recipeCategory?: string[] | string | undefined;
+  recipeCuisine?: string[] | string | undefined;
+  keywords?: string | undefined;
+  nutrition?: NutritionInformation | undefined;
+  isPartOf?: { '@id': string } | undefined;
+  mainEntityOfPage?: string | undefined;
 };
 
 // ─── Schemas ─────────────────────────────────────────────────────────────────

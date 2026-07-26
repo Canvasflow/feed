@@ -1,5 +1,8 @@
-import { stringify } from '../html/parser';
-import { sanitizeHTML, type SanitizeHTMLOptions } from '../html/sanitize-html';
+import {
+  sanitizeHTML,
+  sanitizeNodes,
+  type SanitizeHTMLOptions,
+} from '../html/sanitize-html';
 import {
   type ElementNode,
   type Node,
@@ -23,7 +26,7 @@ import type { Filter, Mapping } from './mapping';
  * @returns {string}
  */
 export function sanitizeNode(node: Node, options: SanitizeHTMLOptions): string {
-  return sanitizeHTML(stringify([node]), options);
+  return sanitizeNodes([node], options);
 }
 
 /**
@@ -228,8 +231,8 @@ export function collapseAsciiWhitespace(value: string): string {
 }
 
 export interface FigcaptionResponse {
-  caption?: string;
-  credit?: string;
+  caption?: string | undefined;
+  credit?: string | undefined;
 }
 
 // Cache the Set for each filter object so it is built at most once per
@@ -351,16 +354,21 @@ export function excludeNode(node: ElementNode, excludes: Mapping[]): boolean {
 }
 
 /**
- * Extract a credit string from a node's `<small>`/`role="credit"` children and
- * strip those children from the node in place. Only the first credit is kept.
+ * Extract a credit string from a node's `<small>`/`role="credit"` children.
+ * Returns the credit and the remaining children with credit nodes removed.
+ * Pure — does not mutate the input node. Only the first credit is kept.
  *
  * @param {ElementNode} node
- * @returns {string | undefined}
+ * @returns {{ credit: string | undefined; children: Node[] }}
  */
-function getCredit(node: ElementNode): string | undefined {
+function getCredit(node: ElementNode): {
+  credit: string | undefined;
+  children: Node[];
+} {
   let credit: string | undefined;
+  const children: Node[] = [];
 
-  node.children = node.children.reduce((acc: Array<Node>, n: Node) => {
+  for (const n of node.children) {
     if (n.type === 'element') {
       const attributes = getAttributes(n.attributes);
       const role = attributes.get('role');
@@ -372,28 +380,23 @@ function getCredit(node: ElementNode): string | undefined {
       ) {
         /* v8 ignore next 3 -- keeps only the first credit; extra credits are rare */
         if (credit) {
-          return acc;
+          continue;
         }
         credit = sanitizeNode(n, {
           allowedTags: allowedFigcaptionTags,
         });
-        return acc;
+        continue;
       }
-
-      acc.push(n);
-      return acc;
+      children.push(n);
+    } else {
+      const content = n.content.replace(/[\r\n\t]/g, '').replace(/\s\s+/g, ' ');
+      if (content.length) {
+        children.push(content === n.content ? n : { ...n, content });
+      }
     }
+  }
 
-    const content = n.content.replace(/[\r\n\t]/g, '').replace(/\s\s+/g, ' ');
-
-    if (content.length) {
-      n.content = content;
-      acc.push(n);
-    }
-
-    return acc;
-  }, []);
-  return credit ? credit.trim() : credit;
+  return { credit: credit ? credit.trim() : credit, children };
 }
 
 /**
@@ -412,9 +415,10 @@ export function fromFigcaption(node: ElementNode): FigcaptionResponse {
           (n) => n.type === 'element' && n.tagName === 'figcaption'
         );
   for (const n of figcaptionNodes) {
-    credit = getCredit(n as ElementNode);
-    const html = stringify([n]);
-    caption = sanitizeHTML(html, {
+    const result = getCredit(n as ElementNode);
+    credit = result.credit;
+    const captionNode = { ...(n as ElementNode), children: result.children };
+    caption = sanitizeNodes([captionNode], {
       allowedTags: allowedFigcaptionTags,
     });
     break;

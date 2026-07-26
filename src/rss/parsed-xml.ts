@@ -1,5 +1,6 @@
 import type * as Attributes from './attributes';
 import type { ChannelImage } from './rss-types';
+import type { FeedIssue } from '../feed-issue';
 
 /**
  * Typed view of the raw `fast-xml-parser` output consumed by `RSSFeed`.
@@ -81,7 +82,7 @@ export interface ParsedItem {
   'cf:isPaid'?: unknown;
   'cf:liveCoverageState'?: { '@_state'?: unknown };
   'cf:thumbnail'?: Record<string, unknown>;
-  errors?: string[];
-  warnings?: string[];
+  errors?: FeedIssue[];
+  warnings?: FeedIssue[];
   [key: string]: unknown;
 }

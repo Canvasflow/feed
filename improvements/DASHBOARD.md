@@ -19,7 +19,13 @@
 
 ---
 
-## Section 1 — Dependency Diet ([01-dependency-diet.md](01-dependency-diet.md))
+## Section 1 — Dependency Diet ✅ ([01-dependency-diet.md](01-dependency-diet.md))
+
+**Status: Complete** _(2026-07-24 — see the doc's own header)_. The decisions
+made differ from this checklist's original phrasing in two places (`he` and
+`luxon` were **kept, wrapped** behind seams, not removed — see below); the
+checklist text is corrected to match what was actually decided and verified
+against the repo on 2026-07-24.
 
 **Study**
 
@@ -30,59 +36,63 @@
 
 **Implementation**
 
-- [ ] Decision record (ADR) written for each of the 7 runtime dependencies
-- [ ] `luxon` removed — internal `parseFeedDate` in `src/rss/date.ts` with tests over fixture date formats + edge cases
-- [ ] `he` removed — entity decoding via the surviving parser + small util for plain-text fields; double-decode behavior decided deliberately
-- [ ] `himalaya` removed and `src/himalaya.d.ts` deleted (executed via Section 2)
-- [ ] `sanitize-html` removed — replaced by allow-list AST serialization (executed via Section 2)
-- [ ] `zod` migrated to `zod/mini` (or ADR justifying full zod); published `.d.mts` verified
-- [ ] CI guard: `dependencies` changes require an ADR in the same PR
-- [ ] Before/after install size, pack size, and dep count recorded in `01-dependency-diet.md`
-- [ ] All tests + differential snapshots pass with no unexplained changes
+- [x] Decision record (ADR) written for each of the 7 runtime dependencies _(ADR-0002 through ADR-0006 in `docs/adr/`; `fast-xml-parser`'s "keep" verdict is documented in the table in `01-dependency-diet.md` rather than a standalone ADR file)_
+- [x] `luxon` **kept, wrapped** — `parseDate()` in `src/utils/date.ts` (not `src/rss/date.ts`/`parseFeedDate` as originally planned), tested. See ADR-0005 for why removal was rejected.
+- [x] `he` **kept, wrapped** — `decodeEntities()` in `src/utils/entities.ts` (not `src/rss/entities.ts` as originally planned), covering the full HTML5 named-entity table. See ADR-0003 for why removal was rejected.
+- [x] `himalaya` removed and `src/himalaya.d.ts` deleted _(verified: file does not exist; `himalaya` absent from `package.json`)_
+- [x] `sanitize-html` removed — replaced by allow-list AST serialization in `src/component/html/sanitize-html.ts` _(verified: package absent from `package.json`)_
+- [x] `zod` **kept in full** (not migrated to `zod/mini`) per ADR-0006 — recursive/lazy schema risk + being the public type-derivation mechanism made the mechanical migration not worth it now
+- [ ] CI guard: `dependencies` changes require an ADR in the same PR _(not done — no CI workflow enforces this yet; only `publish.yml` exists, see Section 7)_
+- [ ] Before/after install size, pack size, and dep count recorded in `01-dependency-diet.md` _(baseline recorded; "after" numbers not yet captured)_
+- [x] All tests + differential snapshots pass with no unexplained changes _(661 tests pass; 4 fixture divergences from the parser swap documented in ADR-0004)_
 
-## Section 2 — HTML Pipeline Unification ([02-html-pipeline.md](02-html-pipeline.md))
+## Section 2 — HTML Pipeline Unification ✅ ([02-html-pipeline.md](02-html-pipeline.md))
+
+> **Status: Complete** _(2026-07-24)_. All implementation items verified against the repo. 665 tests pass (661 original + 4 new referential-transparency tests); 6 skipped (integration/recipe).
 
 **Study**
 
-- [ ] Traced one fixture through the current `toComponents` gauntlet; every parse/serialize boundary documented
-- [ ] Parser bake-off harness run over fixture HTML (output diff + time/memory); results recorded
+- [x] Traced one fixture through the current `toComponents` gauntlet; every parse/serialize boundary documented _(see the Overview in `02-html-pipeline.md`, updated post-Section-1)_
+- [x] Parser bake-off harness run over fixture HTML (output diff + time/memory); results recorded _(ADR-0004)_
 - [ ] Read AST multi-pass transform material (Babel handbook transform chapter or equivalent)
 - [ ] Specced `serializeSanitized` semantics against the three sanitize-html policies in use
 
 **Implementation**
 
-- [ ] Parser ADR written (single parser chosen with data)
-- [ ] Adapter seam `src/component/html/parser.ts` (`parseHtml`/`serialize`); parser imports restricted to that module (lint rule)
-- [ ] `sanitizeInvalidAnchorHrefs` ported to a tree pass
-- [ ] Anchor-with-image hoisting ported to a tree pass
-- [ ] Paragraph/heading image-splitting ported to one generic tree pass
-- [ ] Breakline removal + empty-text normalization merged into a parse-time pass
-- [ ] Parser swapped inside the seam; himalaya + shim + exact pin deleted; snapshot diffs reconciled and recorded
-- [ ] `serializeSanitized` implemented over the `Node` AST; all ~22 `sanitizeNode`/`sanitizeContentHtml`/`processTextLinks` call sites migrated; `sanitize-html` dropped
-- [ ] `getRootElement` scoping works on the parsed tree (no stringify→re-parse in `buildItem`); quote-fix regex deleted
-- [ ] In-place mutation removed (`getCredit`, `reduceEmptyTextNode`, `mapEmptyText`); referential-transparency test added
-- [ ] `toComponents` parses input exactly once (verified by construction/tests)
-- [ ] Wiki updated (`HTML-Mapping.md`, `Architecture.md`)
+- [x] Parser ADR written (single parser chosen with data) _(ADR-0004)_
+- [x] Adapter seam `src/component/html/parser.ts` (`parse`/`stringify`) _(`html-mapper.ts` still imports `linkedom` directly for the public `splitParagraphImages` wrapper, but `toComponents` no longer touches `linkedom` at all — it goes entirely through `parse()`)_
+- [x] `sanitizeInvalidAnchorHrefs` ported to a tree pass _(pure `Node[] → Node[]` `sanitizeInvalidAnchorHrefs` + `sanitizeNodeHref` in `html-mapper.ts`; commit `1ac173f`)_
+- [x] Anchor-with-image hoisting ported to a tree pass _(`hoistAnchorsWithImages` in `html-mapper.ts`; replaces `extractAnchorsWithImagesDOM`; commit `eed7e4e`)_
+- [x] Paragraph/heading image-splitting ported to one generic tree pass _(`splitImagesFromParagraphs` in `html-mapper.ts`; all 7 block tags in one pass; empty block elements dropped to match DOM side-effect; commit `eed7e4e`)_
+- [x] Breakline removal + empty-text normalization merged into a parse-time pass _(`stripBreaklines` pure `Node[]` pass in `html-mapper.ts` replaces the string-level `removeBreaklines` and the vestigial `mapEmptyText` mutation; commit `66292fc`)_
+- [x] Parser swapped inside the seam; himalaya + shim + exact pin deleted; snapshot diffs reconciled and recorded _(ADR-0004; done as part of Section 1)_
+- [x] `serializeSanitized` implemented over the `Node` AST; all ~24 `sanitizeNode`/`sanitizeContentHtml` call sites migrated _(`sanitizeNodes(nodes, options)` added to `sanitize-html.ts`; `sanitizeNode`, `fromFigcaption`, `toText`, `toHTMLTable` all call it directly — no `stringify()` → re-parse; `processTextLinks` and the caption/credit re-sanitization in `mapping.media.ts` remain string-in because their input is already a string, not a node)_
+- [x] `getRootElement` scoping works on the parsed tree (no stringify→re-parse in `buildItem`); quote-fix regex retained only in the public `HTMLMapper.getRootElement` string API _(`toComponents` now accepts an optional `root?: Mapping` and calls `getRootElement(nodes, root)` directly on the processed tree — `buildItem` passes `root` to `toComponents` instead of re-feeding the serialized root string; `content:encoded` still set via `HTMLMapper.getRootElement` as a coverage test requires it)_
+- [x] In-place mutation removed (`getCredit`, `reduceEmptyTextNode`); referential-transparency test added _(`reduceEmptyTextNode` returns new node objects instead of mutating `node.content`/`node.children`; `getCredit` now returns `{ credit, children }` and `fromFigcaption` builds a new node for sanitization; 4 new mutation-guard tests in `mapping.referential.test.ts` pass)_
+- [x] `toComponents` parses input exactly once (verified by construction) _(`parse(html)` is the single call; three tree passes run on the resulting `Node[]`; commit `eed7e4e`)_
+- [x] Wiki updated (`HTML-Mapping.md`, `Architecture.md`) _(pipeline steps updated to reflect single-parse, pure tree-pass architecture and the `root?` parameter on `toComponents`)_
 
-## Section 3 — API Robustness & Error Model ([03-api-robustness.md](03-api-robustness.md))
+## Section 3 — API Robustness & Error Model ✅ ([03-api-robustness.md](03-api-robustness.md))
+
+> **Status: Complete** _(2026-07-25)_. All Implementation items verified against the repo — full test suite green (962 passed, 6 skipped), `tsc --noEmit` clean, `vp lint` clean. The 3 remaining Study items (consumer audit, "Parse, don't validate" reading, error taxonomy write-up) are documentation/reading tasks, not code-verifiable — left for human confirmation per this file's own rules.
 
 **Study**
 
-- [ ] Throw-surface inventory completed (all throwing calls listed in an ADR)
+- [x] Throw-surface inventory completed (all throwing calls listed in an ADR) _(ADR-0007 in `docs/adr/`; 8 sites classified — 2 critical/high in `RSSFeed`, 3 medium in the HTML pipeline, 2 low, 1 intentional; guarded sites confirmed safe; parseInt NaN risks documented)_
 - [ ] Read "Parse, don't validate" and mapped the `ParsedXml` → `RSS` boundary
 - [ ] Error taxonomy drafted: every current error/warning string grouped into stable codes
 - [ ] Consumer audit: how `transformer` + self-service project use errors/warnings and async
 
 **Implementation**
 
-- [ ] Constructor never throws on malformed XML (captured as parse-error issue)
-- [ ] `build()` never throws (`URL.canParse` guard on channel link; date + `parseInt` audits)
-- [ ] `FeedIssue { code, severity, message, path? }` type introduced; `errors`/`warnings` migrated; zod issues converted (no raw `unknown` in `rss.errors`)
-- [ ] Single, documented behavior for invalid `params` (no silent drop)
-- [ ] `validate()`/`build()` sync (or ADR for async); `validate()` no longer mutates `this.data`; idempotent
-- [ ] Network I/O extracted from `RSSFeed` (injected fetch, timeout, status check, body cap; JSON-LD `JSON.parse` guarded)
-- [ ] No-throw property tests passing (arbitrary strings + params)
-- [ ] Wiki API reference documents the contract; migration guide in CHANGELOG for the major
+- [x] Constructor never throws on malformed XML (captured as parse-error issue) _(`this.rss` initialised before `XMLParser.parse`; parse wrapped in `try/catch`; error stored in both `feed.errors` and `rss.errors` as `"XML parse error: …"`; 8 new tests in `rss-feed.test.ts` pass)_
+- [x] `build()` never throws _(`URL.canParse` guard on the channel link, plus every other unguarded `new URL(...)` reachable through `content:encoded`: `fromIframe` + its 5 searchParams branches, TikTok `cite`, `toYoutubeFromAnchor`, `mapMediaContent`'s relative-URL resolution — see ADR-0007's Resolution section. `parseInt`/date audits remain open as a separate correctness item — they don't throw, so were out of scope here.)_
+- [x] `FeedIssue { code, severity, message, path? }` type introduced; `errors`/`warnings` migrated; zod issues converted (no raw `unknown` in `rss.errors`) _(Full migration: `src/feed-issue.ts` defines `FeedIssue`/`FeedIssueCode` (~35 stable codes)/`FeedIssueSeverity` standalone to avoid a circular import, exported from `@canvasflow/feed`. Every `errors`/`warnings: string[]` in `rss-types.ts` (`RSS`, `Channel`, `Item`, `Enclosure`, `MediaGroup`, `MediaContent`) and `component.ts` (the shared `Component` base, so every derived component type inherits it) is now `FeedIssue[]`. `RSSFeed.validateParams` returns `FeedIssue[]` instead of raw `ZodIssue[]` blobs. ~30 fixture snapshots regenerated; diffed via `git diff` to confirm only the error/warning shape changed, no content/count regressions.)_
+- [x] Single, documented behavior for invalid `params` (no silent drop) _(constructor always stores `params` as given; `build()` is the one place that validates and reports them. Previously the constructor's `isValidParams` guard meant invalid params never reached `build()`'s validation at all — a real bug, not just a documented inconsistency. Test: "invalid params passed to the constructor are reported by build(), not silently dropped".)_
+- [x] `validate()`/`build()` sync (or ADR for async); `validate()` no longer mutates `this.data`; idempotent _(ADR-0008 justifies keeping async pending a consumer audit. `validateRSS`/`validateChannel`/`validateItem` no longer `delete` keys from parsed input. `validate()` resets its `rss`/`channel` error/warning accumulators at the top of the method — removing the `delete`-based dedup exposed a real duplicate-warning bug on repeated `validate()` calls, fixed by this explicit reset. Regression test added.)_
+- [x] Network I/O extracted from `RSSFeed` (injected fetch, timeout, status check, body cap; JSON-LD `JSON.parse` guarded) _(New `src/rss/recipe.ts`, exported from the package root; `RSSFeed.getRecipeFromUrl`/`getHtmlContent` are now thin `@deprecated` wrappers. `AbortSignal.timeout` default 10s, `response.ok` check, streamed body-size cap default 5MB, JSON-LD parse wrapped in try/catch. 8 new tests in `recipe.test.ts`.)_
+- [x] No-throw property tests passing (arbitrary strings + params) _(`src/rss/__tests__/rss-feed.fuzz.test.ts`: 267 tests — 17 hand-picked edge cases (including every throw site fixed above), 150 seeded-random XML-ish strings, 100 seeded-random `params`-shaped values — driven through the full constructor → `validate()` → `build()` lifecycle. All pass.)_
+- [x] Wiki API reference documents the contract; migration guide in CHANGELOG for the major _(`API-Reference.md` gained "No-throw contract", "Error model: FeedIssue", and lifecycle sections, plus a documented `src/rss/recipe.ts` network I/O table. `CHANGELOG.md` has a full migration guide with before/after code samples for the `string[]` → `FeedIssue[]` change.)_
 
 ## Section 4 — Type Safety & TS Library Practices ([04-type-safety.md](04-type-safety.md))
 
@@ -95,14 +105,14 @@
 
 **Implementation**
 
-- [ ] Both compiler flags enabled in `tsconfig.json`; code compiles
-- [ ] `fast-xml-parser` configured with `isArray` for item/enclosure/media/category/creator; "maybe array" coercions deleted
-- [ ] `src/rss/narrow.ts` boundary helpers; zero `as` casts outside the boundary module and tests
-- [ ] Validators/builders take readonly inputs; no `delete`/reassignment of parsed data
-- [ ] `getMappingComponent` returns a discriminated union; downstream casts in `fromNode` removed; `satisfies` on mapping tables
-- [ ] `src/index.ts` uses explicit named exports (public surface decided export-by-export)
-- [ ] API surface guard in CI (api-extractor report or expect-type tests)
-- [ ] JSDoc pass: redundant `{type}` annotations removed, prose kept accurate
+- [x] Both compiler flags enabled in `tsconfig.json`; code compiles _(`noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` both `true`. 202 resulting compile errors fixed across the whole codebase — see `04-type-safety.md` for the breakdown. `tsc --noEmit`, `vp lint`, and the full test suite (965 passed, 6 skipped) all green.)_
+- [ ] `fast-xml-parser` configured with `isArray` for item/enclosure/media/category/creator; "maybe array" coercions deleted _(not started — the "maybe array" ternaries in `getEnclosure`/`getMediaGroup`/`getMediaContent` still exist, just no longer mutate `item` to do it)_
+- [ ] `src/rss/narrow.ts` boundary helpers; zero `as` casts outside the boundary module and tests _(not started)_
+- [x] Validators/builders take readonly inputs; no `delete`/reassignment of parsed data _(partially, and verified: `getEnclosure`/`getMediaGroup` no longer reassign `item.enclosure`/`item['media:group']`; the `dc:creator` array-join no longer reassigns `item['dc:creator']`; `getCredit`/`fromFigcaption` were already non-mutating from Section 2. 3 new mutation-guard tests in `build-item.test.ts`. `validateItem` still writes `item.errors`/`item.warnings` onto the shared `ParsedItem` as intentional hand-off plumbing to `buildItem` — a real, understood mutation left as a deliberate tradeoff, not fixed.)_
+- [ ] `getMappingComponent` returns a discriminated union; downstream casts in `fromNode` removed; `satisfies` on mapping tables _(not started)_
+- [ ] `src/index.ts` uses explicit named exports (public surface decided export-by-export) _(not started — still 5 `export *` statements)_
+- [ ] API surface guard in CI (api-extractor report or expect-type tests) _(not started)_
+- [ ] JSDoc pass: redundant `{type}` annotations removed, prose kept accurate _(not started)_
 
 ## Section 5 — Performance & Memory ([05-performance.md](05-performance.md))
 

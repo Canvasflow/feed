@@ -83,6 +83,7 @@ import {
 import { toHTMLTable } from './mapping.table';
 import { toCustom } from './mapping.custom';
 import { toText } from './mapping.text';
+import { errorIssue } from '../../feed-issue';
 
 // Re-export the publicly consumed constants and helpers so the package surface
 // is unchanged.
@@ -160,26 +161,27 @@ export function reduceEmptyTextNode(nodes: Node[], node: Node): Node[] {
   if (node.type === 'comment') return nodes;
 
   if (node.type === 'text') {
-    let { content } = node;
+    let content = node.content;
     if (content) {
       content = collapseAsciiWhitespace(content);
-      node.content = content;
     }
 
     if (content.length >= 1 && !trimAsciiWhitespace(content).length) {
-      node.content = ' ';
-      nodes.push(node);
+      nodes.push(content === node.content ? node : { ...node, content: ' ' });
       return nodes;
     }
-    if (!isEmpty(node.content)) {
-      nodes.push(node);
+    if (!isEmpty(content)) {
+      nodes.push(content === node.content ? node : { ...node, content });
     }
     return nodes;
   }
 
   if (node.type === 'element' && node.children) {
-    node.children = node.children.reduce(reduceEmptyTextNode, []);
+    const newChildren = node.children.reduce(reduceEmptyTextNode, []);
+    nodes.push({ ...node, children: newChildren });
+    return nodes;
   }
+
   nodes.push(node);
   return nodes;
 }
@@ -328,7 +330,8 @@ export function fromNode(
   }
 
   if (isTikTokNode(node)) {
-    if (!attributes.get('cite')) {
+    const cite = attributes.get('cite');
+    if (!cite || !URL.canParse(cite)) {
       return {
         component: 'video',
         vidtype: 'tiktok',
@@ -337,11 +340,22 @@ export function fromNode(
           id: '',
         },
         warnings: [],
-        errors: ['cite attribute is required'],
+        errors: [
+          cite
+            ? errorIssue(
+                'INVALID_TIKTOK_URL',
+                `Invalid cite URL: "${cite}"`,
+                'cite'
+              )
+            : errorIssue(
+                'INVALID_TIKTOK_URL',
+                'cite attribute is required',
+                'cite'
+              ),
+        ],
       } as TikTokComponent;
     }
-    /* v8 ignore next -- cite presence is checked above; `|| ''` is defensive */
-    const tiktokComponent = toTikTok(new URL(attributes.get('cite') || ''));
+    const tiktokComponent = toTikTok(new URL(cite));
     if (tagName) {
       tiktokComponent.element = {
         tag: tagName,
@@ -577,7 +591,8 @@ interface MappingComponentResponse {
     | 'columns'
     | 'live_container'
     | 'gallery'
-    | 'custom';
-  properties?: Record<string, unknown>;
-  mapping?: ComponentMapping;
+    | 'custom'
+    | undefined;
+  properties?: Record<string, unknown> | undefined;
+  mapping?: ComponentMapping | undefined;
 }

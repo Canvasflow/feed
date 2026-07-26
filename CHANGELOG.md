@@ -1,5 +1,67 @@
 # CHANGELOG
 
+## Migration guide — structured `FeedIssue` errors/warnings (next major)
+
+Section 3 of the improvement plan (`improvements/03-api-robustness.md`)
+replaces every `errors`/`warnings` string array with a `FeedIssue[]`:
+
+```ts
+interface FeedIssue {
+  code: FeedIssueCode; // stable, switchable string union — see src/feed-issue.ts
+  severity: 'error' | 'warning';
+  message: string;
+  path?: string;
+}
+```
+
+This affects `RSS.errors`/`warnings`, `Channel.errors`/`warnings`,
+`Item.errors`/`warnings`, `Enclosure`/`MediaGroup`/`MediaContent`
+`errors`/`warnings`, `RSSFeed.errors`, `RSSFeed.validateParams()`'s return
+value, and `errors`/`warnings` on every `Component` produced by
+`HTMLMapper.toComponents()` (image, video, gallery, embeds, containers,
+buttons, text, tables, ...).
+
+**Before:**
+
+```ts
+const rss = await feed.build();
+if (
+  rss.channel.items[0].errors.includes('Required property "url" is missing')
+) {
+  // ...
+}
+```
+
+**After:**
+
+```ts
+const rss = await feed.build();
+if (rss.channel.items[0].errors.some((e) => e.code === 'MISSING_URL')) {
+  // ...
+}
+// e.message still carries the human-readable text for logging/display.
+```
+
+Consumers that render `errors`/`warnings` as plain strings should switch to
+reading `.message`; consumers that branch on specific error text should
+switch to branching on `.code` (see `FeedIssueCode` in `src/feed-issue.ts`
+for the full list, e.g. `XML_PARSE_ERROR`, `INVALID_PARAMS`,
+`MISSING_IMAGE_SRC`, `INVALID_YOUTUBE_URL`, ...).
+
+Also in this pass: `build()` no longer throws on any unparseable URL
+reachable from feed content (channel `<link>`, iframe embeds, TikTok/YouTube
+anchors, relative media URLs); the `RSSFeed` constructor never throws on
+malformed XML; invalid `params` passed to the constructor are always
+reported by `build()` instead of being silently dropped; `validate()` no
+longer mutates parsed input and is idempotent across repeated calls;
+`getRecipeFromUrl`/`getHtmlContent` moved to `src/rss/recipe.ts` (exported
+from the package root) with an injectable `fetch`, a timeout, a
+response-status check, and a body-size cap — `RSSFeed.getRecipeFromUrl`/
+`getHtmlContent` remain as deprecated wrappers.
+
+See ADR-0007 (`docs/adr/0007-throw-surface-inventory.md`) and ADR-0008
+(`docs/adr/0008-keep-validate-build-async.md`) for the full rationale.
+
 ## 🏷️ 1.17.4
 
 _July 14, 2026_

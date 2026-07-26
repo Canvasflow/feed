@@ -1,5 +1,7 @@
 export * from './rss/rss-feed';
 export * from './rss/rss-types';
+export * from './rss/recipe';
+export * from './feed-issue';
 export * from './component/component';
 
 export * from './component/schema/recipe-schema';

@@ -119,7 +119,7 @@ export interface ElementNode {
   type: 'element';
   children: Array<Node>;
   tagName: string;
-  attributes?: Array<Attribute>;
+  attributes?: Array<Attribute> | undefined;
 }
 
 export interface CommentNode {

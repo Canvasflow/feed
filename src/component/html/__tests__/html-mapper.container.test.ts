@@ -152,8 +152,8 @@ describe('Recipe components', () => {
       if (!recipeComponent) {
         return;
       }
-      expect(recipeComponent.components[0].component).toBe('intro');
-      expect(recipeComponent.components[1].component).toBe('body');
+      expect(recipeComponent.components[0]!.component).toBe('intro');
+      expect(recipeComponent.components[1]!.component).toBe('body');
     }
   );
   test(
@@ -455,8 +455,8 @@ describe('Link container components', () => {
 
       const textComponent = components[0] as TextComponent;
       expect(isTextComponent(textComponent)).toBe(true);
-      expect(textComponent.component).toBe(mappings[0].component);
-      expect(textComponent.properties).toEqual(mappings[0].properties);
+      expect(textComponent.component).toBe(mappings[0]!.component);
+      expect(textComponent.properties).toEqual(mappings[0]!.properties);
       expect(textComponent.text).toBe(
         `<a href="${link}" target="_blank">Test</a>`
       );

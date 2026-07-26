@@ -4,6 +4,73 @@ The public surface re-exported from [`src/index.ts`](https://github.com/canvasfl
 
 ← Back to [Home](Home.md) · Related: [RSS Feeds](RSS-Feeds.md) · [HTML Mapping](HTML-Mapping.md) · [Component Types](Component-Types.md)
 
+## No-throw contract
+
+For any string input and any `params`/`root` config, `new RSSFeed(...)`,
+`validate()`, and `build()` never throw — problems are reported through
+`errors`/`warnings` instead:
+
+- **Malformed XML** — the constructor wraps `XMLParser.parse` in a
+  `try/catch`; a parse failure becomes an `XML_PARSE_ERROR` issue on both
+  `feed.errors` and `feed.rss.errors`, and `this.data` is left empty so
+  `validate()`/`build()` still run to completion.
+- **Malformed URLs reachable from feed content** — the channel `<link>`,
+  iframe embeds (YouTube/TikTok/Vimeo/Dailymotion/Twitter/Infogram/Apple
+  Podcasts), anchor-based embeds, and relative `media:content` URL
+  resolution are all guarded with `URL.canParse` before construction; an
+  unparseable URL becomes a warning or an error-annotated component instead
+  of throwing.
+- **Invalid `params`/`root`** — never silently dropped. The constructor
+  always stores what it's given; `build()` is the one place that validates
+  them (`RSSFeed.validateParams`) and reports the result.
+- **Network I/O** — `getRecipeFromUrl`/`getHtmlContent` (see below) still
+  reject on a genuine network failure or non-`ok` response — that's a
+  `Promise` rejection, not a thrown exception from `RSSFeed` itself, and is
+  the one place this library performs I/O you didn't explicitly ask for.
+
+Verified by a seeded property-test suite
+(`src/rss/__tests__/rss-feed.fuzz.test.ts`) driving the constructor →
+`validate()` → `build()` lifecycle over hand-picked edge cases and random
+XML/`params` input. See ADR-0007
+(`docs/adr/0007-throw-surface-inventory.md`) for the full throw-surface
+inventory and how each site was fixed.
+
+## Error model: `FeedIssue`
+
+`errors`/`warnings` throughout this library — `RSS`, `Channel`, `Item`,
+`Enclosure`, `MediaGroup`, `MediaContent`, `RSSFeed.errors`,
+`RSSFeed.validateParams()`'s return value, and every `Component`'s
+`errors`/`warnings` — are arrays of:
+
+```ts
+interface FeedIssue {
+  code: FeedIssueCode; // stable string union, exported from '@canvasflow/feed'
+  severity: 'error' | 'warning';
+  message: string; // human-readable, for logging/display
+  path?: string; // e.g. "cf:thumbnail.url", the tag/field the issue is about
+}
+```
+
+`FeedIssueCode` is a large, stable, switchable union (`XML_PARSE_ERROR`,
+`MISSING_REQUIRED_TAG`, `INVALID_PARAMS`, `MISSING_IMAGE_SRC`,
+`INVALID_YOUTUBE_URL`, ... — see `src/feed-issue.ts` for the full list).
+Branch on `.code` for programmatic handling; use `.message` for display.
+See the CHANGELOG's migration guide for the `string[]` → `FeedIssue[]`
+transition.
+
+## `validate()` / `build()` lifecycle
+
+- `validate()` populates `errors`/`warnings` against the tag allow-lists in
+  `tag.ts`. It does **not** mutate the parsed input (no `delete`), and it
+  resets its own accumulators at the start, so calling it more than once is
+  idempotent.
+- `build()` calls `validate()` automatically if it hasn't run yet, then
+  constructs the typed `RSS`. If `rss.errors` is non-empty after validation,
+  `build()` returns early with that `RSS` (no items are built).
+- Both are `async` even though today's implementation is fully synchronous
+  internally — see ADR-0008 (`docs/adr/0008-keep-validate-build-async.md`)
+  for why the sync conversion is deferred rather than done now.
+
 ## `RSSFeed`
 
 ```ts
@@ -17,22 +84,39 @@ import { RSSFeed } from '@canvasflow/feed';
 | constructor     | `new RSSFeed(content: string, params?: Params)` | Parse the feed XML; optional `Params` configures HTML conversion. |
 | `content`       | `string`                                        | The original XML passed in.                                       |
 | `rss`           | `RSS`                                           | The typed result, populated by `validate()` / `build()`.          |
-| `errors`        | `Array<unknown>`                                | Top-level errors collected during validation.                     |
+| `errors`        | `FeedIssue[]`                                   | Top-level errors collected during validation.                     |
 | `root` (setter) | `set root(mapping?: Mapping)`                   | Scope content extraction to a sub-element before conversion.      |
 | `validate()`    | `Promise<void>`                                 | Validate required tags; fill `errors`/`warnings`.                 |
 | `build()`       | `Promise<RSS>`                                  | Build the typed `RSS`; attach a `components` array to each item.  |
 
 ### Static members
 
-| Member             | Signature                                                 | Description                                                             |
-| ------------------ | --------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `validateParams`   | `(params?: Params, root?: Mapping) => Array<unknown>`     | Validate params/root against the Zod schemas; returns collected issues. |
-| `toJSON`           | `(rss: RSS) => unknown`                                   | Serialize then re-parse an `RSS` (round-trips errors via `toString`).   |
-| `toString`         | `(rss: RSS) => string`                                    | JSON string of an `RSS` (Error values are flattened).                   |
-| `getRecipeFromUrl` | `(url: string) => Promise<Recipe \| null>`                | Fetch a page and extract an LD+JSON `Recipe`.                           |
-| `getHtmlContent`   | `(url: string, headers?: HeadersInit) => Promise<string>` | Fetch raw HTML for a URL.                                               |
+| Member             | Signature                                                 | Description                                                                                                                       |
+| ------------------ | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `validateParams`   | `(params?: Params, root?: Mapping) => FeedIssue[]`        | Validate params/root against the Zod schemas; returns structured issues (`code` is `'INVALID_PARAMS' \| 'INVALID_ROOT_MAPPING'`). |
+| `toJSON`           | `(rss: RSS) => unknown`                                   | Serialize then re-parse an `RSS` (round-trips errors via `toString`).                                                             |
+| `toString`         | `(rss: RSS) => string`                                    | JSON string of an `RSS` (Error values are flattened).                                                                             |
+| `getRecipeFromUrl` | `(url: string) => Promise<Recipe \| null>`                | **Deprecated** thin wrapper around `getRecipeFromUrl` from `./recipe` (see below).                                                |
+| `getHtmlContent`   | `(url: string, headers?: HeadersInit) => Promise<string>` | **Deprecated** thin wrapper around `getHtmlContent` from `./recipe` (see below).                                                  |
 
 > `getRecipeFromUrl` / `getHtmlContent` perform network I/O (`fetch`); everything else is pure.
+
+## Network I/O (`src/rss/recipe.ts`)
+
+Extracted out of `RSSFeed` (Section 3, "Network I/O extraction") so the
+XML-parsing library doesn't hide unbounded `fetch` calls behind its public
+API. Both are exported from `@canvasflow/feed` directly:
+
+```ts
+import { getHtmlContent, getRecipeFromUrl } from '@canvasflow/feed';
+```
+
+| Function                          | Signature                                                          | Description                                                                                                                 |
+| --------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| `getHtmlContent(url, options?)`   | `(url: string, options?: FetchOptions) => Promise<string>`         | Fetch `url` as text. Rejects on a non-`ok` response or on exceeding `maxBytes`.                                             |
+| `getRecipeFromUrl(url, options?)` | `(url: string, options?: FetchOptions) => Promise<Recipe \| null>` | Fetch `url` and extract the first LD+JSON `Recipe` (top-level or nested in `@graph`); malformed JSON-LD blocks are skipped. |
+
+`FetchOptions`: `{ fetch?: typeof fetch; headers?: HeadersInit; timeoutMs?: number /* default 10000 */; maxBytes?: number /* default 5MB */ }`. The request is aborted via `AbortSignal.timeout(timeoutMs)`; the response body is read through a size-capped stream.
 
 ## `HTMLMapper`
 
@@ -73,6 +157,7 @@ The `is*` component guards (e.g. `isImageComponent`, `isVideoComponent`) and `is
 | Group              | Types                                                                                                                                                           |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Feed               | `RSS`, `Channel`, `Item`, `Enclosure`, `MediaContent`, `MediaGroup`, `Thumbnail`                                                                                |
+| Errors             | `FeedIssue`, `FeedIssueCode`, `FeedIssueSeverity` — see "Error model" above                                                                                     |
 | Config             | `Params`, `Mapping`, `ComponentMapping`, `MatchType`, `Filter`, `TagFilter`, `ClassFilter`, `AttributeFilter`, `AttributeValueFilter`, `AttributePatternFilter` |
 | Component mappings | `ContainerMapping`, `ColumnsMapping`, `LiveContainerMapping`, `RecipeMapping`, `CustomMapping`, `TextMapping`, `GalleryMapping`                                 |
 | Components         | `Component`, `ComponentType`, `TextType`, and every `*Component` interface                                                                                      |

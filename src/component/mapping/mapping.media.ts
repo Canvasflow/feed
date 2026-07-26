@@ -48,6 +48,7 @@ import {
   fromNode,
   toCustom,
 } from './mapping';
+import { type FeedIssue, errorIssue, warningIssue } from '../../feed-issue';
 
 /**
  * It process an `img` node into Canvasflow image component
@@ -56,8 +57,8 @@ import {
  * @returns {ImageComponent}
  */
 export function toImg(node: ElementNode): ImageComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   let width: number | undefined;
   let height: number | undefined;
   const attributes = getAttributes(node.attributes);
@@ -80,7 +81,9 @@ export function toImg(node: ElementNode): ImageComponent {
 
   const alt = attributes.get('alt');
   if (!src) {
-    errors.push('Image src attribute is missing');
+    errors.push(
+      errorIssue('MISSING_IMAGE_SRC', 'Image src attribute is missing')
+    );
   }
 
   return {
@@ -121,8 +124,8 @@ export function toImage(node: ElementNode): ImageComponent {
     return imageComponent;
   }
 
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   let imageurl = '';
 
   const src = attributes.get('src');
@@ -154,13 +157,18 @@ export function toImage(node: ElementNode): ImageComponent {
 function fromPicture(node: ElementNode): ImageComponent {
   let imageurl = '';
   let alt: string | undefined;
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
 
   // Handle image
   const imageNodes = node.children.reduce(findDescendants('img'), []);
   if (imageNodes.length > 1) {
-    warnings.push('Only one img tag per picture tag is valid');
+    warnings.push(
+      warningIssue(
+        'DUPLICATE_IMG_TAG',
+        'Only one img tag per picture tag is valid'
+      )
+    );
   }
 
   for (const n of imageNodes) {
@@ -169,7 +177,9 @@ function fromPicture(node: ElementNode): ImageComponent {
     const attributes = getAttributes(n.attributes);
     const src = attributes.get('src');
     if (!src) {
-      errors.push('Image src attribute is missing');
+      errors.push(
+        errorIssue('MISSING_IMAGE_SRC', 'Image src attribute is missing')
+      );
     }
 
     alt = attributes.get('alt');
@@ -179,7 +189,7 @@ function fromPicture(node: ElementNode): ImageComponent {
   }
 
   if (!imageurl) {
-    errors.push('imageurl is empty');
+    errors.push(errorIssue('EMPTY_IMAGE_URL', 'imageurl is empty'));
   }
 
   return {
@@ -202,8 +212,8 @@ function fromFigure(
   node: ElementNode
 ): ImageComponent | VideoComponent | AudioComponent | YoutubeComponent | null {
   let imageurl = '';
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   let caption: string | undefined;
   let credit: string | undefined;
   let link: string | undefined;
@@ -271,7 +281,12 @@ function fromFigure(
       (n) => n.type === 'element' && n.tagName === 'img'
     );
     if (imageNodes.length > 1) {
-      warnings.push('Only one <img> tag is allowed per <figure> element');
+      warnings.push(
+        warningIssue(
+          'DUPLICATE_IMG_TAG',
+          'Only one <img> tag is allowed per <figure> element'
+        )
+      );
     }
     for (const n of imageNodes) {
       if (n.type !== 'element') continue;
@@ -293,7 +308,9 @@ function fromFigure(
       }
       alt = attributes.get('alt');
       if (!src) {
-        errors.push('Image src attribute is missing');
+        errors.push(
+          errorIssue('MISSING_IMAGE_SRC', 'Image src attribute is missing')
+        );
       }
 
       imageurl = src ?? '';
@@ -307,7 +324,12 @@ function fromFigure(
     );
 
     if (pictureNodes.length > 1) {
-      warnings.push('Only one picture tag per figure tag is valid');
+      warnings.push(
+        warningIssue(
+          'DUPLICATE_IMG_TAG',
+          'Only one picture tag per figure tag is valid'
+        )
+      );
     }
 
     for (const n of pictureNodes) {
@@ -322,7 +344,7 @@ function fromFigure(
   }
 
   if (!imageurl) {
-    errors.push('imageurl is empty');
+    errors.push(errorIssue('EMPTY_IMAGE_URL', 'imageurl is empty'));
   }
 
   return {
@@ -357,8 +379,8 @@ function fromFigure(
 function getImageLink(node: ElementNode): LinkResponse {
   const attributes = getAttributes(node.attributes);
   const link = attributes.get('href') ?? '';
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   let height: number | undefined;
   let width: number | undefined;
 
@@ -368,7 +390,9 @@ function getImageLink(node: ElementNode): LinkResponse {
     // Handle image
     const imageNodes = node.children.reduce(findDescendants('img'), []);
     if (imageNodes.length > 1) {
-      warnings.push('Only one img tag per a tag is valid');
+      warnings.push(
+        warningIssue('DUPLICATE_IMG_TAG', 'Only one img tag per a tag is valid')
+      );
     }
 
     for (const n of imageNodes) {
@@ -377,7 +401,9 @@ function getImageLink(node: ElementNode): LinkResponse {
       const src = attributes.get('src');
       alt = attributes.get('alt') ?? '';
       if (!src) {
-        errors.push('Image src attribute is missing');
+        errors.push(
+          errorIssue('MISSING_IMAGE_SRC', 'Image src attribute is missing')
+        );
       }
 
       const widthAttr = attributes.get('width');
@@ -396,7 +422,7 @@ function getImageLink(node: ElementNode): LinkResponse {
   }
 
   if (!link) {
-    warnings.push('Image link is empty');
+    warnings.push(warningIssue('EMPTY_IMAGE_LINK', 'Image link is empty'));
   }
 
   return {
@@ -417,8 +443,8 @@ function getImageLink(node: ElementNode): LinkResponse {
  * @returns {VideoComponent}
  */
 export function toVideo(node: ElementNode): VideoComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   const attributes = getAttributes(node.attributes);
   let url = '';
   const controls = attributes.has('controls');
@@ -447,7 +473,7 @@ export function toVideo(node: ElementNode): VideoComponent {
   }
 
   if (!url) {
-    errors.push('Video source is required');
+    errors.push(errorIssue('MISSING_VIDEO_SOURCE', 'Video source is required'));
   }
 
   return {
@@ -476,8 +502,8 @@ export function toVideo(node: ElementNode): VideoComponent {
  * @returns {AudioComponent}
  */
 export function toAudio(node: ElementNode): AudioComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   const attributes = getAttributes(node.attributes);
   let url = '';
   const controls = attributes.has('controls');
@@ -505,7 +531,7 @@ export function toAudio(node: ElementNode): AudioComponent {
   }
 
   if (!url) {
-    errors.push('Audio source is required');
+    errors.push(errorIssue('MISSING_AUDIO_SOURCE', 'Audio source is required'));
   }
 
   return {
@@ -532,8 +558,8 @@ export function toAudio(node: ElementNode): AudioComponent {
  * @returns {AudioComponent}
  */
 export function toApplePodcast(node: ElementNode): AudioComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   const attributes = getAttributes(node.attributes);
   let url = '';
   const src = attributes.get('src');
@@ -543,7 +569,7 @@ export function toApplePodcast(node: ElementNode): AudioComponent {
   }
 
   if (!url) {
-    errors.push('src is required');
+    errors.push(errorIssue('MISSING_SRC', 'src is required'));
   }
 
   let autoplay = false;
@@ -572,8 +598,8 @@ export function toApplePodcast(node: ElementNode): AudioComponent {
  * @returns {GalleryComponent}
  */
 export function toGallery(node: ElementNode): GalleryComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   const attributes = getAttributes(node.attributes);
   const role = attributes.get('role') === 'mosaic' ? 'mosaic' : 'default';
   const direction =
@@ -635,8 +661,8 @@ export function toGalleryFromMapping(
   params?: Params,
   properties?: Record<string, unknown>
 ): GalleryComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   const attributes = getAttributes(node.attributes);
   const id = attributes.get('id');
 
@@ -655,7 +681,9 @@ export function toGalleryFromMapping(
     .map(mapImageToGalleryImage);
 
   if (!images.length) {
-    errors.push('slides not found in the gallery');
+    errors.push(
+      errorIssue('MISSING_GALLERY_SLIDES', 'slides not found in the gallery')
+    );
   }
 
   return {
@@ -741,9 +769,9 @@ export function toTwitter(node: ElementNode | URL): TwitterComponent | null {
     return toTweetFromUrl(node);
   }
   const twitterRegex = /\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)/;
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const params: { id?: string; account?: string } = {};
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
+  const params: { id?: string | undefined; account?: string | undefined } = {};
   let attrs: Record<string, string> = {};
 
   const anchorNodes = node.children.reduce(
@@ -799,9 +827,9 @@ export function toTwitter(node: ElementNode | URL): TwitterComponent | null {
  * @returns {TwitterComponent}
  */
 function toTweetFromUrl(uri: URL): TwitterComponent {
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const params: { id?: string; account?: string } = {};
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
+  const params: { id?: string | undefined; account?: string | undefined } = {};
 
   const tweetUrl = uri.pathname;
 
@@ -880,6 +908,10 @@ export function fromIframe(
 
   let builtComponent;
 
+  if (!URL.canParse(src)) {
+    return toCustom(node);
+  }
+
   const url = new URL(src);
 
   switch (url.origin) {
@@ -919,7 +951,8 @@ export function fromIframe(
   // Check if youtube is in the source url
   if (
     searchParams.src &&
-    searchParams.src.startsWith('https://www.youtube.com')
+    searchParams.src.startsWith('https://www.youtube.com') &&
+    URL.canParse(searchParams.src)
   ) {
     builtComponent = toYoutube(new URL(searchParams.src));
     builtComponent.html = sanitizeContentHtml(node);
@@ -934,7 +967,8 @@ export function fromIframe(
   // Check if youtube is in the source url
   if (
     searchParams.url &&
-    searchParams.url.startsWith('https://www.tiktok.com')
+    searchParams.url.startsWith('https://www.tiktok.com') &&
+    URL.canParse(searchParams.url)
   ) {
     builtComponent = toTikTok(new URL(searchParams.url));
     builtComponent.html = sanitizeContentHtml(node);
@@ -949,7 +983,8 @@ export function fromIframe(
   // Check if Dailymotion is in the source url
   if (
     searchParams.url &&
-    searchParams.url.startsWith('https://www.dailymotion.com')
+    searchParams.url.startsWith('https://www.dailymotion.com') &&
+    URL.canParse(searchParams.url)
   ) {
     builtComponent = toDailymotion(new URL(searchParams.url));
     builtComponent.element = {
@@ -962,7 +997,11 @@ export function fromIframe(
   }
 
   // Check if Dailymotion is in the source url
-  if (searchParams.url && searchParams.url.startsWith('https://vimeo.com')) {
+  if (
+    searchParams.url &&
+    searchParams.url.startsWith('https://vimeo.com') &&
+    URL.canParse(searchParams.url)
+  ) {
     builtComponent = toVimeo(new URL(searchParams.url));
     builtComponent.element = {
       tag: node.tagName,
@@ -976,7 +1015,8 @@ export function fromIframe(
   if (
     searchParams.url &&
     (searchParams.url.startsWith('https://twitter.com') ||
-      searchParams.url.startsWith('https://x.com'))
+      searchParams.url.startsWith('https://x.com')) &&
+    URL.canParse(searchParams.url)
   ) {
     builtComponent = toTwitter(new URL(searchParams.url));
     if (!builtComponent) return builtComponent;

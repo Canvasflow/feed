@@ -1,7 +1,7 @@
 import { decodeEntities } from '../utils/entities';
 import { parseDate } from '../utils/date';
 import { XMLParser } from 'fast-xml-parser';
-import { parseHTML } from 'linkedom';
+import { getHtmlContent, getRecipeFromUrl } from './recipe';
 
 import type {
   RSS,
@@ -11,17 +11,19 @@ import type {
   MediaGroup,
   Thumbnail,
 } from './rss-types';
+import {
+  type FeedIssue,
+  type FeedIssueCode,
+  errorIssue,
+  warningIssue,
+} from '../feed-issue';
 import { replaceErrors } from './rss-types';
 export { replaceErrors };
 import { Tag } from './tag';
 import * as Attributes from './attributes';
 import { HTMLMapper } from '../component/html/html-mapper';
 import type { Recipe } from '../component/schema/recipe-schema';
-import {
-  isValidParams,
-  type Mapping,
-  type Params,
-} from '../component/mapping/mapping';
+import { type Mapping, type Params } from '../component/mapping/mapping';
 import {
   MappingSchema,
   ParamsSchema,
@@ -39,7 +41,7 @@ import type { ParsedXml, ParsedItem } from './parsed-xml';
  * accessed via `this`.
  */
 export interface BuildItemContext {
-  origin?: string;
+  origin?: string | undefined;
   root?: Mapping | undefined;
   params?: Params | undefined;
 }
@@ -60,7 +62,7 @@ type CanvasflowBooleanTag =
  */
 type CanvasflowBooleanTarget = {
   [K in CanvasflowBooleanTag]: boolean;
-} & { errors: string[]; warnings: string[] };
+} & { errors: FeedIssue[]; warnings: FeedIssue[] };
 
 // ---------------------------------------------------------------------------
 // RSSFeed class
@@ -75,7 +77,7 @@ export class RSSFeed {
   public content: string;
   private readonly data: ParsedXml;
   public rss: RSS;
-  public errors: string[] = [];
+  public errors: FeedIssue[] = [];
   private params: Params | undefined;
   private origin: string | undefined;
   private _root: Mapping | undefined;
@@ -88,14 +90,6 @@ export class RSSFeed {
    */
   constructor(content: string, params?: Params) {
     this.content = content;
-    const parser = new XMLParser({
-      ignoreAttributes: false,
-      processEntities: false,
-    });
-    this.data = parser.parse(content);
-    if (params && isValidParams(params)) {
-      this.params = params;
-    }
 
     this.rss = {
       errors: [],
@@ -106,48 +100,56 @@ export class RSSFeed {
         warnings: [],
       },
     };
+
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      processEntities: false,
+    });
+
+    try {
+      this.data = parser.parse(content);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      this.data = {} as unknown as ParsedXml;
+      const issue = errorIssue(
+        'XML_PARSE_ERROR',
+        `XML parse error: ${message}`
+      );
+      this.errors.push(issue);
+      this.rss.errors.push(issue);
+      return;
+    }
+
+    // Stored as-is, even when invalid: `build()` is the single place that
+    // validates and reports `params` (via `validateParams`), so there is one
+    // consistent behavior instead of the constructor silently dropping bad
+    // config that `build()` never gets a chance to see.
+    this.params = params;
   }
 
   set root(rootMapping: Mapping | undefined) {
     this._root = rootMapping;
   }
 
+  /**
+   * @deprecated Thin backward-compatible wrapper around
+   * `getRecipeFromUrl` in `./recipe` — the network I/O this performs is not
+   * really part of an XML-parsing library's job. Prefer importing
+   * `getRecipeFromUrl` from `@canvasflow/feed` directly, which also accepts
+   * an injected `fetch`, a timeout, and a body-size cap.
+   */
   static async getRecipeFromUrl(url: string): Promise<Recipe | null> {
-    let recipe: Recipe | null = null;
-    const html = await this.getHtmlContent(url);
-    const { document } = parseHTML(html);
-    const scripts = document.querySelectorAll(
-      'script[type="application/ld+json"]'
-    );
-    for (const element of scripts) {
-      const content = element.textContent;
-      if (!content) {
-        continue;
-      }
-      const parseContent = JSON.parse(content);
-      if (parseContent['@type'] && parseContent['@type'] === 'Recipe') {
-        recipe = parseContent as Recipe;
-        break;
-      }
-      if (parseContent['@graph'] && parseContent['@graph'].length) {
-        for (const item of parseContent['@graph']) {
-          if (item['@type'] && item['@type'] === 'Recipe') {
-            recipe = item as Recipe;
-            break;
-          }
-        }
-        if (recipe) {
-          break;
-        }
-      }
-    }
-
-    return recipe;
+    return getRecipeFromUrl(url);
   }
 
+  /**
+   * @deprecated Thin backward-compatible wrapper around `getHtmlContent` in
+   * `./recipe`. Prefer importing `getHtmlContent` from `@canvasflow/feed`
+   * directly, which also accepts an injected `fetch`, a timeout, and a
+   * body-size cap.
+   */
   static async getHtmlContent(url: string, headers?: HeadersInit) {
-    const response = await fetch(url, { method: 'GET', headers });
-    return response.text();
+    return getHtmlContent(url, { headers });
   }
 
   async validate(): Promise<void> {
@@ -155,10 +157,22 @@ export class RSSFeed {
     this.errors = [];
     this._validated = true;
 
+    // Reset accumulators so repeated `validate()` calls are idempotent —
+    // `validateRSS`/`validateChannel`/`validateItem` no longer delete
+    // offending keys from `this.data` to prevent re-detection, so the
+    // reset has to happen here instead.
+    this.rss.errors = [];
+    this.rss.warnings = [];
+    this.rss.channel.errors = [];
+    this.rss.channel.warnings = [];
+
     if (!data.rss) {
-      const error = 'Required property "rss" is missing at the root level';
-      this.errors.push(error);
-      this.rss.errors.push(error);
+      const issue = errorIssue(
+        'MISSING_ROOT_RSS',
+        'Required property "rss" is missing at the root level'
+      );
+      this.errors.push(issue);
+      this.rss.errors.push(issue);
       return;
     }
 
@@ -184,26 +198,25 @@ export class RSSFeed {
   }
 
   /**
-   * Validate `params` and an optional `root` mapping against their Zod schemas.
-   * Returns an array of validation errors; empty when both are valid.
+   * Validate `params` and an optional `root` mapping against their Zod
+   * schemas. Returns structured `FeedIssue`s (one per invalid schema,
+   * summarizing every underlying Zod issue) instead of raw Zod output.
    *
    * @param {Params} [params]
    * @param {Mapping} [root]
-   * @returns {Array<unknown>}
+   * @returns {FeedIssue[]}
    */
-  static validateParams(params?: Params, root?: Mapping): Array<unknown> {
-    const errors: Array<unknown> = [];
+  static validateParams(params?: Params, root?: Mapping): FeedIssue[] {
+    const errors: FeedIssue[] = [];
     if (params) {
       try {
         const result = ParamsSchema.safeParse(params);
 
         if (!result.success) {
-          const paramsError = { params: result.error.issues };
-          errors.push(paramsError);
+          errors.push(toFeedIssue('INVALID_PARAMS', result.error.issues));
         }
-        /* v8 ignore next 3 -- safeParse does not throw; defensive catch */
       } catch (e) {
-        errors.push(e);
+        errors.push(errorIssue('INVALID_PARAMS', String(e)));
       }
     }
 
@@ -212,14 +225,10 @@ export class RSSFeed {
         const result = MappingSchema.safeParse(root);
 
         if (!result.success) {
-          const rootError = {
-            root: result.error.issues,
-          };
-          errors.push(rootError);
+          errors.push(toFeedIssue('INVALID_ROOT_MAPPING', result.error.issues));
         }
-        /* v8 ignore next 3 -- safeParse does not throw; defensive catch */
       } catch (e) {
-        errors.push(e);
+        errors.push(errorIssue('INVALID_ROOT_MAPPING', String(e)));
       }
     }
 
@@ -262,8 +271,17 @@ export class RSSFeed {
     }
 
     if (link) {
-      const url = new URL(link);
-      this.origin = url.origin;
+      if (URL.canParse(link)) {
+        this.origin = new URL(link).origin;
+      } else {
+        this.rss.channel.warnings.push(
+          warningIssue(
+            'INVALID_LINK',
+            `Invalid value for property "link": "${link}"`,
+            'link'
+          )
+        );
+      }
     }
 
     let lastBuildDate: undefined | string;
@@ -323,7 +341,11 @@ export class RSSFeed {
       }
     } else {
       this.rss.channel.errors.push(
-        'Required property "item" is missing in channel'
+        errorIssue(
+          'MISSING_REQUIRED_TAG',
+          'Required property "item" is missing in channel',
+          'item'
+        )
       );
     }
 
@@ -365,18 +387,26 @@ export class RSSFeed {
 
     if (requiredTags.size) {
       for (const key of requiredTags) {
-        const error = `Missing required property '${key}'`;
-        this.errors.push(error);
-        this.rss.errors.push(error);
+        const issue = errorIssue(
+          'MISSING_REQUIRED_TAG',
+          `Required property "${key}" is missing`,
+          key
+        );
+        this.errors.push(issue);
+        this.rss.errors.push(issue);
       }
       return;
     }
 
-    // Add warning for tags that are invalid at the rss level
+    // Warn on tags that are invalid at the rss level. Not deleted from
+    // `this.data`: `build()` only ever reads known, explicitly destructured
+    // fields, so leaving unrecognized keys in place costs nothing and keeps
+    // validate() from mutating the parsed input.
     for (const key in rss) {
       if (!Tag.rss.validTags.has(key)) {
-        this.rss.warnings.push(`Invalid property "${key}"`);
-        delete rss[key];
+        this.rss.warnings.push(
+          warningIssue('INVALID_TAG', `Invalid property "${key}"`, key)
+        );
       }
     }
   }
@@ -393,17 +423,23 @@ export class RSSFeed {
 
     if (requiredTags.size) {
       for (const key of requiredTags) {
-        this.errors.push(`Required property "${key}" is missing`);
-        this.rss.channel.errors.push(`Required property "${key}" is missing`);
+        const issue = errorIssue(
+          'MISSING_REQUIRED_TAG',
+          `Required property "${key}" is missing`,
+          key
+        );
+        this.errors.push(issue);
+        this.rss.channel.errors.push(issue);
       }
       return;
     }
 
-    // Add warning for tags that are invalid at the rss level
+    // Warn without deleting — see the comment in `validateRSS`.
     for (const key in channel) {
       if (!Tag.rss.channel.validTags.has(key)) {
-        this.rss.channel.warnings.push(`Invalid property "${key}"`);
-        delete channel[`${key}`];
+        this.rss.channel.warnings.push(
+          warningIssue('INVALID_TAG', `Invalid property "${key}"`, key)
+        );
       }
     }
   }
@@ -427,21 +463,26 @@ export class RSSFeed {
       }
     }
 
-    const errors: string[] = [];
+    const errors: FeedIssue[] = [];
     if (requiredTags.size) {
       for (const key of requiredTags) {
-        const error = `Required property "${key}" is missing`;
-        errors.push(error);
-        this.errors.push(error);
+        const issue = errorIssue(
+          'MISSING_REQUIRED_TAG',
+          `Required property "${key}" is missing`,
+          key
+        );
+        errors.push(issue);
+        this.errors.push(issue);
       }
       return;
     }
 
-    const warnings: string[] = [];
+    const warnings: FeedIssue[] = [];
     for (const key in item) {
       if (!Tag.rss.channel.item.validTags.has(key)) {
-        warnings.push(`Invalid property "${key}"`);
-        delete item[`${key}`];
+        warnings.push(
+          warningIssue('INVALID_TAG', `Invalid property "${key}"`, key)
+        );
       }
     }
 
@@ -492,8 +533,8 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
       contentEncoded = rootElement;
     }
   }
-  const errors: string[] = item.errors ?? [];
-  const warnings: string[] = item.warnings ?? [];
+  const errors: FeedIssue[] = item.errors ?? [];
+  const warnings: FeedIssue[] = item.warnings ?? [];
 
   let pubDate: string | undefined;
   if (item.pubDate) {
@@ -502,7 +543,13 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
       pubDate = parsedPubDate;
     } else {
       pubDate = item.pubDate;
-      warnings.push(`Unable to parse pubDate: "${item.pubDate}"`);
+      warnings.push(
+        warningIssue(
+          'UNPARSEABLE_DATE',
+          `Unable to parse pubDate: "${item.pubDate}"`,
+          'pubDate'
+        )
+      );
     }
   }
 
@@ -520,9 +567,9 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
         ]
     : [];
 
-  if (Array.isArray(item['dc:creator'])) {
-    item['dc:creator'] = item['dc:creator'].map((c) => c.trim()).join(', ');
-  }
+  const dcCreator = Array.isArray(item['dc:creator'])
+    ? item['dc:creator'].map((c) => c.trim()).join(', ')
+    : item['dc:creator'];
   const mediaContent = getMediaContent(item, origin);
 
   const response: Item = {
@@ -550,9 +597,7 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
     'cf:isSponsored': false,
     'cf:liveCoverageState': undefined,
     'cf:isPaid': false,
-    'dc:creator': item['dc:creator']
-      ? `${item['dc:creator']}`.trim()
-      : undefined,
+    'dc:creator': dcCreator ? `${dcCreator}`.trim() : undefined,
     'dc:date': item['dc:date'] ? `${item['dc:date']}` : undefined,
     'dc:language': item['dc:language']
       ? `${item['dc:language']}`.trim()
@@ -578,7 +623,7 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
   );
 
   if (contentEncoded) {
-    response.components = HTMLMapper.toComponents(contentEncoded, params);
+    response.components = HTMLMapper.toComponents(contentEncoded, params, root);
   }
 
   return response;
@@ -590,8 +635,8 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
 
 function buildThumbnail(
   item: ParsedItem,
-  errors: string[],
-  warnings: string[]
+  errors: FeedIssue[],
+  warnings: FeedIssue[]
 ): Thumbnail | undefined {
   if (!item['cf:thumbnail']) return undefined;
 
@@ -616,12 +661,24 @@ function buildThumbnail(
       : undefined,
   };
   if (!thumbnail.url) {
-    errors.push(`Required property "url" is missing in 'cf:thumbnail'`);
+    errors.push(
+      errorIssue(
+        'MISSING_URL',
+        `Required property "url" is missing in 'cf:thumbnail'`,
+        'cf:thumbnail.url'
+      )
+    );
   }
   if (thumbnail.type !== undefined) {
     /* v8 ignore next 5 -- @_type is parsed as a string when present */
     if (typeof thumbnail.type !== 'string') {
-      warnings.push(`Invalid value for property 'type' in 'cf:thumbnail'`);
+      warnings.push(
+        warningIssue(
+          'INVALID_THUMBNAIL_TYPE',
+          `Invalid value for property 'type' in 'cf:thumbnail'`,
+          'cf:thumbnail.type'
+        )
+      );
       thumbnail.type = undefined;
     } else {
       const validMimeTypes = new Set([
@@ -631,21 +688,45 @@ function buildThumbnail(
         'image/webp',
       ]);
       if (!validMimeTypes.has(thumbnail.type)) {
-        warnings.push(`Invalid value for property 'type' in 'cf:thumbnail'.`);
+        warnings.push(
+          warningIssue(
+            'INVALID_THUMBNAIL_TYPE',
+            `Invalid value for property 'type' in 'cf:thumbnail'.`,
+            'cf:thumbnail.type'
+          )
+        );
         thumbnail.type = undefined;
       }
     }
   }
   if (thumbnail.width !== undefined && isNaN(thumbnail.width)) {
-    warnings.push(`Invalid value for property 'width' in 'cf:thumbnail'`);
+    warnings.push(
+      warningIssue(
+        'INVALID_THUMBNAIL_DIMENSION',
+        `Invalid value for property 'width' in 'cf:thumbnail'`,
+        'cf:thumbnail.width'
+      )
+    );
     thumbnail.width = undefined;
   }
   if (thumbnail.height !== undefined && isNaN(thumbnail.height)) {
-    warnings.push(`Invalid value for property 'height' in 'cf:thumbnail'`);
+    warnings.push(
+      warningIssue(
+        'INVALID_THUMBNAIL_DIMENSION',
+        `Invalid value for property 'height' in 'cf:thumbnail'`,
+        'cf:thumbnail.height'
+      )
+    );
     thumbnail.height = undefined;
   }
   if (thumbnail.fileSize !== undefined && isNaN(thumbnail.fileSize)) {
-    warnings.push(`Invalid value for property 'fileSize' in 'cf:thumbnail'`);
+    warnings.push(
+      warningIssue(
+        'INVALID_THUMBNAIL_DIMENSION',
+        `Invalid value for property 'fileSize' in 'cf:thumbnail'`,
+        'cf:thumbnail.fileSize'
+      )
+    );
     thumbnail.fileSize = undefined;
   }
   return thumbnail;
@@ -653,8 +734,8 @@ function buildThumbnail(
 
 function buildCanvasflowFlags(
   item: ParsedItem,
-  errors: string[],
-  warnings: string[]
+  errors: FeedIssue[],
+  warnings: FeedIssue[]
 ): {
   'cf:hasAffiliateLinks': boolean;
   'cf:isSponsored': boolean;
@@ -705,7 +786,11 @@ function processCanvasflowBooleanTag(
 
   if (typeof item[tagName] !== 'object') {
     response.errors.push(
-      `Invalid value for '${tagName}': "${item[tagName]}". Expected a boolean, "true", or "false".`
+      errorIssue(
+        'INVALID_BOOLEAN_TAG',
+        `Invalid value for '${tagName}': "${item[tagName]}". Expected a boolean, "true", or "false".`,
+        tagName
+      )
     );
     return;
   }
@@ -715,7 +800,11 @@ function processCanvasflowBooleanTag(
     typeof (item[tagName] as { [key: string]: unknown })['#text'] === 'string'
   ) {
     response.warnings.push(
-      `Attributes are not allowed for the '${tagName}' property.`
+      warningIssue(
+        'INVALID_BOOLEAN_TAG',
+        `Attributes are not allowed for the '${tagName}' property.`,
+        tagName
+      )
     );
     const text = (item[tagName] as { [key: string]: unknown })[
       '#text'
@@ -726,7 +815,11 @@ function processCanvasflowBooleanTag(
       return;
     }
     response.errors.push(
-      `Invalid value for '${tagName}': "${text}". Expected "true" or "false".`
+      errorIssue(
+        'INVALID_BOOLEAN_TAG',
+        `Invalid value for '${tagName}': "${text}". Expected "true" or "false".`,
+        tagName
+      )
     );
   }
 }
@@ -736,11 +829,11 @@ function getEnclosure(item: Record<string, unknown>): Array<Enclosure> {
     return [];
   }
 
-  if (!Array.isArray(item.enclosure)) {
-    item.enclosure = [item.enclosure];
-  }
+  const enclosure: Array<Attributes.Enclosure> = Array.isArray(item.enclosure)
+    ? item.enclosure
+    : [item.enclosure as Attributes.Enclosure];
 
-  return (item.enclosure as Array<Attributes.Enclosure>).map(mapEnclosure);
+  return enclosure.map(mapEnclosure);
 }
 
 function getMediaGroup(
@@ -751,12 +844,13 @@ function getMediaGroup(
     return [];
   }
 
-  if (!Array.isArray(item['media:group'])) {
-    item['media:group'] = [item['media:group']];
-  }
-  return (item['media:group'] as Array<Attributes.MediaGroup>).map(
-    mapMediaGroup(origin)
-  );
+  const mediaGroup: Array<Attributes.MediaGroup> = Array.isArray(
+    item['media:group']
+  )
+    ? item['media:group']
+    : [item['media:group'] as Attributes.MediaGroup];
+
+  return mediaGroup.map(mapMediaGroup(origin));
 }
 
 function getMediaContent(
@@ -788,16 +882,26 @@ function getMediaContent(
  * @returns {Enclosure}
  */
 function mapEnclosure(e: Attributes.Enclosure): Enclosure {
-  const errors: string[] = [];
-  const warnings: string[] = [];
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
   if (!e['@_url']) {
-    errors.push(`Required property "url" is missing`);
+    errors.push(
+      errorIssue('MISSING_URL', `Required property "url" is missing`, 'url')
+    );
   }
   if (!e['@_type']) {
-    warnings.push(`Property "type" is suggested`);
+    warnings.push(
+      warningIssue('SUGGESTED_PROPERTY', `Property "type" is suggested`, 'type')
+    );
   }
   if (!e['@_length']) {
-    warnings.push(`Property "length" is suggested`);
+    warnings.push(
+      warningIssue(
+        'SUGGESTED_PROPERTY',
+        `Property "length" is suggested`,
+        'length'
+      )
+    );
   }
   return {
     length: e['@_length'] ? parseInt(`${e['@_length']}`, 10) : 0,
@@ -819,11 +923,17 @@ function mapMediaGroup(
   origin: string | undefined
 ): (mediaGroup: Attributes.MediaGroup) => MediaGroup {
   return (mediaGroup: Attributes.MediaGroup): MediaGroup => {
-    const errors: string[] = [];
-    const warnings: string[] = [];
+    const errors: FeedIssue[] = [];
+    const warnings: FeedIssue[] = [];
     const mediaContent = mediaGroup['media:content'];
     if (!mediaContent) {
-      errors.push(`Required property "media:content" is missing`);
+      errors.push(
+        errorIssue(
+          'MISSING_MEDIA_CONTENT',
+          `Required property "media:content" is missing`,
+          'media:content'
+        )
+      );
     }
     return {
       title: mediaGroup['media:title'],
@@ -848,8 +958,8 @@ function mapMediaContent(
   origin: string | undefined
 ): (mediaContent: Attributes.MediaContent) => MediaContent {
   return (mediaContent: Attributes.MediaContent): MediaContent => {
-    const errors: string[] = [];
-    const warnings: string[] = [];
+    const errors: FeedIssue[] = [];
+    const warnings: FeedIssue[] = [];
     let url = mediaContent['@_url'] ?? '';
     const type = mediaContent['@_type'];
     const medium = mediaContent['@_medium'];
@@ -862,19 +972,39 @@ function mapMediaContent(
       : undefined;
 
     if (!url) {
-      errors.push(`Required property "url" is missing`);
+      errors.push(
+        errorIssue('MISSING_URL', `Required property "url" is missing`, 'url')
+      );
     }
     if (!type) {
-      warnings.push(`Property "type" is suggested`);
+      warnings.push(
+        warningIssue(
+          'SUGGESTED_PROPERTY',
+          `Property "type" is suggested`,
+          'type'
+        )
+      );
     }
     if (!medium && !type) {
-      warnings.push(`Property "medium" is suggested`);
+      warnings.push(
+        warningIssue(
+          'SUGGESTED_PROPERTY',
+          `Property "medium" is suggested`,
+          'medium'
+        )
+      );
     }
 
     let tmpCredit = mediaContent['media:credit'];
     if (tmpCredit) {
       if (Array.isArray(tmpCredit)) {
-        warnings.push('Only one "media:credit" element is allowed');
+        warnings.push(
+          warningIssue(
+            'DUPLICATE_MEDIA_FIELD',
+            'Only one "media:credit" element is allowed',
+            'media:credit'
+          )
+        );
         tmpCredit = tmpCredit[0];
       }
 
@@ -882,7 +1012,7 @@ function mapMediaContent(
         credit = tmpCredit;
       }
 
-      if (tmpCredit['#text']) {
+      if (tmpCredit && tmpCredit['#text']) {
         credit = tmpCredit['#text'];
       }
     }
@@ -890,11 +1020,17 @@ function mapMediaContent(
     let tmpThumbnail = mediaContent['media:thumbnail'];
     if (tmpThumbnail) {
       if (Array.isArray(tmpThumbnail)) {
-        warnings.push('Only one "media:thumbnail" element is allowed');
+        warnings.push(
+          warningIssue(
+            'DUPLICATE_MEDIA_FIELD',
+            'Only one "media:thumbnail" element is allowed',
+            'media:thumbnail'
+          )
+        );
         tmpThumbnail = tmpThumbnail[0];
       }
 
-      thumbnail = tmpThumbnail['@_url'];
+      thumbnail = tmpThumbnail?.['@_url'];
     }
 
     const tmpTitle = mediaContent['media:title'];
@@ -916,8 +1052,14 @@ function mapMediaContent(
     }
 
     if (url && !url.startsWith('http') && !url.startsWith('https')) {
-      warnings.push(`Property "url" is not an absolute URL`);
-      if (origin) {
+      warnings.push(
+        warningIssue(
+          'RELATIVE_MEDIA_URL',
+          `Property "url" is not an absolute URL`,
+          'url'
+        )
+      );
+      if (origin && URL.canParse(url, origin)) {
         url = new URL(url, origin).href;
       }
     }
@@ -935,6 +1077,29 @@ function mapMediaContent(
       description: description ? description.trim() : description,
     };
   };
+}
+
+/**
+ * Summarize a Zod validation failure into a single `FeedIssue`, joining every
+ * underlying issue's path/message so callers get one structured entry per
+ * invalid schema instead of raw `ZodIssue[]` output.
+ *
+ * @param {FeedIssueCode} code
+ * @param {Array<{ path: PropertyKey[]; message: string }>} issues
+ * @returns {FeedIssue}
+ */
+function toFeedIssue(
+  code: FeedIssueCode,
+  issues: Array<{ path: PropertyKey[]; message: string }>
+): FeedIssue {
+  const message = issues
+    .map((issue) => {
+      const path = issue.path.map(String).join('.');
+      return path ? `${path}: ${issue.message}` : issue.message;
+    })
+    .join('; ');
+
+  return { code, severity: 'error', message };
 }
 
 /**

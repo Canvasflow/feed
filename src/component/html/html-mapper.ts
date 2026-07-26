@@ -3,7 +3,7 @@ import { parseHTML } from 'linkedom';
 import { parse, stringify } from './parser';
 
 import type { Component } from '../component';
-import type { Node } from '../node/node-helpers';
+import type { Attribute, Node } from '../node/node-helpers';
 import {
   type Mapping,
   type Params,
@@ -43,66 +43,110 @@ export class HTMLMapper {
    *
    * @param {string} html
    * @param {Params | undefined} params
+   * @param {Mapping | undefined} root
    * @returns {Component[]}
    */
-  static toComponents(html: string, params?: Params): Component[] {
-    html = removeBreaklines(html);
-    html = sanitizeInvalidAnchorHrefs(html);
-    html = preprocessHTML(html);
+  static toComponents(
+    html: string,
+    params?: Params,
+    root?: Mapping
+  ): Component[] {
+    let nodes = sanitizeInvalidAnchorHrefs(
+      splitImagesFromParagraphs(
+        hoistAnchorsWithImages(stripBreaklines(parse(html)))
+      )
+    ).filter(filterEmptyTextNode);
 
-    const parsedContent = parse(html).map(mapEmptyText);
-
-    const nodes: Array<Node> = parsedContent.filter(filterEmptyTextNode);
+    if (root) {
+      const rootNode = getRootElement(nodes, root);
+      nodes = rootNode ? [rootNode] : [];
+    }
 
     return nodes.reduce(reduceComponents(params), []).filter((i) => !!i);
   }
 }
 
-/**
- * Run all DOM-based pre-processing mutations in a single linkedom pass and
- * return the serialized result. Replaces the previous pattern of calling
- * extractAnchorsWithImages + splitParagraphImages×7, each of which re-parsed
- * the HTML from scratch.
- *
- * @param {string} html
- * @returns {string}
- */
-function preprocessHTML(html: string): string {
-  if (!html.includes('<')) return html;
+const BLOCK_TAGS = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
 
-  const { document } = parseHTML(html);
-  extractAnchorsWithImagesDOM(document);
-  const tags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-  for (const tag of tags) {
-    splitParagraphImagesDOM(document, tag);
-  }
-  return document.toString().trim();
+/**
+ * Walk a `Node[]` tree and hoist any `<a>` element that (a) is a direct
+ * child of a `p/h1–h6` and (b) contains an `<img>` descendant, replacing
+ * the entire block element with the `<a>`. Matches the behaviour of the
+ * former `extractAnchorsWithImagesDOM` pass.
+ *
+ * @param {Node[]} nodes
+ * @returns {Node[]}
+ */
+function hoistAnchorsWithImages(nodes: Node[]): Node[] {
+  return nodes.flatMap((node) => {
+    if (node.type !== 'element') return [node];
+
+    const children = hoistAnchorsWithImages(node.children);
+
+    if (BLOCK_TAGS.has(node.tagName)) {
+      const hoistable = children.filter(
+        (c) => c.type === 'element' && c.tagName === 'a' && hasImgDescendant(c)
+      );
+      if (hoistable.length > 0) return hoistable;
+    }
+
+    return [{ ...node, children }];
+  });
+}
+
+function hasImgDescendant(node: Node): boolean {
+  if (node.type !== 'element') return false;
+  if (node.tagName === 'img') return true;
+  return node.children.some(hasImgDescendant);
 }
 
 /**
- * Perform the anchor-extraction mutations on an already-parsed document.
- * Anchors containing <img> that are direct children of p/h1–h6 are hoisted
- * out of their parent element.
+ * Walk a `Node[]` tree and split `p/h1–h6` elements that have `<img>`
+ * direct children into sibling nodes — buffered non-image children become
+ * new copies of the block tag; each `<img>` is hoisted as a sibling.
+ * Handles all seven block tags in one pass. Matches the former
+ * `splitParagraphImagesDOM` behaviour.
  *
- * @param {Document} document
+ * @param {Node[]} nodes
+ * @returns {Node[]}
  */
-function extractAnchorsWithImagesDOM(document: Document): void {
-  const REMOVABLE_PARENTS = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
+function splitImagesFromParagraphs(nodes: Node[]): Node[] {
+  return nodes.flatMap((node) => {
+    if (node.type !== 'element') return [node];
 
-  const anchors = Array.from(document.querySelectorAll('a'));
+    const children = splitImagesFromParagraphs(node.children);
 
-  for (const anchor of anchors) {
-    if (!anchor.querySelector('img')) continue;
+    if (!BLOCK_TAGS.has(node.tagName)) return [{ ...node, children }];
 
-    const parent = anchor.parentElement;
-    if (!parent) continue;
+    // Empty block elements are silently dropped — matching the DOM behaviour of
+    // splitParagraphImagesDOM, which always calls removeChild(p) and only
+    // re-inserts content via flushBuffer (a no-op when buffer is empty).
+    if (children.length === 0) return [];
 
-    if (!REMOVABLE_PARENTS.has(parent.tagName.toLowerCase())) continue;
+    const hasDirectImg = children.some(
+      (c) => c.type === 'element' && c.tagName === 'img'
+    );
+    if (!hasDirectImg) return [{ ...node, children }];
 
-    // Clone before replacing to avoid a linkedom bug.
-    const clonedAnchor = anchor.cloneNode(true) as HTMLElement;
-    parent.replaceWith(clonedAnchor);
-  }
+    const result: Node[] = [];
+    let buffer: Node[] = [];
+
+    for (const child of children) {
+      if (child.type === 'element' && child.tagName === 'img') {
+        if (buffer.length > 0) {
+          result.push({ ...node, children: buffer });
+          buffer = [];
+        }
+        result.push(child);
+      } else {
+        buffer.push(child);
+      }
+    }
+
+    if (buffer.length > 0) result.push({ ...node, children: buffer });
+
+    return result;
+  });
 }
 
 /**
@@ -166,9 +210,9 @@ function splitParagraphImagesDOM(document: Document, tag: string): void {
 }
 
 /**
- * Split paragraphs that have image inside.
- * Public wrapper kept for backwards compatibility — internal code uses
- * splitParagraphImagesDOM on a shared document via preprocessHTML.
+ * Split paragraphs that have an image inside — public string wrapper for
+ * external callers. Internal `toComponents` uses `splitImagesFromParagraphs`
+ * (the `Node[]` tree pass) instead.
  *
  * @param {string} html
  * @param {string} tag
@@ -185,28 +229,34 @@ export function splitParagraphImages(html: string, tag: string): string {
 }
 
 /**
- * Detect invalid anchor hrefs and replace them with '#'
+ * Walk a `Node[]` tree and rewrite any `<a href="…">` where the href fails
+ * `isValidHref` to `href="#"`. Pure — returns new node objects where changed,
+ * leaves unchanged nodes untouched (referential equality preserved for
+ * unaffected subtrees).
  *
- * @param {string} html
- * @returns {string}
+ * @param {Node[]} nodes
+ * @returns {Node[]}
  */
-function sanitizeInvalidAnchorHrefs(html: string): string {
-  const { document } = parseHTML(html);
+function sanitizeInvalidAnchorHrefs(nodes: Node[]): Node[] {
+  return nodes.map(sanitizeNodeHref);
+}
 
-  const anchors = document.querySelectorAll('a[href]');
+function sanitizeNodeHref(node: Node): Node {
+  if (node.type !== 'element') return node;
 
-  for (const anchor of anchors) {
-    const href = anchor.getAttribute('href');
+  const children = node.children.map(sanitizeNodeHref);
+  let { attributes } = node;
 
-    if (href && !isValidHref(href)) {
-      anchor.setAttribute('href', '#');
+  if (node.tagName === 'a' && attributes) {
+    const hrefIdx = attributes.findIndex((a: Attribute) => a.key === 'href');
+    // hrefIdx !== -1 guarantees attributes[hrefIdx] exists.
+    if (hrefIdx !== -1 && !isValidHref(attributes[hrefIdx]!.value)) {
+      attributes = [...attributes];
+      attributes[hrefIdx] = { key: 'href', value: '#' };
     }
   }
 
-  const response = document.toString();
-
-  // linkedom preserves the original markup structure as much as possible
-  return response;
+  return { ...node, attributes, children };
 }
 
 /**
@@ -249,28 +299,32 @@ function isValidHref(href: string): boolean {
 }
 
 /**
- * Remove the breaklines in the string
+ * Walk a `Node[]` tree and strip `\r\n`, `\n`, and `\r` from text node
+ * content. Text nodes that become empty (zero-length) after stripping are
+ * dropped — this lets `splitImagesFromParagraphs` see block elements left
+ * childless by the strip and discard them, matching the old `removeBreaklines`
+ * string pre-processor behaviour. Pure — returns new node objects only where
+ * content or children change; unchanged nodes preserve referential equality.
  *
- * @param {string | undefined} value
- * @returns {string}
+ * @param {Node[]} nodes
+ * @returns {Node[]}
  */
-function removeBreaklines(value: string | undefined): string {
-  if (!value) return '';
-  return value.replace(/(\r\n|\n|\r)/gm, '');
-}
-
-/**
- * Recursively walk a parsed node tree. Comment and text nodes are returned
- * as-is; element nodes have their children mapped through the same function.
- *
- * @param {Node} node
- * @returns {Node}
- */
-function mapEmptyText(node: Node): Node {
-  if (node.type === 'comment') return node;
-  if (node.type === 'element' && node.children) {
-    node.children = node.children.map(mapEmptyText);
-  }
-
-  return node;
+function stripBreaklines(nodes: Node[]): Node[] {
+  return nodes.flatMap<Node>((node) => {
+    if (node.type === 'comment') return [node];
+    if (node.type === 'text') {
+      const content = node.content.replace(/(\r\n|\n|\r)/g, '');
+      if (content.length === 0) return [];
+      return [
+        content === node.content ? node : { type: 'text' as const, content },
+      ];
+    }
+    const attributes = node.attributes?.map((attr) => {
+      if (!attr.value) return attr;
+      const value = attr.value.replace(/(\r\n|\n|\r)/g, '');
+      return value === attr.value ? attr : { ...attr, value };
+    });
+    const children = stripBreaklines(node.children);
+    return [{ ...node, attributes, children }];
+  });
 }

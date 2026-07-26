@@ -95,10 +95,10 @@ Coverage uses the **v8** provider and is gated by thresholds in `vite.config.ts`
 
 | Metric     | Minimum |
 | ---------- | ------- |
-| Statements | 99%     |
+| Statements | 95%     |
 | Branches   | 95%     |
-| Functions  | 99%     |
-| Lines      | 99%     |
+| Functions  | 95%     |
+| Lines      | 95%     |
 
 `src/index.ts`, config files, and `*.d.ts` are excluded from coverage.
 

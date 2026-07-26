@@ -3,14 +3,14 @@ import {
   type TextType,
   isValidTextRole,
 } from '../component';
-import { stringify } from '../html/parser';
 import {
   type ElementNode,
   type Node,
   getAttributes,
 } from '../node/node-helpers';
 import { textAllowedTags, textAllowedAttributes } from './mapping.constants';
-import { sanitizeHTML as sanitizeHtml } from '../html/sanitize-html';
+import { sanitizeNodes } from '../html/sanitize-html';
+import { type FeedIssue, warningIssue } from '../../feed-issue';
 
 /**
  * Preserve whitespace that sits between inline elements inside a text
@@ -47,16 +47,12 @@ export function toText(
   properties?: Record<string, unknown>
 ): TextComponent {
   preserveInlineWhitespace(node);
-  const html = stringify([node]);
-  const warnings: string[] = [];
+  const warnings: FeedIssue[] = [];
   const attributes = getAttributes(node.attributes);
 
-  const allowedTags = textAllowedTags;
-  const allowedAttributes = textAllowedAttributes;
-
-  const text = sanitizeHtml(html, {
-    allowedTags,
-    allowedAttributes,
+  const text = sanitizeNodes([node], {
+    allowedTags: textAllowedTags,
+    allowedAttributes: textAllowedAttributes,
   });
   const id = attributes.get('id');
   const role = attributes.get('role');
@@ -66,7 +62,9 @@ export function toText(
       component = role as TextType;
     } else {
       // If the role was invalid we use body as fallback
-      warnings.push(`role '${role}' is invalid`);
+      warnings.push(
+        warningIssue('INVALID_TEXT_ROLE', `role '${role}' is invalid`, 'role')
+      );
       component = 'body';
     }
   }

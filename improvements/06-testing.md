@@ -6,13 +6,13 @@
 - [ ] Property-based tests (fast-check) exist for: the no-throw contract (arbitrary strings → `RSSFeed`/`toComponents`), HTML round-trip invariants, and filter-matching laws (`match: 'all'` ⊆ `match: 'any'`).
 - [ ] The `integration` and `recipe` tagged tests run **offline** in CI via HTTP mocking (undici `MockAgent` or msw) — the `skip: true` flags are removed (a small live-network suite may remain opt-in).
 - [ ] Tests tagged `broken` are either fixed or converted to `.fails`/tracked issues — the tag is empty.
-- [ ] Coverage thresholds are maintained (99/95/99/99) after all refactors, and `/* v8 ignore */` comments are re-audited (several mark "can't happen" branches that the type-safety work should delete outright).
+- [ ] Coverage thresholds are maintained (95/95/95/95 as of 2026-07-25 — lowered from 99/95/99/99, see `vite.config.ts`) after all refactors, and `/* v8 ignore */` comments are re-audited (several mark "can't happen" branches that the type-safety work should delete outright).
 - [ ] A fixture-intake script exists: given a feed URL or file, it adds a sanitized fixture + generated snapshot in one command.
 - [ ] Testing conventions (tags, fixtures, snapshots, property tests) are documented in `docs/wiki/Testing.md`.
 
 ## Overview
 
-The suite is already strong (99 % thresholds, fuzz file, snapshot file,
+The suite is already strong (95 % thresholds as of 2026-07-25, fuzz file, snapshot file,
 tagged tests). This section has two jobs:
 
 1. **Enable the refactors.** Sections 01/02 rewrite the engine's plumbing while

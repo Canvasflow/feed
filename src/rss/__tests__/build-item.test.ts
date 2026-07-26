@@ -30,7 +30,9 @@ describe('buildItem — pubDate normalisation', () => {
     () => {
       const item = buildItem({ ...base, pubDate: 'not-a-date' }, ctx);
       expect(item.pubDate).toBe('not-a-date');
-      expect(item.warnings.some((w) => w.includes('pubDate'))).toBe(true);
+      expect(item.warnings.some((w) => w.message.includes('pubDate'))).toBe(
+        true
+      );
     }
   );
 
@@ -76,9 +78,9 @@ describe('buildItem — cf:hasAffiliateLinks', () => {
 
   test('invalid string value adds an error', { tags: ['unit', 'rss'] }, () => {
     const item = buildItem({ ...base, 'cf:hasAffiliateLinks': 'yes' }, ctx);
-    expect(item.errors.some((e) => e.includes('cf:hasAffiliateLinks'))).toBe(
-      true
-    );
+    expect(
+      item.errors.some((e) => e.message.includes('cf:hasAffiliateLinks'))
+    ).toBe(true);
   });
 });
 
@@ -115,7 +117,9 @@ describe('buildItem — cf:thumbnail', () => {
       ctx
     );
     expect(item['cf:thumbnail']).toBeDefined();
-    expect(item.errors.some((e) => e.includes('cf:thumbnail'))).toBe(true);
+    expect(item.errors.some((e) => e.message.includes('cf:thumbnail'))).toBe(
+      true
+    );
   });
 
   test('invalid MIME type adds a warning', { tags: ['unit', 'rss'] }, () => {
@@ -129,7 +133,9 @@ describe('buildItem — cf:thumbnail', () => {
       },
       ctx
     );
-    expect(item.warnings.some((w) => w.includes('cf:thumbnail'))).toBe(true);
+    expect(item.warnings.some((w) => w.message.includes('cf:thumbnail'))).toBe(
+      true
+    );
   });
 });
 
@@ -153,7 +159,50 @@ describe('buildItem — media:group', () => {
         ctx
       );
       expect(item.mediaGroup).toHaveLength(1);
-      expect(item.mediaGroup[0].mediaContent).toHaveLength(2);
+      expect(item.mediaGroup[0]!.mediaContent).toHaveLength(2);
     }
   );
+});
+
+describe('buildItem — does not mutate its input', () => {
+  test('a single (non-array) enclosure is not rewritten onto the input', () => {
+    const input: ParsedItem = {
+      ...base,
+      enclosure: {
+        '@_url': 'https://example.com/a.mp3',
+        '@_type': 'audio/mpeg',
+      },
+    };
+    const before = input.enclosure;
+    const item = buildItem(input, ctx);
+    expect(item.enclosure).toHaveLength(1);
+    expect(input.enclosure).toBe(before);
+    expect(Array.isArray(input.enclosure)).toBe(false);
+  });
+
+  test('a single (non-array) media:group is not rewritten onto the input', () => {
+    const input: ParsedItem = {
+      ...base,
+      'media:group': {
+        'media:content': [{ '@_url': 'https://example.com/a.jpg' }],
+      },
+    };
+    const before = input['media:group'];
+    const item = buildItem(input, ctx);
+    expect(item.mediaGroup).toHaveLength(1);
+    expect(input['media:group']).toBe(before);
+    expect(Array.isArray(input['media:group'])).toBe(false);
+  });
+
+  test('an array dc:creator is not collapsed onto the input', () => {
+    const input: ParsedItem = {
+      ...base,
+      'dc:creator': ['Jane Doe', 'John Smith'],
+    };
+    const before = input['dc:creator'];
+    const item = buildItem(input, ctx);
+    expect(item['dc:creator']).toBe('Jane Doe, John Smith');
+    expect(input['dc:creator']).toBe(before);
+    expect(Array.isArray(input['dc:creator'])).toBe(true);
+  });
 });

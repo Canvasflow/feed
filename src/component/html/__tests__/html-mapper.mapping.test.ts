@@ -76,11 +76,11 @@ describe('Mapping', () => {
       `;
       const components = HTMLMapper.toComponents(content, { mappings });
       expect(components.length).toBe(5);
-      expect(components[0].component).toBe('headline');
-      expect(components[1].component).toBe('text48');
-      expect(components[2].component).toBe('subtitle');
-      expect(components[3].component).toBe('headline');
-      expect(components[4].component).toBe('title');
+      expect(components[0]!.component).toBe('headline');
+      expect(components[1]!.component).toBe('text48');
+      expect(components[2]!.component).toBe('subtitle');
+      expect(components[3]!.component).toBe('headline');
+      expect(components[4]!.component).toBe('title');
     }
   );
 
@@ -118,8 +118,8 @@ describe('Mapping', () => {
       `;
       const components = HTMLMapper.toComponents(content, { mappings });
       expect(components.length).toBe(2);
-      expect(components[0].component).toBe('text33');
-      expect(components[1].component).toBe('body');
+      expect(components[0]!.component).toBe('text33');
+      expect(components[1]!.component).toBe('body');
     }
   );
 
@@ -146,8 +146,8 @@ describe('Mapping', () => {
       `;
       const components = HTMLMapper.toComponents(content, { mappings });
       expect(components.length).toBe(2);
-      expect(components[0].component).toBe('text36');
-      expect(components[1].component).toBe('body');
+      expect(components[0]!.component).toBe('text36');
+      expect(components[1]!.component).toBe('body');
     }
   );
 
@@ -194,9 +194,9 @@ describe('Mapping', () => {
       `;
       const components = HTMLMapper.toComponents(content, { mappings });
       expect(components.length).toBe(3);
-      expect(components[0].component).toBe('text48');
-      expect(components[1].component).toBe('title');
-      expect(components[2].component).toBe('subtitle');
+      expect(components[0]!.component).toBe('text48');
+      expect(components[1]!.component).toBe('title');
+      expect(components[2]!.component).toBe('subtitle');
     }
   );
 
@@ -248,12 +248,12 @@ describe('Mapping', () => {
       `;
       const components = HTMLMapper.toComponents(content, { mappings });
       expect(components.length).toBe(6);
-      expect(components[0].component).toBe('text33');
-      expect(components[1].component).toBe('text33');
-      expect(components[2].component).toBe('title');
-      expect(components[3].component).toBe('text35');
-      expect(components[4].component).toBe('body');
-      expect(components[5].component).toBe('text35');
+      expect(components[0]!.component).toBe('text33');
+      expect(components[1]!.component).toBe('text33');
+      expect(components[2]!.component).toBe('title');
+      expect(components[3]!.component).toBe('text35');
+      expect(components[4]!.component).toBe('body');
+      expect(components[5]!.component).toBe('text35');
     }
   );
 
@@ -285,9 +285,9 @@ describe('Mapping', () => {
       `;
       const components = HTMLMapper.toComponents(content, { mappings });
       expect(components.length).toBe(3);
-      expect(components[0].component).toBe('text36');
-      expect(components[1].component).toBe('headline');
-      expect(components[2].component).toBe('subtitle');
+      expect(components[0]!.component).toBe('text36');
+      expect(components[1]!.component).toBe('headline');
+      expect(components[2]!.component).toBe('subtitle');
     }
   );
 
