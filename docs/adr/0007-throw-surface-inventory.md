@@ -183,13 +183,13 @@ this function if the `FeedIssue` model makes it redundant.
 
 ## Guarded sites (confirmed safe — no action needed)
 
-| File                | Line                    | Call                             | Guard                                                              |
-| ------------------- | ----------------------- | -------------------------------- | ------------------------------------------------------------------ |
-| `html-mapper.ts`    | 293                     | `new URL(value)`                 | `try/catch` returning `false`                                      |
-| `mapping.embeds.ts` | 51                      | `new URL(url)`                   | `try/catch` with error accumulation                                |
-| `mapping.utils.ts`  | 136                     | `new URL('https:' + href)`       | `try/catch` returning original href                                |
-| `rss-feed.ts`       | 341                     | `JSON.parse(this.toString(rss))` | structurally safe: input is the output of `JSON.stringify`         |
-| `html-mapper.ts`    | 225                     | `throw new Error(...)`           | defensive guard; `parseHTML` never returns `null` in practice      |
+| File                | Line | Call                             | Guard                                                         |
+| ------------------- | ---- | -------------------------------- | ------------------------------------------------------------- |
+| `html-mapper.ts`    | 293  | `new URL(value)`                 | `try/catch` returning `false`                                 |
+| `mapping.embeds.ts` | 51   | `new URL(url)`                   | `try/catch` with error accumulation                           |
+| `mapping.utils.ts`  | 136  | `new URL('https:' + href)`       | `try/catch` returning original href                           |
+| `rss-feed.ts`       | 341  | `JSON.parse(this.toString(rss))` | structurally safe: input is the output of `JSON.stringify`    |
+| `html-mapper.ts`    | 225  | `throw new Error(...)`           | defensive guard; `parseHTML` never returns `null` in practice |
 
 > **Correction (2026-07-25):** this table originally also listed
 > `mapping.media.ts` lines 924/939/954/966/981 (`new URL(searchParams.*)`) as
@@ -224,17 +224,17 @@ correctness issues to address as part of the `build()` never-throws work.
 All eight numbered sites and the corrected `mapping.media.ts` entries above
 are now fixed:
 
-| Site                                                     | Fix                                                                                                          |
-| ---------------------------------------------------------| -------------------------------------------------------------------------------------------------------------|
-| 1 — constructor `XMLParser.parse()`                       | `try/catch`, `parse-error` string issue (fixed earlier; see `rss-feed.test.ts`)                              |
-| 2 — `build()` channel `<link>`                            | `URL.canParse(link)` guard; warning on failure, `origin` extraction skipped                                  |
-| 3 — `getRecipeFromUrl()` JSON-LD `JSON.parse`             | moved to `src/rss/recipe.ts`; wrapped in `try/catch`, malformed blocks skipped                                |
-| 4 — `fromIframe()` src URL                                | `URL.canParse(src)` guard; falls back to `toCustom(node)`                                                    |
-| 4b — `fromIframe()` searchParams (media.ts 924/939/954/966/981) | `URL.canParse` added to each `.startsWith(...)` condition; falls through to the next check / `toCustom` |
-| 5 — `mapMediaContent()` relative URL                      | `URL.canParse(url, origin)` guard; `url` left unchanged and a warning is pushed on failure                    |
-| 6 — `blockquote[cite]` TikTok                             | `URL.canParse(cite)` guard; returns an error-annotated `TikTokComponent` stub instead of throwing              |
-| 7 — `toYoutubeFromAnchor()`                                | `URL.canParse(url)` guard; returns an error-annotated `YoutubeComponent` stub (verified by a direct unit test — the full pipeline neutralizes bad anchor hrefs to `"#"` before this function is ever reached, per `sanitizeInvalidAnchorHrefs`) |
-| 8 — `validateParams()` public API                          | intentional throw, left as-is (documented, not on the `RSSFeed` path)                                          |
+| Site                                                            | Fix                                                                                                                                                                                                                                             |
+| --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 — constructor `XMLParser.parse()`                             | `try/catch`, `parse-error` string issue (fixed earlier; see `rss-feed.test.ts`)                                                                                                                                                                 |
+| 2 — `build()` channel `<link>`                                  | `URL.canParse(link)` guard; warning on failure, `origin` extraction skipped                                                                                                                                                                     |
+| 3 — `getRecipeFromUrl()` JSON-LD `JSON.parse`                   | moved to `src/rss/recipe.ts`; wrapped in `try/catch`, malformed blocks skipped                                                                                                                                                                  |
+| 4 — `fromIframe()` src URL                                      | `URL.canParse(src)` guard; falls back to `toCustom(node)`                                                                                                                                                                                       |
+| 4b — `fromIframe()` searchParams (media.ts 924/939/954/966/981) | `URL.canParse` added to each `.startsWith(...)` condition; falls through to the next check / `toCustom`                                                                                                                                         |
+| 5 — `mapMediaContent()` relative URL                            | `URL.canParse(url, origin)` guard; `url` left unchanged and a warning is pushed on failure                                                                                                                                                      |
+| 6 — `blockquote[cite]` TikTok                                   | `URL.canParse(cite)` guard; returns an error-annotated `TikTokComponent` stub instead of throwing                                                                                                                                               |
+| 7 — `toYoutubeFromAnchor()`                                     | `URL.canParse(url)` guard; returns an error-annotated `YoutubeComponent` stub (verified by a direct unit test — the full pipeline neutralizes bad anchor hrefs to `"#"` before this function is ever reached, per `sanitizeInvalidAnchorHrefs`) |
+| 8 — `validateParams()` public API                               | intentional throw, left as-is (documented, not on the `RSSFeed` path)                                                                                                                                                                           |
 
 End-to-end verification: `src/rss/__tests__/rss-feed.fuzz.test.ts` builds
 every one of these edge cases (plus 150 random XML-ish strings and 100

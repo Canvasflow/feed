@@ -24,13 +24,13 @@ import { RSSFeed } from '@canvasflow/feed';
 
 ### Static members
 
-| Member             | Signature                                                 | Description                                                             |
-| ------------------ | --------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Member             | Signature                                                 | Description                                                                                                                                                      |
+| ------------------ | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `validateParams`   | `(params?: Params, root?: Mapping) => FeedIssue[]`        | Validate params/root against the Zod schemas; returns structured issues (`{ code, severity, message }`, `code` is `'invalid-params' \| 'invalid-root-mapping'`). |
-| `toJSON`           | `(rss: RSS) => unknown`                                   | Serialize then re-parse an `RSS` (round-trips errors via `toString`).   |
-| `toString`         | `(rss: RSS) => string`                                    | JSON string of an `RSS` (Error values are flattened).                   |
-| `getRecipeFromUrl` | `(url: string) => Promise<Recipe \| null>`                | Fetch a page and extract an LD+JSON `Recipe`.                           |
-| `getHtmlContent`   | `(url: string, headers?: HeadersInit) => Promise<string>` | Fetch raw HTML for a URL.                                               |
+| `toJSON`           | `(rss: RSS) => unknown`                                   | Serialize then re-parse an `RSS` (round-trips errors via `toString`).                                                                                            |
+| `toString`         | `(rss: RSS) => string`                                    | JSON string of an `RSS` (Error values are flattened).                                                                                                            |
+| `getRecipeFromUrl` | `(url: string) => Promise<Recipe \| null>`                | Fetch a page and extract an LD+JSON `Recipe`.                                                                                                                    |
+| `getHtmlContent`   | `(url: string, headers?: HeadersInit) => Promise<string>` | Fetch raw HTML for a URL.                                                                                                                                        |
 
 > `getRecipeFromUrl` / `getHtmlContent` perform network I/O (`fetch`); everything else is pure.
 
