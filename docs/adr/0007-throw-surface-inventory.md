@@ -183,14 +183,22 @@ this function if the `FeedIssue` model makes it redundant.
 
 ## Guarded sites (confirmed safe — no action needed)
 
-| File | Line | Call | Guard |
-|------|------|------|-------|
-| `html-mapper.ts` | 293 | `new URL(value)` | `try/catch` returning `false` |
-| `mapping.embeds.ts` | 51 | `new URL(url)` | `try/catch` with error accumulation |
-| `mapping.utils.ts` | 136 | `new URL('https:' + href)` | `try/catch` returning original href |
-| `rss-feed.ts` | 341 | `JSON.parse(this.toString(rss))` | structurally safe: input is the output of `JSON.stringify` |
-| `html-mapper.ts` | 225 | `throw new Error(...)` | defensive guard; `parseHTML` never returns `null` in practice |
-| `mapping.media.ts` | 924, 939, 954, 966, 981 | `new URL(searchParams.*)` | each call is inside a branch guarded by `.startsWith('https://…')` |
+| File                | Line                    | Call                             | Guard                                                              |
+| ------------------- | ----------------------- | -------------------------------- | ------------------------------------------------------------------ |
+| `html-mapper.ts`    | 293                     | `new URL(value)`                 | `try/catch` returning `false`                                      |
+| `mapping.embeds.ts` | 51                      | `new URL(url)`                   | `try/catch` with error accumulation                                |
+| `mapping.utils.ts`  | 136                     | `new URL('https:' + href)`       | `try/catch` returning original href                                |
+| `rss-feed.ts`       | 341                     | `JSON.parse(this.toString(rss))` | structurally safe: input is the output of `JSON.stringify`         |
+| `html-mapper.ts`    | 225                     | `throw new Error(...)`           | defensive guard; `parseHTML` never returns `null` in practice      |
+
+> **Correction (2026-07-25):** this table originally also listed
+> `mapping.media.ts` lines 924/939/954/966/981 (`new URL(searchParams.*)`) as
+> "guarded" because each call sits behind a `.startsWith('https://…')` check.
+> That assessment was wrong — `.startsWith` does not imply the string is a
+> parseable URL: `new URL('https://www.youtube.com%')` throws even though it
+> starts with `https://www.youtube.com`. Confirmed by direct reproduction.
+> Removed from this table; see Resolution below — these five sites now carry
+> an explicit `URL.canParse` guard alongside the `.startsWith` check.
 
 ---
 
@@ -199,15 +207,42 @@ this function if the `FeedIssue` model makes it redundant.
 `parseInt` does not throw, but it returns `NaN` for non-numeric input. Several
 call sites do not radix-10 or check for `NaN`:
 
-| File | Line | Call | Has radix? | Checks NaN? |
-|------|------|------|-----------|-------------|
-| `rss-feed.ts` | 308 | `parseInt(\`${channel['sy:updateFrequency']}\`)` | No | No |
-| `rss-feed.ts` | 803 | `parseInt(\`${e['@_length']}\`, 10)` | Yes | No |
-| `rss-feed.ts` | 608, 611, 615 | thumbnail dimension parsing | Yes | Yes ✓ |
-| `mapping.media.ts` | 69, 75, 141, 142, 283, 289, 385, 390 | image dimension parsing | Yes | Some |
+| File               | Line                                 | Call                                             | Has radix? | Checks NaN? |
+| ------------------ | ------------------------------------ | ------------------------------------------------ | ---------- | ----------- |
+| `rss-feed.ts`      | 308                                  | `parseInt(\`${channel['sy:updateFrequency']}\`)` | No         | No          |
+| `rss-feed.ts`      | 803                                  | `parseInt(\`${e['@_length']}\`, 10)`             | Yes        | No          |
+| `rss-feed.ts`      | 608, 611, 615                        | thumbnail dimension parsing                      | Yes        | Yes ✓       |
+| `mapping.media.ts` | 69, 75, 141, 142, 283, 289, 385, 390 | image dimension parsing                          | Yes        | Some        |
 
 The missing radix on line 308 and the unchecked `NaN` on line 803 are minor
 correctness issues to address as part of the `build()` never-throws work.
+
+---
+
+## Resolution (2026-07-25)
+
+All eight numbered sites and the corrected `mapping.media.ts` entries above
+are now fixed:
+
+| Site                                                     | Fix                                                                                                          |
+| ---------------------------------------------------------| -------------------------------------------------------------------------------------------------------------|
+| 1 — constructor `XMLParser.parse()`                       | `try/catch`, `parse-error` string issue (fixed earlier; see `rss-feed.test.ts`)                              |
+| 2 — `build()` channel `<link>`                            | `URL.canParse(link)` guard; warning on failure, `origin` extraction skipped                                  |
+| 3 — `getRecipeFromUrl()` JSON-LD `JSON.parse`             | moved to `src/rss/recipe.ts`; wrapped in `try/catch`, malformed blocks skipped                                |
+| 4 — `fromIframe()` src URL                                | `URL.canParse(src)` guard; falls back to `toCustom(node)`                                                    |
+| 4b — `fromIframe()` searchParams (media.ts 924/939/954/966/981) | `URL.canParse` added to each `.startsWith(...)` condition; falls through to the next check / `toCustom` |
+| 5 — `mapMediaContent()` relative URL                      | `URL.canParse(url, origin)` guard; `url` left unchanged and a warning is pushed on failure                    |
+| 6 — `blockquote[cite]` TikTok                             | `URL.canParse(cite)` guard; returns an error-annotated `TikTokComponent` stub instead of throwing              |
+| 7 — `toYoutubeFromAnchor()`                                | `URL.canParse(url)` guard; returns an error-annotated `YoutubeComponent` stub (verified by a direct unit test — the full pipeline neutralizes bad anchor hrefs to `"#"` before this function is ever reached, per `sanitizeInvalidAnchorHrefs`) |
+| 8 — `validateParams()` public API                          | intentional throw, left as-is (documented, not on the `RSSFeed` path)                                          |
+
+End-to-end verification: `src/rss/__tests__/rss-feed.fuzz.test.ts` builds
+every one of these edge cases (plus 150 random XML-ish strings and 100
+random `params`-shaped values) through the full `RSSFeed` lifecycle
+(`constructor` → `validate()` → `build()`) and asserts none of them throw.
+`parseInt` NaN correctness issues (lines 308, 803) remain open — they don't
+throw, so they were out of scope for the no-throw contract, but are still
+worth a follow-up pass.
 
 ---
 

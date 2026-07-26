@@ -880,6 +880,10 @@ export function fromIframe(
 
   let builtComponent;
 
+  if (!URL.canParse(src)) {
+    return toCustom(node);
+  }
+
   const url = new URL(src);
 
   switch (url.origin) {
@@ -919,7 +923,8 @@ export function fromIframe(
   // Check if youtube is in the source url
   if (
     searchParams.src &&
-    searchParams.src.startsWith('https://www.youtube.com')
+    searchParams.src.startsWith('https://www.youtube.com') &&
+    URL.canParse(searchParams.src)
   ) {
     builtComponent = toYoutube(new URL(searchParams.src));
     builtComponent.html = sanitizeContentHtml(node);
@@ -934,7 +939,8 @@ export function fromIframe(
   // Check if youtube is in the source url
   if (
     searchParams.url &&
-    searchParams.url.startsWith('https://www.tiktok.com')
+    searchParams.url.startsWith('https://www.tiktok.com') &&
+    URL.canParse(searchParams.url)
   ) {
     builtComponent = toTikTok(new URL(searchParams.url));
     builtComponent.html = sanitizeContentHtml(node);
@@ -949,7 +955,8 @@ export function fromIframe(
   // Check if Dailymotion is in the source url
   if (
     searchParams.url &&
-    searchParams.url.startsWith('https://www.dailymotion.com')
+    searchParams.url.startsWith('https://www.dailymotion.com') &&
+    URL.canParse(searchParams.url)
   ) {
     builtComponent = toDailymotion(new URL(searchParams.url));
     builtComponent.element = {
@@ -962,7 +969,11 @@ export function fromIframe(
   }
 
   // Check if Dailymotion is in the source url
-  if (searchParams.url && searchParams.url.startsWith('https://vimeo.com')) {
+  if (
+    searchParams.url &&
+    searchParams.url.startsWith('https://vimeo.com') &&
+    URL.canParse(searchParams.url)
+  ) {
     builtComponent = toVimeo(new URL(searchParams.url));
     builtComponent.element = {
       tag: node.tagName,
@@ -976,7 +987,8 @@ export function fromIframe(
   if (
     searchParams.url &&
     (searchParams.url.startsWith('https://twitter.com') ||
-      searchParams.url.startsWith('https://x.com'))
+      searchParams.url.startsWith('https://x.com')) &&
+    URL.canParse(searchParams.url)
   ) {
     builtComponent = toTwitter(new URL(searchParams.url));
     if (!builtComponent) return builtComponent;

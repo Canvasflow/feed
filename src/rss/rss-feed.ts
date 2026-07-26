@@ -1,7 +1,7 @@
 import { decodeEntities } from '../utils/entities';
 import { parseDate } from '../utils/date';
 import { XMLParser } from 'fast-xml-parser';
-import { parseHTML } from 'linkedom';
+import { getHtmlContent, getRecipeFromUrl } from './recipe';
 
 import type {
   RSS,
@@ -10,6 +10,8 @@ import type {
   MediaContent,
   MediaGroup,
   Thumbnail,
+  FeedIssue,
+  FeedIssueCode,
 } from './rss-types';
 import { replaceErrors } from './rss-types';
 export { replaceErrors };
@@ -17,11 +19,7 @@ import { Tag } from './tag';
 import * as Attributes from './attributes';
 import { HTMLMapper } from '../component/html/html-mapper';
 import type { Recipe } from '../component/schema/recipe-schema';
-import {
-  isValidParams,
-  type Mapping,
-  type Params,
-} from '../component/mapping/mapping';
+import { type Mapping, type Params } from '../component/mapping/mapping';
 import {
   MappingSchema,
   ParamsSchema,
@@ -115,57 +113,51 @@ export class RSSFeed {
       return;
     }
 
-    if (params && isValidParams(params)) {
-      this.params = params;
-    }
+    // Stored as-is, even when invalid: `build()` is the single place that
+    // validates and reports `params` (via `validateParams`), so there is one
+    // consistent behavior instead of the constructor silently dropping bad
+    // config that `build()` never gets a chance to see.
+    this.params = params;
   }
 
   set root(rootMapping: Mapping | undefined) {
     this._root = rootMapping;
   }
 
+  /**
+   * @deprecated Thin backward-compatible wrapper around
+   * `getRecipeFromUrl` in `./recipe` — the network I/O this performs is not
+   * really part of an XML-parsing library's job. Prefer importing
+   * `getRecipeFromUrl` from `@canvasflow/feed` directly, which also accepts
+   * an injected `fetch`, a timeout, and a body-size cap.
+   */
   static async getRecipeFromUrl(url: string): Promise<Recipe | null> {
-    let recipe: Recipe | null = null;
-    const html = await this.getHtmlContent(url);
-    const { document } = parseHTML(html);
-    const scripts = document.querySelectorAll(
-      'script[type="application/ld+json"]'
-    );
-    for (const element of scripts) {
-      const content = element.textContent;
-      if (!content) {
-        continue;
-      }
-      const parseContent = JSON.parse(content);
-      if (parseContent['@type'] && parseContent['@type'] === 'Recipe') {
-        recipe = parseContent as Recipe;
-        break;
-      }
-      if (parseContent['@graph'] && parseContent['@graph'].length) {
-        for (const item of parseContent['@graph']) {
-          if (item['@type'] && item['@type'] === 'Recipe') {
-            recipe = item as Recipe;
-            break;
-          }
-        }
-        if (recipe) {
-          break;
-        }
-      }
-    }
-
-    return recipe;
+    return getRecipeFromUrl(url);
   }
 
+  /**
+   * @deprecated Thin backward-compatible wrapper around `getHtmlContent` in
+   * `./recipe`. Prefer importing `getHtmlContent` from `@canvasflow/feed`
+   * directly, which also accepts an injected `fetch`, a timeout, and a
+   * body-size cap.
+   */
   static async getHtmlContent(url: string, headers?: HeadersInit) {
-    const response = await fetch(url, { method: 'GET', headers });
-    return response.text();
+    return getHtmlContent(url, { headers });
   }
 
   async validate(): Promise<void> {
     const { data } = this;
     this.errors = [];
     this._validated = true;
+
+    // Reset accumulators so repeated `validate()` calls are idempotent —
+    // `validateRSS`/`validateChannel`/`validateItem` no longer delete
+    // offending keys from `this.data` to prevent re-detection, so the
+    // reset has to happen here instead.
+    this.rss.errors = [];
+    this.rss.warnings = [];
+    this.rss.channel.errors = [];
+    this.rss.channel.warnings = [];
 
     if (!data.rss) {
       const error = 'Required property "rss" is missing at the root level';
@@ -196,26 +188,30 @@ export class RSSFeed {
   }
 
   /**
-   * Validate `params` and an optional `root` mapping against their Zod schemas.
-   * Returns an array of validation errors; empty when both are valid.
+   * Validate `params` and an optional `root` mapping against their Zod
+   * schemas. Returns structured `FeedIssue`s (one per invalid schema,
+   * summarizing every underlying Zod issue) instead of raw Zod output.
    *
    * @param {Params} [params]
    * @param {Mapping} [root]
-   * @returns {Array<unknown>}
+   * @returns {FeedIssue[]}
    */
-  static validateParams(params?: Params, root?: Mapping): Array<unknown> {
-    const errors: Array<unknown> = [];
+  static validateParams(params?: Params, root?: Mapping): FeedIssue[] {
+    const errors: FeedIssue[] = [];
     if (params) {
       try {
         const result = ParamsSchema.safeParse(params);
 
         if (!result.success) {
-          const paramsError = { params: result.error.issues };
-          errors.push(paramsError);
+          errors.push(toFeedIssue('invalid-params', result.error.issues));
         }
         /* v8 ignore next 3 -- safeParse does not throw; defensive catch */
       } catch (e) {
-        errors.push(e);
+        errors.push({
+          code: 'invalid-params',
+          severity: 'error',
+          message: e instanceof Error ? e.message : String(e),
+        });
       }
     }
 
@@ -224,14 +220,15 @@ export class RSSFeed {
         const result = MappingSchema.safeParse(root);
 
         if (!result.success) {
-          const rootError = {
-            root: result.error.issues,
-          };
-          errors.push(rootError);
+          errors.push(toFeedIssue('invalid-root-mapping', result.error.issues));
         }
         /* v8 ignore next 3 -- safeParse does not throw; defensive catch */
       } catch (e) {
-        errors.push(e);
+        errors.push({
+          code: 'invalid-root-mapping',
+          severity: 'error',
+          message: e instanceof Error ? e.message : String(e),
+        });
       }
     }
 
@@ -389,11 +386,13 @@ export class RSSFeed {
       return;
     }
 
-    // Add warning for tags that are invalid at the rss level
+    // Warn on tags that are invalid at the rss level. Not deleted from
+    // `this.data`: `build()` only ever reads known, explicitly destructured
+    // fields, so leaving unrecognized keys in place costs nothing and keeps
+    // validate() from mutating the parsed input.
     for (const key in rss) {
       if (!Tag.rss.validTags.has(key)) {
         this.rss.warnings.push(`Invalid property "${key}"`);
-        delete rss[key];
       }
     }
   }
@@ -416,11 +415,10 @@ export class RSSFeed {
       return;
     }
 
-    // Add warning for tags that are invalid at the rss level
+    // Warn without deleting — see the comment in `validateRSS`.
     for (const key in channel) {
       if (!Tag.rss.channel.validTags.has(key)) {
         this.rss.channel.warnings.push(`Invalid property "${key}"`);
-        delete channel[`${key}`];
       }
     }
   }
@@ -458,7 +456,6 @@ export class RSSFeed {
     for (const key in item) {
       if (!Tag.rss.channel.item.validTags.has(key)) {
         warnings.push(`Invalid property "${key}"`);
-        delete item[`${key}`];
       }
     }
 
@@ -934,7 +931,7 @@ function mapMediaContent(
 
     if (url && !url.startsWith('http') && !url.startsWith('https')) {
       warnings.push(`Property "url" is not an absolute URL`);
-      if (origin) {
+      if (origin && URL.canParse(url, origin)) {
         url = new URL(url, origin).href;
       }
     }
@@ -952,6 +949,29 @@ function mapMediaContent(
       description: description ? description.trim() : description,
     };
   };
+}
+
+/**
+ * Summarize a Zod validation failure into a single `FeedIssue`, joining every
+ * underlying issue's path/message so callers get one structured entry per
+ * invalid schema instead of raw `ZodIssue[]` output.
+ *
+ * @param {FeedIssueCode} code
+ * @param {Array<{ path: PropertyKey[]; message: string }>} issues
+ * @returns {FeedIssue}
+ */
+function toFeedIssue(
+  code: FeedIssueCode,
+  issues: Array<{ path: PropertyKey[]; message: string }>
+): FeedIssue {
+  const message = issues
+    .map((issue) => {
+      const path = issue.path.map(String).join('.');
+      return path ? `${path}: ${issue.message}` : issue.message;
+    })
+    .join('; ');
+
+  return { code, severity: 'error', message };
 }
 
 /**

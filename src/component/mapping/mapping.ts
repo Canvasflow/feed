@@ -329,7 +329,8 @@ export function fromNode(
   }
 
   if (isTikTokNode(node)) {
-    if (!attributes.get('cite')) {
+    const cite = attributes.get('cite');
+    if (!cite || !URL.canParse(cite)) {
       return {
         component: 'video',
         vidtype: 'tiktok',
@@ -338,11 +339,12 @@ export function fromNode(
           id: '',
         },
         warnings: [],
-        errors: ['cite attribute is required'],
+        errors: [
+          cite ? `Invalid cite URL: "${cite}"` : 'cite attribute is required',
+        ],
       } as TikTokComponent;
     }
-    /* v8 ignore next -- cite presence is checked above; `|| ''` is defensive */
-    const tiktokComponent = toTikTok(new URL(attributes.get('cite') || ''));
+    const tiktokComponent = toTikTok(new URL(cite));
     if (tagName) {
       tiktokComponent.element = {
         tag: tagName,

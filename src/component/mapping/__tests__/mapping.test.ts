@@ -107,6 +107,63 @@ describe('Mapping — iframe embeds', () => {
       components.find((c) => c && c.component === 'custom')
     ).toBeUndefined();
   });
+
+  test(
+    'unparseable iframe src falls back to custom instead of throwing',
+    tags,
+    () => {
+      expect(() =>
+        find(`<iframe src="not a valid url %"></iframe>`, 'custom')
+      ).not.toThrow();
+      const c = find(`<iframe src="not a valid url %"></iframe>`, 'custom');
+      expect(c).toBeDefined();
+    }
+  );
+
+  test(
+    'unparseable youtube src search param falls back to custom instead of throwing',
+    tags,
+    () => {
+      const html = `<iframe src="https://cdn.embedly.com/widgets/media.html?src=https://www.youtube.com%"></iframe>`;
+      expect(() => convert(html)).not.toThrow();
+    }
+  );
+
+  test(
+    'unparseable tiktok url search param falls back to custom instead of throwing',
+    tags,
+    () => {
+      const html = `<iframe src="https://example.com/e?url=https://www.tiktok.com%"></iframe>`;
+      expect(() => convert(html)).not.toThrow();
+    }
+  );
+
+  test(
+    'unparseable dailymotion url search param falls back to custom instead of throwing',
+    tags,
+    () => {
+      const html = `<iframe src="https://example.com/e?url=https://www.dailymotion.com%"></iframe>`;
+      expect(() => convert(html)).not.toThrow();
+    }
+  );
+
+  test(
+    'unparseable vimeo url search param falls back to custom instead of throwing',
+    tags,
+    () => {
+      const html = `<iframe src="https://example.com/e?url=https://vimeo.com%"></iframe>`;
+      expect(() => convert(html)).not.toThrow();
+    }
+  );
+
+  test(
+    'unparseable twitter url search param falls back to custom instead of throwing',
+    tags,
+    () => {
+      const html = `<iframe src="https://example.com/e?url=https://twitter.com%"></iframe>`;
+      expect(() => convert(html)).not.toThrow();
+    }
+  );
 });
 
 describe('Mapping — social blockquotes and anchors', () => {
@@ -158,6 +215,36 @@ describe('Mapping — social blockquotes and anchors', () => {
       'video'
     );
     expect(c).toBeDefined();
+  });
+
+  test(
+    'tiktok blockquote with unparseable cite reports an error instead of throwing',
+    tags,
+    () => {
+      const html = `<blockquote class="tiktok-embed" cite="not a url %">x</blockquote>`;
+      expect(() => convert(html)).not.toThrow();
+      const c = find(html, 'video') as { errors: string[] };
+      expect(c.errors.length).toBeGreaterThan(0);
+    }
+  );
+
+  test('toYoutubeFromAnchor does not throw on an unparseable href (direct unit call)', async () => {
+    // `sanitizeInvalidAnchorHrefs` neutralizes malformed hrefs to "#" before
+    // `fromNode` ever runs, so this path isn't reachable through the full
+    // `toComponents` pipeline — call the converter directly to prove it's
+    // still safe if invoked in isolation (it is exported).
+    const { toYoutubeFromAnchor } = await import('../mapping.embeds');
+    const node = {
+      type: 'element' as const,
+      tagName: 'a',
+      attributes: [{ key: 'href', value: 'https://www.youtube.com%embed/xyz' }],
+      children: [],
+    };
+    let component: { errors: string[] } | undefined;
+    expect(() => {
+      component = toYoutubeFromAnchor(node);
+    }).not.toThrow();
+    expect(component?.errors.length).toBeGreaterThan(0);
   });
 });
 

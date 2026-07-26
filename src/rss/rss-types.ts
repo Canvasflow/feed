@@ -1,9 +1,32 @@
 import type { Component } from '../component/component';
 
+/**
+ * Stable, switchable codes for structured feed/config issues. Currently only
+ * emitted at the `params`/`root` (Zod) validation boundary in
+ * `RSSFeed.validateParams`; the rest of `errors`/`warnings` across this module
+ * remain plain strings pending the full migration tracked in
+ * improvements/03-api-robustness.md.
+ */
+export type FeedIssueCode = 'invalid-params' | 'invalid-root-mapping';
+
+export type FeedIssueSeverity = 'error' | 'warning';
+
+export interface FeedIssue {
+  code: FeedIssueCode;
+  severity: FeedIssueSeverity;
+  message: string;
+  path?: string;
+}
+
 export interface RSS {
   modules?: string[];
   channel: Channel;
-  errors: Array<unknown>;
+  /**
+   * Mixed transitional shape: plain strings from XML/tag validation, plus
+   * structured `FeedIssue`s from `params`/`root` validation. See
+   * `FeedIssueCode` for why this isn't fully typed yet.
+   */
+  errors: Array<string | FeedIssue>;
   warnings: string[];
 }
 

@@ -132,8 +132,10 @@ describe('Validate Params', () => {
       };
       const errors = RSSFeed.validateParams(params, root);
       expect(errors.length).toBe(1);
-      const error = errors.pop() as any;
-      expect(error.root).toBeDefined();
+      const error = errors.pop();
+      expect(error?.code).toBe('invalid-root-mapping');
+      expect(error?.severity).toBe('error');
+      expect(error?.message.length).toBeGreaterThan(0);
     }
   );
   test(
@@ -175,8 +177,27 @@ describe('Validate Params', () => {
       };
       const errors = RSSFeed.validateParams(params, root);
       expect(errors.length).toBe(1);
-      const error = errors.pop() as any;
-      expect(error.params).toBeDefined();
+      const error = errors.pop();
+      expect(error?.code).toBe('invalid-params');
+      expect(error?.severity).toBe('error');
+      expect(error?.message.length).toBeGreaterThan(0);
+    }
+  );
+
+  test(
+    'invalid params passed to the constructor are reported by build(), not silently dropped',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const invalidParams = { mappings: 'not-an-array' } as unknown as Params;
+      const feed = new RSSFeed(buildFeed(''), invalidParams);
+      await feed.validate();
+      const rss = await feed.build();
+      expect(
+        rss.errors.some(
+          (e) =>
+            typeof e === 'object' && e !== null && e.code === 'invalid-params'
+        )
+      ).toBe(true);
     }
   );
 });
@@ -1817,6 +1838,26 @@ describe('RSSFeed serialization', () => {
 
 describe('RSSFeed validation branches', () => {
   test(
+    'validate() does not mutate parsed input and is idempotent across repeated calls',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed('', {
+          channelExtra: '<unknownChannelTag>x</unknownChannelTag>',
+        })
+      );
+      await feed.validate();
+      const firstWarnings = [...feed.rss.channel.warnings];
+      await feed.validate();
+      expect(feed.rss.channel.warnings).toEqual(firstWarnings);
+      expect(
+        feed.rss.channel.warnings.filter((w) => w.includes('unknownChannelTag'))
+          .length
+      ).toBe(1);
+    }
+  );
+
+  test(
     'It should report a missing required item property',
     { tags: ['unit', 'rss'] },
     async () => {
@@ -2130,7 +2171,7 @@ describe('getRecipeFromUrl with stubbed fetch', () => {
 
   function stubFetch(html: string) {
     globalThis.fetch = (async () =>
-      ({ text: async () => html }) as Response) as typeof fetch;
+      ({ ok: true, text: async () => html }) as Response) as typeof fetch;
   }
 
   test(
@@ -2244,10 +2285,9 @@ describe('getHtmlContent with stubbed fetch', () => {
   );
 
   test(
-    'It should return text even on a non-ok response',
+    'It should throw on a non-ok response instead of returning its body',
     { tags: ['unit'] },
     async () => {
-      // getHtmlContent does not inspect response.ok — it always returns text()
       globalThis.fetch = (async () =>
         ({
           ok: false,
@@ -2255,8 +2295,9 @@ describe('getHtmlContent with stubbed fetch', () => {
           text: async () => 'Not Found',
         }) as Response) as typeof fetch;
       try {
-        const html = await RSSFeed.getHtmlContent('https://example.com');
-        expect(html).toBe('Not Found');
+        await expect(
+          RSSFeed.getHtmlContent('https://example.com')
+        ).rejects.toThrow('failed with status 404');
       } finally {
         globalThis.fetch = originalFetch;
       }

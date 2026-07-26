@@ -83,14 +83,14 @@ against the repo on 2026-07-24.
 
 **Implementation**
 
-- [x] Constructor never throws on malformed XML (captured as parse-error issue) _(`this.rss` initialised before `XMLParser.parse`; parse wrapped in `try/catch`; error stored in both `feed.errors` and `rss.errors` as `"XML parse error: …"`; 8 new tests in `rss-feed.test.ts` pass; 673 total tests green)_
-- [ ] `build()` never throws (`URL.canParse` guard on channel link; date + `parseInt` audits)
-- [ ] `FeedIssue { code, severity, message, path? }` type introduced; `errors`/`warnings` migrated; zod issues converted (no raw `unknown` in `rss.errors`)
-- [ ] Single, documented behavior for invalid `params` (no silent drop)
-- [ ] `validate()`/`build()` sync (or ADR for async); `validate()` no longer mutates `this.data`; idempotent
-- [ ] Network I/O extracted from `RSSFeed` (injected fetch, timeout, status check, body cap; JSON-LD `JSON.parse` guarded)
-- [ ] No-throw property tests passing (arbitrary strings + params)
-- [ ] Wiki API reference documents the contract; migration guide in CHANGELOG for the major
+- [x] Constructor never throws on malformed XML (captured as parse-error issue) _(`this.rss` initialised before `XMLParser.parse`; parse wrapped in `try/catch`; error stored in both `feed.errors` and `rss.errors` as `"XML parse error: …"`; 8 new tests in `rss-feed.test.ts` pass)_
+- [x] `build()` never throws _(`URL.canParse` guard on the channel link, plus every other unguarded `new URL(...)` reachable through `content:encoded`: `fromIframe` + its 5 searchParams branches, TikTok `cite`, `toYoutubeFromAnchor`, `mapMediaContent`'s relative-URL resolution — see ADR-0007's Resolution section. `parseInt`/date audits remain open as a separate correctness item — they don't throw, so were out of scope here.)_
+- [ ] `FeedIssue { code, severity, message, path? }` type introduced; `errors`/`warnings` migrated; zod issues converted (no raw `unknown` in `rss.errors`) _(Partially done by deliberate scope choice: the type exists and is used at the `params`/`root` boundary — `RSSFeed.validateParams` returns `FeedIssue[]`, `RSS.errors` is now `Array<string \| FeedIssue>` instead of `Array<unknown>`. Every other `errors`/`warnings: string[]` across RSS/channel/item and the mapping components is untouched — that's a major-version, high-blast-radius migration deferred on purpose, not silently skipped. See ADR-0008 for the plan to bundle it with the sync conversion.)_
+- [x] Single, documented behavior for invalid `params` (no silent drop) _(constructor always stores `params` as given; `build()` is the one place that validates and reports them. Previously the constructor's `isValidParams` guard meant invalid params never reached `build()`'s validation at all — a real bug, not just a documented inconsistency. Test: "invalid params passed to the constructor are reported by build(), not silently dropped".)_
+- [x] `validate()`/`build()` sync (or ADR for async); `validate()` no longer mutates `this.data`; idempotent _(ADR-0008 justifies keeping async pending a consumer audit. `validateRSS`/`validateChannel`/`validateItem` no longer `delete` keys from parsed input. `validate()` resets its `rss`/`channel` error/warning accumulators at the top of the method — removing the `delete`-based dedup exposed a real duplicate-warning bug on repeated `validate()` calls, fixed by this explicit reset. Regression test added.)_
+- [x] Network I/O extracted from `RSSFeed` (injected fetch, timeout, status check, body cap; JSON-LD `JSON.parse` guarded) _(New `src/rss/recipe.ts`, exported from the package root; `RSSFeed.getRecipeFromUrl`/`getHtmlContent` are now thin `@deprecated` wrappers. `AbortSignal.timeout` default 10s, `response.ok` check, streamed body-size cap default 5MB, JSON-LD parse wrapped in try/catch. 8 new tests in `recipe.test.ts`.)_
+- [x] No-throw property tests passing (arbitrary strings + params) _(`src/rss/__tests__/rss-feed.fuzz.test.ts`: 267 tests — 17 hand-picked edge cases (including every throw site fixed above), 150 seeded-random XML-ish strings, 100 seeded-random `params`-shaped values — driven through the full constructor → `validate()` → `build()` lifecycle. All pass.)_
+- [ ] Wiki API reference documents the contract; migration guide in CHANGELOG for the major _(not done — only the `validateParams` signature line in `API-Reference.md` was touched, as a side effect of its return type changing)_
 
 ## Section 4 — Type Safety & TS Library Practices ([04-type-safety.md](04-type-safety.md))
 

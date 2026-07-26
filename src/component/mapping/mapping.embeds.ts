@@ -218,7 +218,15 @@ export function toYoutubeFromAnchor(node: ElementNode): YoutubeComponent {
   const attributes = getAttributes(node.attributes);
   /* v8 ignore next -- only invoked for anchors with a youtube href */
   const url = attributes.get('href') || '';
-  const component = toYoutube(new URL(url));
+  const component: YoutubeComponent = URL.canParse(url)
+    ? toYoutube(new URL(url))
+    : {
+        component: 'video',
+        vidtype: 'youtube',
+        params: { id: '' },
+        errors: [`Invalid Youtube video URL: "${url}"`],
+        warnings: [],
+      };
   component.element = {
     tag: node.tagName,
     attributes: Object.fromEntries(attributes),
