@@ -84,20 +84,20 @@ import { RSSFeed } from '@canvasflow/feed';
 | constructor     | `new RSSFeed(content: string, params?: Params)` | Parse the feed XML; optional `Params` configures HTML conversion. |
 | `content`       | `string`                                        | The original XML passed in.                                       |
 | `rss`           | `RSS`                                           | The typed result, populated by `validate()` / `build()`.          |
-| `errors`        | `FeedIssue[]`                                    | Top-level errors collected during validation.                     |
+| `errors`        | `FeedIssue[]`                                   | Top-level errors collected during validation.                     |
 | `root` (setter) | `set root(mapping?: Mapping)`                   | Scope content extraction to a sub-element before conversion.      |
 | `validate()`    | `Promise<void>`                                 | Validate required tags; fill `errors`/`warnings`.                 |
 | `build()`       | `Promise<RSS>`                                  | Build the typed `RSS`; attach a `components` array to each item.  |
 
 ### Static members
 
-| Member             | Signature                                                 | Description                                                                                                                                                      |
-| ------------------ | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Member             | Signature                                                 | Description                                                                                                                       |
+| ------------------ | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `validateParams`   | `(params?: Params, root?: Mapping) => FeedIssue[]`        | Validate params/root against the Zod schemas; returns structured issues (`code` is `'INVALID_PARAMS' \| 'INVALID_ROOT_MAPPING'`). |
-| `toJSON`           | `(rss: RSS) => unknown`                                   | Serialize then re-parse an `RSS` (round-trips errors via `toString`).                                                                                            |
-| `toString`         | `(rss: RSS) => string`                                    | JSON string of an `RSS` (Error values are flattened).                                                                                                            |
-| `getRecipeFromUrl` | `(url: string) => Promise<Recipe \| null>`                | **Deprecated** thin wrapper around `getRecipeFromUrl` from `./recipe` (see below).                                                                                |
-| `getHtmlContent`   | `(url: string, headers?: HeadersInit) => Promise<string>` | **Deprecated** thin wrapper around `getHtmlContent` from `./recipe` (see below).                                                                                  |
+| `toJSON`           | `(rss: RSS) => unknown`                                   | Serialize then re-parse an `RSS` (round-trips errors via `toString`).                                                             |
+| `toString`         | `(rss: RSS) => string`                                    | JSON string of an `RSS` (Error values are flattened).                                                                             |
+| `getRecipeFromUrl` | `(url: string) => Promise<Recipe \| null>`                | **Deprecated** thin wrapper around `getRecipeFromUrl` from `./recipe` (see below).                                                |
+| `getHtmlContent`   | `(url: string, headers?: HeadersInit) => Promise<string>` | **Deprecated** thin wrapper around `getHtmlContent` from `./recipe` (see below).                                                  |
 
 > `getRecipeFromUrl` / `getHtmlContent` perform network I/O (`fetch`); everything else is pure.
 
@@ -111,9 +111,9 @@ API. Both are exported from `@canvasflow/feed` directly:
 import { getHtmlContent, getRecipeFromUrl } from '@canvasflow/feed';
 ```
 
-| Function                                            | Signature                                                    | Description                                                                                                            |
-| ---------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `getHtmlContent(url, options?)` | `(url: string, options?: FetchOptions) => Promise<string>`      | Fetch `url` as text. Rejects on a non-`ok` response or on exceeding `maxBytes`.                                          |
+| Function                          | Signature                                                          | Description                                                                                                                 |
+| --------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| `getHtmlContent(url, options?)`   | `(url: string, options?: FetchOptions) => Promise<string>`         | Fetch `url` as text. Rejects on a non-`ok` response or on exceeding `maxBytes`.                                             |
 | `getRecipeFromUrl(url, options?)` | `(url: string, options?: FetchOptions) => Promise<Recipe \| null>` | Fetch `url` and extract the first LD+JSON `Recipe` (top-level or nested in `@graph`); malformed JSON-LD blocks are skipped. |
 
 `FetchOptions`: `{ fetch?: typeof fetch; headers?: HeadersInit; timeoutMs?: number /* default 10000 */; maxBytes?: number /* default 5MB */ }`. The request is aborted via `AbortSignal.timeout(timeoutMs)`; the response body is read through a size-capped stream.
@@ -157,7 +157,7 @@ The `is*` component guards (e.g. `isImageComponent`, `isVideoComponent`) and `is
 | Group              | Types                                                                                                                                                           |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Feed               | `RSS`, `Channel`, `Item`, `Enclosure`, `MediaContent`, `MediaGroup`, `Thumbnail`                                                                                |
-| Errors             | `FeedIssue`, `FeedIssueCode`, `FeedIssueSeverity` — see "Error model" above                                                                                      |
+| Errors             | `FeedIssue`, `FeedIssueCode`, `FeedIssueSeverity` — see "Error model" above                                                                                     |
 | Config             | `Params`, `Mapping`, `ComponentMapping`, `MatchType`, `Filter`, `TagFilter`, `ClassFilter`, `AttributeFilter`, `AttributeValueFilter`, `AttributePatternFilter` |
 | Component mappings | `ContainerMapping`, `ColumnsMapping`, `LiveContainerMapping`, `RecipeMapping`, `CustomMapping`, `TextMapping`, `GalleryMapping`                                 |
 | Components         | `Component`, `ComponentType`, `TextType`, and every `*Component` interface                                                                                      |

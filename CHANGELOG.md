@@ -25,7 +25,9 @@ buttons, text, tables, ...).
 
 ```ts
 const rss = await feed.build();
-if (rss.channel.items[0].errors.includes('Required property "url" is missing')) {
+if (
+  rss.channel.items[0].errors.includes('Required property "url" is missing')
+) {
   // ...
 }
 ```
@@ -34,9 +36,7 @@ if (rss.channel.items[0].errors.includes('Required property "url" is missing')) 
 
 ```ts
 const rss = await feed.build();
-if (
-  rss.channel.items[0].errors.some((e) => e.code === 'MISSING_URL')
-) {
+if (rss.channel.items[0].errors.some((e) => e.code === 'MISSING_URL')) {
   // ...
 }
 // e.message still carries the human-readable text for logging/display.
