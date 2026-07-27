@@ -20,6 +20,18 @@ The build is configured under the `pack` key in [`vite.config.ts`](https://githu
 
 Only `dist/` is published (`files` in `package.json`). The package exposes `./dist/index.mjs` (module/main) and `./dist/index.d.mts` (types).
 
+## CI
+
+Every PR and push to `main`, `develop`, or `feature/**` triggers the **🔍 CI** workflow ([`.github/workflows/ci.yml`](https://github.com/canvasflow/feed/blob/main/.github/workflows/ci.yml)):
+
+| Job | What it does |
+|---|---|
+| **🧹 Lint** | `npm run lint` — ESLint via vite-plus |
+| **📦 Package quality** | `npm run build` → `publint` → `attw --pack .` → size budget check |
+| **🧪 Test (Node 20/22/24)** | `npm run coverage` on each Node version in the support matrix |
+
+This workflow must pass before merging. Failures catch lint errors, packaging regressions, and test failures on the full Node matrix — not just at release time.
+
 ## Publishing
 
 Publishing is automated by the **🚀 Publish** workflow ([`.github/workflows/publish.yml`](https://github.com/canvasflow/feed/blob/main/.github/workflows/publish.yml)), triggered when a `v*` tag is pushed.
@@ -27,8 +39,10 @@ Publishing is automated by the **🚀 Publish** workflow ([`.github/workflows/pu
 | Job              | Trigger            | What it does                                                                                                |
 | ---------------- | ------------------ | ----------------------------------------------------------------------------------------------------------- |
 | **🧪 Test**      | push of a `v*` tag | `npm ci`, then `npm run coverage` and append a coverage summary to the run summary.                         |
-| **🚀 Publish**   | after Test         | `npm ci` → `npm run build` → `npm pack --dry-run` → `npm publish` to GitHub Packages (`@canvasflow` scope). |
+| **🚀 Publish**   | after Test         | `npm ci` → `npm run build` → quality gates → `npm pack --dry-run` → `npm publish --provenance` to GitHub Packages (`@canvasflow` scope). |
 | **📚 Sync Wiki** | push of a `v*` tag | Mirror `docs/wiki/` into the repository's GitHub Wiki (independent of the other jobs).                      |
+
+npm provenance attaches a signed SLSA attestation to every published version so consumers can verify the package was built from this repository's source. This requires `id-token: write` permission in the workflow (already set).
 
 ### Releasing
 
