@@ -41,6 +41,43 @@ const customParams: Params = {
   ],
 };
 
+// Stress-tests attribute-map allocation: 20 class-based mappings + 10
+// tag/attribute excludes means ~30 getAttributes() calls per element node.
+const heavyParams: Params = {
+  mappings: Array.from({ length: 20 }, (_, i) => ({
+    component: 'container' as const,
+    match: 'any' as const,
+    filters: [
+      {
+        type: 'class' as const,
+        items: [`widget-${i}`, `box-${i}`],
+        match: 'any' as const,
+      },
+    ],
+  })),
+  excludes: [
+    ...Array.from({ length: 5 }, (_, i) => ({
+      match: 'any' as const,
+      filters: [
+        {
+          type: 'class' as const,
+          items: [`ad-${i}`, `promo-${i}`],
+          match: 'any' as const,
+        },
+      ],
+    })),
+    ...Array.from({ length: 5 }, () => ({
+      match: 'any' as const,
+      filters: [
+        {
+          type: 'tag' as const,
+          items: ['aside', 'nav', 'footer', 'script', 'style'],
+        },
+      ],
+    })),
+  ],
+};
+
 describe('HTMLMapper.toComponents() — large HTML fixture (~2.8 MB)', () => {
   bench('toComponents() — no params', () => {
     HTMLMapper.toComponents(largeHtml);
@@ -58,5 +95,15 @@ describe('HTMLMapper.toComponents() — small HTML fixture (~26 KB)', () => {
 
   bench('toComponents() — with custom mappings + excludes', () => {
     HTMLMapper.toComponents(smallHtml, customParams);
+  });
+
+  bench('toComponents() — heavy params (20 mappings, 10 excludes)', () => {
+    HTMLMapper.toComponents(smallHtml, heavyParams);
+  });
+});
+
+describe('HTMLMapper.toComponents() — large HTML fixture, heavy params', () => {
+  bench('toComponents() — heavy params (20 mappings, 10 excludes)', () => {
+    HTMLMapper.toComponents(largeHtml, heavyParams);
   });
 });

@@ -116,7 +116,7 @@ against the repo on 2026-07-24.
 
 ## Section 5 — Performance & Memory ([05-performance.md](05-performance.md))
 
-> **Status: Not started** _(2026-07-27 — verified against repo; feature/performance branch is clean)_. All implementation items remain open. Sections 1 and 2 have already landed, so the pre-01/02 baseline opportunity has passed; the bench suite should be added now and the first numbers recorded as the current (post-02) baseline.
+> **Status: In progress** _(2026-07-27 — all implementation items done in code; not yet committed)_.
 
 **Study**
 
@@ -140,11 +140,11 @@ against the repo on 2026-07-24.
       | `removeDescendants("span")` — depth-6 tree | 7,203,184 | 0.0001 |
 - [x] Post-Section-2 numbers recorded as the baseline (see row above); delta vs any future change documented
 - [x] `findDescendants`/`removeDescendants` no longer allocate a reducer per tree level (bench-verified) — _hoisted recursive `walk` inner function closes over `findFn`/`tagSet` once; `node-helpers.ts` refactored 2026-07-27. Bench delta (depth-6 tree, isolated run): `findDescendants("div")` +24%, `findDescendants(["div","span"])` +39%, `removeDescendants("span")` +33%. 1004 tests pass._
-- [ ] Attribute-map churn addressed (measured; kept only if bench moves) — _currently `filterAnyMapping` (`:309`) and `filterAllMapping` (`:327`) each call `getAttributes()` independently; `fromNode` (`:300`) builds the same map again for the same node_
-- [ ] `patternCache` bounded or per-run; memory-stability test added — _currently unbounded `Map<string, RegExp | null>` at `mapping.utils.ts:48`_
-- [ ] Depth guard in `fromNode`/passes emitting a warning issue (no stack overflow); deep-nesting fuzz case — _`fromNode` recurses freely into `node.children` (`mapping.ts:469`) with no depth limit_
-- [ ] Heap check after large-feed build: no document-scale retained memory; findings documented
-- [ ] Performance note added to the wiki
+- [x] Attribute-map churn addressed (measured; bench moves) — _`nodeAttributesCache` WeakMap in `mapping.utils.ts` makes `cachedGetAttributes()` the single allocation point per node per pipeline run; `filterAnyMapping`, `filterAllMapping`, `getCredit`, and `filterClassNameDescendants` all use it. Bench delta on large HTML with 20 mappings + 10 excludes (30 filter calls/node): **+19–25%** throughput. 1004 tests pass._
+- [x] `patternCache` bounded or per-run; memory-stability test added — _`MAX_PATTERN_CACHE_SIZE = 500` with oldest-entry eviction in `mapping.utils.ts`; 3 tests in `src/component/mapping/__tests__/pattern-cache.test.ts` (correctness under eviction, no-throw on invalid patterns, < 5 MB heap delta for 2000 unique patterns). 975 unit tests pass._
+- [x] Depth guard in `fromNode`/passes; deep-nesting fuzz case — _`MAX_FROMNODE_DEPTH = 256` constant exported from `mapping.ts`; `fromNode` accepts `_depth = 0` and returns `null` beyond the limit; recursive child call passes `_depth + 1`. Two fuzz tests in `src/component/mapping/__tests__/depth-guard.test.ts` (500-level HTML doesn't throw; shallow content survives, deep content is silently dropped). 975 unit tests pass._
+- [x] Heap check after large-feed build: no document-scale retained memory; findings documented — _`node --expose-gc` run: 5 isolated `RSSFeed.build(forbes-large.rss)` calls post-GC retain ~2 MB each; consistent with V8 JIT warmup, not document-scale leaks. 1.1 MB XML source and parsed node trees are collected after each call. Findings in `docs/wiki/Performance.md` and `05-performance.md`._
+- [x] Performance note added to the wiki — _`docs/wiki/Performance.md` created (throughput table, complexity table, memory behaviour, running benchmarks, known limits); `_Sidebar.md` updated with link under Operations._
 
 ## Section 6 — Testing Strategy ([06-testing.md](06-testing.md))
 

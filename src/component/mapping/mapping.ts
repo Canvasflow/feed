@@ -87,6 +87,10 @@ import { errorIssue } from '../../feed-issue';
 
 // Re-export the publicly consumed constants and helpers so the package surface
 // is unchanged.
+// Maximum HTML nesting depth fromNode will recurse into. Deeper subtrees are
+// silently dropped rather than risking a stack overflow from adversarial input.
+export const MAX_FROMNODE_DEPTH = 256;
+
 export { textTags, textTagsSet, mappingTagsSet };
 export { processTextLinks, isEmpty };
 export { mapLivePost } from './mapping.container';
@@ -264,8 +268,11 @@ const TEXT_TAG_MAPPING: Record<string, TextType> = {
  */
 export function fromNode(
   node: Node,
-  params?: Params
+  params?: Params,
+  _depth = 0
 ): Component | Array<Component> | null {
+  if (_depth > MAX_FROMNODE_DEPTH) return null;
+
   // If the node is a comment it get's ignore
   if (node.type === 'comment') return null;
 
@@ -466,7 +473,7 @@ export function fromNode(
   if (node.children) {
     const components: Array<Component> = [];
     for (const n of node.children) {
-      const c = fromNode(n, params);
+      const c = fromNode(n, params, _depth + 1);
       if (!c) continue;
       if (Array.isArray(c)) {
         if (!c.length) continue;
