@@ -43,7 +43,7 @@ try {
 
   writeFileSync(
     join(tmp, 'package.json'),
-    JSON.stringify({ name: 'smoke-consumer', version: '1.0.0', type: 'module' }),
+    JSON.stringify({ name: 'smoke-consumer', version: '1.0.0', type: 'module' })
   );
 
   // Install the tarball directly (no registry auth needed).
@@ -53,14 +53,33 @@ try {
   console.log('\n--- Runtime import test ---');
   const runtimeScript = `
 import { RSSFeed, HTMLMapper } from '@canvasflow/feed';
-const feed = new RSSFeed('<rss version="2.0"><channel></channel></rss>');
+
+const xml = \`<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Smoke Test Feed</title>
+    <link>https://example.com</link>
+    <description>A minimal RSS feed for smoke testing.</description>
+    <item>
+      <title>First Item</title>
+      <link>https://example.com/1</link>
+      <description>Item description.</description>
+      <content:encoded><![CDATA[<h1>Title</h1><p>Body text.</p>]]></content:encoded>
+    </item>
+  </channel>
+</rss>\`;
+
+const feed = new RSSFeed(xml);
 const rss = await feed.build();
 if (!rss || !rss.channel) throw new Error('build() did not return a valid RSS object');
+if (rss.channel.title !== 'Smoke Test Feed') throw new Error('Unexpected channel title: ' + rss.channel.title);
+if (rss.channel.items.length !== 1) throw new Error('Expected 1 item, got ' + rss.channel.items.length);
+
 const components = HTMLMapper.toComponents('<h1>Smoke test</h1><p>OK</p>');
 if (!Array.isArray(components) || components.length === 0) {
   throw new Error('toComponents() did not return a component array');
 }
-console.log('Runtime import: OK (' + components.length + ' components)');
+console.log('Runtime import: OK (' + components.length + ' components, 1 feed item)');
 `;
   writeFileSync(join(tmp, 'test.mjs'), runtimeScript);
   run('node test.mjs', { cwd: tmp });
@@ -88,7 +107,7 @@ const _components: Component[] = HTMLMapper.toComponents('<p>hello</p>');
         noEmit: true,
       },
       include: ['consumer.ts'],
-    }),
+    })
   );
 
   const tsBin = resolve(root, 'node_modules', '.bin', 'tsc');
@@ -108,7 +127,7 @@ const _components: Component[] = HTMLMapper.toComponents('<p>hello</p>');
         noEmit: true,
       },
       include: ['consumer.ts'],
-    }),
+    })
   );
 
   run(`"${tsBin}" --project tsconfig.node16.json`, { cwd: tmp });

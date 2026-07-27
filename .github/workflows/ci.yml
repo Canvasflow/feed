@@ -62,7 +62,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['20', '22', '24']
+        node: [20, 22, 24]
     steps:
       - uses: actions/checkout@v4
 
@@ -77,5 +77,5 @@ jobs:
         run: npm run coverage
 
       - name: 📝 Coverage summary
-        if: matrix.node == '24'
+        if: matrix.node == 24
         run: node scripts/coverage-summary.mjs >> "$GITHUB_STEP_SUMMARY"

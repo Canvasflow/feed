@@ -298,10 +298,7 @@ export class RSSFeed {
       pubDate = parseDate(`${channel.pubDate}`) ?? undefined;
     }
 
-    this.rss.channel.title = decodeEntities(title);
-    if (this.rss.channel.title) {
-      this.rss.channel.title = this.rss.channel.title.trim();
-    }
+    this.rss.channel.title = title ? decodeEntities(title).trim() : '';
     this.rss.channel.link = link;
     this.rss.channel.description = description
       ? removeHTMLTags(description)

@@ -31,14 +31,14 @@ let failed = false;
 
 if (size > PACKED_BUDGET_KB * 1024) {
   console.error(
-    `❌ Packed size ${packedKB} KB exceeds budget ${PACKED_BUDGET_KB} KB`,
+    `❌ Packed size ${packedKB} KB exceeds budget ${PACKED_BUDGET_KB} KB`
   );
   failed = true;
 }
 
 if (unpackedSize > UNPACKED_BUDGET_KB * 1024) {
   console.error(
-    `❌ Unpacked size ${unpackedKB} KB exceeds budget ${UNPACKED_BUDGET_KB} KB`,
+    `❌ Unpacked size ${unpackedKB} KB exceeds budget ${UNPACKED_BUDGET_KB} KB`
   );
   failed = true;
 }

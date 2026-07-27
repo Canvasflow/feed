@@ -53,13 +53,13 @@ for the complete conventions.
 
 `@canvasflow/feed` follows [Semantic Versioning](https://semver.org/). The following changes are **breaking** and require a major-version bump:
 
-| Area | Breaking change examples |
-|---|---|
-| Exported types | Removing or renaming an exported type/interface; narrowing a return type; adding a required property to a public interface |
-| `FeedIssueCode` values | Removing or renaming an issue code (consumers may `switch` on them) |
-| Component output shapes | Removing a property from a `Component` subtype; changing the type of an existing property |
-| Default HTML→component mapping | Changing which HTML tag maps to which component type (e.g. `<h2>` → `subtitle` becoming `title`) |
-| `errors`/`warnings` semantics | Moving an error to a warning or vice versa; changing message text that consumers may pattern-match |
+| Area                           | Breaking change examples                                                                                                   |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| Exported types                 | Removing or renaming an exported type/interface; narrowing a return type; adding a required property to a public interface |
+| `FeedIssueCode` values         | Removing or renaming an issue code (consumers may `switch` on them)                                                        |
+| Component output shapes        | Removing a property from a `Component` subtype; changing the type of an existing property                                  |
+| Default HTML→component mapping | Changing which HTML tag maps to which component type (e.g. `<h2>` → `subtitle` becoming `title`)                           |
+| `errors`/`warnings` semantics  | Moving an error to a warning or vice versa; changing message text that consumers may pattern-match                         |
 
 The following changes are **non-breaking** and use a minor-version bump:
 
