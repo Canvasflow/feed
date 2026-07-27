@@ -2,14 +2,33 @@
 
 ## Completion checklist
 
-- [ ] A benchmark suite exists (`vitest bench` or tinybench) covering: full `build()` on `forbes-large.rss`, `toComponents` on the largest HTML fixtures, and the filter/matching engine in isolation.
-- [ ] Benchmarks run in CI (informational job, not a gate) and results are recorded for the baseline **before** the 01/02 refactors, and after.
-- [ ] The parse-once pipeline (02) is measured: ≥2× throughput on `build()` for `forbes-large.rss` vs baseline (adjust target after baseline is known).
+- [x] A benchmark suite exists (`vitest bench` or tinybench) covering: full `build()` on `forbes-large.rss`, `toComponents` on the largest HTML fixtures, and the filter/matching engine in isolation. _(2026-07-27: `src/__bench__/rss-feed.bench.ts`, `html-mapper.bench.ts`, `mapping-filter.bench.ts`; run with `npm run bench`)_
+- [ ] Benchmarks run in CI (informational job, not a gate) and results are recorded for the baseline **before** the 01/02 refactors, and after. _(bench suite exists; CI job still TODO; pre-01/02 window passed — post-Section-2 baseline recorded in DASHBOARD.md instead)_
+- [ ] The parse-once pipeline (02) is measured: ≥2× throughput on `build()` for `forbes-large.rss` vs baseline (adjust target after baseline is known). _(baseline: 18.5 hz construct+build; 3.8 hz construct+validate+build — target TBD once CI numbers are stable)_
 - [ ] Per-recursion closure allocation in `findDescendants`/`removeDescendants` is eliminated (reducer created once, not per tree level).
 - [ ] `getAttributes` maps are not rebuilt repeatedly for the same node within one pipeline run (memoized or computed once per node).
 - [ ] The unbounded module-level `patternCache` in `mapping.utils.ts` is bounded or scoped per-conversion (long-lived process safety in `transformer`).
 - [ ] Memory profile of a large-feed `build()` captured once (heap snapshot); no retained document-sized strings/trees after build resolves.
 - [ ] A performance note exists in the wiki (what's O(what), expected throughput, how to run benches).
+
+## Baseline numbers
+
+Recorded **2026-07-27** on Apple M-series, Node 20, post-Section-2 (Sections 1 and 2 already landed before the bench suite was added). Run with `npm run bench`.
+
+| Workload | hz | mean (ms) | notes |
+|---|---|---|---|
+| `RSSFeed` construct + `validate()` — forbes-large.rss (~1.1 MB) | 19.5 | 51.4 | XML parse + tag checks only |
+| `RSSFeed` construct + `build()` — forbes-large.rss | 18.5 | 54.2 | XML parse + full component conversion |
+| `RSSFeed` construct + `validate()` + `build()` — forbes-large.rss | 3.8 | 266 | combined; much slower due to double XML parse |
+| `RSSFeed` construct + `build()` — forbes.rss (~5 items) | 33.3 | 30.1 | small-feed reference |
+| `HTMLMapper.toComponents()` — large HTML (~2.8 MB) | 2.5 | 404 | no params |
+| `HTMLMapper.toComponents()` — large HTML, with mappings+excludes | 3.2 | 308 | |
+| `HTMLMapper.toComponents()` — small HTML (~26 KB) | 175 | 5.7 | no params |
+| `findDescendants("div")` — depth-6 tree (5 461 nodes) | 191 858 | 0.0052 | string tag match |
+| `findDescendants(["div","span"])` — depth-6 tree | 52 778 | 0.019 | array tag match |
+| `removeDescendants("span")` — depth-6 tree | 7 203 184 | 0.0001 | early-exit on top-level spans |
+
+Update this table after each significant change; add a row noting what changed and the new numbers.
 
 ## Overview
 
@@ -41,15 +60,27 @@ Principle: **measure first**. The existing fixtures (`forbes-large.rss`,
 `toms.html`, `theenglishhome.html`) are realistic workloads; build the harness
 on them before touching code.
 
+## Running benchmarks
+
+```bash
+npm run bench                              # run all suites, print to terminal
+npm run bench:save                         # same + write bench-results.json (gitignored)
+npm run bench -- src/__bench__/rss-feed.bench.ts   # single suite
+npm run bench:save && <make changes> && npm run bench -- --compare bench-results.json
+```
+
+The `--compare` workflow is the fastest way to measure a fix: save before, change code, compare after. Discard the JSON once the delta is noted in this doc.
+
 ## Files to review
 
+- `src/__bench__/` — the benchmark suite (added 2026-07-27)
 - `src/component/node/node-helpers.ts` — the recursive reducers
 - `src/component/mapping/mapping.utils.ts` — `patternCache`, `filterItemsCache`, `getAttributes` call frequency, `matchesFilter`
 - `src/component/mapping/mapping.ts` — `fromNode` recursion, `getMappingComponent` (linear scan per node — fine, but measure with many mappings)
 - `src/component/html/html-mapper.ts` — the pre-processing passes (post-02 versions)
 - `src/rss/rss-feed.ts` — `build()` loop over items; `removeHTMLTags` (calls the internal `sanitizeHTML` in `src/component/html/sanitize-html.ts` per description — the npm `sanitize-html` package itself was removed in Section 1)
 - `src/support/feeds/forbes-large.rss` and the larger HTML fixtures — benchmark corpus
-- `vite.config.ts` — where a `bench` config would live
+- `vite.config.ts` — where bench-specific config would live if needed
 
 ## Resources
 
