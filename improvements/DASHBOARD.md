@@ -128,18 +128,18 @@ against the repo on 2026-07-24.
 
 - [x] Bench suite added (`build` on forbes-large, `toComponents` on large HTML, filter engine) + `npm run bench` _(`src/__bench__/rss-feed.bench.ts`, `html-mapper.bench.ts`, `mapping-filter.bench.ts`; run with `npm run bench` / save with `npm run bench:save`; CI informational job still TODO)_
 - [x] ~~Baseline numbers recorded **before** Sections 1–2 land~~ — window has passed; post-Section-2 numbers recorded as the baseline instead _(2026-07-27, Apple M-series, Node 20):_
-  | Workload | hz | mean (ms) |
-  |---|---|---|
-  | `RSSFeed` construct + `build()` — forbes-large.rss (~1.1 MB) | 18.5 | 54.2 |
-  | `RSSFeed` construct + `validate()` + `build()` — forbes-large.rss | 3.8 | 266 |
-  | `RSSFeed` construct + `build()` — forbes.rss (small) | 33.3 | 30.1 |
-  | `HTMLMapper.toComponents()` — large HTML (~2.8 MB) | 2.5 | 404 |
-  | `HTMLMapper.toComponents()` — small HTML (~26 KB) | 175 | 5.7 |
-  | `findDescendants("div")` — depth-6 tree | 191,858 | 0.0052 |
-  | `findDescendants(["div","span"])` — depth-6 tree | 52,778 | 0.0189 |
-  | `removeDescendants("span")` — depth-6 tree | 7,203,184 | 0.0001 |
+      | Workload | hz | mean (ms) |
+      |---|---|---|
+      | `RSSFeed` construct + `build()` — forbes-large.rss (~1.1 MB) | 18.5 | 54.2 |
+      | `RSSFeed` construct + `validate()` + `build()` — forbes-large.rss | 3.8 | 266 |
+      | `RSSFeed` construct + `build()` — forbes.rss (small) | 33.3 | 30.1 |
+      | `HTMLMapper.toComponents()` — large HTML (~2.8 MB) | 2.5 | 404 |
+      | `HTMLMapper.toComponents()` — small HTML (~26 KB) | 175 | 5.7 |
+      | `findDescendants("div")` — depth-6 tree | 191,858 | 0.0052 |
+      | `findDescendants(["div","span"])` — depth-6 tree | 52,778 | 0.0189 |
+      | `removeDescendants("span")` — depth-6 tree | 7,203,184 | 0.0001 |
 - [x] Post-Section-2 numbers recorded as the baseline (see row above); delta vs any future change documented
-- [ ] `findDescendants`/`removeDescendants` no longer allocate a reducer per tree level (bench-verified) — _currently broken: `node-helpers.ts:32` and `:66` call `findDescendants`/`removeDescendants` recursively, constructing a new closure + new `tagSet` at every tree level_
+- [x] `findDescendants`/`removeDescendants` no longer allocate a reducer per tree level (bench-verified) — _hoisted recursive `walk` inner function closes over `findFn`/`tagSet` once; `node-helpers.ts` refactored 2026-07-27. Bench delta (depth-6 tree, isolated run): `findDescendants("div")` +24%, `findDescendants(["div","span"])` +39%, `removeDescendants("span")` +33%. 1004 tests pass._
 - [ ] Attribute-map churn addressed (measured; kept only if bench moves) — _currently `filterAnyMapping` (`:309`) and `filterAllMapping` (`:327`) each call `getAttributes()` independently; `fromNode` (`:300`) builds the same map again for the same node_
 - [ ] `patternCache` bounded or per-run; memory-stability test added — _currently unbounded `Map<string, RegExp | null>` at `mapping.utils.ts:48`_
 - [ ] Depth guard in `fromNode`/passes emitting a warning issue (no stack overflow); deep-nesting fuzz case — _`fromNode` recurses freely into `node.children` (`mapping.ts:469`) with no depth limit_

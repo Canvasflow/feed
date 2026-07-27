@@ -14,23 +14,23 @@
  */
 export function findDescendants(findFn: FindFn): DescendantsReducer {
   const tagSet = Array.isArray(findFn) ? new Set(findFn) : null;
-  return (acc: Node[], node: Node): Node[] => {
+
+  function walk(acc: Node[], node: Node): Node[] {
     if (node.type !== 'element') return acc;
 
-    if (typeof findFn === 'string' && node.tagName === findFn) {
-      acc.push(node);
-    }
-
-    if (tagSet !== null && tagSet.has(node.tagName)) {
-      acc.push(node);
-    }
-
-    if (typeof findFn === 'function' && findFn(node)) {
+    if (typeof findFn === 'string') {
+      if (node.tagName === findFn) acc.push(node);
+    } else if (tagSet !== null) {
+      if (tagSet.has(node.tagName)) acc.push(node);
+    } else if ((findFn as NodeFilterFn)(node)) {
       acc.push(node);
       return acc;
     }
-    return node.children.reduce(findDescendants(findFn), acc);
-  };
+
+    return node.children.reduce(walk, acc);
+  }
+
+  return walk;
 }
 
 /**
@@ -49,7 +49,8 @@ export function findDescendants(findFn: FindFn): DescendantsReducer {
  */
 export function removeDescendants(findFn: FindFn): DescendantsReducer {
   const tagSet = Array.isArray(findFn) ? new Set(findFn) : null;
-  return (acc: Node[], node: Node): Node[] => {
+
+  function walk(acc: Node[], node: Node): Node[] {
     if (node.type !== 'element') {
       acc.push(node);
       return acc;
@@ -63,10 +64,12 @@ export function removeDescendants(findFn: FindFn): DescendantsReducer {
 
     acc.push({
       ...node,
-      children: node.children.reduce(removeDescendants(findFn), []),
+      children: node.children.reduce(walk, []),
     });
     return acc;
-  };
+  }
+
+  return walk;
 }
 
 /**
