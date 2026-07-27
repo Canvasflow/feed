@@ -5,6 +5,11 @@ import {
   type LiveContainerMapping,
 } from '../../mapping/mapping';
 import {
+  toButton,
+  toAnchorButton,
+  toFigureContainer,
+} from '../../mapping/mapping.container';
+import {
   type ImageComponent,
   type TextComponent,
   type AudioComponent,
@@ -15,11 +20,19 @@ import {
   type ColumnsComponent,
   type LiveContainerComponent,
   type LivePostComponent,
+  type FigureContainerComponent,
+  type GalleryComponent,
   isTextComponent,
   isImageComponent,
   isHTMLTableComponent,
   isButtonComponent,
 } from '../../component';
+import type { ElementNode } from '../../node/node-helpers';
+import type { FeedIssue } from '../../../feed-issue';
+
+function hasMessage(issues: readonly FeedIssue[], message: string): boolean {
+  return issues.some((issue) => issue.message === message);
+}
 
 describe('Button component', () => {
   test(
@@ -744,6 +757,270 @@ describe('Live container component', () => {
       const inner = outer.components[0] as LiveContainerComponent;
       expect(inner.component).toBe('live_container');
       expect(inner.posts).toHaveLength(1);
+    }
+  );
+});
+
+// ─── Button builder edge cases (direct calls) ────────────────────────────────
+
+describe('Button builder edge cases', () => {
+  const tags = { tags: ['unit', 'html'] };
+  const el = (
+    tagName: string,
+    children: ElementNode['children'] = [],
+    attrs?: { key: string; value: string }[]
+  ): ElementNode => ({
+    type: 'element',
+    tagName,
+    children,
+    attributes: attrs,
+  });
+  const text = (content: string) => ({ type: 'text' as const, content });
+
+  test('toButton flags an invalid implementation', tags, () => {
+    const c = toButton(el('div'));
+    expect(hasMessage(c.errors, 'invalid button implementation')).toBe(true);
+  });
+
+  test('toButton flags a button>a without text', tags, () => {
+    const node = el('button', [
+      el('a', [], [{ key: 'href', value: 'https://example.com' }]),
+    ]);
+    const c = toButton(node);
+    expect(hasMessage(c.errors, 'Button text is required')).toBe(true);
+    expect(c.link).toBe('https://example.com');
+  });
+
+  test('toButton flags a button>a without href', tags, () => {
+    const node = el('button', [el('a', [text('Click')])]);
+    const c = toButton(node);
+    expect(
+      hasMessage(c.errors, 'href attribute is required in a button link')
+    ).toBe(true);
+  });
+
+  test('toButton warns when a bare button has no link', tags, () => {
+    const node = el('button', [text('Press me')]);
+    const c = toButton(node);
+    expect(c.warnings.length).toBeGreaterThan(0);
+    expect(c.text).toBe('Press me');
+  });
+
+  test('toAnchorButton flags a missing button text', tags, () => {
+    const node = el(
+      'a',
+      [el('button')],
+      [{ key: 'href', value: 'https://example.com' }]
+    );
+    const c = toAnchorButton(node);
+    expect(hasMessage(c.errors, 'Button text is required')).toBe(true);
+  });
+
+  test('toAnchorButton flags a missing link', tags, () => {
+    const node = el('a', [el('button', [text('Go')])]);
+    const c = toAnchorButton(node);
+    expect(hasMessage(c.errors, 'Button link is required')).toBe(true);
+  });
+});
+
+// ─── Container / columns / live empty paths (through HTMLMapper) ─────────────
+
+describe('Container/columns/live empty paths', () => {
+  const tags = { tags: ['unit', 'html'] };
+
+  test('columns mapping with no columns records an error', tags, () => {
+    const mappings: ComponentMapping[] = [
+      {
+        component: 'columns',
+        match: 'all',
+        filters: [{ type: 'class', match: 'any', items: ['cmc-columns'] }],
+        column: {
+          match: 'any',
+          filters: [{ type: 'class', match: 'any', items: ['cmc-column'] }],
+        },
+      },
+    ];
+    const content = `<article><div class="cmc-columns">no columns here</div></article>`;
+    const [component] = HTMLMapper.toComponents(content, { mappings });
+    expect(
+      hasMessage(component!.errors, 'HTML node do not have children')
+    ).toBe(true);
+  });
+
+  test('live container mapping with no posts records an error', tags, () => {
+    const mappings: ComponentMapping[] = [
+      {
+        component: 'live_container',
+        match: 'all',
+        filters: [{ type: 'class', match: 'any', items: ['live-container'] }],
+        post: {
+          match: 'any',
+          filters: [{ type: 'class', match: 'any', items: ['cmc-post'] }],
+        },
+      },
+    ];
+    const content = `<article><div class="live-container">no posts</div></article>`;
+    const [component] = HTMLMapper.toComponents(content, { mappings });
+    expect(
+      hasMessage(component!.errors, 'HTML node do not have children')
+    ).toBe(true);
+  });
+
+  test('live post with no components records an error', tags, () => {
+    const mappings: ComponentMapping[] = [
+      {
+        component: 'live_container',
+        match: 'all',
+        filters: [{ type: 'class', match: 'any', items: ['live-container'] }],
+        post: {
+          match: 'any',
+          filters: [{ type: 'class', match: 'any', items: ['cmc-post'] }],
+        },
+      },
+    ];
+    const content = `<article><div class="live-container"><div class="cmc-post"></div></div></article>`;
+    const [component] = HTMLMapper.toComponents(content, { mappings });
+    const live = component as unknown as {
+      posts: Array<{ errors: FeedIssue[] }>;
+    };
+    expect(
+      hasMessage(live.posts[0]!.errors, 'post do not have components')
+    ).toBe(true);
+  });
+
+  test('container mapping still builds with only text content', tags, () => {
+    const containerMapping: ComponentMapping = {
+      component: 'container',
+      match: 'all',
+      filters: [{ type: 'class', match: 'any', items: ['cmc-container'] }],
+    };
+    const content = `<article><div class="cmc-container">just text</div></article>`;
+    const components = HTMLMapper.toComponents(content, {
+      mappings: [containerMapping],
+    });
+    expect(components.length).toBeGreaterThan(0);
+  });
+
+  test('gallery mapping with no image slides records an error', tags, () => {
+    const mappings: ComponentMapping[] = [
+      {
+        component: 'gallery',
+        match: 'any',
+        filters: [{ type: 'class', match: 'any', items: ['gal'] }],
+        slide: {
+          match: 'all',
+          filters: [{ type: 'class', match: 'any', items: ['slide'] }],
+        },
+      },
+    ];
+    const content = `<div class="gal"><div class="slide"><h2>not an image</h2></div></div>`;
+    const [component] = HTMLMapper.toComponents(content, { mappings });
+    const gallery = component as GalleryComponent;
+    expect(hasMessage(gallery.errors, 'slides not found in the gallery')).toBe(
+      true
+    );
+  });
+});
+
+// ─── Link container reduce paths (through HTMLMapper) ────────────────────────
+
+describe('Link container reduce paths', () => {
+  const tags = { tags: ['unit', 'html'] };
+
+  test(
+    'wraps a text component in an anchor carrying its attributes',
+    tags,
+    () => {
+      const link = 'https://example.org';
+      const content = `<a href="${link}" target="_blank"><div><h1>Heading</h1></div></a>`;
+      const [component] = HTMLMapper.toComponents(content, { mappings: [] });
+      expect((component as unknown as { text: string }).text).toBe(
+        `<a href="${link}" target="_blank">Heading</a>`
+      );
+    }
+  );
+
+  test('applies the link to a wrapped image component', tags, () => {
+    const content = `<a href="https://example.org" target="_blank"><div><h1>x</h1></div><img src="a.jpg" /></a>`;
+    const components = HTMLMapper.toComponents(content, { mappings: [] });
+    const image = components.find((c) => 'imageurl' in c) as ImageComponent;
+    expect(image.link).toBe('https://example.org');
+  });
+
+  test(
+    'applies the link to a wrapped button without its own link',
+    tags,
+    () => {
+      const content = `<a href="https://example.org" target="_blank"><div><h1>x</h1></div><div><button>Press</button></div></a>`;
+      const components = HTMLMapper.toComponents(content, { mappings: [] });
+      const button = components.find((c) => isButtonComponent(c)) as
+        | ButtonComponent
+        | undefined;
+      expect(button).toBeDefined();
+      expect(button?.link).toBe('https://example.org');
+    }
+  );
+});
+
+// ─── toFigureContainer direct paths ─────────────────────────────────────────
+
+describe('toFigureContainer direct paths', () => {
+  const tags = { tags: ['unit', 'html'] };
+  const el = (
+    tagName: string,
+    children: ElementNode['children'] = [],
+    attrs: { key: string; value: string }[] = []
+  ): ElementNode => ({
+    type: 'element',
+    tagName,
+    children,
+    attributes: attrs,
+  });
+  const text = (content: string) => ({ type: 'text' as const, content });
+
+  test('extracts credit from class-credit node inside figcaption', tags, () => {
+    const node = el('figure', [
+      el('img', [], [{ key: 'src', value: 'a.jpg' }]),
+      el('figcaption', [
+        el('div', [text('Caption text')]),
+        el('div', [text('Credit text')], [{ key: 'class', value: 'credit' }]),
+      ]),
+    ]);
+    const c = toFigureContainer(node) as FigureContainerComponent;
+    expect(c.credit).toContain('Credit text');
+    expect(c.caption).not.toContain('Credit text');
+  });
+
+  test('extracts credit from class-credit sibling of figcaption', tags, () => {
+    const node = el('figure', [
+      el('img', [], [{ key: 'src', value: 'a.jpg' }]),
+      el('figcaption', [el('div', [text('Caption text')])]),
+      el('div', [text('Sibling credit')], [{ key: 'class', value: 'credit' }]),
+    ]);
+    const c = toFigureContainer(node) as FigureContainerComponent;
+    expect(c.credit).toContain('Sibling credit');
+  });
+
+  test(
+    'credit nested deeper than direct figcaption child is stripped',
+    tags,
+    () => {
+      const node = el('figure', [
+        el('img', [], [{ key: 'src', value: 'a.jpg' }]),
+        el('figcaption', [
+          el('div', [
+            el('span', [text('Caption')]),
+            el(
+              'div',
+              [text('Deep credit')],
+              [{ key: 'class', value: 'credit' }]
+            ),
+          ]),
+        ]),
+      ]);
+      const c = toFigureContainer(node) as FigureContainerComponent;
+      expect(c.credit).toContain('Deep credit');
+      expect(c.caption).not.toContain('Deep credit');
     }
   );
 });

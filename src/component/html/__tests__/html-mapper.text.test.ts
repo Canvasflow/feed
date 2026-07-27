@@ -664,3 +664,19 @@ describe('Relative links', () => {
     }
   );
 });
+
+describe('HTMLMapper invalid href handling', () => {
+  const tags = { tags: ['unit', 'html'] };
+
+  test('rewrites a whitespace-only href to #', tags, () => {
+    const [c] = HTMLMapper.toComponents(`<p><a href="   ">link</a></p>`);
+    expect((c as TextComponent).text).toContain('href="#"');
+  });
+
+  test('keeps a valid absolute href untouched', tags, () => {
+    const [c] = HTMLMapper.toComponents(
+      `<p><a href="https://example.com">link</a></p>`
+    );
+    expect((c as TextComponent).text).toContain('href="https://example.com"');
+  });
+});

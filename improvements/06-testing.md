@@ -1,8 +1,6 @@
 # 06 — Testing Strategy
 
-> **Status: In progress** _(2026-07-27)_. 6 of 7 items done. The only open item is
-> consolidating the `*.coverage.test.ts` files (blocked on auditing each file against
-> the Section 4 type-safety branch deletions).
+> **Status: Complete** _(2026-07-27)_. All 7 items done.
 
 ## Completion checklist
 
@@ -10,7 +8,7 @@
 - [x] Property-based tests exist for: the no-throw contract, HTML round-trip invariants, and filter-matching laws (`match: 'all'` ⊆ `match: 'any'`). _(2026-07-27: No-throw: `rss-feed.fuzz.test.ts` + `html-mapper.fuzz.test.ts` (seeded PRNG). Invariants: `html-mapper.invariants.test.ts` — allow-list compliance verified over all HTML fixtures (dangerous tags + textAllowedTags); filter law (`match:'all' ⊆ match:'any'`) verified for mappings and excludes.)_
 - [x] The `integration` and `recipe` tagged tests run **offline** in CI via HTTP mocking — the `skip: true` flags are removed (a small live-network suite may remain opt-in). _(2026-07-27: 3 Recipe tests converted from `RSSFeed.getRecipeFromUrl` (network) to `getRecipeFromUrl` with injected fetch stubs reading fixtures under `src/support/http/`. `describe.skip('The English Home')` converted to `describe` (reads local fixtures, no network). `skip: true` removed from both `integration` and `recipe` tags in `vite.config.ts`. 1054 tests pass.)_
 - [x] Tests tagged `broken` are either fixed or converted to `.fails`/tracked issues — the tag is empty; `todo`-tagged tests converted to `test.todo`. _(2026-07-27: No tests in the codebase are tagged `broken` or `todo`. Both tags are defined in `vite.config.ts` but unused.)_
-- [ ] Coverage thresholds are maintained (95/95/95/95) and `/* v8 ignore */` comments are re-audited. _(Thresholds maintained: 98.76%/95.8%/97.75%/99.17%. Re-audit: removed one dead `!attribs` branch (6 lines + comment) in `mapping.utils.ts:processTextLinks` — typed as `Record<string,string>`, provably never null. Remaining 37 comments are structural invariants that remain valid. Added 5 runtime tests for the `clone` function in `build-item.test.ts` to close a coverage gap. The `*.coverage.test.ts` files themselves are not yet consolidated into the main suites — left as the one open item.)_
+- [x] Coverage thresholds are maintained (95/95/95/95) and `/* v8 ignore */` comments are re-audited. _(Thresholds maintained: 98.76%/95.8%/97.75%/99.17%. Re-audit: removed one dead `!attribs` branch (6 lines + comment) in `mapping.utils.ts:processTextLinks` — typed as `Record<string,string>`, provably never null. Remaining 37 comments are structural invariants that remain valid. Added 5 runtime tests for the `clone` function in `build-item.test.ts` to close a coverage gap.)_
 - [x] A fixture-intake script exists: given a feed URL or file, it adds a sanitized fixture + generated snapshot in one command. _(2026-07-27: `scripts/add-fixture.mjs` — accepts a URL or file path, derives output name, fetches/reads content, writes to `src/support/feeds/`, prints next steps.)_
 - [x] Testing conventions (tags, fixtures, snapshots, property tests) are documented in `docs/wiki/Testing.md`. _(2026-07-27: added "Test layers" table, "Adding a new test" guide, "Snapshot review discipline" section, and "Fixture curation" conventions.)_
 
@@ -42,7 +40,7 @@ The suite is strong, but two structural gaps remain:
 - `src/rss/__tests__/rss-feed.fuzz.test.ts` — no-throw fuzz for full RSS lifecycle (17 edge cases + 150 random XML + 100 random params); upgrade to fast-check
 - `vite.config.ts` — tags (`integration`, `recipe` still `skip: true`; `todo`, `broken` defined but unused), coverage thresholds, `setup-tests.ts` env paths
 - `src/setup-tests.ts` — `SUPPORT_PATH`/`FEEDS_PATH` convention
-- `src/rss/__tests__/rss-feed.coverage.test.ts`, `src/component/html/__tests__/html-mapper.coverage.test.ts`, `src/component/mapping/__tests__/mapping.coverage.test.ts` — coverage-only tests; audit against Section 4 branch deletions and consolidate
+- ~~`src/rss/__tests__/rss-feed.coverage.test.ts`, `src/component/html/__tests__/html-mapper.coverage.test.ts`, `src/component/mapping/__tests__/mapping.coverage.test.ts`~~ — **deleted 2026-07-27**; all tests distributed to first-class test files (see item 6 in Actionable plan below)
 - `src/rss/__tests__/rss-feed.test.ts` (~2 200 lines) — structure/duplication review; `describe.skip('The English Home')` at line 1506 to resolve
 - `src/support/feeds/` (23 `*.rss` + 3 `*.html` fixtures), `src/support/html/` (2 `*.html` fixtures) — full corpus
 - **New since this section was written:** `src/__tests__/api-surface.test.ts`, `src/rss/__tests__/recipe.test.ts`, `src/rss/__tests__/narrow.test.ts`, `src/rss/__tests__/build-item.test.ts`, `src/component/mapping/__tests__/mapping.referential.test.ts`, `src/component/mapping/__tests__/depth-guard.test.ts`, `src/component/mapping/__tests__/pattern-cache.test.ts`
@@ -102,11 +100,13 @@ The suite is strong, but two structural gaps remain:
    on The English Home block removed (reads local files only). `skip: true` removed from
    both tags in `vite.config.ts`.
 5. ✅ **`broken`/`todo` tags** _(done 2026-07-27)_: no tests use either tag.
-6. **Consolidate `*.coverage.test.ts`.** _(still open)_ Section 04 deleted many "can't happen"
-   branches via stricter TS flags. Audit `rss-feed.coverage.test.ts`,
-   `html-mapper.coverage.test.ts`, and `mapping.coverage.test.ts` against the current code;
-   fold remaining meaningful cases into the main test files and delete tests that exist only
-   to touch now-deleted lines.
+6. ✅ **Consolidate `*.coverage.test.ts`.** _(done 2026-07-27)_: All three files dissolved:
+   `rss-feed.coverage.test.ts` → `rss-feed.test.ts`; `html-mapper.coverage.test.ts` split to
+   `html-mapper.mapping.test.ts` (splitParagraphImages) and `html-mapper.text.test.ts` (href
+   handling); `mapping.coverage.test.ts` distributed to `mapping.test.ts` (embed builders,
+   utils, schema), `html-mapper.container.test.ts` (button edge cases, columns/live/link
+   container, figureContainer), `html-mapper.media.test.ts` (media error paths, direct media
+   calls). 1054 tests pass in 26 files.
 7. ✅ **Fixture intake script** _(done 2026-07-27)_: `scripts/add-fixture.mjs` — accepts a
    URL or file path, derives output name, fetches/reads content, writes to `src/support/feeds/`,
    prints next steps. Documented in the wiki.

@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { test, expect, describe, beforeEach } from 'vite-plus/test';
 import { HTMLMapper } from '../html-mapper';
 import { type ComponentMapping } from '../../mapping/mapping';
+import { toImage, toApplePodcast } from '../../mapping/mapping.media';
 import {
   type GalleryComponent,
   type ImageComponent,
@@ -11,6 +12,12 @@ import {
   isGalleryComponent,
   isGalleryImage,
 } from '../../component';
+import type { ElementNode } from '../../node/node-helpers';
+import type { FeedIssue } from '../../../feed-issue';
+
+function hasMessage(issues: readonly FeedIssue[], message: string): boolean {
+  return issues.some((issue) => issue.message === message);
+}
 
 describe('Image component', () => {
   test(
@@ -945,6 +952,172 @@ describe('Audio component', () => {
       expect(component.autoplay).toBe(true);
       expect(component.controls).toBe(false);
       expect(component.muted).toBe(false);
+    }
+  );
+});
+
+// ─── Media error paths (through HTMLMapper) ──────────────────────────────────
+
+describe('Media error paths', () => {
+  const tags = { tags: ['unit', 'html'] };
+
+  test('picture without an img src records an error', tags, () => {
+    const [c] = HTMLMapper.toComponents(`<picture><img alt="x" /></picture>`);
+    expect(
+      hasMessage((c as ImageComponent).errors, 'Image src attribute is missing')
+    ).toBe(true);
+  });
+
+  test('picture with multiple imgs warns', tags, () => {
+    const [c] = HTMLMapper.toComponents(
+      `<picture><img src="a.jpg" /><img src="b.jpg" /></picture>`
+    );
+    expect(
+      hasMessage(
+        (c as ImageComponent).warnings,
+        'Only one img tag per picture tag is valid'
+      )
+    ).toBe(true);
+  });
+
+  test('figure img without src records an error', tags, () => {
+    const [c] = HTMLMapper.toComponents(`<figure><img alt="x" /></figure>`);
+    expect(
+      hasMessage((c as ImageComponent).errors, 'Image src attribute is missing')
+    ).toBe(true);
+  });
+
+  test('figure img width/height attributes are parsed', tags, () => {
+    const [c] = HTMLMapper.toComponents(
+      `<figure><img src="a.jpg" width="640" height="480" /></figure>`
+    );
+    const img = c as ImageComponent;
+    expect(img.width).toBe(640);
+    expect(img.height).toBe(480);
+  });
+
+  test('anchor wrapping an img without src records an error', tags, () => {
+    const [c] = HTMLMapper.toComponents(
+      `<a href="https://example.com"><img alt="x" /></a>`
+    );
+    expect(
+      hasMessage((c as ImageComponent).errors, 'Image src attribute is missing')
+    ).toBe(true);
+  });
+
+  test('video without a source records an error', tags, () => {
+    const [c] = HTMLMapper.toComponents(`<video></video>`);
+    expect((c as VideoComponent).errors.length).toBeGreaterThan(0);
+  });
+
+  test('audio without a source records an error', tags, () => {
+    const [c] = HTMLMapper.toComponents(`<audio></audio>`);
+    expect((c as AudioComponent).errors.length).toBeGreaterThan(0);
+  });
+
+  test(
+    'a twitter blockquote without a valid tweet link is dropped',
+    tags,
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="twitter-tweet"><p>no links here</p></blockquote>`
+      );
+      expect(components.every((c) => c.component !== 'twitter')).toBe(true);
+    }
+  );
+
+  test(
+    'a twitter blockquote whose anchor lacks an href is dropped',
+    tags,
+    () => {
+      const components = HTMLMapper.toComponents(
+        `<blockquote class="twitter-tweet"><a>no href</a></blockquote>`
+      );
+      expect(components.every((c) => c.component !== 'twitter')).toBe(true);
+    }
+  );
+});
+
+// ─── Media direct-call error paths ───────────────────────────────────────────
+
+describe('Media direct-call error paths', () => {
+  const tags = { tags: ['unit', 'html'] };
+  const el = (
+    tagName: string,
+    children: ElementNode['children'] = [],
+    attrs: { key: string; value: string }[] = []
+  ): ElementNode => ({
+    type: 'element',
+    tagName,
+    children,
+    attributes: attrs,
+  });
+
+  test('toImage figure with multiple pictures warns', tags, () => {
+    const node = el('figure', [
+      el('picture', [el('img', [], [{ key: 'src', value: 'a.jpg' }])]),
+      el('picture', [el('img', [], [{ key: 'src', value: 'b.jpg' }])]),
+    ]);
+    const c = toImage(node) as ImageComponent;
+    expect(
+      hasMessage(c.warnings, 'Only one picture tag per figure tag is valid')
+    ).toBe(true);
+  });
+
+  test(
+    'toImage figure with anchor img missing src records an error',
+    tags,
+    () => {
+      const node = el('figure', [
+        el(
+          'a',
+          [el('img', [], [{ key: 'alt', value: 'x' }])],
+          [{ key: 'href', value: 'https://example.com' }]
+        ),
+      ]);
+      const c = toImage(node) as ImageComponent;
+      expect(hasMessage(c.errors, 'Image src attribute is missing')).toBe(true);
+    }
+  );
+
+  test('toImage figure with anchor missing href warns', tags, () => {
+    const node = el('figure', [
+      el('a', [el('img', [], [{ key: 'src', value: 'a.jpg' }])]),
+    ]);
+    const c = toImage(node) as ImageComponent;
+    expect(hasMessage(c.warnings, 'Image link is empty')).toBe(true);
+  });
+
+  test('toApplePodcast without src records an error', tags, () => {
+    const node = el('iframe');
+    const c = toApplePodcast(node);
+    expect(hasMessage(c.errors, 'src is required')).toBe(true);
+  });
+
+  test(
+    'toImage figure with class-credit in figcaption extracts credit',
+    tags,
+    () => {
+      const node = el('figure', [
+        el(
+          'img',
+          [],
+          [
+            { key: 'src', value: 'a.jpg' },
+            { key: 'alt', value: 'A photo' },
+          ]
+        ),
+        el('figcaption', [
+          el(
+            'div',
+            [{ type: 'text', content: 'Photo credit' }],
+            [{ key: 'class', value: 'credit' }]
+          ),
+        ]),
+      ]);
+      const c = toImage(node) as ImageComponent;
+      expect(c.credit).toContain('Photo credit');
+      expect(c.caption).toBeUndefined();
     }
   );
 });
