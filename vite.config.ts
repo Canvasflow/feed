@@ -28,7 +28,6 @@ export default defineConfig({
         description:
           'Tests that verify the interaction between multiple modules or systems.',
         timeout: 60000,
-        skip: true,
       },
       {
         name: 'unit',
@@ -49,7 +48,6 @@ export default defineConfig({
         description:
           'Ensures correct extraction of ingredients, instructions, and cooking times from JSON-LD blocks.',
         timeout: 60000,
-        skip: true,
       },
       {
         name: 'todo',

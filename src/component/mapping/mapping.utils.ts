@@ -124,14 +124,6 @@ export function processTextLinks(html: string, link: string = '/'): string {
     allowedAttributes,
     transformTags: {
       a: function (tagName, attribs) {
-        /* v8 ignore next 6 -- sanitize-html always passes an attribs object */
-        if (!attribs) {
-          return {
-            tagName,
-            attribs: {},
-          };
-        }
-
         let href = attribs.href;
         if (!href) {
           return {

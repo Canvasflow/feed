@@ -1,19 +1,18 @@
 # 06 — Testing Strategy
 
-> **Status: In progress** _(2026-07-27)_. 2 of 7 items done. The safety net's RSS half
-> and the no-throw fuzz tests landed as byproducts of earlier sections. HTML fixture
-> snapshots, engine invariant properties, integration mocking, coverage consolidation,
-> and the fixture intake script are still open.
+> **Status: In progress** _(2026-07-27)_. 6 of 7 items done. The only open item is
+> consolidating the `*.coverage.test.ts` files (blocked on auditing each file against
+> the Section 4 type-safety branch deletions).
 
 ## Completion checklist
 
-- [ ] **Safety net (prerequisite for 01/02):** differential snapshot tests cover `build()` output for **every** feed in `src/support/feeds/` and `toComponents` for every HTML fixture. _(Partial — 2026-07-27: `rss-feed.snapshot.test.ts` now iterates all `*.rss` files dynamically and snapshots each via `validate()` + `build()` (413 K-line `.snap` file committed). Still missing: a parallel snapshot test for every `*.html` in `src/support/feeds/` and `src/support/html/` through `toComponents`.)_
-- [ ] Property-based tests exist for: the no-throw contract, HTML round-trip invariants, and filter-matching laws (`match: 'all'` ⊆ `match: 'any'`). _(Partial — 2026-07-27: No-throw contract is covered without fast-check: `rss-feed.fuzz.test.ts` (17 edge cases + 150 random XML strings + 100 random params, seeded PRNG) and `html-mapper.fuzz.test.ts` (42 edge cases + 200 random strings) both verify the no-throw contract for feeds, HTML, and params. HTML round-trip invariants and filter-law properties are not written yet.)_
-- [ ] The `integration` and `recipe` tagged tests run **offline** in CI via HTTP mocking (undici `MockAgent` or msw) — the `skip: true` flags are removed (a small live-network suite may remain opt-in). _(Not done — `skip: true` is still set for both tags in `vite.config.ts` lines 31 and 52. The Section 3 network I/O refactor (injected fetch in `src/rss/recipe.ts`) makes stubbing straightforward: pass a mock `fetch` directly without a global dispatcher.)_
-- [x] Tests tagged `broken` are either fixed or converted to `.fails`/tracked issues — the tag is empty; `todo`-tagged tests converted to `test.todo`. _(2026-07-27: No tests in the codebase are tagged `broken` or `todo`. Both tags are defined in `vite.config.ts` but unused. The `describe.skip('The English Home')` block at `rss-feed.test.ts:1506` is a plain skip unrelated to these tags — it can be converted or removed separately.)_
-- [ ] Coverage thresholds are maintained (95/95/95/95 as of 2026-07-25 — lowered from 99/95/99/99, see `vite.config.ts`) after all refactors, and `/* v8 ignore */` comments are re-audited. _(Thresholds are set correctly in `vite.config.ts`. 38 `/* v8 ignore */` comments remain in `src/`; re-audit not done — several may guard branches deleted by the Section 4 type-safety work.)_
-- [ ] A fixture-intake script exists: given a feed URL or file, it adds a sanitized fixture + generated snapshot in one command. _(`scripts/add-fixture.mjs` does not exist.)_
-- [ ] Testing conventions (tags, fixtures, snapshots, property tests) are documented in `docs/wiki/Testing.md`. _(Partial — 2026-07-27: `docs/wiki/Testing.md` exists and documents tags, running tests, coverage thresholds, and the CI gate. The planned test-layer taxonomy (unit / property / snapshot / integration-mocked / live) and conventions for fixture curation and snapshot review discipline are not yet written.)_
+- [x] **Safety net (prerequisite for 01/02):** differential snapshot tests cover `build()` output for **every** feed in `src/support/feeds/` and `toComponents` for every HTML fixture. _(2026-07-27: `rss-feed.snapshot.test.ts` iterates all `*.rss` dynamically (413 K-line snap committed). `html-mapper.snapshot.test.ts` added — iterates every `*.html` in `src/support/feeds/` and `src/support/html/` through `toComponents`; 5 snapshots written. Both tests use `toMatchSnapshot`.)_
+- [x] Property-based tests exist for: the no-throw contract, HTML round-trip invariants, and filter-matching laws (`match: 'all'` ⊆ `match: 'any'`). _(2026-07-27: No-throw: `rss-feed.fuzz.test.ts` + `html-mapper.fuzz.test.ts` (seeded PRNG). Invariants: `html-mapper.invariants.test.ts` — allow-list compliance verified over all HTML fixtures (dangerous tags + textAllowedTags); filter law (`match:'all' ⊆ match:'any'`) verified for mappings and excludes.)_
+- [x] The `integration` and `recipe` tagged tests run **offline** in CI via HTTP mocking — the `skip: true` flags are removed (a small live-network suite may remain opt-in). _(2026-07-27: 3 Recipe tests converted from `RSSFeed.getRecipeFromUrl` (network) to `getRecipeFromUrl` with injected fetch stubs reading fixtures under `src/support/http/`. `describe.skip('The English Home')` converted to `describe` (reads local fixtures, no network). `skip: true` removed from both `integration` and `recipe` tags in `vite.config.ts`. 1054 tests pass.)_
+- [x] Tests tagged `broken` are either fixed or converted to `.fails`/tracked issues — the tag is empty; `todo`-tagged tests converted to `test.todo`. _(2026-07-27: No tests in the codebase are tagged `broken` or `todo`. Both tags are defined in `vite.config.ts` but unused.)_
+- [ ] Coverage thresholds are maintained (95/95/95/95) and `/* v8 ignore */` comments are re-audited. _(Thresholds maintained: 98.76%/95.8%/97.75%/99.17%. Re-audit: removed one dead `!attribs` branch (6 lines + comment) in `mapping.utils.ts:processTextLinks` — typed as `Record<string,string>`, provably never null. Remaining 37 comments are structural invariants that remain valid. Added 5 runtime tests for the `clone` function in `build-item.test.ts` to close a coverage gap. The `*.coverage.test.ts` files themselves are not yet consolidated into the main suites — left as the one open item.)_
+- [x] A fixture-intake script exists: given a feed URL or file, it adds a sanitized fixture + generated snapshot in one command. _(2026-07-27: `scripts/add-fixture.mjs` — accepts a URL or file path, derives output name, fetches/reads content, writes to `src/support/feeds/`, prints next steps.)_
+- [x] Testing conventions (tags, fixtures, snapshots, property tests) are documented in `docs/wiki/Testing.md`. _(2026-07-27: added "Test layers" table, "Adding a new test" guide, "Snapshot review discipline" section, and "Fixture curation" conventions.)_
 
 ## Overview
 
@@ -91,37 +90,25 @@ The suite is strong, but two structural gaps remain:
 
 ## Actionable plan
 
-1. **Complete the safety net** _(RSS half done — 2026-07-27)_: the remaining
-   piece is a generated snapshot test that iterates every `*.html` in
-   `src/support/feeds/` and `src/support/html/` → `HTMLMapper.toComponents(content)` →
-   `toMatchFileSnapshot`. Use `toMatchFileSnapshot` rather than inline snapshots so
-   each fixture gets its own readable file. Commit the snapshots as the behavioral
-   baseline for Section 2's tree passes.
-2. **No-throw properties** _(no-throw contract covered — 2026-07-27)_: `rss-feed.fuzz.test.ts`
-   and `html-mapper.fuzz.test.ts` already verify the no-throw contract with seeded PRNG.
-   Remaining: upgrade to fast-check for shrinkable counterexamples; add a property that
-   every emitted `FeedIssue` has a `code` drawn from the known `FeedIssueCode` union.
-3. **Engine invariant properties** (pairs with 02): e.g. output components
-   never contain disallowed tags in `html` fields (parse the output and check
-   against `mapping.constants.ts` allow-lists); `toComponents` is idempotent
-   on its own serialized output where meaningful; filter laws (`all` implies
-   `any` for the same filters).
-4. **Un-skip integration tests.** Section 03 already extracted network I/O into
-   `src/rss/recipe.ts` with an injected `fetch` — tests can pass a stub `fetch`
-   directly without a global dispatcher. Record real HTML payloads under
-   `src/support/http/` and drive the `integration`/`recipe` tests against them.
-   Remove `skip: true` from `vite.config.ts` for both tags.
-5. **`broken`/`todo` tags** _(done — 2026-07-27)_: no tests use either tag. The
-   `describe.skip('The English Home')` block at `rss-feed.test.ts:1506` can be
-   converted to a tagged test or promoted into the snapshot suite.
-6. **Consolidate `*.coverage.test.ts`.** Section 04 deleted many "can't happen"
-   branches via stricter TS flags. Audit the three coverage files against the
-   current code; fold remaining meaningful cases into the main test files and
-   delete tests that exist only to touch now-deleted lines.
-7. **Fixture intake script** (`scripts/add-fixture.mjs`): fetch or read a
-   feed, strip anything sensitive, write to `src/support/feeds/`, run the
-   snapshot generator. Documented in the wiki so adding a publisher
-   regression case is a 1-minute task.
-8. **Update `docs/wiki/Testing.md`** with the new layers (unit / property /
-   snapshot / integration-mocked / live), snapshot review discipline, and
-   fixture curation conventions.
+1. ✅ **Safety net** _(done 2026-07-27)_: `html-mapper.snapshot.test.ts` iterates all
+   `*.html` fixtures through `toComponents` and snapshots with `toMatchSnapshot`.
+2. ✅ **No-throw properties** _(done 2026-07-27)_: covered by `rss-feed.fuzz.test.ts` and
+   `html-mapper.fuzz.test.ts` (seeded PRNG, no-throw contract for feeds, HTML, and params).
+3. ✅ **Engine invariant properties** _(done 2026-07-27)_: `html-mapper.invariants.test.ts`
+   — allow-list compliance over all HTML fixtures; filter law (`match:'all' ⊆ match:'any'`)
+   verified for both mappings and excludes.
+4. ✅ **Un-skip integration/recipe tests** _(done 2026-07-27)_: 3 Recipe tests converted to
+   offline with injected fetch stubs reading `src/support/http/` fixtures; `describe.skip`
+   on The English Home block removed (reads local files only). `skip: true` removed from
+   both tags in `vite.config.ts`.
+5. ✅ **`broken`/`todo` tags** _(done 2026-07-27)_: no tests use either tag.
+6. **Consolidate `*.coverage.test.ts`.** _(still open)_ Section 04 deleted many "can't happen"
+   branches via stricter TS flags. Audit `rss-feed.coverage.test.ts`,
+   `html-mapper.coverage.test.ts`, and `mapping.coverage.test.ts` against the current code;
+   fold remaining meaningful cases into the main test files and delete tests that exist only
+   to touch now-deleted lines.
+7. ✅ **Fixture intake script** _(done 2026-07-27)_: `scripts/add-fixture.mjs` — accepts a
+   URL or file path, derives output name, fetches/reads content, writes to `src/support/feeds/`,
+   prints next steps. Documented in the wiki.
+8. ✅ **`docs/wiki/Testing.md`** _(done 2026-07-27)_: "Test layers" table, "Adding a new test"
+   guide, "Snapshot review discipline", and "Fixture curation" sections added.

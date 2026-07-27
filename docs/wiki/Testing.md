@@ -111,3 +111,37 @@ npm run lint && npm run coverage
 ```
 
 See [Contributing](Contributing.md).
+
+## Test layers
+
+The suite has five layers. Use the right layer for each kind of assertion — they are complementary, not substitutes.
+
+| Layer | What it does | How to run | Files |
+|---|---|---|---|
+| **Unit** | Isolated logic for a single function or converter. Fast, no I/O. | `vp test --tags-filter=unit` | `*.test.ts` (most files) |
+| **No-throw / fuzz** | Seeded-PRNG corpus asserting that arbitrary strings never throw. Catches structural crashes before they reach CI. | `vp test --tags-filter=unit` (fuzz tests are tagged `unit`) | `*.fuzz.test.ts` |
+| **Snapshot** | Full-pipeline characterisation: every fixture file snapshotted so any output change is a visible diff. | `npm test` | `rss-feed.snapshot.test.ts`, `html-mapper.snapshot.test.ts` |
+| **Integration (offline)** | Recipe extraction and similar cross-module flows driven by stored HTML fixtures under `src/support/http/` — no network required. | `npm test` (or `vp test --tags-filter=recipe`) | `rss-feed.test.ts` (Recipe describe), `recipe.test.ts` |
+| **Live** (opt-in) | True end-to-end tests against real publisher URLs. Not run in normal CI. Enable by passing `skip: false` for the `integration` tag in `vite.config.ts` and running with `--tags-filter=integration`. | Manual only | Any test tagged `integration` |
+
+### Adding a new test
+
+1. **Bug or feature** — write a unit test in the nearest `__tests__/` sibling. Tag it `unit` (and `rss`/`html` as appropriate).
+2. **New fixture** — use `node scripts/add-fixture.mjs <url-or-path>` to fetch or copy a feed into `src/support/feeds/`, then run `npm test -- --update-snapshot` to add it to the snapshot baseline.
+3. **New network-dependent flow** — store a representative HTML response in `src/support/http/`, stub `fetch` via `getRecipeFromUrl`/`getHtmlContent`'s injected-fetch option (see `recipe.ts`), and tag the test `unit` (not `integration`).
+
+### Snapshot review discipline
+
+A snapshot diff is a **question**, not a failure. When a snapshot changes:
+1. Read the diff — understand what output changed and why.
+2. If the change is intentional (parser upgrade, bug fix, new field): update with `npm test -- --update-snapshot`.
+3. If the change is unintentional: that is a regression — fix the code, not the snapshot.
+
+Never blindly accept snapshot updates without reading the diff.
+
+### Fixture curation
+
+- RSS feeds live in `src/support/feeds/*.rss`; HTML fixtures for `toComponents` testing live in `src/support/feeds/*.html` and `src/support/html/*.html`.
+- HTTP response fixtures (for offline recipe/integration tests) live in `src/support/http/`.
+- Strip any personally identifying information or auth tokens before committing a fixture.
+- Run `npm test -- --update-snapshot` after adding a fixture to establish the baseline.

@@ -159,15 +159,15 @@ against the repo on 2026-07-24.
 
 **Implementation**
 
-- [ ] **Safety net:** snapshot tests over every `src/support/feeds/*.rss` (`build()`) and every HTML fixture (`toComponents`), committed as baseline
+- [x] **Safety net:** snapshot tests over every `src/support/feeds/*.rss` (`build()`) and every HTML fixture (`toComponents`), committed as baseline _(RSS: `rss-feed.snapshot.test.ts` — dynamic, 413 K-line snap file. HTML: `html-mapper.snapshot.test.ts` — 5 fixtures (3 from `feeds/`, 2 from `html/`) snapshotted via `toComponents`; 5 snapshots written 2026-07-27.)_
 - [x] No-throw property tests (feeds + HTML + params) _(`rss-feed.fuzz.test.ts`: 17 edge cases + 150 random XML strings + 100 random params; `html-mapper.fuzz.test.ts`: 42 edge cases + 200 random strings — both verify no-throw contract for all three categories)_
-- [ ] Engine invariant properties (allow-list compliance of output `html`, filter laws)
-- [ ] `integration`/`recipe` tests run offline via HTTP mocking; `skip: true` removed; opt-in live suite only
+- [x] Engine invariant properties (allow-list compliance of output `html`, filter laws) _(`html-mapper.invariants.test.ts` — 2026-07-27: allow-list compliance (dangerous tags + textAllowedTags) verified against all 5 HTML fixtures; filter law (`match:'all' ⊆ match:'any'`) verified for both mappings and excludes with multiple filter types. 1054 tests pass.)_
+- [x] `integration`/`recipe` tests run offline via HTTP mocking; `skip: true` removed; opt-in live suite only _(2026-07-27: 3 Recipe tests converted from `RSSFeed.getRecipeFromUrl` (network) to `getRecipeFromUrl` with injected fetch stubs reading fixtures under `src/support/http/`. Tags changed from `['integration', 'recipe']` to `['unit', 'recipe']`. `describe.skip('The English Home')` converted to `describe` — tests read local files, no network. `skip: true` removed from both `integration` and `recipe` tags in `vite.config.ts`. 1054 tests pass.)_
 - [x] `broken` tag emptied (fixed or converted to `test.fails`); `todo` tag → `test.todo` _(no tests in the codebase are tagged `broken` or `todo`; tags are defined in `vite.config.ts` but unused — the `describe.skip('The English Home')` at `rss-feed.test.ts:1506` is not tagged `broken`)_
 - [ ] `*.coverage.test.ts` consolidated into meaningful tests as dead branches are deleted
-- [ ] Fixture-intake script (`scripts/add-fixture.mjs`) working and documented
-- [ ] Coverage thresholds still met; `v8 ignore` comments re-audited
-- [ ] `docs/wiki/Testing.md` updated with the test-layer taxonomy
+- [x] Fixture-intake script (`scripts/add-fixture.mjs`) working and documented _(`scripts/add-fixture.mjs` created 2026-07-27 — accepts a URL or file path, derives the output name from the URL/filename, fetches or reads the content, writes to `src/support/feeds/`, prints next steps including the snapshot-update command.)_
+- [x] Coverage thresholds still met; `v8 ignore` comments re-audited _(2026-07-27: 98.76%/95.8%/97.75%/99.17% — all ≥ 95%. Re-audit: removed the dead `!attribs` branch (6 lines + stale comment) in `mapping.utils.ts:processTextLinks` — `attribs` is typed `Record<string,string>` in the custom sanitize-html and can never be null/undefined. Remaining 37 comments are structural invariants (pre-filtered arrays, AST guarantees, parser contracts) that remain valid. `clone` function in `rss-types.ts` had only type-level tests; 5 runtime tests added to `build-item.test.ts`.)_
+- [x] `docs/wiki/Testing.md` updated with the test-layer taxonomy _(2026-07-27: added "Test layers" table (unit / no-throw / snapshot / integration-offline / live), "Adding a new test" guide, "Snapshot review discipline" section, and "Fixture curation" section.)_
 
 ## Section 7 — Packaging, Publishing & DX ([07-packaging.md](07-packaging.md))
 
