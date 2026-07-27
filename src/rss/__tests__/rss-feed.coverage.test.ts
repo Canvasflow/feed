@@ -12,7 +12,7 @@ const tags = { tags: ['unit', 'rss'] };
  * helper so assertions against `FeedIssue[]` read like the old
  * `toContain('exact string')` checks against `string[]`.
  */
-function hasMessage(issues: FeedIssue[], message: string): boolean {
+function hasMessage(issues: readonly FeedIssue[], message: string): boolean {
   return issues.some((issue) => issue.message === message);
 }
 

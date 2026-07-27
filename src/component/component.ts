@@ -126,8 +126,8 @@ export type Component = {
   component: ComponentType;
   properties?: Record<string, unknown> | undefined;
   html?: string | undefined;
-  errors: FeedIssue[];
-  warnings: FeedIssue[];
+  errors: readonly FeedIssue[];
+  warnings: readonly FeedIssue[];
   element?:
     | {
         tag: string;

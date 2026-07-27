@@ -23,7 +23,7 @@ import {
  * helper so assertions against `FeedIssue[]` read like the old
  * `toContain('exact string')` checks against `string[]`.
  */
-function hasMessage(issues: FeedIssue[], message: string): boolean {
+function hasMessage(issues: readonly FeedIssue[], message: string): boolean {
   return issues.some((issue) => issue.message === message);
 }
 
@@ -1246,11 +1246,14 @@ describe('T3', () => {
         for (const item of rss.channel.items) {
           if (!item.link) {
             item.components = [];
-            item.errors.push({
-              code: 'MISSING_URL',
-              severity: 'error',
-              message: `link missing in guid "${item.guid}"`,
-            });
+            item.errors = [
+              ...item.errors,
+              {
+                code: 'MISSING_URL',
+                severity: 'error',
+                message: `link missing in guid "${item.guid}"`,
+              },
+            ];
             continue;
           }
 
@@ -1272,11 +1275,14 @@ describe('T3', () => {
           } catch (e: unknown) {
             const error = e as Error;
             item.components = [];
-            item.errors.push({
-              code: 'MISSING_URL',
-              severity: 'error',
-              message: error.message,
-            });
+            item.errors = [
+              ...item.errors,
+              {
+                code: 'MISSING_URL',
+                severity: 'error',
+                message: error.message,
+              },
+            ];
           }
         }
       }
@@ -1485,7 +1491,7 @@ describe('The New World', () => {
     if (!item) return;
     const { mediaContent } = item;
     expect(mediaContent.length).toBe(1);
-    const lastMediaContent = mediaContent.pop();
+    const lastMediaContent = mediaContent[mediaContent.length - 1];
     expect(lastMediaContent).toBeDefined();
     if (!lastMediaContent) return;
     expect(lastMediaContent.url).toBe(
@@ -1618,11 +1624,10 @@ describe.skip('The English Home', () => {
       } catch (e: unknown) {
         const error = e as Error;
         item.components = [];
-        item.errors.push({
-          code: 'MISSING_URL',
-          severity: 'error',
-          message: error.message,
-        });
+        item.errors = [
+          ...item.errors,
+          { code: 'MISSING_URL', severity: 'error', message: error.message },
+        ];
       }
     }
 

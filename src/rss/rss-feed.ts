@@ -602,16 +602,9 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
       : undefined,
   };
 
-  Object.assign(
-    response,
-    buildCanvasflowFlags(item, response.errors, response.warnings)
-  );
+  Object.assign(response, buildCanvasflowFlags(item, errors, warnings));
 
-  response['cf:thumbnail'] = buildThumbnail(
-    item,
-    response.errors,
-    response.warnings
-  );
+  response['cf:thumbnail'] = buildThumbnail(item, errors, warnings);
 
   if (contentEncoded) {
     response.components = HTMLMapper.toComponents(contentEncoded, params, root);
