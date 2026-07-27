@@ -116,13 +116,13 @@ See [Contributing](Contributing.md).
 
 The suite has five layers. Use the right layer for each kind of assertion — they are complementary, not substitutes.
 
-| Layer | What it does | How to run | Files |
-|---|---|---|---|
-| **Unit** | Isolated logic for a single function or converter. Fast, no I/O. | `vp test --tags-filter=unit` | `*.test.ts` (most files) |
-| **No-throw / fuzz** | Seeded-PRNG corpus asserting that arbitrary strings never throw. Catches structural crashes before they reach CI. | `vp test --tags-filter=unit` (fuzz tests are tagged `unit`) | `*.fuzz.test.ts` |
-| **Snapshot** | Full-pipeline characterisation: every fixture file snapshotted so any output change is a visible diff. | `npm test` | `rss-feed.snapshot.test.ts`, `html-mapper.snapshot.test.ts` |
-| **Integration (offline)** | Recipe extraction and similar cross-module flows driven by stored HTML fixtures under `src/support/http/` — no network required. | `npm test` (or `vp test --tags-filter=recipe`) | `rss-feed.test.ts` (Recipe describe), `recipe.test.ts` |
-| **Live** (opt-in) | True end-to-end tests against real publisher URLs. Not run in normal CI. Enable by passing `skip: false` for the `integration` tag in `vite.config.ts` and running with `--tags-filter=integration`. | Manual only | Any test tagged `integration` |
+| Layer                     | What it does                                                                                                                                                                                         | How to run                                                  | Files                                                       |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------- |
+| **Unit**                  | Isolated logic for a single function or converter. Fast, no I/O.                                                                                                                                     | `vp test --tags-filter=unit`                                | `*.test.ts` (most files)                                    |
+| **No-throw / fuzz**       | Seeded-PRNG corpus asserting that arbitrary strings never throw. Catches structural crashes before they reach CI.                                                                                    | `vp test --tags-filter=unit` (fuzz tests are tagged `unit`) | `*.fuzz.test.ts`                                            |
+| **Snapshot**              | Full-pipeline characterisation: every fixture file snapshotted so any output change is a visible diff.                                                                                               | `npm test`                                                  | `rss-feed.snapshot.test.ts`, `html-mapper.snapshot.test.ts` |
+| **Integration (offline)** | Recipe extraction and similar cross-module flows driven by stored HTML fixtures under `src/support/http/` — no network required.                                                                     | `npm test` (or `vp test --tags-filter=recipe`)              | `rss-feed.test.ts` (Recipe describe), `recipe.test.ts`      |
+| **Live** (opt-in)         | True end-to-end tests against real publisher URLs. Not run in normal CI. Enable by passing `skip: false` for the `integration` tag in `vite.config.ts` and running with `--tags-filter=integration`. | Manual only                                                 | Any test tagged `integration`                               |
 
 ### Adding a new test
 
@@ -133,6 +133,7 @@ The suite has five layers. Use the right layer for each kind of assertion — th
 ### Snapshot review discipline
 
 A snapshot diff is a **question**, not a failure. When a snapshot changes:
+
 1. Read the diff — understand what output changed and why.
 2. If the change is intentional (parser upgrade, bug fix, new field): update with `npm test -- --update-snapshot`.
 3. If the change is unintentional: that is a regression — fix the code, not the snapshot.

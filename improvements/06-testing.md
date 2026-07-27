@@ -16,8 +16,8 @@
 
 ## Overview
 
-> **Current state (2026-07-27):** 1 004+ tests pass (6 skipped — `integration`/`recipe`);
-> coverage gated at 95/95/95/95. The suite has grown substantially through Sections 1–5:
+> **Current state (2026-07-27):** 1 054 tests pass (0 skipped); `tsc --noEmit` clean;
+> coverage gated at 95/95/95/95 (actual: 98.76%/95.8%/97.75%/99.17%). The suite has grown substantially through Sections 1–5:
 > fuzz tests (`rss-feed.fuzz.test.ts`, `html-mapper.fuzz.test.ts`), referential-transparency
 > tests, depth-guard and pattern-cache tests, API surface type tests, and the full-corpus
 > RSS snapshot test have all been added. The snapshot test now iterates every `*.rss`

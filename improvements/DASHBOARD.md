@@ -126,7 +126,7 @@ against the repo on 2026-07-24.
 
 **Implementation**
 
-- [x] Bench suite added (`build` on forbes-large, `toComponents` on large HTML, filter engine) + `npm run bench` + informational CI job _(`src/__bench__/rss-feed.bench.ts`, `html-mapper.bench.ts`, `mapping-filter.bench.ts`; `npm run bench` / `npm run bench:save`; `.github/workflows/bench.yml` triggers on push/PR to `develop`/`main`/`feature/**`, `continue-on-error: true`, posts markdown summary, uploads artifact 90 days)_
+- [x] Bench suite added (`build` on forbes-large, `toComponents` on large HTML, filter engine) + `npm run bench` + informational CI job _(`src/__bench__/rss-feed.bench.ts`, `html-mapper.bench.ts`, `mapping-filter.bench.ts`; `npm run bench` / `npm run bench:save`; `.github/workflows/bench.yml` triggers on push/PR to `develop`/`main`/`feature/**`, `continue-on-error: true`, posts markdown summary, uploads artifact 90 days. TS error fixed 2026-07-27: `mapping-filter.bench.ts` was importing `filterAllMapping`/`filterAnyMapping` from `mapping.ts` where they are internal; corrected to import from `mapping.utils.ts` where they are exported.)_
 - [x] ~~Baseline numbers recorded **before** Sections 1–2 land~~ — window has passed; post-Section-2 numbers recorded as the baseline instead _(2026-07-27, Apple M-series, Node 20):_
       | Workload | hz | mean (ms) |
       |---|---|---|

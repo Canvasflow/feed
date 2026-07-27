@@ -9,9 +9,8 @@ import {
 import {
   filterAllMapping,
   filterAnyMapping,
-  type Filter,
-  type Mapping,
-} from '../component/mapping/mapping';
+} from '../component/mapping/mapping.utils';
+import { type Filter, type Mapping } from '../component/mapping/mapping';
 
 // Build a balanced tree: depth 6, branching 4 → 5461 nodes total.
 function buildTree(depth: number, branching: number): ElementNode {

@@ -27,7 +27,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FEEDS_DIR = path.resolve(__dirname, '..', 'src', 'support', 'feeds');
 
 function usage() {
-  console.error('Usage: node scripts/add-fixture.mjs <url-or-file-path> [output-name]');
+  console.error(
+    'Usage: node scripts/add-fixture.mjs <url-or-file-path> [output-name]'
+  );
   process.exit(1);
 }
 
@@ -40,9 +42,16 @@ function deriveOutputName(input) {
     base = path.basename(input);
   }
   // Normalise: lowercase, replace spaces and non-word chars with hyphens
-  base = base.toLowerCase().replace(/[^a-z0-9._-]/g, '-').replace(/-+/g, '-');
+  base = base
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]/g, '-')
+    .replace(/-+/g, '-');
   // Ensure a recognised extension
-  if (!base.endsWith('.rss') && !base.endsWith('.html') && !base.endsWith('.xml')) {
+  if (
+    !base.endsWith('.rss') &&
+    !base.endsWith('.html') &&
+    !base.endsWith('.xml')
+  ) {
     base += '.rss';
   }
   return base;
