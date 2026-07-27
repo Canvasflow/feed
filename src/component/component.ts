@@ -126,8 +126,8 @@ export type Component = {
   component: ComponentType;
   properties?: Record<string, unknown> | undefined;
   html?: string | undefined;
-  errors: FeedIssue[];
-  warnings: FeedIssue[];
+  errors: readonly FeedIssue[];
+  warnings: readonly FeedIssue[];
   element?:
     | {
         tag: string;
@@ -504,8 +504,8 @@ export function isImageComponent(object: unknown): object is ImageComponent {
   );
 }
 
-/** Check whether `role` is a recognised text component role. */
-export function isValidTextRole(role: string): boolean {
+/** Type predicate — narrows `role` to `TextType` when it is a recognised text component role. */
+export function isValidTextRole(role: string): role is TextType {
   return validRoleType.has(role);
 }
 

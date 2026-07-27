@@ -30,6 +30,7 @@ import {
 } from '../component/mapping/mapping.schema';
 import { sanitizeHTML as sanitizeHtml } from '../component/html/sanitize-html';
 import type { ParsedXml, ParsedItem } from './parsed-xml';
+import { textOf } from './narrow';
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -104,6 +105,13 @@ export class RSSFeed {
     const parser = new XMLParser({
       ignoreAttributes: false,
       processEntities: false,
+      isArray: (tagName: string) =>
+        tagName === 'item' ||
+        tagName === 'enclosure' ||
+        tagName === 'media:group' ||
+        tagName === 'media:content' ||
+        tagName === 'category' ||
+        tagName === 'dc:creator',
     });
 
     try {
@@ -185,16 +193,12 @@ export class RSSFeed {
 
     const items = data.rss?.channel?.item;
 
-    /* v8 ignore next 3 -- channel validation guarantees an item is present here */
-    if (items === null || items === undefined) {
+    /* v8 ignore next 2 -- channel validation guarantees an item is present here */
+    if (!items) {
       return;
     }
 
-    if (Array.isArray(items)) {
-      this.validateItems(items);
-    } else {
-      this.validateItems([items]);
-    }
+    this.validateItems(toArray(items));
   }
 
   /**
@@ -305,7 +309,7 @@ export class RSSFeed {
     this.rss.channel.language = language;
     this.rss.channel.lastBuildDate = lastBuildDate;
     this.rss.channel.docs = docs;
-    this.rss.channel.category = category;
+    this.rss.channel.category = category ? toArray(category) : undefined;
     if (image?.title) {
       image.title = decodeEntities(image.title);
     }
@@ -330,13 +334,12 @@ export class RSSFeed {
 
     const rawItems = channel.item;
     if (rawItems) {
-      const items = Array.isArray(rawItems) ? rawItems : [rawItems];
       const ctx: BuildItemContext = {
         origin: this.origin,
         root: this._root,
         params: this.params,
       };
-      for (const item of items) {
+      for (const item of toArray(rawItems)) {
         this.rss.channel.items.push(buildItem(item, ctx));
       }
     } else {
@@ -444,7 +447,7 @@ export class RSSFeed {
     }
   }
 
-  private validateItems(items: Array<Record<string, unknown>>) {
+  private validateItems(items: Array<ParsedItem>) {
     /* v8 ignore next 3 -- validateItems is only ever called with arrays */
     if (!isIterable(items)) {
       return;
@@ -454,7 +457,7 @@ export class RSSFeed {
     }
   }
 
-  private validateItem(item: Record<string, unknown>) {
+  private validateItem(item: ParsedItem) {
     // Validate first required tags
     const requiredTags = new Set(Tag.rss.channel.item.requiredTags);
     for (const key in item) {
@@ -508,13 +511,7 @@ export class RSSFeed {
 export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
   const { origin, root, params } = ctx;
 
-  let guid: string | undefined = undefined;
-  if (typeof item.guid === 'string') {
-    guid = item.guid;
-  } else if (typeof item.guid === 'object' && item?.guid) {
-    const g = item.guid as { '#text'?: unknown };
-    guid = `${g['#text']}`;
-  }
+  const guid = typeof item.guid === 'string' ? item.guid : textOf(item.guid);
   const title = item.title?.trim();
   const description = item.description
     ? removeHTMLTags(`${item.description}`)
@@ -553,34 +550,28 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
     }
   }
 
-  const category: Array<string | { '#text': string }> = item.category
-    ? Array.isArray(item.category)
-      ? item.category.map((c) =>
+  const category: string[] = item.category
+    ? toArray(item.category)
+        .map((c) =>
           typeof c === 'string' || typeof c === 'number'
             ? `${c}`.trim()
-            : (c as { '#text': string })
+            : (textOf(c) ?? '').trim()
         )
-      : [
-          typeof item.category === 'string'
-            ? item.category.trim()
-            : (item.category as { '#text': string }),
-        ]
+        .filter(Boolean)
     : [];
 
-  const dcCreator = Array.isArray(item['dc:creator'])
-    ? item['dc:creator'].map((c) => c.trim()).join(', ')
-    : item['dc:creator'];
+  const dcCreator = item['dc:creator']
+    ? toArray(item['dc:creator'])
+        .map((c) => (typeof c === 'string' ? c : (textOf(c) ?? '')).trim())
+        .filter(Boolean)
+        .join(', ')
+    : undefined;
   const mediaContent = getMediaContent(item, origin);
 
   const response: Item = {
     guid,
     title: title ? decodeEntities(title.trim()) : '',
-    category: category
-      .filter((i) => !!i)
-      .map((c) => {
-        if (typeof c === 'string') return c.trim();
-        return c['#text'].trim();
-      }),
+    category,
     description: description
       ? removeHTMLTags(decodeEntities(description))
       : description,
@@ -611,16 +602,9 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
       : undefined,
   };
 
-  Object.assign(
-    response,
-    buildCanvasflowFlags(item, response.errors, response.warnings)
-  );
+  Object.assign(response, buildCanvasflowFlags(item, errors, warnings));
 
-  response['cf:thumbnail'] = buildThumbnail(
-    item,
-    response.errors,
-    response.warnings
-  );
+  response['cf:thumbnail'] = buildThumbnail(item, errors, warnings);
 
   if (contentEncoded) {
     response.components = HTMLMapper.toComponents(contentEncoded, params, root);
@@ -640,13 +624,7 @@ function buildThumbnail(
 ): Thumbnail | undefined {
   if (!item['cf:thumbnail']) return undefined;
 
-  const cfThumbnail = item['cf:thumbnail'] as {
-    '@_url'?: string;
-    '@_width'?: string;
-    '@_height'?: string;
-    '@_type'?: string;
-    '@_fileSize'?: string;
-  };
+  const cfThumbnail = item['cf:thumbnail'];
   const thumbnail: Thumbnail = {
     url: cfThumbnail['@_url'] ?? '',
     width: cfThumbnail['@_width']
@@ -758,9 +736,7 @@ function buildCanvasflowFlags(
   processCanvasflowBooleanTag(item, flags, 'cf:isPaid');
 
   if (item['cf:liveCoverageState']) {
-    const liveCoverageState = item['cf:liveCoverageState'] as {
-      '@_state'?: string;
-    };
+    const liveCoverageState = item['cf:liveCoverageState'];
     flags['cf:liveCoverageState'] =
       liveCoverageState['@_state'] === 'live' ||
       liveCoverageState['@_state'] === 'completed'
@@ -780,7 +756,7 @@ function processCanvasflowBooleanTag(
     return;
   }
   if (typeof item[tagName] === 'boolean') {
-    response[tagName] = item[tagName] as boolean;
+    response[tagName] = item[tagName];
     return;
   }
 
@@ -795,79 +771,56 @@ function processCanvasflowBooleanTag(
     return;
   }
 
-  if (
-    item[tagName] !== null &&
-    typeof (item[tagName] as { [key: string]: unknown })['#text'] === 'string'
-  ) {
-    response.warnings.push(
-      warningIssue(
-        'INVALID_BOOLEAN_TAG',
-        `Attributes are not allowed for the '${tagName}' property.`,
-        tagName
-      )
-    );
-    const text = (item[tagName] as { [key: string]: unknown })[
-      '#text'
-    ] as string;
-    /* v8 ignore next 4 -- the parser coerces "true"/"false" text to booleans */
-    if (text === 'true' || text === 'false') {
-      response[tagName] = text === 'true';
-      return;
+  if (item[tagName] !== null) {
+    const text = textOf(item[tagName]);
+    if (text !== undefined) {
+      response.warnings.push(
+        warningIssue(
+          'INVALID_BOOLEAN_TAG',
+          `Attributes are not allowed for the '${tagName}' property.`,
+          tagName
+        )
+      );
+      /* v8 ignore next 4 -- the parser coerces "true"/"false" text to booleans */
+      if (text === 'true' || text === 'false') {
+        response[tagName] = text === 'true';
+        return;
+      }
+      response.errors.push(
+        errorIssue(
+          'INVALID_BOOLEAN_TAG',
+          `Invalid value for '${tagName}': "${text}". Expected "true" or "false".`,
+          tagName
+        )
+      );
     }
-    response.errors.push(
-      errorIssue(
-        'INVALID_BOOLEAN_TAG',
-        `Invalid value for '${tagName}': "${text}". Expected "true" or "false".`,
-        tagName
-      )
-    );
   }
 }
 
-function getEnclosure(item: Record<string, unknown>): Array<Enclosure> {
-  if (!item.enclosure) {
-    return [];
-  }
+function toArray<T>(val: T | T[]): T[] {
+  return Array.isArray(val) ? val : [val];
+}
 
-  const enclosure: Array<Attributes.Enclosure> = Array.isArray(item.enclosure)
-    ? item.enclosure
-    : [item.enclosure as Attributes.Enclosure];
-
-  return enclosure.map(mapEnclosure);
+function getEnclosure(item: ParsedItem): Array<Enclosure> {
+  return item.enclosure ? toArray(item.enclosure).map(mapEnclosure) : [];
 }
 
 function getMediaGroup(
-  item: Record<string, unknown>,
+  item: ParsedItem,
   origin: string | undefined
 ): Array<MediaGroup> {
-  if (!item['media:group']) {
-    return [];
-  }
-
-  const mediaGroup: Array<Attributes.MediaGroup> = Array.isArray(
-    item['media:group']
-  )
-    ? item['media:group']
-    : [item['media:group'] as Attributes.MediaGroup];
-
-  return mediaGroup.map(mapMediaGroup(origin));
+  return item['media:group']
+    ? toArray(item['media:group']).map(mapMediaGroup(origin))
+    : [];
 }
 
 function getMediaContent(
-  item: Record<string, unknown>,
+  item: ParsedItem,
   origin: string | undefined
 ): Array<MediaContent> {
-  if (!item['media:content']) {
-    return [];
-  }
-
-  const mediaContent: Array<Attributes.MediaContent> = Array.isArray(
-    item['media:content']
-  )
-    ? item['media:content']
-    : [item['media:content']];
-
-  return mediaContent.map(mapMediaContent(origin));
+  return item['media:content']
+    ? toArray(item['media:content']).map(mapMediaContent(origin))
+    : [];
 }
 
 // ---------------------------------------------------------------------------

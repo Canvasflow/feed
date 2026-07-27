@@ -103,9 +103,11 @@ function getLegacyInstagramUrl(node: ElementNode): string {
     .reduce(findDescendants('a'), [])
     .filter(filterInstagramAnchor);
 
-  if (!anchorNodes.length) return '';
+  const anchorNode = anchorNodes.find(
+    (n): n is ElementNode => n.type === 'element'
+  );
+  if (!anchorNode) return '';
 
-  const anchorNode = anchorNodes.shift() as ElementNode;
   const anchorNodeAttributes = getAttributes(anchorNode.attributes);
 
   /* v8 ignore next -- matched anchors always carry an href */
@@ -213,7 +215,7 @@ export function toDailymotion(url: URL): DailymotionComponent {
     );
   }
 
-  const id = url.pathname.split('/').pop() as string;
+  const id = url.pathname.split('/').pop()!;
 
   return {
     component: 'video',
@@ -275,7 +277,7 @@ export function toYoutube(url: URL): YoutubeComponent {
     );
   }
 
-  const id = url.pathname.split('/').pop() as string;
+  const id = url.pathname.split('/').pop()!;
 
   if (!/^[a-zA-Z0-9_-]{11}$/.test(id)) {
     errors.push(errorIssue('INVALID_YOUTUBE_ID', 'Invalid YouTube video ID.'));
@@ -308,7 +310,7 @@ export function toVimeo(url: URL): VimeoComponent {
     );
   }
 
-  const id = url.pathname.split('/').pop() as string;
+  const id = url.pathname.split('/').pop()!;
 
   return {
     component: 'video',

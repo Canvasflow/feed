@@ -113,9 +113,12 @@ export function toImage(node: ElementNode): ImageComponent {
   const id = attributes.get('id');
 
   if (tagName === 'figure') {
-    const imageComponent: ImageComponent = fromFigure(node) as ImageComponent;
-    imageComponent.id = id;
-    return imageComponent;
+    const component = fromFigure(node);
+    if (isImageComponent(component)) {
+      component.id = id;
+      return component;
+    }
+    return { component: 'image', imageurl: '', errors: [], warnings: [] };
   }
 
   if (tagName === 'picture') {
@@ -237,25 +240,23 @@ function fromFigure(
     .map((n: Node) => fromNode(n))
     .flat()
     .filter(
-      (c) =>
-        c &&
+      (c): c is VideoComponent | AudioComponent =>
+        c !== null &&
         !Array.isArray(c) &&
         (c.component === 'video' || c.component === 'audio')
     );
   if (components.length) {
-    const component: VideoComponent | AudioComponent = components.pop() as
-      | VideoComponent
-      | AudioComponent;
+    const component = components.pop()!;
     component.caption = caption;
     component.credit = credit;
     return component;
   }
 
   const linkNodes = node.children.filter(
-    (n) => n.type === 'element' && n.tagName === 'a'
+    (n): n is ElementNode => n.type === 'element' && n.tagName === 'a'
   );
   if (linkNodes.length > 0) {
-    const imageLink = getImageLink(linkNodes[0] as ElementNode);
+    const imageLink = getImageLink(linkNodes[0]!);
     if (imageLink.errors.length > 0) {
       errors.push(...imageLink.errors);
     }
@@ -469,7 +470,7 @@ export function toVideo(node: ElementNode): VideoComponent {
     .filter((i) => !!i);
 
   if (sources.length) {
-    url = sources.shift() as string;
+    url = sources.shift()!;
   }
 
   if (!url) {
@@ -527,7 +528,7 @@ export function toAudio(node: ElementNode): AudioComponent {
     .filter((i) => !!i);
 
   if (sources.length) {
-    url = sources.shift() as string;
+    url = sources.shift()!;
   }
 
   if (!url) {
@@ -608,11 +609,12 @@ export function toGallery(node: ElementNode): GalleryComponent {
   const galleryTags = new Set([...imageTags, 'figure']);
   const images: Array<GalleryImage> = node.children
     // Validate the only image tag are supported
-    .filter((n) => n.type === 'element' && galleryTags.has(n.tagName))
+    .filter(
+      (n): n is ElementNode =>
+        n.type === 'element' && galleryTags.has(n.tagName)
+    )
     // Map the node to an image component
-    .map((n: Node): ImageComponent => {
-      return toImage(n as ElementNode);
-    })
+    .map((n): ImageComponent => toImage(n))
     // If some is invalid and return undefined we remove them
     .filter((i) => !!i)
     // Map Valid image components to gallery items
@@ -774,10 +776,9 @@ export function toTwitter(node: ElementNode | URL): TwitterComponent | null {
   const params: { id?: string | undefined; account?: string | undefined } = {};
   let attrs: Record<string, string> = {};
 
-  const anchorNodes = node.children.reduce(
-    findDescendants('a'),
-    []
-  ) as ElementNode[];
+  const anchorNodes = node.children
+    .reduce(findDescendants('a'), [])
+    .filter((n): n is ElementNode => n.type === 'element');
   const validAnchorNodes = anchorNodes.filter((node: ElementNode) => {
     const attributes = getAttributes(node.attributes);
     attrs = Object.fromEntries(attributes);

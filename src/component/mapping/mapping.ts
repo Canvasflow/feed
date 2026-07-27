@@ -252,7 +252,7 @@ const TEXT_TAG_MAPPING: Record<string, TextType> = {
   ol: 'body',
   ul: 'body',
   a: 'body',
-};
+} satisfies Record<string, TextType>;
 
 /**
  * It process a node individually and transform it into a single canvasflow
@@ -278,12 +278,13 @@ export function fromNode(
     const trimmed = escapeText(trimAsciiWhitespace(node.content));
     const text = params?.ignoreParagraphWrap ? trimmed : `<p>${trimmed}</p>`;
 
-    return {
+    const bodyComponent: TextComponent = {
       component: 'body',
       errors: [],
       warnings: [],
       text,
-    } as TextComponent;
+    };
+    return bodyComponent;
   }
 
   const { tagName } = node;
@@ -332,7 +333,7 @@ export function fromNode(
   if (isTikTokNode(node)) {
     const cite = attributes.get('cite');
     if (!cite || !URL.canParse(cite)) {
-      return {
+      const invalidTikTok: TikTokComponent = {
         component: 'video',
         vidtype: 'tiktok',
         params: {
@@ -353,7 +354,8 @@ export function fromNode(
                 'cite'
               ),
         ],
-      } as TikTokComponent;
+      };
+      return invalidTikTok;
     }
     const tiktokComponent = toTikTok(new URL(cite));
     if (tagName) {
@@ -390,47 +392,61 @@ export function fromNode(
   }
 
   // Handle mapping send by the user
-  const { mappedComponent, properties, mapping } = getMappingComponent(
-    node,
-    params?.mappings
-  );
+  const mappingResult = getMappingComponent(node, params?.mappings);
 
-  if (mappedComponent && mapping) {
-    if (mappedComponent === 'recipe' || mappedComponent === 'container') {
-      return toContainer(mappedComponent, node, params, properties);
+  if (mappingResult.mappedComponent !== undefined) {
+    if (
+      mappingResult.mappedComponent === 'recipe' ||
+      mappingResult.mappedComponent === 'container'
+    ) {
+      return toContainer(
+        mappingResult.mappedComponent,
+        node,
+        params,
+        mappingResult.properties
+      );
     }
-    if (mappedComponent === 'columns') {
-      return toColumns(node, mapping as ColumnsMapping, params, properties);
+    if (mappingResult.mappedComponent === 'columns') {
+      return toColumns(
+        node,
+        mappingResult.mapping,
+        params,
+        mappingResult.properties
+      );
     }
-    if (mappedComponent === 'live_container') {
+    if (mappingResult.mappedComponent === 'live_container') {
       return toLiveContainer(
         node,
-        mapping as LiveContainerMapping,
+        mappingResult.mapping,
         params,
-        properties
+        mappingResult.properties
       );
     }
-    if (mappedComponent === 'gallery') {
+    if (mappingResult.mappedComponent === 'gallery') {
       return toGalleryFromMapping(
         node,
-        mapping as GalleryMapping,
+        mappingResult.mapping,
         params,
-        properties
+        mappingResult.properties
       );
     }
-    if (mappedComponent === 'custom') {
-      return toCustom(node, properties);
+    if (mappingResult.mappedComponent === 'custom') {
+      return toCustom(node, mappingResult.properties);
     }
 
-    return toText(node, mappedComponent, properties);
+    return toText(
+      node,
+      mappingResult.mappedComponent,
+      mappingResult.properties
+    );
   }
 
   if (tagName === 'figure') {
-    return toFigureContainer(node, params, properties);
+    return toFigureContainer(node, params);
   }
 
   if (tagName === 'a') {
-    return toLinkContainer(node, params, properties);
+    return toLinkContainer(node, params);
   }
 
   if (tagName === 'img') {
@@ -535,13 +551,44 @@ export function validateParams(params: unknown): Params {
   return result.data;
 }
 
-/**
- * Get the mapping of the component
- *
- * @param {ElementNode} node
- * @param {ComponentMapping[]} [mappings]
- * @returns {MappingComponentResponse}
- */
+type MappingComponentResponse =
+  | {
+      mappedComponent: 'columns';
+      mapping: ColumnsMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | {
+      mappedComponent: 'live_container';
+      mapping: LiveContainerMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | {
+      mappedComponent: 'gallery';
+      mapping: GalleryMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | {
+      mappedComponent: 'recipe';
+      mapping: RecipeMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | {
+      mappedComponent: 'container';
+      mapping: ContainerMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | {
+      mappedComponent: 'custom';
+      mapping: CustomMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | {
+      mappedComponent: TextType;
+      mapping: TextMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | { mappedComponent: undefined; mapping: undefined; properties: undefined };
+
 function getMappingComponent(
   node: ElementNode,
   mappings?: ComponentMapping[]
@@ -549,50 +596,39 @@ function getMappingComponent(
   if (!mappings || !mappings.length) {
     return {
       mappedComponent: undefined,
-      properties: undefined,
       mapping: undefined,
+      properties: undefined,
     };
   }
 
   for (const mapping of mappings) {
-    const { component, match, filters, properties } = mapping;
-    if (match === 'all') {
-      if (filterAllMapping(node, filters)) {
-        return {
-          mappedComponent: component,
-          properties,
-          mapping,
-        };
-      }
-    }
-    if (match === 'any') {
-      if (filterAnyMapping(node, filters)) {
-        return {
-          mappedComponent: component,
-          properties,
-          mapping,
-        };
-      }
+    const { match, filters, properties } = mapping;
+    const matched =
+      (match === 'all' && filterAllMapping(node, filters)) ||
+      (match === 'any' && filterAnyMapping(node, filters));
+    if (!matched) continue;
+
+    switch (mapping.component) {
+      case 'columns':
+        return { mappedComponent: 'columns', mapping, properties };
+      case 'live_container':
+        return { mappedComponent: 'live_container', mapping, properties };
+      case 'gallery':
+        return { mappedComponent: 'gallery', mapping, properties };
+      case 'recipe':
+        return { mappedComponent: 'recipe', mapping, properties };
+      case 'container':
+        return { mappedComponent: 'container', mapping, properties };
+      case 'custom':
+        return { mappedComponent: 'custom', mapping, properties };
+      default:
+        return { mappedComponent: mapping.component, mapping, properties };
     }
   }
 
   return {
     mappedComponent: undefined,
-    properties: undefined,
     mapping: undefined,
+    properties: undefined,
   };
-}
-
-interface MappingComponentResponse {
-  mappedComponent?:
-    | TextType
-    | 'recipe'
-    | 'container'
-    | 'columns'
-    | 'live_container'
-    | 'gallery'
-    | 'custom'
-    | undefined;
-  properties?: Record<string, unknown> | undefined;
-  mapping?: ComponentMapping | undefined;
 }

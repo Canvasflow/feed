@@ -165,7 +165,7 @@ describe('buildItem — media:group', () => {
 });
 
 describe('buildItem — does not mutate its input', () => {
-  test('a single (non-array) enclosure is not rewritten onto the input', () => {
+  test('a single (non-array) enclosure is normalised to an array without mutating the input', () => {
     const input: ParsedItem = {
       ...base,
       enclosure: {
@@ -177,10 +177,9 @@ describe('buildItem — does not mutate its input', () => {
     const item = buildItem(input, ctx);
     expect(item.enclosure).toHaveLength(1);
     expect(input.enclosure).toBe(before);
-    expect(Array.isArray(input.enclosure)).toBe(false);
   });
 
-  test('a single (non-array) media:group is not rewritten onto the input', () => {
+  test('a single (non-array) media:group is normalised to an array without mutating the input', () => {
     const input: ParsedItem = {
       ...base,
       'media:group': {
@@ -191,7 +190,6 @@ describe('buildItem — does not mutate its input', () => {
     const item = buildItem(input, ctx);
     expect(item.mediaGroup).toHaveLength(1);
     expect(input['media:group']).toBe(before);
-    expect(Array.isArray(input['media:group'])).toBe(false);
   });
 
   test('an array dc:creator is not collapsed onto the input', () => {

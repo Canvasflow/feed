@@ -204,10 +204,8 @@ describe('Mapping — social blockquotes and anchors', () => {
     const components = convert(
       `<blockquote class="tiktok-embed">x</blockquote>`
     );
-    const c = components.find((x) => x && x.component === 'video') as {
-      errors: FeedIssue[];
-    };
-    expect(c.errors.length).toBeGreaterThan(0);
+    const c = components.find((x) => x && x.component === 'video');
+    expect(c?.errors.length).toBeGreaterThan(0);
   });
 
   test('youtube anchor', tags, () => {
@@ -224,8 +222,8 @@ describe('Mapping — social blockquotes and anchors', () => {
     () => {
       const html = `<blockquote class="tiktok-embed" cite="not a url %">x</blockquote>`;
       expect(() => convert(html)).not.toThrow();
-      const c = find(html, 'video') as { errors: FeedIssue[] };
-      expect(c.errors.length).toBeGreaterThan(0);
+      const c = find(html, 'video');
+      expect(c?.errors.length).toBeGreaterThan(0);
     }
   );
 
@@ -608,17 +606,15 @@ describe('Mapping — instagram variants', () => {
     );
     const c = components.find((x) => x && x.component === 'instagram');
     expect(c).toBeDefined();
-    expect((c as { errors: FeedIssue[] }).errors.length).toBeGreaterThan(0);
+    expect(c!.errors.length).toBeGreaterThan(0);
   });
 
   test('instagram permalink missing type and id reports errors', tags, () => {
     const components = convert(
       `<blockquote data-instgrm-version="6" data-instgrm-permalink="https://www.instagram.com/">x</blockquote>`
     );
-    const c = components.find((x) => x && x.component === 'instagram') as {
-      errors: FeedIssue[];
-    };
-    expect(c.errors.length).toBeGreaterThan(0);
+    const c = components.find((x) => x && x.component === 'instagram');
+    expect(c?.errors.length).toBeGreaterThan(0);
   });
 
   test('instagram legacy embed resolves url from anchors', tags, () => {
@@ -633,20 +629,16 @@ describe('Mapping — instagram variants', () => {
     const components = convert(
       `<blockquote data-instgrm-version="6" data-instgrm-permalink="not a url">x</blockquote>`
     );
-    const c = components.find((x) => x && x.component === 'instagram') as {
-      errors: FeedIssue[];
-    };
-    expect(c.errors.length).toBeGreaterThan(0);
+    const c = components.find((x) => x && x.component === 'instagram');
+    expect(c?.errors.length).toBeGreaterThan(0);
   });
 });
 
 describe('Mapping — button variants', () => {
   test('anchor button without text reports an error', tags, () => {
     const components = convert(`<a role="button" href="https://x.com"></a>`);
-    const c = components.find((x) => x && x.component === 'button') as {
-      errors: FeedIssue[];
-    };
-    expect(c.errors.length).toBeGreaterThan(0);
+    const c = components.find((x) => x && x.component === 'button');
+    expect(c?.errors.length).toBeGreaterThan(0);
   });
 
   test('button wrapping an anchor link', tags, () => {
@@ -656,18 +648,14 @@ describe('Mapping — button variants', () => {
 
   test('button wrapping an anchor without href', tags, () => {
     const components = convert(`<button><a>Go</a></button>`);
-    const c = components.find((x) => x && x.component === 'button') as {
-      errors: FeedIssue[];
-    };
-    expect(c.errors.length).toBeGreaterThan(0);
+    const c = components.find((x) => x && x.component === 'button');
+    expect(c?.errors.length).toBeGreaterThan(0);
   });
 
   test('empty button warns it is not clickable', tags, () => {
     const components = convert(`<button></button>`);
-    const c = components.find((x) => x && x.component === 'button') as {
-      warnings: FeedIssue[];
-    };
-    expect(c.warnings.length).toBeGreaterThan(0);
+    const c = components.find((x) => x && x.component === 'button');
+    expect(c?.warnings.length).toBeGreaterThan(0);
   });
 
   test('anchor wrapping a button (Forbes-style) becomes a button', tags, () => {
@@ -683,10 +671,8 @@ describe('Mapping — button variants', () => {
     tags,
     () => {
       const components = convert(`<a><button></button></a>`);
-      const c = components.find((x) => x && x.component === 'button') as {
-        errors: FeedIssue[];
-      };
-      expect(c.errors.length).toBeGreaterThan(0);
+      const c = components.find((x) => x && x.component === 'button');
+      expect(c?.errors.length).toBeGreaterThan(0);
     }
   );
 });
@@ -694,26 +680,20 @@ describe('Mapping — button variants', () => {
 describe('Mapping — media and image edge cases', () => {
   test('video without a source reports an error', tags, () => {
     const components = convert(`<video></video>`);
-    const c = components.find((x) => x && x.component === 'video') as {
-      errors: FeedIssue[];
-    };
-    expect(c.errors.length).toBeGreaterThan(0);
+    const c = components.find((x) => x && x.component === 'video');
+    expect(c?.errors.length).toBeGreaterThan(0);
   });
 
   test('audio without a source reports an error', tags, () => {
     const components = convert(`<audio></audio>`);
-    const c = components.find((x) => x && x.component === 'audio') as {
-      errors: FeedIssue[];
-    };
-    expect(c.errors.length).toBeGreaterThan(0);
+    const c = components.find((x) => x && x.component === 'audio');
+    expect(c?.errors.length).toBeGreaterThan(0);
   });
 
   test('picture with an image missing src reports an error', tags, () => {
     const components = convert(`<picture><img alt="no source"/></picture>`);
-    const c = components.find((x) => x && x.component === 'image') as {
-      errors: FeedIssue[];
-    };
-    expect(c.errors.length).toBeGreaterThan(0);
+    const c = components.find((x) => x && x.component === 'image');
+    expect(c?.errors.length).toBeGreaterThan(0);
   });
 
   test('youtube iframe with non-video path is invalid', tags, () => {
@@ -722,7 +702,7 @@ describe('Mapping — media and image edge cases', () => {
       'video'
     );
     expect(c).toBeDefined();
-    expect((c as { errors: FeedIssue[] }).errors.length).toBeGreaterThan(0);
+    expect(c!.errors.length).toBeGreaterThan(0);
   });
 
   test('dailymotion via url with invalid format is flagged', tags, () => {
@@ -731,7 +711,7 @@ describe('Mapping — media and image edge cases', () => {
       'video'
     );
     expect(c).toBeDefined();
-    expect((c as { errors: FeedIssue[] }).errors.length).toBeGreaterThan(0);
+    expect(c!.errors.length).toBeGreaterThan(0);
   });
 });
 
@@ -798,10 +778,8 @@ describe('Mapping — mappings with all-match inner filters', () => {
       `<div class="live"><p>No posts</p></div>`,
       params
     );
-    const c = components.find((x) => x && x.component === 'live_container') as {
-      errors: FeedIssue[];
-    };
-    expect(c.errors.length).toBeGreaterThan(0);
+    const c = components.find((x) => x && x.component === 'live_container');
+    expect(c?.errors.length).toBeGreaterThan(0);
   });
 
   test('gallery from mapping honors excludes', tags, () => {

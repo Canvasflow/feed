@@ -392,8 +392,10 @@ export function toFigureContainer(
   );
 
   // If we have a figcaption node, we will extract the caption and credit from it
-  if (figcaptionNodes.length) {
-    const figcaptionNode = figcaptionNodes.shift() as ElementNode;
+  const figcaptionNode = figcaptionNodes.find(
+    (n): n is ElementNode => n.type === 'element'
+  );
+  if (figcaptionNode) {
     const ficaptionResponse = fromFigcaption(figcaptionNode);
     if (ficaptionResponse) {
       caption = ficaptionResponse.caption ?? '';
@@ -403,8 +405,10 @@ export function toFigureContainer(
 
   // If we have a credit node, we will extract the credit from it and override
   // the credit from the figcaption node
-  if (creditNodes.length) {
-    const creditNode = creditNodes.shift() as ElementNode;
+  const creditNode = creditNodes.find(
+    (n): n is ElementNode => n.type === 'element'
+  );
+  if (creditNode) {
     credit = sanitizeNode(creditNode, {
       allowedTags: [],
       allowedAttributes: {},
@@ -522,9 +526,10 @@ export function toAnchorButton(node: ElementNode): ButtonComponent {
 
   const buttonsNode = node.children.reduce(findDescendants('button'), []);
 
-  if (buttonsNode.length > 0) {
-    const button = buttonsNode[0] as ElementNode;
-
+  const button = buttonsNode.find(
+    (n): n is ElementNode => n.type === 'element'
+  );
+  if (button) {
     text = textContent(button.children);
   }
   if (!text) {
@@ -570,8 +575,10 @@ export function toButton(node: ElementNode): ButtonComponent {
     }
   } else if (node.tagName === 'button') {
     const anchorNodes = node.children.reduce(findDescendants('a'), []);
-    if (anchorNodes.length > 0) {
-      const aNode = anchorNodes[0] as ElementNode;
+    const aNode = anchorNodes.find(
+      (n): n is ElementNode => n.type === 'element'
+    );
+    if (aNode) {
       const aAttributes = getAttributes(aNode.attributes);
       link = aAttributes.get('href');
       if (!link) {

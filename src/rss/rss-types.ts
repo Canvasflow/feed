@@ -52,16 +52,16 @@ export interface ChannelImage {
 export interface Item {
   guid?: string | undefined;
   title?: string | undefined;
-  category?: string[] | undefined;
+  category?: readonly string[] | undefined;
   link?: string | undefined;
   description?: string | undefined;
-  enclosure: Enclosure[];
-  mediaGroup: MediaGroup[];
-  mediaContent: MediaContent[];
+  enclosure: readonly Enclosure[];
+  mediaGroup: readonly MediaGroup[];
+  mediaContent: readonly MediaContent[];
   pubDate?: string | undefined;
-  errors: FeedIssue[];
-  warnings: FeedIssue[];
-  components: Component[];
+  errors: readonly FeedIssue[];
+  warnings: readonly FeedIssue[];
+  components: readonly Component[];
   'content:encoded'?: string | undefined;
   'cf:hasAffiliateLinks'?: boolean | undefined;
   'cf:isSponsored'?: boolean | undefined;
@@ -94,21 +94,21 @@ export interface Enclosure {
   length: number;
   type: string;
   url: string;
-  errors: FeedIssue[];
-  warnings: FeedIssue[];
+  errors: readonly FeedIssue[];
+  warnings: readonly FeedIssue[];
 }
 
 export interface MediaGroup {
   title?: string | undefined;
-  mediaContent?: MediaContent[] | undefined;
+  mediaContent?: readonly MediaContent[] | undefined;
   /**
    * Array of errors from the media content
    */
-  errors: FeedIssue[];
+  errors: readonly FeedIssue[];
   /**
    * Array of warnings from the media content
    */
-  warnings: FeedIssue[];
+  warnings: readonly FeedIssue[];
 }
 
 /**
@@ -129,6 +129,80 @@ export function replaceErrors(_: string, value: unknown) {
     return error.message;
   }
   return value;
+}
+
+// ---------------------------------------------------------------------------
+// Mutable clone helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Recursively strips `readonly` from every array type in `T`, turning
+ * `readonly X[]` into `X[]` at every level of nesting. Properties that are
+ * individually marked `readonly` are also de-readonly-ed.
+ *
+ * Used as the building block for {@link MutableItem}.
+ */
+type DeepMutable<T> = T extends readonly (infer U)[]
+  ? Array<DeepMutable<U>>
+  : T extends object
+    ? { -readonly [K in keyof T]: DeepMutable<T[K]> }
+    : T;
+
+/**
+ * A fully mutable copy of {@link Item}.
+ *
+ * Every `readonly` array in `Item` (and in its nested types) becomes a plain
+ * `Array` so consumers can call `.push()`, `.splice()`, etc. without hitting
+ * compile errors. Produced by {@link clone}.
+ */
+export type MutableItem = DeepMutable<Item>;
+
+/**
+ * Deep-clone an {@link Item} into a fully mutable {@link MutableItem}.
+ *
+ * Every `readonly` array is copied into a fresh mutable array — `errors`,
+ * `warnings`, `enclosure`, `mediaGroup`, `mediaContent`, `components`, and
+ * `category`. Use this when you need to post-process a built item with
+ * `.push()` / `.splice()` / reassignment without TypeScript complaining.
+ *
+ * @example
+ * ```ts
+ * const item = clone(rss.channel.items[0]);
+ * item.errors.push({ code: 'MISSING_URL', severity: 'error', message: '…' });
+ * ```
+ */
+export function clone(item: Item): MutableItem {
+  return {
+    ...item,
+    category: item.category ? [...item.category] : undefined,
+    errors: [...item.errors],
+    warnings: [...item.warnings],
+    enclosure: item.enclosure.map((e) => ({
+      ...e,
+      errors: [...e.errors],
+      warnings: [...e.warnings],
+    })),
+    mediaGroup: item.mediaGroup.map((mg) => ({
+      ...mg,
+      errors: [...mg.errors],
+      warnings: [...mg.warnings],
+      mediaContent: mg.mediaContent?.map((mc) => ({
+        ...mc,
+        errors: [...mc.errors],
+        warnings: [...mc.warnings],
+      })),
+    })),
+    mediaContent: item.mediaContent.map((mc) => ({
+      ...mc,
+      errors: [...mc.errors],
+      warnings: [...mc.warnings],
+    })),
+    components: item.components.map((c) => ({
+      ...c,
+      errors: [...c.errors],
+      warnings: [...c.warnings],
+    })) as Array<DeepMutable<Component>>,
+  };
 }
 
 export interface MediaContent {
@@ -174,9 +248,9 @@ export interface MediaContent {
   /**
    * Array of errors from the media content
    */
-  errors: FeedIssue[];
+  errors: readonly FeedIssue[];
   /**
    * Array of warnings from the media content
    */
-  warnings: FeedIssue[];
+  warnings: readonly FeedIssue[];
 }

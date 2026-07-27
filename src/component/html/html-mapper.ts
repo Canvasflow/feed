@@ -160,15 +160,14 @@ function splitParagraphImagesDOM(document: Document, tag: string): void {
   const paragraphs = Array.from(document.querySelectorAll(tag));
 
   for (const paragraph of paragraphs) {
-    const p = paragraph as Element;
-    const parent = p.parentNode;
+    const parent = paragraph.parentNode;
     /* v8 ignore next -- matched elements always have a parent node */
     if (!parent) continue;
 
-    const children = Array.from(p.childNodes);
+    const children = Array.from(paragraph.childNodes);
     let buffer: (typeof children)[number][] = [];
 
-    const originalAttrs = Array.from(p.attributes).map((attr) => ({
+    const originalAttrs = Array.from(paragraph.attributes).map((attr) => ({
       name: attr.name,
       value: attr.value,
     }));
@@ -187,7 +186,7 @@ function splitParagraphImagesDOM(document: Document, tag: string): void {
       for (const node of buffer) {
         newP.appendChild(node);
       }
-      parent.insertBefore(newP, p);
+      parent.insertBefore(newP, paragraph);
       buffer = [];
     };
 
@@ -198,14 +197,14 @@ function splitParagraphImagesDOM(document: Document, tag: string): void {
 
       if (isImg) {
         flushBuffer();
-        parent.insertBefore(node, p);
+        parent.insertBefore(node, paragraph);
       } else {
         buffer.push(node);
       }
     }
 
     flushBuffer();
-    parent.removeChild(p);
+    parent.removeChild(paragraph);
   }
 }
 
