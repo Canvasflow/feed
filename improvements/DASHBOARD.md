@@ -160,10 +160,10 @@ against the repo on 2026-07-24.
 **Implementation**
 
 - [ ] **Safety net:** snapshot tests over every `src/support/feeds/*.rss` (`build()`) and every HTML fixture (`toComponents`), committed as baseline
-- [ ] No-throw property tests (feeds + HTML + params)
+- [x] No-throw property tests (feeds + HTML + params) _(`rss-feed.fuzz.test.ts`: 17 edge cases + 150 random XML strings + 100 random params; `html-mapper.fuzz.test.ts`: 42 edge cases + 200 random strings — both verify no-throw contract for all three categories)_
 - [ ] Engine invariant properties (allow-list compliance of output `html`, filter laws)
 - [ ] `integration`/`recipe` tests run offline via HTTP mocking; `skip: true` removed; opt-in live suite only
-- [ ] `broken` tag emptied (fixed or converted to `test.fails`); `todo` tag → `test.todo`
+- [x] `broken` tag emptied (fixed or converted to `test.fails`); `todo` tag → `test.todo` _(no tests in the codebase are tagged `broken` or `todo`; tags are defined in `vite.config.ts` but unused — the `describe.skip('The English Home')` at `rss-feed.test.ts:1506` is not tagged `broken`)_
 - [ ] `*.coverage.test.ts` consolidated into meaningful tests as dead branches are deleted
 - [ ] Fixture-intake script (`scripts/add-fixture.mjs`) working and documented
 - [ ] Coverage thresholds still met; `v8 ignore` comments re-audited
