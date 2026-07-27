@@ -80,10 +80,10 @@ npm run bench -- --compare bench-results.json
 ```
 
 The CI bench job (`.github/workflows/bench.yml`) runs on every push to
-`develop`, `main`, and `feature/**` branches. It is informational only
-(`continue-on-error: true`) — a regression in bench numbers never blocks a
-merge. Results are posted as a GitHub Actions step summary and uploaded as a
-90-day artifact (`bench-results.json`).
+`develop`, `main`, and `feature/**` branches across a Node matrix (20, 22, 24).
+It is informational only (`continue-on-error: true`) — a regression in bench
+numbers never blocks a merge. Results are posted per-node as a GitHub Actions
+step summary and uploaded as 90-day artifacts (`bench-results-node20`, etc.).
 
 ## Known limits
 

@@ -10,19 +10,22 @@ on:
 
 jobs:
   bench:
-    name: 📊 Benchmark (Node 20)
+    name: 📊 Benchmark (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     # Never block CI — results are informational.
     continue-on-error: true
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['20', '22', '24']
 
     steps:
       - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v7
         with:
-          # Pin to the minimum supported version for the most consistent
-          # baseline across runs. Changing this version resets the trend line.
-          node-version: '20'
+          node-version: ${{ matrix.node-version }}
 
       - name: Install dependencies
         run: npm ci
@@ -36,7 +39,7 @@ jobs:
       - name: 📤 Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: bench-results
+          name: bench-results-node${{ matrix.node-version }}
           path: bench-results.json
           # Keep 90 days of history so you can download and diff any two runs.
           retention-days: 90
