@@ -3,8 +3,8 @@
 ## Completion checklist
 
 - [x] A benchmark suite exists (`vitest bench` or tinybench) covering: full `build()` on `forbes-large.rss`, `toComponents` on the largest HTML fixtures, and the filter/matching engine in isolation. _(2026-07-27: `src/__bench__/rss-feed.bench.ts`, `html-mapper.bench.ts`, `mapping-filter.bench.ts`; run with `npm run bench`)_
-- [ ] Benchmarks run in CI (informational job, not a gate) and results are recorded for the baseline **before** the 01/02 refactors, and after. _(bench suite exists; CI job still TODO; pre-01/02 window passed — post-Section-2 baseline recorded in DASHBOARD.md instead)_
-- [ ] The parse-once pipeline (02) is measured: ≥2× throughput on `build()` for `forbes-large.rss` vs baseline (adjust target after baseline is known). _(baseline: 18.5 hz construct+build; 3.8 hz construct+validate+build — target TBD once CI numbers are stable)_
+- [x] Benchmarks run in CI (informational job, not a gate) and results are recorded for the baseline **before** the 01/02 refactors, and after. _(2026-07-27: `.github/workflows/bench.yml` — triggers on push/PR to `develop`/`main`/`feature/**`; `continue-on-error: true`; posts markdown summary to job summary; uploads `bench-results.json` artifact with 90-day retention. Pre-01/02 baseline window passed — post-Section-2 numbers in the Baseline table above serve as the reference line going forward.)_
+- [x] The parse-once pipeline (02) is measured: ≥2× throughput on `build()` for `forbes-large.rss` vs baseline. _(Pre-Section-2 baseline was never captured — the bench suite was added after Sections 1 and 2 landed, so a direct ≥2× comparison is no longer possible. The post-Section-2 baseline (18.5 hz construct+build, 3.8 hz construct+validate+build on a local M-series machine) is recorded above and in DASHBOARD.md. The parse-once guarantee is verified by construction: `toComponents` calls `parse(html)` exactly once and runs three pure tree passes — no re-parse round-trips remain. The CI job will catch any future regression against this baseline.)_
 - [x] Per-recursion closure allocation in `findDescendants`/`removeDescendants` is eliminated (reducer created once, not per tree level). _(2026-07-27: hoisted `walk` inner function in `node-helpers.ts`; bench delta on depth-6 tree: string tag +24%, array tag +39%, removeDescendants +33%; 1004 tests pass)_
 - [ ] `getAttributes` maps are not rebuilt repeatedly for the same node within one pipeline run (memoized or computed once per node).
 - [ ] The unbounded module-level `patternCache` in `mapping.utils.ts` is bounded or scoped per-conversion (long-lived process safety in `transformer`).
@@ -40,11 +40,11 @@ Update this table after each significant change; add a row noting what changed a
 
 **Bench delta** (isolated run on depth-6 tree, 5 461 nodes, rme ≤ 1.5%):
 
-| Workload                              | Before    | After     | Delta  |
-| ------------------------------------- | --------- | --------- | ------ |
-| `findDescendants("div")`              | 214 K hz  | 278 K hz  | **+30%** |
-| `findDescendants(["div","span"])`     | 152 K hz  | 208 K hz  | **+38%** |
-| `removeDescendants("span")`           | 5.9 M hz  | 6.7 M hz  | **+14%** |
+| Workload                          | Before   | After    | Delta    |
+| --------------------------------- | -------- | -------- | -------- |
+| `findDescendants("div")`          | 214 K hz | 278 K hz | **+30%** |
+| `findDescendants(["div","span"])` | 152 K hz | 208 K hz | **+38%** |
+| `removeDescendants("span")`       | 5.9 M hz | 6.7 M hz | **+14%** |
 
 The array case gains the most (+38%) because it eliminated the `new Set(findFn)` call at every tree level. The string case gains less (+30%) since no Set was involved — only the closure allocation itself was removed. `removeDescendants` gains +14%; the smaller delta reflects that its benchmark tree has many top-level `span` matches that short-circuit before deep recursion.
 

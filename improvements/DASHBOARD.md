@@ -126,7 +126,7 @@ against the repo on 2026-07-24.
 
 **Implementation**
 
-- [x] Bench suite added (`build` on forbes-large, `toComponents` on large HTML, filter engine) + `npm run bench` _(`src/__bench__/rss-feed.bench.ts`, `html-mapper.bench.ts`, `mapping-filter.bench.ts`; run with `npm run bench` / save with `npm run bench:save`; CI informational job still TODO)_
+- [x] Bench suite added (`build` on forbes-large, `toComponents` on large HTML, filter engine) + `npm run bench` + informational CI job _(`src/__bench__/rss-feed.bench.ts`, `html-mapper.bench.ts`, `mapping-filter.bench.ts`; `npm run bench` / `npm run bench:save`; `.github/workflows/bench.yml` triggers on push/PR to `develop`/`main`/`feature/**`, `continue-on-error: true`, posts markdown summary, uploads artifact 90 days)_
 - [x] ~~Baseline numbers recorded **before** Sections 1–2 land~~ — window has passed; post-Section-2 numbers recorded as the baseline instead _(2026-07-27, Apple M-series, Node 20):_
       | Workload | hz | mean (ms) |
       |---|---|---|
