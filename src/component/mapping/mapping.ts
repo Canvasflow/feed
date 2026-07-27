@@ -180,6 +180,7 @@ export function reduceEmptyTextNode(nodes: Node[], node: Node): Node[] {
     return nodes;
   }
 
+  /* v8 ignore next -- ElementNode always has children; the fallthrough is a defensive guard */
   if (node.type === 'element' && node.children) {
     const newChildren = node.children.reduce(reduceEmptyTextNode, []);
     nodes.push({ ...node, children: newChildren });

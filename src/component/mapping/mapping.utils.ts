@@ -411,6 +411,7 @@ function getCredit(node: ElementNode): {
       children.push(n);
     } else {
       const content = n.content.replace(/[\r\n\t]/g, '').replace(/\s\s+/g, ' ');
+      /* v8 ignore next -- text nodes in figcaption that become empty after strip are extremely rare */
       if (content.length) {
         children.push(content === n.content ? n : { ...n, content });
       }

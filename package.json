@@ -35,19 +35,19 @@
     "build": "vp pack",
     "test": "vp test",
     "test:debug": "vp test --test-timeout=0 --no-file-parallelism",
-    "test:ui": "VP_VERSION=4.1.8 vp test watch --ui --open",
-    "test:unit": "VP_VERSION=4.1.8 vp test --ui --tags-filter=unit",
-    "test:integration": "VP_VERSION=4.1.8 vp test --ui --tags-filter=integration",
-    "test:todo": "VP_VERSION=4.1.8 vp test --ui --tags-filter=todo",
-    "test:broken": "VP_VERSION=4.1.8 vp test --ui --tags-filter=broken",
+    "test:ui": "VP_VERSION=4.1.10 vp test watch --ui --open",
+    "test:unit": "VP_VERSION=4.1.10 vp test --ui --tags-filter=unit",
+    "test:integration": "VP_VERSION=4.1.10 vp test --ui --tags-filter=integration",
+    "test:todo": "VP_VERSION=4.1.10 vp test --ui --tags-filter=todo",
+    "test:broken": "VP_VERSION=4.1.10 vp test --ui --tags-filter=broken",
     "test:snapshot": "vp test src/**/*.snapshot.test.ts",
     "test:snapshot:update": "vp test --update src/**/*.snapshot.test.ts",
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",
-    "coverage": "VP_VERSION=4.1.8 vp test --coverage",
-    "coverage:ui": "VP_VERSION=4.1.8 vp test watch --coverage --ui --open",
-    "bench": "VP_VERSION=4.1.8 vp test bench",
-    "bench:save": "VP_VERSION=4.1.8 vp test bench --outputJson bench-results.json",
+    "coverage": "VP_VERSION=4.1.10 vp test --coverage",
+    "coverage:ui": "VP_VERSION=4.1.10 vp test watch --coverage --ui --open",
+    "bench": "VP_VERSION=4.1.10 vp test bench",
+    "bench:save": "VP_VERSION=4.1.10 vp test bench --outputJson bench-results.json",
     "commit": "cz",
     "format": "vp fmt .",
     "changelog": "node scripts/update-changelog.mjs",
@@ -63,30 +63,30 @@
     }
   },
   "devDependencies": {
-    "@commitlint/cli": "^21.2.0",
+    "@commitlint/cli": "^21.2.1",
     "@commitlint/config-conventional": "^21.1.0",
     "@types/he": "^1.2.3",
     "@types/luxon": "^3.7.2",
     "@types/node": "^26.1.1",
-    "@vitest/coverage-v8": "^4.1.8",
-    "@vitest/ui": "^4.1.8",
+    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/ui": "^4.1.10",
     "cz-conventional-changelog": "^3.3.0",
     "typescript": "~6.0.3",
-    "vite-plus": "^0.1.24"
+    "vite-plus": "^0.2.6"
   },
   "engines": {
     "node": ">=20.19.2"
   },
   "dependencies": {
-    "fast-xml-parser": "^5.5.6",
+    "fast-xml-parser": "^5.10.1",
     "he": "^1.2.0",
-    "linkedom": "^0.18.12",
+    "linkedom": "^0.18.13",
     "luxon": "^3.6.1",
     "zod": "^4.3.6"
   },
   "overrides": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.24",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@0.1.24",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.6",
+    "vitest": "4.1.10",
     "commitizen": {
       "lodash": "^4.17.22",
       "inquirer": "^9.3.7"
