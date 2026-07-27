@@ -55,6 +55,7 @@ Added `MAX_PATTERN_CACHE_SIZE = 500`. Before inserting a new entry, the oldest k
 ### 2026-07-27 — Depth guard in `fromNode` (`mapping.ts`)
 
 Added `MAX_FROMNODE_DEPTH = 256` (exported) and a `_depth = 0` parameter to `fromNode`. Returns `null` immediately when `_depth > MAX_FROMNODE_DEPTH`; the recursive child call passes `_depth + 1`. Content beyond 256 levels is silently dropped — consistent with the no-throw contract from Section 3. Two fuzz tests in `src/component/mapping/__tests__/depth-guard.test.ts`:
+
 - 500-level nesting does not throw
 - Shallow content at depth 0 survives; content nested beyond 256 is absent (not an error)
 

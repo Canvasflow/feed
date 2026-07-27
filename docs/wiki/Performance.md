@@ -7,35 +7,35 @@ benchmarks, and known limits of `@canvasflow/feed`.
 
 Recorded **2026-07-27** on Apple M-series, Node 20. Run with `npm run bench`.
 
-| Workload                                                          | hz        | mean (ms) |
-| ----------------------------------------------------------------- | --------- | --------- |
-| `RSSFeed` construct + `validate()` — forbes-large.rss (~1.1 MB)   | ~19.5     | ~51       |
-| `RSSFeed` construct + `build()` — forbes-large.rss                | ~18.5     | ~54       |
-| `RSSFeed` construct + `validate()` + `build()` — forbes-large.rss | ~3.8      | ~266      |
-| `RSSFeed` construct + `build()` — forbes.rss (~5 items)           | ~33       | ~30       |
-| `HTMLMapper.toComponents()` — large HTML (~2.8 MB), no params     | ~2.5      | ~404      |
-| `HTMLMapper.toComponents()` — large HTML, 20 mappings + 10 excl.  | ~3.2      | ~308      |
-| `HTMLMapper.toComponents()` — small HTML (~26 KB), no params      | ~175      | ~5.7      |
+| Workload                                                          | hz    | mean (ms) |
+| ----------------------------------------------------------------- | ----- | --------- |
+| `RSSFeed` construct + `validate()` — forbes-large.rss (~1.1 MB)   | ~19.5 | ~51       |
+| `RSSFeed` construct + `build()` — forbes-large.rss                | ~18.5 | ~54       |
+| `RSSFeed` construct + `validate()` + `build()` — forbes-large.rss | ~3.8  | ~266      |
+| `RSSFeed` construct + `build()` — forbes.rss (~5 items)           | ~33   | ~30       |
+| `HTMLMapper.toComponents()` — large HTML (~2.8 MB), no params     | ~2.5  | ~404      |
+| `HTMLMapper.toComponents()` — large HTML, 20 mappings + 10 excl.  | ~3.2  | ~308      |
+| `HTMLMapper.toComponents()` — small HTML (~26 KB), no params      | ~175  | ~5.7      |
 
 > Numbers vary by hardware. Pin Node version in CI for repeatable comparisons
 > (`node: '20'` in the bench workflow). Re-run with `npm run bench:save` to
 > capture a baseline before making changes; use `--compare bench-results.json`
 > afterwards to diff.
 
-Note: calling `validate()` *and* `build()` together is slow because each
+Note: calling `validate()` _and_ `build()` together is slow because each
 invokes `fast-xml-parser` independently. If you only need `build()`, skip
 `validate()` or check `rss.errors` post-build (they are populated during
 `build()` as a side-effect).
 
 ## Complexity
 
-| Operation | Dominant cost | Complexity |
-| --------- | ------------- | ---------- |
-| `RSSFeed.build()` | `fast-xml-parser` XML parse | O(n) in document size |
-| `HTMLMapper.toComponents()` | HTML parse + 3 tree passes + `fromNode` traversal | O(n · m) where n = nodes, m = mappings/excludes |
-| `filterAnyMapping` / `filterAllMapping` | linear scan over `filters[]` per node | O(m) per node |
-| `findDescendants` / `removeDescendants` | full subtree traversal | O(n) in subtree size |
-| `patternCache` lookup | Map get/set | O(1) amortized |
+| Operation                               | Dominant cost                                     | Complexity                                      |
+| --------------------------------------- | ------------------------------------------------- | ----------------------------------------------- |
+| `RSSFeed.build()`                       | `fast-xml-parser` XML parse                       | O(n) in document size                           |
+| `HTMLMapper.toComponents()`             | HTML parse + 3 tree passes + `fromNode` traversal | O(n · m) where n = nodes, m = mappings/excludes |
+| `filterAnyMapping` / `filterAllMapping` | linear scan over `filters[]` per node             | O(m) per node                                   |
+| `findDescendants` / `removeDescendants` | full subtree traversal                            | O(n) in subtree size                            |
+| `patternCache` lookup                   | Map get/set                                       | O(1) amortized                                  |
 
 The dominant cost in a full `build()` is the XML parse + `fast-xml-parser`'s
 attribute extraction, not the component mapping. `toComponents` on large HTML
