@@ -45,7 +45,25 @@ export function sanitizeContentHtml(node: Node): string {
   });
 }
 
+// Evict the oldest entry once this limit is reached. Prevents unbounded
+// growth in long-lived processes where consumer-supplied params introduce
+// many unique patterns over thousands of feed conversions.
+const MAX_PATTERN_CACHE_SIZE = 500;
 const patternCache = new Map<string, RegExp | null>();
+
+// Cache the attribute Map for each ElementNode reference. Entries are held
+// weakly, so they are GC'd with the node — no manual cleanup is needed and
+// the cache is implicitly scoped to a single toComponents run at runtime.
+const nodeAttributesCache = new WeakMap<object, Map<string, string>>();
+
+function cachedGetAttributes(node: ElementNode): Map<string, string> {
+  let map = nodeAttributesCache.get(node);
+  if (!map) {
+    map = getAttributes(node.attributes);
+    nodeAttributesCache.set(node, map);
+  }
+  return map;
+}
 
 /**
  * Safely test a value against an attribute pattern filter's regular
@@ -64,6 +82,9 @@ export function matchesPattern(value: string, pattern: string): boolean {
       regex = new RegExp(pattern);
     } catch {
       regex = null;
+    }
+    if (patternCache.size >= MAX_PATTERN_CACHE_SIZE) {
+      patternCache.delete(patternCache.keys().next().value!);
     }
     patternCache.set(pattern, regex);
   }
@@ -306,7 +327,7 @@ export function filterAnyMapping(
   filters: Filter[]
 ): boolean {
   const { tagName } = node;
-  const attributes = getAttributes(node.attributes);
+  const attributes = cachedGetAttributes(node);
   return filters.some((filter) => matchesFilter(tagName, attributes, filter));
 }
 
@@ -324,7 +345,7 @@ export function filterAllMapping(
   // If there aren't any filter, this is invalid
   if (!filters.length) return false;
   const { tagName } = node;
-  const attributes = getAttributes(node.attributes);
+  const attributes = cachedGetAttributes(node);
   return filters.every((filter) => matchesFilter(tagName, attributes, filter));
 }
 
@@ -370,7 +391,7 @@ function getCredit(node: ElementNode): {
 
   for (const n of node.children) {
     if (n.type === 'element') {
-      const attributes = getAttributes(n.attributes);
+      const attributes = cachedGetAttributes(n);
       const role = attributes.get('role');
       const classes = attributes.get('class')?.split(' ') ?? [];
       if (
@@ -442,7 +463,7 @@ export function filterClassNameDescendants(className: string): NodeFilterFn {
   return (node: Node): boolean => {
     /* v8 ignore next -- findDescendants only ever passes element nodes */
     if (node.type !== 'element') return false;
-    const classNames = getAttributes(node.attributes).get('class');
+    const classNames = cachedGetAttributes(node).get('class');
     if (!classNames) return false;
     return classNames.split(' ').includes(className);
   };
