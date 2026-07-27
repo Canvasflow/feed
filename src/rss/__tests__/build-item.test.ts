@@ -1,6 +1,7 @@
 import { test, expect, describe } from 'vite-plus/test';
 
 import { buildItem, type BuildItemContext } from '../rss-feed';
+import { clone } from '../rss-types';
 import type { ParsedItem } from '../parsed-xml';
 
 const ctx: BuildItemContext = {};
@@ -202,5 +203,77 @@ describe('buildItem — does not mutate its input', () => {
     expect(item['dc:creator']).toBe('Jane Doe, John Smith');
     expect(input['dc:creator']).toBe(before);
     expect(Array.isArray(input['dc:creator'])).toBe(true);
+  });
+});
+
+describe('clone', () => {
+  const tags = { tags: ['unit', 'rss'] };
+
+  test('returns a deep copy with all arrays unfrozen', tags, () => {
+    const item = buildItem(
+      { ...base, pubDate: 'Mon, 01 Jan 2024 00:00:00 GMT' },
+      ctx
+    );
+    const mutable = clone(item);
+
+    expect(mutable.title).toBe(item.title);
+    expect(mutable.errors).not.toBe(item.errors);
+    expect(mutable.warnings).not.toBe(item.warnings);
+    expect(mutable.enclosure).not.toBe(item.enclosure);
+    expect(mutable.mediaGroup).not.toBe(item.mediaGroup);
+    expect(mutable.mediaContent).not.toBe(item.mediaContent);
+    expect(mutable.components).not.toBe(item.components);
+
+    // Mutating the clone does not affect the original
+    mutable.title = 'changed';
+    expect(item.title).toBe('Test item');
+  });
+
+  test('clones category array when present', tags, () => {
+    const item = buildItem({ ...base, category: ['food', 'travel'] }, ctx);
+    const mutable = clone(item);
+    expect(mutable.category).toEqual(['food', 'travel']);
+    expect(mutable.category).not.toBe(item.category);
+  });
+
+  test('handles item with no category', tags, () => {
+    const item = buildItem(base, ctx);
+    const mutable = clone(item);
+    // category with no input comes back as an empty array or undefined — not undefined only if empty array
+    expect(mutable.category == null || Array.isArray(mutable.category)).toBe(
+      true
+    );
+  });
+
+  test('clones enclosure errors/warnings', tags, () => {
+    const input: ParsedItem = {
+      ...base,
+      enclosure: [
+        {
+          '@_url': 'https://example.com/a.mp3',
+          '@_type': 'audio/mpeg',
+          '@_length': 1000,
+        },
+      ],
+    };
+    const item = buildItem(input, ctx);
+    const mutable = clone(item);
+    expect(mutable.enclosure[0]).not.toBe(item.enclosure[0]);
+    expect(mutable.enclosure[0]?.errors).not.toBe(item.enclosure[0]?.errors);
+  });
+
+  test('clones mediaContent errors/warnings', tags, () => {
+    const input: ParsedItem = {
+      ...base,
+      'media:content': [
+        { '@_url': 'https://example.com/img.jpg', '@_type': 'image/jpeg' },
+      ],
+    };
+    const item = buildItem(input, ctx);
+    const mutable = clone(item);
+    expect(mutable.mediaContent[0]).not.toBe(item.mediaContent[0]);
+    expect(mutable.mediaContent[0]?.errors).not.toBe(
+      item.mediaContent[0]?.errors
+    );
   });
 });

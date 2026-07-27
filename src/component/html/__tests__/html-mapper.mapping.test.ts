@@ -1,14 +1,18 @@
 import { join } from 'path';
 import { readFileSync } from 'fs';
 import { test, expect, describe, beforeEach } from 'vite-plus/test';
-import { HTMLMapper } from '../html-mapper';
+import { HTMLMapper, splitParagraphImages } from '../html-mapper';
 import {
   type ComponentMapping,
   type Mapping,
   isValidParams,
   isValidMapping,
 } from '../../mapping/mapping';
-import { type TextComponent, type ContainerComponent } from '../../component';
+import {
+  type TextComponent,
+  type ContainerComponent,
+  type ImageComponent,
+} from '../../component';
 
 describe('Mapping', () => {
   test(
@@ -661,4 +665,52 @@ describe('HTML Articles', () => {
       expect(components.length).toBe(117);
     }
   );
+});
+
+describe('splitParagraphImages', () => {
+  const tags = { tags: ['unit', 'html'] };
+
+  test('lifts an img out of a p that contains only the image', tags, () => {
+    const result = splitParagraphImages(
+      '<div><p><img src="a.jpg" alt="x" /></p></div>',
+      'p'
+    );
+    expect(result).toContain('<img');
+    expect(result).not.toMatch(/<p[^>]*><img/);
+  });
+
+  test('splits text before and after an img into separate p tags', tags, () => {
+    const result = splitParagraphImages(
+      '<div><p>Before<img src="a.jpg" />After</p></div>',
+      'p'
+    );
+    expect(result).toContain('Before');
+    expect(result).toContain('After');
+    expect(result).toContain('<img');
+    expect(result).not.toMatch(/<p[^>]*>[^<]*<img/);
+  });
+
+  test('preserves p attributes on the split fragments', tags, () => {
+    const result = splitParagraphImages(
+      '<div><p class="body">Text<img src="a.jpg" /></p></div>',
+      'p'
+    );
+    expect(result).toContain('class="body"');
+  });
+
+  test('leaves a p without an img unchanged', tags, () => {
+    const result = splitParagraphImages('<div><p>No image here</p></div>', 'p');
+    expect(result).toContain('<p>No image here</p>');
+  });
+
+  test('works end-to-end through HTMLMapper.toComponents', tags, () => {
+    const components = HTMLMapper.toComponents(
+      '<p>Caption<img src="a.jpg" alt="photo" />After</p>'
+    );
+    const image = components.find((c) => c.component === 'image') as
+      | ImageComponent
+      | undefined;
+    expect(image).toBeDefined();
+    expect(image?.imageurl).toBe('a.jpg');
+  });
 });

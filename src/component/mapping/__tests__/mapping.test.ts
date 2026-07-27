@@ -7,9 +7,27 @@ import {
   isValidParams,
   validateParams,
   processTextLinks,
+  filterEmptyTextNode,
 } from '../mapping';
+import {
+  matchesPattern,
+  filterAllMapping,
+  excludeNode,
+} from '../mapping.utils';
+import {
+  toTikTok,
+  toInfogram,
+  toYoutube,
+  toVimeo,
+  toDailymotion,
+} from '../mapping.embeds';
 import type { GalleryComponent } from '../../component';
+import type { ElementNode } from '../../node/node-helpers';
 import type { FeedIssue } from '../../../feed-issue';
+
+function hasMessage(issues: readonly FeedIssue[], message: string): boolean {
+  return issues.some((issue) => issue.message === message);
+}
 
 const tags = { tags: ['unit', 'html'] };
 
@@ -1005,4 +1023,153 @@ describe('Mapping — validators and helpers', () => {
       ).toContain('href');
     }
   );
+});
+
+// ─── Embed URL builders (direct calls) ──────────────────────────────────────
+
+describe('Embed URL builders', () => {
+  const tags = { tags: ['unit', 'html'] };
+
+  test('toTikTok parses a valid video URL', tags, () => {
+    const c = toTikTok(
+      new URL('https://www.tiktok.com/@someuser/video/1234567890')
+    );
+    expect(c.params.username).toBe('@someuser');
+    expect(c.params.id).toBe('1234567890');
+    expect(c.errors).toHaveLength(0);
+  });
+
+  test('toTikTok rejects an invalid video URL', tags, () => {
+    const c = toTikTok(new URL('https://www.tiktok.com/@someuser'));
+    expect(hasMessage(c.errors, 'Invalid TikTok video URL format.')).toBe(true);
+  });
+
+  test('toInfogram extracts parent_url when present', tags, () => {
+    const c = toInfogram(
+      new URL('https://e.infogram.com/abc-123?parent_url=https://news.example')
+    );
+    expect(c.params.id).toBe('abc-123');
+    expect(c.params.parentUrl).toBe('https://news.example');
+  });
+
+  test('toInfogram falls back to empty parent_url', tags, () => {
+    const c = toInfogram(new URL('https://e.infogram.com/abc-123'));
+    expect(c.params.parentUrl).toBe('');
+  });
+
+  test('toYoutube rejects a non-youtube URL', tags, () => {
+    const c = toYoutube(new URL('https://example.com/watchme'));
+    expect(hasMessage(c.errors, 'Invalid Youtube video URL format.')).toBe(
+      true
+    );
+  });
+
+  test('toYoutube rejects an invalid video id', tags, () => {
+    const c = toYoutube(new URL('https://youtu.be/short'));
+    expect(hasMessage(c.errors, 'Invalid YouTube video ID.')).toBe(true);
+  });
+
+  test('toVimeo accepts a valid vimeo URL', tags, () => {
+    const c = toVimeo(new URL('https://vimeo.com/123456789'));
+    expect(c.errors).toHaveLength(0);
+    expect(c.params.id).toBe('123456789');
+  });
+
+  test('toVimeo rejects a non-vimeo URL', tags, () => {
+    const c = toVimeo(new URL('https://example.com/123456789'));
+    expect(c.errors.length).toBeGreaterThan(0);
+  });
+
+  test('toDailymotion builds a component from a URL', tags, () => {
+    const c = toDailymotion(
+      new URL('https://www.dailymotion.com/video/x7tgad0')
+    );
+    expect(c.component).toBe('video');
+  });
+});
+
+// ─── Mapping utilities (direct calls) ───────────────────────────────────────
+
+describe('Mapping.utils direct branches', () => {
+  const tags = { tags: ['unit', 'html'] };
+
+  test(
+    'matchesPattern caches and returns false for an invalid regex',
+    tags,
+    () => {
+      expect(matchesPattern('anything', '([')).toBe(false);
+      expect(matchesPattern('anything', '([')).toBe(false);
+    }
+  );
+
+  test('matchesPattern matches a valid regex', tags, () => {
+    expect(matchesPattern('hello-world', '^hello')).toBe(true);
+  });
+
+  test('filterAllMapping returns false when there are no filters', tags, () => {
+    const node: ElementNode = { type: 'element', tagName: 'div', children: [] };
+    expect(filterAllMapping(node, [])).toBe(false);
+  });
+
+  test('excludeNode matches via an any-filter', tags, () => {
+    const node: ElementNode = {
+      type: 'element',
+      tagName: 'div',
+      children: [],
+      attributes: [{ key: 'class', value: 'ad' }],
+    };
+    const excluded = excludeNode(node, [
+      {
+        match: 'any',
+        filters: [{ type: 'class', match: 'any', items: ['ad'] }],
+      },
+    ]);
+    expect(excluded).toBe(true);
+  });
+});
+
+describe('Mapping core direct branches', () => {
+  test(
+    'filterEmptyTextNode drops empty text nodes',
+    { tags: ['unit', 'html'] },
+    () => {
+      expect(filterEmptyTextNode({ type: 'text', content: '' })).toBe(false);
+      expect(filterEmptyTextNode({ type: 'text', content: 'hi' })).toBe(true);
+      expect(filterEmptyTextNode({ type: 'comment', content: 'x' })).toBe(
+        false
+      );
+    }
+  );
+});
+
+describe('AttributePatternFilterSchema regex validation', () => {
+  const unitTags = { tags: ['unit'] };
+
+  test('isValidParams rejects an invalid regex pattern', unitTags, () => {
+    expect(
+      isValidParams({
+        mappings: [
+          {
+            match: 'any',
+            filters: [{ type: 'attribute', key: 'class', pattern: '[invalid' }],
+            component: 'body',
+          },
+        ],
+      })
+    ).toBe(false);
+  });
+
+  test('isValidParams accepts a valid regex pattern', unitTags, () => {
+    expect(
+      isValidParams({
+        mappings: [
+          {
+            match: 'any',
+            filters: [{ type: 'attribute', key: 'class', pattern: '^valid$' }],
+            component: 'body',
+          },
+        ],
+      })
+    ).toBe(true);
+  });
 });

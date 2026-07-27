@@ -126,7 +126,7 @@ against the repo on 2026-07-24.
 
 **Implementation**
 
-- [x] Bench suite added (`build` on forbes-large, `toComponents` on large HTML, filter engine) + `npm run bench` + informational CI job _(`src/__bench__/rss-feed.bench.ts`, `html-mapper.bench.ts`, `mapping-filter.bench.ts`; `npm run bench` / `npm run bench:save`; `.github/workflows/bench.yml` triggers on push/PR to `develop`/`main`/`feature/**`, `continue-on-error: true`, posts markdown summary, uploads artifact 90 days)_
+- [x] Bench suite added (`build` on forbes-large, `toComponents` on large HTML, filter engine) + `npm run bench` + informational CI job _(`src/__bench__/rss-feed.bench.ts`, `html-mapper.bench.ts`, `mapping-filter.bench.ts`; `npm run bench` / `npm run bench:save`; `.github/workflows/bench.yml` triggers on push/PR to `develop`/`main`/`feature/**`, `continue-on-error: true`, posts markdown summary, uploads artifact 90 days. TS error fixed 2026-07-27: `mapping-filter.bench.ts` was importing `filterAllMapping`/`filterAnyMapping` from `mapping.ts` where they are internal; corrected to import from `mapping.utils.ts` where they are exported.)_
 - [x] ~~Baseline numbers recorded **before** Sections 1–2 land~~ — window has passed; post-Section-2 numbers recorded as the baseline instead _(2026-07-27, Apple M-series, Node 20):_
       | Workload | hz | mean (ms) |
       |---|---|---|
@@ -146,7 +146,7 @@ against the repo on 2026-07-24.
 - [x] Heap check after large-feed build: no document-scale retained memory; findings documented — _`node --expose-gc` run: 5 isolated `RSSFeed.build(forbes-large.rss)` calls post-GC retain ~2 MB each; consistent with V8 JIT warmup, not document-scale leaks. 1.1 MB XML source and parsed node trees are collected after each call. Findings in `docs/wiki/Performance.md` and `05-performance.md`._
 - [x] Performance note added to the wiki — _`docs/wiki/Performance.md` created (throughput table, complexity table, memory behaviour, running benchmarks, known limits); `_Sidebar.md` updated with link under Operations._
 
-## Section 6 — Testing Strategy ([06-testing.md](06-testing.md))
+## Section 6 — Testing Strategy ✅ ([06-testing.md](06-testing.md))
 
 > ⚠️ The **safety net** item below is a prerequisite for Sections 1 and 2.
 
@@ -159,15 +159,15 @@ against the repo on 2026-07-24.
 
 **Implementation**
 
-- [ ] **Safety net:** snapshot tests over every `src/support/feeds/*.rss` (`build()`) and every HTML fixture (`toComponents`), committed as baseline
-- [ ] No-throw property tests (feeds + HTML + params)
-- [ ] Engine invariant properties (allow-list compliance of output `html`, filter laws)
-- [ ] `integration`/`recipe` tests run offline via HTTP mocking; `skip: true` removed; opt-in live suite only
-- [ ] `broken` tag emptied (fixed or converted to `test.fails`); `todo` tag → `test.todo`
-- [ ] `*.coverage.test.ts` consolidated into meaningful tests as dead branches are deleted
-- [ ] Fixture-intake script (`scripts/add-fixture.mjs`) working and documented
-- [ ] Coverage thresholds still met; `v8 ignore` comments re-audited
-- [ ] `docs/wiki/Testing.md` updated with the test-layer taxonomy
+- [x] **Safety net:** snapshot tests over every `src/support/feeds/*.rss` (`build()`) and every HTML fixture (`toComponents`), committed as baseline _(RSS: `rss-feed.snapshot.test.ts` — dynamic, 413 K-line snap file. HTML: `html-mapper.snapshot.test.ts` — 5 fixtures (3 from `feeds/`, 2 from `html/`) snapshotted via `toComponents`; 5 snapshots written 2026-07-27.)_
+- [x] No-throw property tests (feeds + HTML + params) _(`rss-feed.fuzz.test.ts`: 17 edge cases + 150 random XML strings + 100 random params; `html-mapper.fuzz.test.ts`: 42 edge cases + 200 random strings — both verify no-throw contract for all three categories)_
+- [x] Engine invariant properties (allow-list compliance of output `html`, filter laws) _(`html-mapper.invariants.test.ts` — 2026-07-27: allow-list compliance (dangerous tags + textAllowedTags) verified against all 5 HTML fixtures; filter law (`match:'all' ⊆ match:'any'`) verified for both mappings and excludes with multiple filter types. 1054 tests pass.)_
+- [x] `integration`/`recipe` tests run offline via HTTP mocking; `skip: true` removed; opt-in live suite only _(2026-07-27: 3 Recipe tests converted from `RSSFeed.getRecipeFromUrl` (network) to `getRecipeFromUrl` with injected fetch stubs reading fixtures under `src/support/http/`. Tags changed from `['integration', 'recipe']` to `['unit', 'recipe']`. `describe.skip('The English Home')` converted to `describe` — tests read local files, no network. `skip: true` removed from both `integration` and `recipe` tags in `vite.config.ts`. 1054 tests pass.)_
+- [x] `broken` tag emptied (fixed or converted to `test.fails`); `todo` tag → `test.todo` _(no tests in the codebase are tagged `broken` or `todo`; tags are defined in `vite.config.ts` but unused — the `describe.skip('The English Home')` at `rss-feed.test.ts:1506` is not tagged `broken`)_
+- [x] `*.coverage.test.ts` consolidated into meaningful tests as dead branches are deleted _(2026-07-27: All three files dissolved — `rss-feed.coverage.test.ts` merged into `rss-feed.test.ts`; `html-mapper.coverage.test.ts` split between `html-mapper.mapping.test.ts` (splitParagraphImages) and `html-mapper.text.test.ts` (href handling); `mapping.coverage.test.ts` distributed to `mapping.test.ts` (embed builders, utils, schema), `html-mapper.container.test.ts` (button edge cases, columns/live/link container, figureContainer), and `html-mapper.media.test.ts` (media error paths, direct media calls). 1054 tests pass in 26 files.)_
+- [x] Fixture-intake script (`scripts/add-fixture.mjs`) working and documented _(`scripts/add-fixture.mjs` created 2026-07-27 — accepts a URL or file path, derives the output name from the URL/filename, fetches or reads the content, writes to `src/support/feeds/`, prints next steps including the snapshot-update command.)_
+- [x] Coverage thresholds still met; `v8 ignore` comments re-audited _(2026-07-27: 98.76%/95.8%/97.75%/99.17% — all ≥ 95%. Re-audit: removed the dead `!attribs` branch (6 lines + stale comment) in `mapping.utils.ts:processTextLinks` — `attribs` is typed `Record<string,string>` in the custom sanitize-html and can never be null/undefined. Remaining 37 comments are structural invariants (pre-filtered arrays, AST guarantees, parser contracts) that remain valid. `clone` function in `rss-types.ts` had only type-level tests; 5 runtime tests added to `build-item.test.ts`.)_
+- [x] `docs/wiki/Testing.md` updated with the test-layer taxonomy _(2026-07-27: added "Test layers" table (unit / no-throw / snapshot / integration-offline / live), "Adding a new test" guide, "Snapshot review discipline" section, and "Fixture curation" section.)_
 
 ## Section 7 — Packaging, Publishing & DX ([07-packaging.md](07-packaging.md))
 
