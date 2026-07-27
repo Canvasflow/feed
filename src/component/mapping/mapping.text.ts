@@ -59,7 +59,7 @@ export function toText(
   if (role) {
     // If the role was set and is valid we apply it
     if (isValidTextRole(role)) {
-      component = role as TextType;
+      component = role;
     } else {
       // If the role was invalid we use body as fallback
       warnings.push(

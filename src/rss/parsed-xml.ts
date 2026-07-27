@@ -90,8 +90,14 @@ export interface ParsedItem {
   'cf:hasAffiliateLinks'?: unknown;
   'cf:isSponsored'?: unknown;
   'cf:isPaid'?: unknown;
-  'cf:liveCoverageState'?: { '@_state'?: unknown };
-  'cf:thumbnail'?: Record<string, unknown>;
+  'cf:liveCoverageState'?: { '@_state'?: string };
+  'cf:thumbnail'?: {
+    '@_url'?: string;
+    '@_width'?: string;
+    '@_height'?: string;
+    '@_type'?: string;
+    '@_fileSize'?: string;
+  };
   errors?: FeedIssue[];
   warnings?: FeedIssue[];
   [key: string]: unknown;

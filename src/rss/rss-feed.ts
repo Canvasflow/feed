@@ -30,6 +30,7 @@ import {
 } from '../component/mapping/mapping.schema';
 import { sanitizeHTML as sanitizeHtml } from '../component/html/sanitize-html';
 import type { ParsedXml, ParsedItem } from './parsed-xml';
+import { textOf } from './narrow';
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -510,13 +511,7 @@ export class RSSFeed {
 export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
   const { origin, root, params } = ctx;
 
-  let guid: string | undefined = undefined;
-  if (typeof item.guid === 'string') {
-    guid = item.guid;
-  } else if (typeof item.guid === 'object' && item?.guid) {
-    const g = item.guid as { '#text'?: unknown };
-    guid = `${g['#text']}`;
-  }
+  const guid = typeof item.guid === 'string' ? item.guid : textOf(item.guid);
   const title = item.title?.trim();
   const description = item.description
     ? removeHTMLTags(`${item.description}`)
@@ -555,21 +550,19 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
     }
   }
 
-  const category: Array<string | { '#text': string }> = item.category
-    ? toArray(item.category).map((c) =>
-        typeof c === 'string' || typeof c === 'number'
-          ? `${c}`.trim()
-          : (c as { '#text': string })
-      )
+  const category: string[] = item.category
+    ? toArray(item.category)
+        .map((c) =>
+          typeof c === 'string' || typeof c === 'number'
+            ? `${c}`.trim()
+            : (textOf(c) ?? '').trim()
+        )
+        .filter(Boolean)
     : [];
 
   const dcCreator = item['dc:creator']
     ? toArray(item['dc:creator'])
-        .map((c) =>
-          typeof c === 'string'
-            ? c.trim()
-            : `${(c as { '#text'?: unknown })['#text'] ?? ''}`.trim()
-        )
+        .map((c) => (typeof c === 'string' ? c : (textOf(c) ?? '')).trim())
         .filter(Boolean)
         .join(', ')
     : undefined;
@@ -578,12 +571,7 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
   const response: Item = {
     guid,
     title: title ? decodeEntities(title.trim()) : '',
-    category: category
-      .filter((i) => !!i)
-      .map((c) => {
-        if (typeof c === 'string') return c.trim();
-        return c['#text'].trim();
-      }),
+    category,
     description: description
       ? removeHTMLTags(decodeEntities(description))
       : description,
@@ -643,13 +631,7 @@ function buildThumbnail(
 ): Thumbnail | undefined {
   if (!item['cf:thumbnail']) return undefined;
 
-  const cfThumbnail = item['cf:thumbnail'] as {
-    '@_url'?: string;
-    '@_width'?: string;
-    '@_height'?: string;
-    '@_type'?: string;
-    '@_fileSize'?: string;
-  };
+  const cfThumbnail = item['cf:thumbnail'];
   const thumbnail: Thumbnail = {
     url: cfThumbnail['@_url'] ?? '',
     width: cfThumbnail['@_width']
@@ -761,9 +743,7 @@ function buildCanvasflowFlags(
   processCanvasflowBooleanTag(item, flags, 'cf:isPaid');
 
   if (item['cf:liveCoverageState']) {
-    const liveCoverageState = item['cf:liveCoverageState'] as {
-      '@_state'?: string;
-    };
+    const liveCoverageState = item['cf:liveCoverageState'];
     flags['cf:liveCoverageState'] =
       liveCoverageState['@_state'] === 'live' ||
       liveCoverageState['@_state'] === 'completed'
@@ -783,7 +763,7 @@ function processCanvasflowBooleanTag(
     return;
   }
   if (typeof item[tagName] === 'boolean') {
-    response[tagName] = item[tagName] as boolean;
+    response[tagName] = item[tagName];
     return;
   }
 
@@ -798,32 +778,29 @@ function processCanvasflowBooleanTag(
     return;
   }
 
-  if (
-    item[tagName] !== null &&
-    typeof (item[tagName] as { [key: string]: unknown })['#text'] === 'string'
-  ) {
-    response.warnings.push(
-      warningIssue(
-        'INVALID_BOOLEAN_TAG',
-        `Attributes are not allowed for the '${tagName}' property.`,
-        tagName
-      )
-    );
-    const text = (item[tagName] as { [key: string]: unknown })[
-      '#text'
-    ] as string;
-    /* v8 ignore next 4 -- the parser coerces "true"/"false" text to booleans */
-    if (text === 'true' || text === 'false') {
-      response[tagName] = text === 'true';
-      return;
+  if (item[tagName] !== null) {
+    const text = textOf(item[tagName]);
+    if (text !== undefined) {
+      response.warnings.push(
+        warningIssue(
+          'INVALID_BOOLEAN_TAG',
+          `Attributes are not allowed for the '${tagName}' property.`,
+          tagName
+        )
+      );
+      /* v8 ignore next 4 -- the parser coerces "true"/"false" text to booleans */
+      if (text === 'true' || text === 'false') {
+        response[tagName] = text === 'true';
+        return;
+      }
+      response.errors.push(
+        errorIssue(
+          'INVALID_BOOLEAN_TAG',
+          `Invalid value for '${tagName}': "${text}". Expected "true" or "false".`,
+          tagName
+        )
+      );
     }
-    response.errors.push(
-      errorIssue(
-        'INVALID_BOOLEAN_TAG',
-        `Invalid value for '${tagName}': "${text}". Expected "true" or "false".`,
-        tagName
-      )
-    );
   }
 }
 

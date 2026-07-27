@@ -278,12 +278,13 @@ export function fromNode(
     const trimmed = escapeText(trimAsciiWhitespace(node.content));
     const text = params?.ignoreParagraphWrap ? trimmed : `<p>${trimmed}</p>`;
 
-    return {
+    const bodyComponent: TextComponent = {
       component: 'body',
       errors: [],
       warnings: [],
       text,
-    } as TextComponent;
+    };
+    return bodyComponent;
   }
 
   const { tagName } = node;
@@ -332,7 +333,7 @@ export function fromNode(
   if (isTikTokNode(node)) {
     const cite = attributes.get('cite');
     if (!cite || !URL.canParse(cite)) {
-      return {
+      const invalidTikTok: TikTokComponent = {
         component: 'video',
         vidtype: 'tiktok',
         params: {
@@ -353,7 +354,8 @@ export function fromNode(
                 'cite'
               ),
         ],
-      } as TikTokComponent;
+      };
+      return invalidTikTok;
     }
     const tiktokComponent = toTikTok(new URL(cite));
     if (tagName) {

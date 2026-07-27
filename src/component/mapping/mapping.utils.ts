@@ -408,16 +408,17 @@ function getCredit(node: ElementNode): {
 export function fromFigcaption(node: ElementNode): FigcaptionResponse {
   let caption: string | undefined;
   let credit: string | undefined;
-  const figcaptionNodes =
+  const figcaptionNodes: ElementNode[] =
     node.tagName === 'figcaption'
       ? [node]
       : node.children.filter(
-          (n) => n.type === 'element' && n.tagName === 'figcaption'
+          (n): n is ElementNode =>
+            n.type === 'element' && n.tagName === 'figcaption'
         );
   for (const n of figcaptionNodes) {
-    const result = getCredit(n as ElementNode);
+    const result = getCredit(n);
     credit = result.credit;
-    const captionNode = { ...(n as ElementNode), children: result.children };
+    const captionNode = { ...n, children: result.children };
     caption = sanitizeNodes([captionNode], {
       allowedTags: allowedFigcaptionTags,
     });
