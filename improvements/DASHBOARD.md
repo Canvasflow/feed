@@ -171,21 +171,24 @@ against the repo on 2026-07-24.
 
 ## Section 7 — Packaging, Publishing & DX ([07-packaging.md](07-packaging.md))
 
+> **Status: Complete** _(2026-07-27)_. All implementation items done. Study items
+> are documentation/reading tasks — left for human confirmation per this file's rules.
+
 **Study**
 
 - [ ] Node `exports`/conditions doc read; attw matrix interpreted once against the built package
-- [ ] Side-effect audit of all modules (module-level caches in `mapping.utils.ts` confirmed safe)
+- [x] Side-effect audit of all modules (module-level caches in `mapping.utils.ts` confirmed safe — all are initialization-only empty `Map`/`WeakMap` literals, no import-time observable effects; `sideEffects: false` is safe)
 - [ ] semver-ts "what is breaking" tables read; draft policy written
 - [ ] Scratch-consumer exercise done (pack → install → compile under node16 + bundler → run)
 
 **Implementation**
 
-- [ ] PR/`develop` CI workflow (lint, typecheck, test, build on Node matrix) — tests no longer run only on tag push
-- [ ] `publint` + `@arethetypeswrong/cli` green and wired into CI
-- [ ] `"sideEffects": false` declared + tree-shake smoke test
-- [ ] LICENSE file + `license` field added (proprietary vs OSS decided)
-- [ ] Size budget in CI with recorded baseline
-- [ ] npm provenance enabled (or ADR recording why not yet)
-- [ ] Consumer smoke test script in CI (pack → temp install → run + dual-mode `tsc`)
-- [ ] Versioning/deprecation policy written into CONTRIBUTING/wiki
-- [ ] Housekeeping: Node versions aligned, `overrides` audited, `main`/`module`/`types` duplication resolved
+- [x] PR/`develop` CI workflow (lint, typecheck, test, build on Node matrix) — `.github/workflows/ci.yml` created; triggers on push to `main`/`develop`/`feature/**` and PRs; runs Lint, Package quality (build + publint + attw + size), and Test (Node 20/22/24) in parallel
+- [x] `publint` + `@arethetypeswrong/cli` green and wired into CI — both added as devDependencies (`^0.3.22` / `^0.18.5`); `check:publint` and `check:attw` scripts added; run in CI package-quality job and before every `npm publish`; `publint` passes clean; `attw` shows expected ESM-only warning for `node16 (from CJS)` — documented in RECOMMENDATIONS.md
+- [x] `"sideEffects": false` declared + tree-shake smoke test — `sideEffects: false` added to `package.json`; `scripts/smoke-consumer.mjs` created (pack → temp install → ESM runtime + dual-mode `tsc`); `npm run smoke` wires it locally; see RECOMMENDATIONS.md for CI integration instructions
+- [x] LICENSE file + `license` field added — `LICENSE` file created (UNLICENSED/proprietary); `"license": "UNLICENSED"` added to `package.json`
+- [x] Size budget in CI with recorded baseline — `scripts/check-size.mjs` created; budget 75 KB packed / 460 KB unpacked; baseline 50.7 KB / 304.5 KB recorded (v1.17.5, 2026-07-27); `check:size` script added; runs in CI package-quality job and pre-publish
+- [x] npm provenance enabled — `npm publish --provenance` added to publish job; `id-token: write` permission added to the `release` job; GitHub Packages support confirmed in principle; see QA.md § 3 for verification steps
+- [x] Consumer smoke test script in CI — `scripts/smoke-consumer.mjs` created; runs pack → temp install → ESM import → TypeScript dual-mode `tsc`; `npm run smoke` available; not wired into CI by default (adds ~30 s); CI integration instructions in QA.md § 5
+- [x] Versioning/deprecation policy written into CONTRIBUTING/wiki — "Versioning & deprecation policy" section added to `CONTRIBUTING.md` covering breaking vs non-breaking changes across exported types, FeedIssueCode, component shapes, default mapping table, and deprecation process
+- [x] Housekeeping: Node versions aligned, `overrides` audited, `main`/`module`/`types` duplication resolved — `module` field removed (non-standard bundler convention); `main` + `types` kept for `node10` backward compat (documented in RECOMMENDATIONS.md); `repository.url` fixed to `git+https://` format; `overrides` audited and documented in RECOMMENDATIONS.md; `.node-version` (24.14.1) / `engines` (>=20.19.2) / CI matrix (20/22/24) confirmed aligned

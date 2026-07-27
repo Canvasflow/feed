@@ -94,7 +94,7 @@ Two cooperating pipelines drive the library:
 1. **Feed pipeline** (`src/rss/`) — `RSSFeed` wraps `fast-xml-parser`, validates
    required tags, and builds the typed `RSS` object.
 2. **HTML pipeline** (`src/component/`) — `HTMLMapper.toComponents()` pre-processes
-   the HTML, parses it with `himalaya`, and reduces the node tree into `Component[]`
+   the HTML, parses it with `linkedom`, reduces the node tree into `Component[]`
    through the detection engine in `component/mapping/`.
 
 `build()` runs each item's `content:encoded` through the HTML pipeline, so the two
@@ -108,7 +108,7 @@ src/
     ├── Component.ts    # Component types and is* type guards
     ├── html/           # HTMLMapper — HTML → Component[] entry point
     ├── mapping/        # Detection engine + per-family converters, Zod schemas, constants, utils
-    ├── node/           # himalaya AST node helpers
+    ├── node/           # AST node helpers (Node, ElementNode, TextNode, tree traversal)
     └── schema/         # Zod schemas for recipe (JSON-LD) extraction
 ```
 

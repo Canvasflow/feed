@@ -28,6 +28,6 @@ coverage
 bench-results.json
 
 # Claude
-RECOMENDATIONS.md
-QA.md 
+RECOMMENDATIONS.md
+QA.md
 ARCHITECTURE.md
