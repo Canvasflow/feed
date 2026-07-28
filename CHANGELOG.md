@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 🏷️ 2.0.1
+
+_July 27, 2026_
+
+🧹 Chores
+
+- (hooks) Use git config core.hooksPath in prepare instead of manual copy ([`66e0766`](https://github.com/Canvasflow/feed/commit/66e0766208ddc924eda76675be77c9df1886f2f4))
+- (hooks) Move test run from pre-commit to pre-push ([`dad7591`](https://github.com/Canvasflow/feed/commit/dad7591c77a3ab7a66ee4c8eaaa5eb6552fba5c9))
+
 ## 🏷️ 2.0.0
 
 _July 27, 2026_

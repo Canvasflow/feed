@@ -1,7 +1,7 @@
 {
   "name": "@canvasflow/feed",
   "description": "This is canvasflow utility for processing feeds",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "type": "module",
   "license": "UNLICENSED",
   "sideEffects": false,
@@ -56,7 +56,7 @@
     "commit": "cz",
     "format": "vp fmt .",
     "changelog": "node scripts/update-changelog.mjs",
-    "prepare": "cp scripts/post-merge.sh .git/hooks/post-merge && chmod +x .git/hooks/post-merge"
+    "prepare": "git rev-parse --git-dir > /dev/null 2>&1 && git config core.hooksPath .vite-hooks || true"
   },
   "config": {
     "commitizen": {
