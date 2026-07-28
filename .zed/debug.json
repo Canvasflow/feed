@@ -1,0 +1,53 @@
+// Debug configurations for this project's test suite (vitest via vite-plus's
+// `vp` CLI — see .zed/tasks.json for why the built-in vitest auto-detection
+// doesn't fire here).
+//
+// "program" points directly at vite-plus's `vp` entry script (a plain node
+// file, not a shell shim) so the debugged Node process IS the process that
+// runs the tests — no npx/subprocess hop in between for breakpoints to get
+// lost across. "--pool=threads" swaps vitest's default fork-based worker
+// pool for worker_threads, which Node's inspector can follow reliably
+// (fork-based workers are separate OS processes and are not guaranteed to
+// inherit the debug session) — this is Vitest's own recommendation for
+// debugging.
+//
+// Workflow (whole file): click a breakpoint in the gutter next to the line
+// you care about, then run "Debug vitest: current file" (no test-name
+// filter needed — execution just stops when it reaches your breakpoint).
+//
+// Workflow (one test/describe): put your cursor inside the test you want,
+// click a breakpoint, press F4 (or Cmd+Shift+D > "+") and pick "Debug
+// vitest: current symbol" — $ZED_SYMBOL resolves to whatever test/describe
+// your cursor is in, same as it does for tasks.json. This calls
+// scripts/zed-run-test.mjs, which regex-escapes the symbol and runs vitest
+// in-process (no subprocess hop) for the same debugger-attach reason as
+// above.
+[
+  {
+    "adapter": "JavaScript",
+    "label": "Debug vitest: current file",
+    "type": "node",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/node_modules/vite-plus/bin/vp",
+    "args": [
+      "test",
+      "run",
+      "--no-file-parallelism",
+      "--pool=threads",
+      "--hideSkippedTests",
+      "$ZED_RELATIVE_FILE"
+    ],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "skipFiles": ["<node_internals>/**"]
+  },
+  {
+    "adapter": "JavaScript",
+    "label": "Debug vitest: current symbol",
+    "type": "node",
+    "request": "launch",
+    "program": "$ZED_WORKTREE_ROOT/scripts/zed-run-test.mjs",
+    "args": ["$ZED_SYMBOL", "$ZED_RELATIVE_FILE"],
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "skipFiles": ["<node_internals>/**"]
+  }
+]

@@ -1,0 +1,81 @@
+name: '🔍 CI'
+
+# Runs on every PR and on direct pushes to the integration branches.
+# Failures here block merging — the publish workflow only runs on v* tags
+# after this gate has already passed on the tip commit.
+on:
+  push:
+    branches: [main, develop, 'feature/**', 'release/**']
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '24'
+
+jobs:
+  # ── Lint ─────────────────────────────────────────────────────────────────
+  lint:
+    name: 🧹 Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+  # ── Build + packaging quality gates ──────────────────────────────────────
+  package-quality:
+    name: 📦 Package quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: 🚜 Build
+        run: npm run build
+
+      - name: 🔍 publint
+        run: npm run check:publint
+
+      - name: 🔍 Are The Types Wrong
+        run: npm run check:attw
+
+      - name: 📏 Size budget
+        run: npm run check:size
+
+  # ── Test matrix ──────────────────────────────────────────────────────────
+  test:
+    name: 🧪 Test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: 📊 Coverage
+        run: npm run coverage
+
+      - name: 📝 Coverage summary
+        if: matrix.node == 24
+        run: node scripts/coverage-summary.mjs >> "$GITHUB_STEP_SUMMARY"

@@ -19,5 +19,6 @@
 
 - [Testing](Testing.md)
 - [Build & Publishing](Build-and-Publishing.md)
+- [Performance](Performance.md)
 - [Contributing](Contributing.md)
 - [Glossary](Glossary.md)

@@ -1,0 +1,45 @@
+name: '📊 Benchmark'
+
+# Informational only — this job never gates a merge. It records throughput
+# trends over time so regressions can be spotted before they compound.
+on:
+  push:
+    branches: [develop, main, 'feature/**']
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  bench:
+    name: 📊 Benchmark (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    # Never block CI — results are informational.
+    continue-on-error: true
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['20', '22', '24']
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: 📊 Run benchmarks
+        run: npm run bench:save
+
+      - name: 📝 Post summary
+        run: node scripts/bench-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 📤 Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-results-node${{ matrix.node-version }}
+          path: bench-results.json
+          # Keep 90 days of history so you can download and diff any two runs.
+          retention-days: 90

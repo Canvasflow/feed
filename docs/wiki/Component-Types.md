@@ -1,6 +1,6 @@
 # Component Types
 
-Every conversion produces `Component[]`. This page lists the component union, the shared shape, and the type guards used to narrow them. All of these are defined in [`Component.ts`](https://github.com/canvasflow/feed/blob/main/src/component/Component.ts) and re-exported from the package root.
+Every conversion produces `Component[]`. This page lists the component union, the shared shape, and the type guards used to narrow them. All of these are defined in [`component.ts`](https://github.com/canvasflow/feed/blob/main/src/component/component.ts) and re-exported from the package root.
 
 ← Back to [Home](Home.md) · Related: [HTML Mapping](HTML-Mapping.md) · [API Reference](API-Reference.md)
 
@@ -34,20 +34,20 @@ type Component = {
 
 Each kind has a typed interface extending `Component`, e.g.:
 
-| Interface                                                                                                                                                                                  | `component` value                    |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
-| `TextComponent`                                                                                                                                                                            | any `TextType`                       |
-| `ImageComponent`                                                                                                                                                                           | `image`                              |
-| `GalleryComponent`                                                                                                                                                                         | `gallery`                            |
-| `VideoComponent` / `YoutubeComponent` / `VimeoComponent` / `DailymotionComponent` / `TikTokComponent`                                                                                      | `video` (with a `vidtype`)           |
-| `AudioComponent`                                                                                                                                                                           | `audio`                              |
-| `TwitterComponent` / `InstagramComponent` / `InfogramComponent`                                                                                                                            | `twitter` / `instagram` / `infogram` |
-| `HTMLTableComponent`                                                                                                                                                                       | `htmltable`                          |
-| `ButtonComponent`                                                                                                                                                                          | `button`                             |
-| `ContainerComponent` / `ColumnsComponent` / `LiveContainerComponent` / `LivePostComponent` / `RecipeComponent` / `CustomComponent` | `container` / `columns` / `live_container` / `live_post` / `recipe` / `custom` |
-| `FigureContainerComponent` | `container` with `type: 'figure'` — produced by every `<figure>` element; carries `caption?`, `credit?`, and a `components[]` of the nested media. |
-| `LinkContainerComponent` | `container` with `type: 'link'` — produced by an `<a>` wrapping mixed content; carries `link`, `attributes`, and a `components[]`. |
-| `SpacerComponent`                                                                                                                                                                          | `spacer`                             |
+| Interface                                                                                                                          | `component` value                                                                                                                                  |
+| ---------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `TextComponent`                                                                                                                    | any `TextType`                                                                                                                                     |
+| `ImageComponent`                                                                                                                   | `image`                                                                                                                                            |
+| `GalleryComponent`                                                                                                                 | `gallery`                                                                                                                                          |
+| `VideoComponent` / `YoutubeComponent` / `VimeoComponent` / `DailymotionComponent` / `TikTokComponent`                              | `video` (with a `vidtype`)                                                                                                                         |
+| `AudioComponent`                                                                                                                   | `audio`                                                                                                                                            |
+| `TwitterComponent` / `InstagramComponent` / `InfogramComponent`                                                                    | `twitter` / `instagram` / `infogram`                                                                                                               |
+| `HTMLTableComponent`                                                                                                               | `htmltable`                                                                                                                                        |
+| `ButtonComponent`                                                                                                                  | `button`                                                                                                                                           |
+| `ContainerComponent` / `ColumnsComponent` / `LiveContainerComponent` / `LivePostComponent` / `RecipeComponent` / `CustomComponent` | `container` / `columns` / `live_container` / `live_post` / `recipe` / `custom`                                                                     |
+| `FigureContainerComponent`                                                                                                         | `container` with `type: 'figure'` — produced by every `<figure>` element; carries `caption?`, `credit?`, and a `components[]` of the nested media. |
+| `LinkContainerComponent`                                                                                                           | `container` with `type: 'link'` — produced by an `<a>` wrapping mixed content; carries `link`, `attributes`, and a `components[]`.                 |
+| `SpacerComponent`                                                                                                                  | `spacer`                                                                                                                                           |
 
 ## Type guards
 
@@ -80,4 +80,4 @@ isValidTextRole
 
 ## Runtime schemas
 
-For validation, `Component.ts` also exports Zod schemas (`ComponentSchema`, `ComponentTypeSchema`, `TextTypeSchema`, and per-kind schemas such as `ImageComponentSchema`). Recipe extraction has its own schemas in [`schema/Schema.ts`](https://github.com/canvasflow/feed/blob/main/src/component/schema/Schema.ts).
+For validation, `component.ts` also exports Zod schemas (`ComponentSchema`, `ComponentTypeSchema`, `TextTypeSchema`, and per-kind schemas such as `ImageComponentSchema`). Recipe extraction has its own schemas in [`schema/Schema.ts`](https://github.com/canvasflow/feed/blob/main/src/component/schema/recipe-schema.ts).

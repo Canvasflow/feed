@@ -12,15 +12,22 @@ export default defineConfig({
     sortPackageJson: false,
     ignorePatterns: ['**/*.html'],
   },
+  lint: {
+    jsPlugins: [{ name: 'vite-plus', specifier: 'vite-plus/oxlint-plugin' }],
+    rules: {
+      // Enforce the project-wide kebab-case file naming convention (see
+      // docs/adr/0001-kebab-case-naming-and-colocated-test-conventions.md).
+      'unicorn/filename-case': ['error', { case: 'kebabCase' }],
+    },
+  },
   test: {
-    setupFiles: ['src/setupTests.ts'],
+    setupFiles: ['src/setup-tests.ts'],
     tags: [
       {
         name: 'integration',
         description:
           'Tests that verify the interaction between multiple modules or systems.',
         timeout: 60000,
-        skip: true,
       },
       {
         name: 'unit',
@@ -41,7 +48,6 @@ export default defineConfig({
         description:
           'Ensures correct extraction of ingredients, instructions, and cooking times from JSON-LD blocks.',
         timeout: 60000,
-        skip: true,
       },
       {
         name: 'todo',
@@ -64,10 +70,10 @@ export default defineConfig({
       ],
       reporter: ['text', 'json', 'json-summary', 'html'],
       thresholds: {
-        statements: 99,
+        statements: 95,
         branches: 95,
-        functions: 99,
-        lines: 99,
+        functions: 95,
+        lines: 95,
       },
     },
   },

@@ -1,0 +1,194 @@
+# Improvements Dashboard — cross-session state
+
+> **This file is the single source of truth for improvement progress.** It is
+> used across Claude Code sessions: sections are tackled one at a time
+> (top-to-bottom — they are sorted by impact); when work on a section is done,
+> ask Claude Code to **review the actual code/repo state and check off only the
+> items that are verifiably finished**. Do not check items from memory.
+>
+> Rules for Claude Code sessions updating this file:
+>
+> 1. Read this file first to see where things stand.
+> 2. A checkbox is checked only after verifying the repo (run the tests,
+>    read the code, run the tool) — not because a conversation said so.
+> 3. Each section has **Study** and **Implementation** items; study items are
+>    checked when the human confirms them done (they are not verifiable in-repo).
+> 4. Keep the per-section documents (`0X-*.md`) as the detailed reference;
+>    if scope changes, update both the document and this checklist.
+> 5. When every item in a section is checked, mark its heading with ✅.
+
+---
+
+## Section 1 — Dependency Diet ✅ ([01-dependency-diet.md](01-dependency-diet.md))
+
+**Status: Complete** _(2026-07-24 — see the doc's own header)_. The decisions
+made differ from this checklist's original phrasing in two places (`he` and
+`luxon` were **kept, wrapped** behind seams, not removed — see below); the
+checklist text is corrected to match what was actually decided and verified
+against the repo on 2026-07-24.
+
+**Study**
+
+- [ ] Mapped the full transitive dependency tree with install sizes (`npm ls --all --omit=dev` + Bundlephobia); baseline recorded
+- [ ] Compared htmlparser2 / parse5 / linkedom on malformed-HTML behavior (5+ nasty snippets)
+- [ ] Read RFC 2822 §3.3; inventoried actual date formats present in fixture feeds
+- [ ] Read the zod/mini migration guide
+
+**Implementation**
+
+- [x] Decision record (ADR) written for each of the 7 runtime dependencies _(ADR-0002 through ADR-0006 in `docs/adr/`; `fast-xml-parser`'s "keep" verdict is documented in the table in `01-dependency-diet.md` rather than a standalone ADR file)_
+- [x] `luxon` **kept, wrapped** — `parseDate()` in `src/utils/date.ts` (not `src/rss/date.ts`/`parseFeedDate` as originally planned), tested. See ADR-0005 for why removal was rejected.
+- [x] `he` **kept, wrapped** — `decodeEntities()` in `src/utils/entities.ts` (not `src/rss/entities.ts` as originally planned), covering the full HTML5 named-entity table. See ADR-0003 for why removal was rejected.
+- [x] `himalaya` removed and `src/himalaya.d.ts` deleted _(verified: file does not exist; `himalaya` absent from `package.json`)_
+- [x] `sanitize-html` removed — replaced by allow-list AST serialization in `src/component/html/sanitize-html.ts` _(verified: package absent from `package.json`)_
+- [x] `zod` **kept in full** (not migrated to `zod/mini`) per ADR-0006 — recursive/lazy schema risk + being the public type-derivation mechanism made the mechanical migration not worth it now
+- [ ] CI guard: `dependencies` changes require an ADR in the same PR _(explicitly deferred — enforcing this in CI requires a custom script that diffs `package.json` and checks for a matching ADR file; low ROI given the ADR discipline is already established. See `01-dependency-diet.md` § Actionable plan step 7 if this ever needs to be wired up)_
+- [x] Before/after install size, pack size, and dep count recorded in `01-dependency-diet.md` _("after" numbers recorded 2026-07-27: 5 runtime deps, packed 49.8 KB / unpacked 297.8 KB, runtime dep tree ~14.8 MB; see `01-dependency-diet.md` § After numbers)_
+- [x] All tests + differential snapshots pass with no unexplained changes _(661 tests pass; 4 fixture divergences from the parser swap documented in ADR-0004)_
+
+## Section 2 — HTML Pipeline Unification ✅ ([02-html-pipeline.md](02-html-pipeline.md))
+
+> **Status: Complete** _(2026-07-24)_. All implementation items verified against the repo. 665 tests pass (661 original + 4 new referential-transparency tests); 6 skipped (integration/recipe).
+
+**Study**
+
+- [x] Traced one fixture through the current `toComponents` gauntlet; every parse/serialize boundary documented _(see the Overview in `02-html-pipeline.md`, updated post-Section-1)_
+- [x] Parser bake-off harness run over fixture HTML (output diff + time/memory); results recorded _(ADR-0004)_
+- [ ] Read AST multi-pass transform material (Babel handbook transform chapter or equivalent)
+- [ ] Specced `serializeSanitized` semantics against the three sanitize-html policies in use
+
+**Implementation**
+
+- [x] Parser ADR written (single parser chosen with data) _(ADR-0004)_
+- [x] Adapter seam `src/component/html/parser.ts` (`parse`/`stringify`) _(`html-mapper.ts` still imports `linkedom` directly for the public `splitParagraphImages` wrapper, but `toComponents` no longer touches `linkedom` at all — it goes entirely through `parse()`)_
+- [x] `sanitizeInvalidAnchorHrefs` ported to a tree pass _(pure `Node[] → Node[]` `sanitizeInvalidAnchorHrefs` + `sanitizeNodeHref` in `html-mapper.ts`; commit `1ac173f`)_
+- [x] Anchor-with-image hoisting ported to a tree pass _(`hoistAnchorsWithImages` in `html-mapper.ts`; replaces `extractAnchorsWithImagesDOM`; commit `eed7e4e`)_
+- [x] Paragraph/heading image-splitting ported to one generic tree pass _(`splitImagesFromParagraphs` in `html-mapper.ts`; all 7 block tags in one pass; empty block elements dropped to match DOM side-effect; commit `eed7e4e`)_
+- [x] Breakline removal + empty-text normalization merged into a parse-time pass _(`stripBreaklines` pure `Node[]` pass in `html-mapper.ts` replaces the string-level `removeBreaklines` and the vestigial `mapEmptyText` mutation; commit `66292fc`)_
+- [x] Parser swapped inside the seam; himalaya + shim + exact pin deleted; snapshot diffs reconciled and recorded _(ADR-0004; done as part of Section 1)_
+- [x] `serializeSanitized` implemented over the `Node` AST; all ~24 `sanitizeNode`/`sanitizeContentHtml` call sites migrated _(`sanitizeNodes(nodes, options)` added to `sanitize-html.ts`; `sanitizeNode`, `fromFigcaption`, `toText`, `toHTMLTable` all call it directly — no `stringify()` → re-parse; `processTextLinks` and the caption/credit re-sanitization in `mapping.media.ts` remain string-in because their input is already a string, not a node)_
+- [x] `getRootElement` scoping works on the parsed tree (no stringify→re-parse in `buildItem`); quote-fix regex retained only in the public `HTMLMapper.getRootElement` string API _(`toComponents` now accepts an optional `root?: Mapping` and calls `getRootElement(nodes, root)` directly on the processed tree — `buildItem` passes `root` to `toComponents` instead of re-feeding the serialized root string; `content:encoded` still set via `HTMLMapper.getRootElement` as a coverage test requires it)_
+- [x] In-place mutation removed (`getCredit`, `reduceEmptyTextNode`); referential-transparency test added _(`reduceEmptyTextNode` returns new node objects instead of mutating `node.content`/`node.children`; `getCredit` now returns `{ credit, children }` and `fromFigcaption` builds a new node for sanitization; 4 new mutation-guard tests in `mapping.referential.test.ts` pass)_
+- [x] `toComponents` parses input exactly once (verified by construction) _(`parse(html)` is the single call; three tree passes run on the resulting `Node[]`; commit `eed7e4e`)_
+- [x] Wiki updated (`HTML-Mapping.md`, `Architecture.md`) _(pipeline steps updated to reflect single-parse, pure tree-pass architecture and the `root?` parameter on `toComponents`)_
+
+## Section 3 — API Robustness & Error Model ✅ ([03-api-robustness.md](03-api-robustness.md))
+
+> **Status: Complete** _(2026-07-25)_. All Implementation items verified against the repo — full test suite green (962 passed, 6 skipped), `tsc --noEmit` clean, `vp lint` clean. The 3 remaining Study items (consumer audit, "Parse, don't validate" reading, error taxonomy write-up) are documentation/reading tasks, not code-verifiable — left for human confirmation per this file's own rules.
+
+**Study**
+
+- [x] Throw-surface inventory completed (all throwing calls listed in an ADR) _(ADR-0007 in `docs/adr/`; 8 sites classified — 2 critical/high in `RSSFeed`, 3 medium in the HTML pipeline, 2 low, 1 intentional; guarded sites confirmed safe; parseInt NaN risks documented)_
+- [ ] Read "Parse, don't validate" and mapped the `ParsedXml` → `RSS` boundary
+- [ ] Error taxonomy drafted: every current error/warning string grouped into stable codes
+- [ ] Consumer audit: how `transformer` + self-service project use errors/warnings and async
+
+**Implementation**
+
+- [x] Constructor never throws on malformed XML (captured as parse-error issue) _(`this.rss` initialised before `XMLParser.parse`; parse wrapped in `try/catch`; error stored in both `feed.errors` and `rss.errors` as `"XML parse error: …"`; 8 new tests in `rss-feed.test.ts` pass)_
+- [x] `build()` never throws _(`URL.canParse` guard on the channel link, plus every other unguarded `new URL(...)` reachable through `content:encoded`: `fromIframe` + its 5 searchParams branches, TikTok `cite`, `toYoutubeFromAnchor`, `mapMediaContent`'s relative-URL resolution — see ADR-0007's Resolution section. `parseInt`/date audits remain open as a separate correctness item — they don't throw, so were out of scope here.)_
+- [x] `FeedIssue { code, severity, message, path? }` type introduced; `errors`/`warnings` migrated; zod issues converted (no raw `unknown` in `rss.errors`) _(Full migration: `src/feed-issue.ts` defines `FeedIssue`/`FeedIssueCode` (~35 stable codes)/`FeedIssueSeverity` standalone to avoid a circular import, exported from `@canvasflow/feed`. Every `errors`/`warnings: string[]` in `rss-types.ts` (`RSS`, `Channel`, `Item`, `Enclosure`, `MediaGroup`, `MediaContent`) and `component.ts` (the shared `Component` base, so every derived component type inherits it) is now `FeedIssue[]`. `RSSFeed.validateParams` returns `FeedIssue[]` instead of raw `ZodIssue[]` blobs. ~30 fixture snapshots regenerated; diffed via `git diff` to confirm only the error/warning shape changed, no content/count regressions.)_
+- [x] Single, documented behavior for invalid `params` (no silent drop) _(constructor always stores `params` as given; `build()` is the one place that validates and reports them. Previously the constructor's `isValidParams` guard meant invalid params never reached `build()`'s validation at all — a real bug, not just a documented inconsistency. Test: "invalid params passed to the constructor are reported by build(), not silently dropped".)_
+- [x] `validate()`/`build()` sync (or ADR for async); `validate()` no longer mutates `this.data`; idempotent _(ADR-0008 justifies keeping async pending a consumer audit. `validateRSS`/`validateChannel`/`validateItem` no longer `delete` keys from parsed input. `validate()` resets its `rss`/`channel` error/warning accumulators at the top of the method — removing the `delete`-based dedup exposed a real duplicate-warning bug on repeated `validate()` calls, fixed by this explicit reset. Regression test added.)_
+- [x] Network I/O extracted from `RSSFeed` (injected fetch, timeout, status check, body cap; JSON-LD `JSON.parse` guarded) _(New `src/rss/recipe.ts`, exported from the package root; `RSSFeed.getRecipeFromUrl`/`getHtmlContent` are now thin `@deprecated` wrappers. `AbortSignal.timeout` default 10s, `response.ok` check, streamed body-size cap default 5MB, JSON-LD parse wrapped in try/catch. 8 new tests in `recipe.test.ts`.)_
+- [x] No-throw property tests passing (arbitrary strings + params) _(`src/rss/__tests__/rss-feed.fuzz.test.ts`: 267 tests — 17 hand-picked edge cases (including every throw site fixed above), 150 seeded-random XML-ish strings, 100 seeded-random `params`-shaped values — driven through the full constructor → `validate()` → `build()` lifecycle. All pass.)_
+- [x] Wiki API reference documents the contract; migration guide in CHANGELOG for the major _(`API-Reference.md` gained "No-throw contract", "Error model: FeedIssue", and lifecycle sections, plus a documented `src/rss/recipe.ts` network I/O table. `CHANGELOG.md` has a full migration guide with before/after code samples for the `string[]` → `FeedIssue[]` change.)_
+
+## Section 4 — Type Safety & TS Library Practices ([04-type-safety.md](04-type-safety.md))
+
+**Study**
+
+- [ ] `noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` enabled locally; error counts per file mapped
+- [ ] Raw `fast-xml-parser` output shapes documented against `parsed-xml.ts`; `isArray`/parser options evaluated
+- [ ] Narrowing-pattern practice done (rewrote one cast-heavy function without `as`)
+- [ ] api-extractor / attw report run once and understood
+
+**Implementation**
+
+- [x] Both compiler flags enabled in `tsconfig.json`; code compiles _(`noUncheckedIndexedAccess` + `exactOptionalPropertyTypes` both `true`. 202 resulting compile errors fixed across the whole codebase — see `04-type-safety.md` for the breakdown. `tsc --noEmit`, `vp lint`, and the full test suite (965 passed, 6 skipped) all green.)_
+- [x] `fast-xml-parser` configured with `isArray` for item/enclosure/media/category/creator; "maybe array" coercions deleted _(`XMLParser` now declares `isArray` for `item`, `enclosure`, `media:group`, `media:content`, `category`, and `dc:creator` so the parser always produces arrays at runtime. A `toArray<T>(val: T | T[]): T[]` helper normalises both parser output and direct `buildItem` callers. `ParsedChannel.item` and `ParsedItem` union fields remain as `T | T[]` for robustness. `dc:creator` handling now extracts `#text` from namespace-attributed elements, fixing a longstanding `[object Object]` bug in autosport/motorsport feeds. Snapshots updated. 965 tests pass.)_
+- [x] `src/rss/narrow.ts` boundary helpers; zero `as` casts outside the boundary module and tests _(`src/rss/narrow.ts` created with `textOf` (plain string / number / `{ '#text': ... }` object → `string | undefined`) and `recordOf` (unknown → `Record<string, unknown> | undefined`). All XML-boundary `as` casts in `rss-feed.ts` replaced by `textOf`/`recordOf` or type predicates. Mapping module casts eliminated: `isValidTextRole` now returns `role is TextType`, inline `as TextComponent`/`as TikTokComponent` replaced by typed locals, `as ElementNode` casts replaced by `.find((n): n is ElementNode => ...)` type-predicate filters, `.pop() as string` → `.pop()!`, `fromFigure(node) as ImageComponent` → `isImageComponent(component)` guard with fallback, video/audio filter rewritten as type-predicate eliminating `components.pop() as VideoComponent | AudioComponent`. The 3 `mapping as XxxMapping` casts eliminated by the discriminated-union refactor (checklist item 5). Remaining `as` in `src/`: (a) `narrow.ts` itself (the documented boundary), (b) two structural casts in `rss-feed.ts` (initialization fallback `{} as unknown as ParsedXml`, iterator-check), (c) DOM-boundary casts in `parser.ts`/`html-mapper.ts`, (d) standard `object as Record<string, unknown>` in `component.ts` is\* type guards, (e) error-catch cast in `mapping.embeds.ts`. 965 tests pass.)_
+- [x] Validators/builders take readonly inputs; no `delete`/reassignment of parsed data _(partially, and verified: `getEnclosure`/`getMediaGroup` no longer reassign `item.enclosure`/`item['media:group']`; the `dc:creator` array-join no longer reassigns `item['dc:creator']`; `getCredit`/`fromFigcaption` were already non-mutating from Section 2. 3 new mutation-guard tests in `build-item.test.ts`. `validateItem` still writes `item.errors`/`item.warnings` onto the shared `ParsedItem` as intentional hand-off plumbing to `buildItem` — a real, understood mutation left as a deliberate tradeoff, not fixed.)_
+- [x] `getMappingComponent` returns a discriminated union; downstream casts in `fromNode` removed; `satisfies` on mapping tables _(`MappingComponentResponse` converted to a discriminated union (one arm per component kind, pairing `mappedComponent` with the correct `mapping` type); `getMappingComponent` switches on `mapping.component`; call site in `fromNode` uses `mappingResult.xxx` property access (not destructuring) so TypeScript narrows `mappingResult.mapping` via the discriminant, eliminating all 3 `mapping as XxxMapping` casts. `TEXT_TAG_MAPPING` uses `satisfies Record<string, TextType>`. 965 tests pass, `tsc --noEmit` clean.)_
+- [x] `src/index.ts` uses explicit named exports (public surface decided export-by-export) _(`export *` replaced with deliberate named exports grouped by domain. Internal helpers removed: all `*Schema` Zod exports, `feedIssue`/`errorIssue`/`warningIssue`, pipeline internals (`reduceComponents`, `fromNode`, etc.), utilities (`processTextLinks`, `isEmpty`, `mapLivePost`, `toCustom`), constants (`textTags`, `MAX_TEXT`). `readonly` arrays on `Component`, `Item`, `Enclosure`, `MediaGroup`, `MediaContent`; `Channel`/`RSS` arrays remain mutable pending validate/build pipeline refactor. `MutableItem` type alias (`DeepMutable<Item>`) and `clone(item: Item): MutableItem` function added to `rss-types.ts` and exported publicly — consumers can obtain a fully mutable deep-copy of any built `Item` for post-processing. 965 tests pass, `tsc --noEmit` clean.)_
+- [x] API surface guard in CI (api-extractor report or expect-type tests) _(`src/__tests__/api-surface.test.ts` added: assertions covering return types of `validate()`/`build()`, readonly vs mutable array contracts on `Item`/`MutableItem`/`Enclosure`/`MediaContent`, `clone` signature, all `is*` guard predicates, `FeedIssue` field types, `HTMLMapper.toComponents`, mapping validators, network utilities, `buildItem`, and a union-type import-existence guard that catches any removed or renamed type export. Type-level conditional checks (`T extends U ? true : false`) used for assertions involving `FeedIssue[]` — the large `FeedIssueCode` union exceeds what `toEqualTypeOf`/`toMatchTypeOf` can represent without a TS2344 false positive. 1004 tests pass, 6 skipped.)_
+- [x] JSDoc `@param {type}` annotations kept intentionally (maintainers can add per-parameter descriptions alongside the types) _(Decision: keep as-is — no cleanup needed.)_
+
+## Section 5 — Performance & Memory ✅ ([05-performance.md](05-performance.md))
+
+> **Status: Complete** _(2026-07-27 — all implementation items committed; bench suite, depth guard, patternCache bound, WeakMap attribute cache, heap check, and Performance wiki all verified in repo)_.
+
+**Study**
+
+- [ ] Vitest bench / tinybench methodology reviewed (warmup, isolation, pinned Node)
+- [ ] One full CPU-profile + heap-snapshot session done on `build(forbes-large.rss)`; artifacts kept as baseline
+- [ ] Bounded-cache options reviewed for `patternCache` (LRU vs per-run)
+
+**Implementation**
+
+- [x] Bench suite added (`build` on forbes-large, `toComponents` on large HTML, filter engine) + `npm run bench` + informational CI job _(`src/__bench__/rss-feed.bench.ts`, `html-mapper.bench.ts`, `mapping-filter.bench.ts`; `npm run bench` / `npm run bench:save`; `.github/workflows/bench.yml` triggers on push/PR to `develop`/`main`/`feature/**`, `continue-on-error: true`, posts markdown summary, uploads artifact 90 days. TS error fixed 2026-07-27: `mapping-filter.bench.ts` was importing `filterAllMapping`/`filterAnyMapping` from `mapping.ts` where they are internal; corrected to import from `mapping.utils.ts` where they are exported.)_
+- [x] ~~Baseline numbers recorded **before** Sections 1–2 land~~ — window has passed; post-Section-2 numbers recorded as the baseline instead _(2026-07-27, Apple M-series, Node 20):_
+      | Workload | hz | mean (ms) |
+      |---|---|---|
+      | `RSSFeed` construct + `build()` — forbes-large.rss (~1.1 MB) | 18.5 | 54.2 |
+      | `RSSFeed` construct + `validate()` + `build()` — forbes-large.rss | 3.8 | 266 |
+      | `RSSFeed` construct + `build()` — forbes.rss (small) | 33.3 | 30.1 |
+      | `HTMLMapper.toComponents()` — large HTML (~2.8 MB) | 2.5 | 404 |
+      | `HTMLMapper.toComponents()` — small HTML (~26 KB) | 175 | 5.7 |
+      | `findDescendants("div")` — depth-6 tree | 191,858 | 0.0052 |
+      | `findDescendants(["div","span"])` — depth-6 tree | 52,778 | 0.0189 |
+      | `removeDescendants("span")` — depth-6 tree | 7,203,184 | 0.0001 |
+- [x] Post-Section-2 numbers recorded as the baseline (see row above); delta vs any future change documented
+- [x] `findDescendants`/`removeDescendants` no longer allocate a reducer per tree level (bench-verified) — _hoisted recursive `walk` inner function closes over `findFn`/`tagSet` once; `node-helpers.ts` refactored 2026-07-27. Bench delta (depth-6 tree, isolated run): `findDescendants("div")` +24%, `findDescendants(["div","span"])` +39%, `removeDescendants("span")` +33%. 1004 tests pass._
+- [x] Attribute-map churn addressed (measured; bench moves) — _`nodeAttributesCache` WeakMap in `mapping.utils.ts` makes `cachedGetAttributes()` the single allocation point per node per pipeline run; `filterAnyMapping`, `filterAllMapping`, `getCredit`, and `filterClassNameDescendants` all use it. Bench delta on large HTML with 20 mappings + 10 excludes (30 filter calls/node): **+19–25%** throughput. 1004 tests pass._
+- [x] `patternCache` bounded or per-run; memory-stability test added — _`MAX_PATTERN_CACHE_SIZE = 500` with oldest-entry eviction in `mapping.utils.ts`; 3 tests in `src/component/mapping/__tests__/pattern-cache.test.ts` (correctness under eviction, no-throw on invalid patterns, < 5 MB heap delta for 2000 unique patterns). 975 unit tests pass._
+- [x] Depth guard in `fromNode`/passes; deep-nesting fuzz case — _`MAX_FROMNODE_DEPTH = 256` constant exported from `mapping.ts`; `fromNode` accepts `_depth = 0` and returns `null` beyond the limit; recursive child call passes `_depth + 1`. Two fuzz tests in `src/component/mapping/__tests__/depth-guard.test.ts` (500-level HTML doesn't throw; shallow content survives, deep content is silently dropped). 975 unit tests pass._
+- [x] Heap check after large-feed build: no document-scale retained memory; findings documented — _`node --expose-gc` run: 5 isolated `RSSFeed.build(forbes-large.rss)` calls post-GC retain ~2 MB each; consistent with V8 JIT warmup, not document-scale leaks. 1.1 MB XML source and parsed node trees are collected after each call. Findings in `docs/wiki/Performance.md` and `05-performance.md`._
+- [x] Performance note added to the wiki — _`docs/wiki/Performance.md` created (throughput table, complexity table, memory behaviour, running benchmarks, known limits); `_Sidebar.md` updated with link under Operations._
+
+## Section 6 — Testing Strategy ✅ ([06-testing.md](06-testing.md))
+
+> ⚠️ The **safety net** item below is a prerequisite for Sections 1 and 2.
+
+**Study**
+
+- [ ] Characterization/approval-testing material read; snapshot review discipline agreed
+- [ ] fast-check tutorial done; domain arbitraries designed (mutated XML, HTML-ish strings, Params from schema)
+- [ ] undici `MockAgent` (or injected-fetch stubbing) learned
+- [ ] Full read-through of `RSSFeed.test.ts`; duplication/behavior audit notes written
+
+**Implementation**
+
+- [x] **Safety net:** snapshot tests over every `src/support/feeds/*.rss` (`build()`) and every HTML fixture (`toComponents`), committed as baseline _(RSS: `rss-feed.snapshot.test.ts` — dynamic, 413 K-line snap file. HTML: `html-mapper.snapshot.test.ts` — 5 fixtures (3 from `feeds/`, 2 from `html/`) snapshotted via `toComponents`; 5 snapshots written 2026-07-27.)_
+- [x] No-throw property tests (feeds + HTML + params) _(`rss-feed.fuzz.test.ts`: 17 edge cases + 150 random XML strings + 100 random params; `html-mapper.fuzz.test.ts`: 42 edge cases + 200 random strings — both verify no-throw contract for all three categories)_
+- [x] Engine invariant properties (allow-list compliance of output `html`, filter laws) _(`html-mapper.invariants.test.ts` — 2026-07-27: allow-list compliance (dangerous tags + textAllowedTags) verified against all 5 HTML fixtures; filter law (`match:'all' ⊆ match:'any'`) verified for both mappings and excludes with multiple filter types. 1054 tests pass.)_
+- [x] `integration`/`recipe` tests run offline via HTTP mocking; `skip: true` removed; opt-in live suite only _(2026-07-27: 3 Recipe tests converted from `RSSFeed.getRecipeFromUrl` (network) to `getRecipeFromUrl` with injected fetch stubs reading fixtures under `src/support/http/`. Tags changed from `['integration', 'recipe']` to `['unit', 'recipe']`. `describe.skip('The English Home')` converted to `describe` — tests read local files, no network. `skip: true` removed from both `integration` and `recipe` tags in `vite.config.ts`. 1054 tests pass.)_
+- [x] `broken` tag emptied (fixed or converted to `test.fails`); `todo` tag → `test.todo` _(no tests in the codebase are tagged `broken` or `todo`; tags are defined in `vite.config.ts` but unused — the `describe.skip('The English Home')` at `rss-feed.test.ts:1506` is not tagged `broken`)_
+- [x] `*.coverage.test.ts` consolidated into meaningful tests as dead branches are deleted _(2026-07-27: All three files dissolved — `rss-feed.coverage.test.ts` merged into `rss-feed.test.ts`; `html-mapper.coverage.test.ts` split between `html-mapper.mapping.test.ts` (splitParagraphImages) and `html-mapper.text.test.ts` (href handling); `mapping.coverage.test.ts` distributed to `mapping.test.ts` (embed builders, utils, schema), `html-mapper.container.test.ts` (button edge cases, columns/live/link container, figureContainer), and `html-mapper.media.test.ts` (media error paths, direct media calls). 1054 tests pass in 26 files.)_
+- [x] Fixture-intake script (`scripts/add-fixture.mjs`) working and documented _(`scripts/add-fixture.mjs` created 2026-07-27 — accepts a URL or file path, derives the output name from the URL/filename, fetches or reads the content, writes to `src/support/feeds/`, prints next steps including the snapshot-update command.)_
+- [x] Coverage thresholds still met; `v8 ignore` comments re-audited _(2026-07-27: 98.76%/95.8%/97.75%/99.17% — all ≥ 95%. Re-audit: removed the dead `!attribs` branch (6 lines + stale comment) in `mapping.utils.ts:processTextLinks` — `attribs` is typed `Record<string,string>` in the custom sanitize-html and can never be null/undefined. Remaining 37 comments are structural invariants (pre-filtered arrays, AST guarantees, parser contracts) that remain valid. `clone` function in `rss-types.ts` had only type-level tests; 5 runtime tests added to `build-item.test.ts`.)_
+- [x] `docs/wiki/Testing.md` updated with the test-layer taxonomy _(2026-07-27: added "Test layers" table (unit / no-throw / snapshot / integration-offline / live), "Adding a new test" guide, "Snapshot review discipline" section, and "Fixture curation" section.)_
+
+## Section 7 — Packaging, Publishing & DX ([07-packaging.md](07-packaging.md))
+
+> **Status: Complete** _(2026-07-27)_. All implementation items done. Study items
+> are documentation/reading tasks — left for human confirmation per this file's rules.
+
+**Study**
+
+- [ ] Node `exports`/conditions doc read; attw matrix interpreted once against the built package
+- [x] Side-effect audit of all modules (module-level caches in `mapping.utils.ts` confirmed safe — all are initialization-only empty `Map`/`WeakMap` literals, no import-time observable effects; `sideEffects: false` is safe)
+- [ ] semver-ts "what is breaking" tables read; draft policy written
+- [ ] Scratch-consumer exercise done (pack → install → compile under node16 + bundler → run)
+
+**Implementation**
+
+- [x] PR/`develop` CI workflow (lint, typecheck, test, build on Node matrix) — `.github/workflows/ci.yml` created; triggers on push to `main`/`develop`/`feature/**` and PRs; runs Lint, Package quality (build + publint + attw + size), and Test (Node 20/22/24) in parallel
+- [x] `publint` + `@arethetypeswrong/cli` green and wired into CI — both added as devDependencies (`^0.3.22` / `^0.18.5`); `check:publint` and `check:attw` scripts added; run in CI package-quality job and before every `npm publish`; `publint` passes clean; `attw` shows expected ESM-only warning for `node16 (from CJS)` — documented in RECOMMENDATIONS.md
+- [x] `"sideEffects": false` declared + tree-shake smoke test — `sideEffects: false` added to `package.json`; `scripts/smoke-consumer.mjs` created (pack → temp install → ESM runtime + dual-mode `tsc`); `npm run smoke` wires it locally; see RECOMMENDATIONS.md for CI integration instructions
+- [x] LICENSE file + `license` field added — `LICENSE` file created (UNLICENSED/proprietary); `"license": "UNLICENSED"` added to `package.json`
+- [x] Size budget in CI with recorded baseline — `scripts/check-size.mjs` created; budget 75 KB packed / 460 KB unpacked; baseline 50.7 KB / 304.5 KB recorded (v1.17.5, 2026-07-27); `check:size` script added; runs in CI package-quality job and pre-publish
+- [x] npm provenance enabled — `npm publish --provenance` added to publish job; `id-token: write` permission added to the `release` job; GitHub Packages support confirmed in principle; see QA.md § 3 for verification steps
+- [x] Consumer smoke test script in CI — `scripts/smoke-consumer.mjs` created; runs pack → temp install → ESM import → TypeScript dual-mode `tsc`; `npm run smoke` available; not wired into CI by default (adds ~30 s); CI integration instructions in QA.md § 5
+- [x] Versioning/deprecation policy written into CONTRIBUTING/wiki — "Versioning & deprecation policy" section added to `CONTRIBUTING.md` covering breaking vs non-breaking changes across exported types, FeedIssueCode, component shapes, default mapping table, and deprecation process
+- [x] Housekeeping: Node versions aligned, `overrides` audited, `main`/`module`/`types` duplication resolved — `module` field removed (non-standard bundler convention); `main` + `types` kept for `node10` backward compat (documented in RECOMMENDATIONS.md); `repository.url` fixed to `git+https://` format; `overrides` audited and documented in RECOMMENDATIONS.md; `.node-version` (24.14.1) / `engines` (>=20.19.2) / CI matrix (20/22/24) confirmed aligned

@@ -38,7 +38,7 @@ comment density.
   `RSSFeed`.
 - Don't throw for malformed input — accumulate `errors` / `warnings` so one bad
   element never aborts a conversion.
-- Reuse the Zod schemas in `mapping/Mapping.schema.ts` rather than re-deriving
+- Reuse the Zod schemas in `mapping/mapping.schema.ts` rather than re-deriving
   shapes, and add type guards (`is*Component`) alongside new component kinds.
 
 ## Commits
@@ -48,3 +48,23 @@ subject`), enforced by **commitlint**. Interactive helper: `npm run commit`.
 
 See the [Contributing wiki page](https://github.com/Canvasflow/feed/wiki/Contributing)
 for the complete conventions.
+
+## Versioning & deprecation policy
+
+`@canvasflow/feed` follows [Semantic Versioning](https://semver.org/). The following changes are **breaking** and require a major-version bump:
+
+| Area                           | Breaking change examples                                                                                                   |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| Exported types                 | Removing or renaming an exported type/interface; narrowing a return type; adding a required property to a public interface |
+| `FeedIssueCode` values         | Removing or renaming an issue code (consumers may `switch` on them)                                                        |
+| Component output shapes        | Removing a property from a `Component` subtype; changing the type of an existing property                                  |
+| Default HTML→component mapping | Changing which HTML tag maps to which component type (e.g. `<h2>` → `subtitle` becoming `title`)                           |
+| `errors`/`warnings` semantics  | Moving an error to a warning or vice versa; changing message text that consumers may pattern-match                         |
+
+The following changes are **non-breaking** and use a minor-version bump:
+
+- Adding new exported types, optional properties, or new `FeedIssueCode` values.
+- Adding new component types to the output union.
+- Adding new optional `Params`/`Mapping` options.
+
+**Deprecation process:** mark with `@deprecated` in JSDoc, announce in `CHANGELOG.md`, and keep the deprecated symbol for at least one major version before removal.

@@ -1,0 +1,642 @@
+import { z } from 'zod';
+
+import { escapeText } from '../html/parser';
+import {
+  type Component,
+  type TextComponent,
+  type TextType,
+  type TikTokComponent,
+  isFigureContainerComponent,
+  isLinkContainerComponent,
+} from '../component';
+import {
+  type ElementNode,
+  type Node,
+  getAttributes,
+} from '../node/node-helpers';
+import {
+  AttributeFilterSchema,
+  AttributeValueFilterSchema,
+  AttributePatternFilterSchema,
+  ClassFilterSchema,
+  ColumnsMappingSchema,
+  ContainerMappingSchema,
+  CustomMappingSchema,
+  FilterSchema,
+  LiveContainerMappingSchema,
+  MappingSchema,
+  MatchTypeSchema,
+  RecipeMappingSchema,
+  TagFilterSchema,
+  TextMappingSchema,
+  ParamsSchema,
+  ComponentMappingSchema,
+  LinkResponseSchema,
+  GalleryMappingSchema,
+} from './mapping.schema';
+import {
+  textTags,
+  textTagsSet,
+  mappingTagsSet,
+  CF_IGNORE_ATTR,
+} from './mapping.constants';
+import {
+  isYoutubeUrl,
+  processTextLinks,
+  isEmpty,
+  excludeNode,
+  filterAllMapping,
+  filterAnyMapping,
+  trimAsciiWhitespace,
+  collapseAsciiWhitespace,
+} from './mapping.utils';
+import {
+  toInstagram,
+  toTikTok,
+  toYoutubeFromAnchor,
+  isInstagramNode,
+  isTikTokNode,
+} from './mapping.embeds';
+import {
+  toImg,
+  toImage,
+  toVideo,
+  toAudio,
+  toGallery,
+  toGalleryFromMapping,
+  toTwitter,
+  isTwitterNode,
+  fromIframe,
+} from './mapping.media';
+import {
+  toContainer,
+  toColumns,
+  toLiveContainer,
+  toFigureContainer,
+  toLinkContainer,
+  appendLinkContainerComponents,
+  appendFigureContainerComponents,
+  toAnchorButton,
+  toButton,
+  isButtonNode,
+} from './mapping.container';
+import { toHTMLTable } from './mapping.table';
+import { toCustom } from './mapping.custom';
+import { toText } from './mapping.text';
+import { errorIssue } from '../../feed-issue';
+
+// Re-export the publicly consumed constants and helpers so the package surface
+// is unchanged.
+// Maximum HTML nesting depth fromNode will recurse into. Deeper subtrees are
+// silently dropped rather than risking a stack overflow from adversarial input.
+export const MAX_FROMNODE_DEPTH = 256;
+
+export { textTags, textTagsSet, mappingTagsSet };
+export { processTextLinks, isEmpty };
+export { mapLivePost } from './mapping.container';
+export { toCustom } from './mapping.custom';
+
+export type Filter = z.infer<typeof FilterSchema>;
+export type TagFilter = z.infer<typeof TagFilterSchema>;
+export type ClassFilter = z.infer<typeof ClassFilterSchema>;
+export type AttributeFilter = z.infer<typeof AttributeFilterSchema>;
+export type AttributeValueFilter = z.infer<typeof AttributeValueFilterSchema>;
+export type AttributePatternFilter = z.infer<
+  typeof AttributePatternFilterSchema
+>;
+
+export type Mapping = z.infer<typeof MappingSchema>;
+export type LinkResponse = z.infer<typeof LinkResponseSchema>;
+export type ComponentMapping = z.infer<typeof ComponentMappingSchema>;
+export type MatchType = z.infer<typeof MatchTypeSchema>;
+
+export type RecipeMapping = z.infer<typeof RecipeMappingSchema>;
+export type ColumnsMapping = z.infer<typeof ColumnsMappingSchema>;
+export type LiveContainerMapping = z.infer<typeof LiveContainerMappingSchema>;
+export type ContainerMapping = z.infer<typeof ContainerMappingSchema>;
+export type CustomMapping = z.infer<typeof CustomMappingSchema>;
+export type TextMapping = z.infer<typeof TextMappingSchema>;
+export type GalleryMapping = z.infer<typeof GalleryMappingSchema>;
+
+/**
+ * It gets the root node from a list of nodes
+ *
+ * @param {Node[]} nodes
+ * @param {Mapping} mapping
+ * @returns {ElementNode | null}
+ */
+export function getRootElement(
+  nodes: Node[],
+  mapping: Mapping
+): ElementNode | null {
+  const { match, filters } = mapping;
+  for (const node of nodes) {
+    if (node.type !== 'element') continue;
+    if (match === 'all') {
+      if (filterAllMapping(node, filters)) {
+        return node;
+      }
+    }
+
+    if (match === 'any') {
+      if (filterAnyMapping(node, filters)) {
+        return node;
+      }
+    }
+
+    if (node.children) {
+      const rootElement = getRootElement(node.children, mapping);
+      if (!rootElement) continue;
+      return rootElement;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * It reduce a list of nodes and remove the comments and empty text elements
+ *
+ * @param {Node[]} nodes
+ * @param {Node} node
+ * @returns {Node[]}
+ */
+export function reduceEmptyTextNode(nodes: Node[], node: Node): Node[] {
+  if (node.type === 'comment') return nodes;
+
+  if (node.type === 'text') {
+    let content = node.content;
+    if (content) {
+      content = collapseAsciiWhitespace(content);
+    }
+
+    if (content.length >= 1 && !trimAsciiWhitespace(content).length) {
+      nodes.push(content === node.content ? node : { ...node, content: ' ' });
+      return nodes;
+    }
+    if (!isEmpty(content)) {
+      nodes.push(content === node.content ? node : { ...node, content });
+    }
+    return nodes;
+  }
+
+  /* v8 ignore next -- ElementNode always has children; the fallthrough is a defensive guard */
+  if (node.type === 'element' && node.children) {
+    const newChildren = node.children.reduce(reduceEmptyTextNode, []);
+    nodes.push({ ...node, children: newChildren });
+    return nodes;
+  }
+
+  nodes.push(node);
+  return nodes;
+}
+
+/**
+ * It process the html node and returns a list of canvasflow components
+ *
+ * @param {Params | undefined} params
+ * @returns {ReduceComponentsFn}
+ */
+export function reduceComponents(params?: Params): ReduceComponentsFn {
+  return (acc: Array<Component>, node: Node): Array<Component> => {
+    const component = fromNode(node, params);
+
+    if (!component) {
+      return acc;
+    }
+
+    if (Array.isArray(component)) {
+      for (const c of component) {
+        /* v8 ignore next -- fromNode never yields falsy array entries */
+        if (!c) continue;
+        if (isLinkContainerComponent(c)) {
+          appendLinkContainerComponents(acc, c);
+          continue;
+        }
+
+        if (isFigureContainerComponent(c)) {
+          appendFigureContainerComponents(acc, c);
+          continue;
+        }
+
+        acc.push(c);
+      }
+      return acc;
+    }
+
+    if (isLinkContainerComponent(component)) {
+      appendLinkContainerComponents(acc, component);
+      return acc;
+    }
+
+    if (isFigureContainerComponent(component)) {
+      appendFigureContainerComponents(acc, component);
+      return acc;
+    }
+
+    acc.push(component);
+    return acc;
+  };
+}
+
+type ReduceComponentsFn = (
+  acc: Array<Component>,
+  node: Node
+) => Array<Component>;
+
+const TEXT_TAG_MAPPING: Record<string, TextType> = {
+  h1: 'headline',
+  h2: 'title',
+  h3: 'subtitle',
+  h4: 'intro',
+  h5: 'crosshead',
+  h6: 'byline',
+  footer: 'footer',
+  blockquote: 'blockquote',
+  p: 'body',
+  ol: 'body',
+  ul: 'body',
+  a: 'body',
+} satisfies Record<string, TextType>;
+
+/**
+ * It process a node individually and transform it into a single canvasflow
+ * component
+ *
+ * @param {Node} node
+ * @param {Params | undefined} params
+ * @returns {Component | Array<Component> | null}
+ */
+export function fromNode(
+  node: Node,
+  params?: Params,
+  _depth = 0
+): Component | Array<Component> | null {
+  if (_depth > MAX_FROMNODE_DEPTH) return null;
+
+  // If the node is a comment it get's ignore
+  if (node.type === 'comment') return null;
+
+  // If the node is a text, it get's wrapped in a p tag
+  if (node.type === 'text') {
+    if (!trimAsciiWhitespace(node.content).length) {
+      return null;
+    }
+
+    const trimmed = escapeText(trimAsciiWhitespace(node.content));
+    const text = params?.ignoreParagraphWrap ? trimmed : `<p>${trimmed}</p>`;
+
+    const bodyComponent: TextComponent = {
+      component: 'body',
+      errors: [],
+      warnings: [],
+      text,
+    };
+    return bodyComponent;
+  }
+
+  const { tagName } = node;
+
+  // If the element is a script or a style it will get ignored
+  if (tagName === 'script' || tagName === 'style') return null;
+
+  const attributes = getAttributes(node.attributes);
+
+  // We exclude first and then we process
+  if (params?.excludes?.length) {
+    const isNodeExcluded = excludeNode(node, params.excludes);
+    if (isNodeExcluded) {
+      return null;
+    }
+  }
+
+  // If the element is specifically ignored
+  if (attributes.get(CF_IGNORE_ATTR) !== undefined) {
+    return null;
+  }
+
+  const role = attributes.get('role');
+
+  if (tagName === 'a' && isYoutubeUrl(attributes.get('href') || '')) {
+    return toYoutubeFromAnchor(node);
+  }
+
+  // Some publishers (e.g. Forbes) wrap a <button> inside an <a> tag instead
+  // of using a standalone <button>. Without this check the <a> would be
+  // converted to a plain link component, silently discarding the button child.
+  // hasButton() detects the presence of a direct <button> child so we can
+  // route the whole anchor to toAnchorButton() instead.
+  if (tagName === 'a' && hasButton(node)) {
+    return toAnchorButton(node);
+  }
+
+  if (isInstagramNode(node)) {
+    return toInstagram(node);
+  }
+
+  if (tagName === 'table') {
+    return toHTMLTable(node);
+  }
+
+  if (isTikTokNode(node)) {
+    const cite = attributes.get('cite');
+    if (!cite || !URL.canParse(cite)) {
+      const invalidTikTok: TikTokComponent = {
+        component: 'video',
+        vidtype: 'tiktok',
+        params: {
+          username: '',
+          id: '',
+        },
+        warnings: [],
+        errors: [
+          cite
+            ? errorIssue(
+                'INVALID_TIKTOK_URL',
+                `Invalid cite URL: "${cite}"`,
+                'cite'
+              )
+            : errorIssue(
+                'INVALID_TIKTOK_URL',
+                'cite attribute is required',
+                'cite'
+              ),
+        ],
+      };
+      return invalidTikTok;
+    }
+    const tiktokComponent = toTikTok(new URL(cite));
+    if (tagName) {
+      tiktokComponent.element = {
+        tag: tagName,
+        attributes: Object.fromEntries(attributes),
+      };
+    }
+    return tiktokComponent;
+  }
+
+  if (isTwitterNode(node)) {
+    return toTwitter(node);
+  }
+
+  if (isButtonNode(node)) {
+    return toButton(node);
+  }
+
+  if (role === 'gallery' || role === 'mosaic') {
+    return toGallery(node);
+  }
+
+  // This section validates the rest of the tags components
+  switch (tagName) {
+    case 'video':
+      return toVideo(node);
+    case 'audio':
+      return toAudio(node);
+    case 'iframe':
+      return fromIframe(node);
+    default:
+      break;
+  }
+
+  // Handle mapping send by the user
+  const mappingResult = getMappingComponent(node, params?.mappings);
+
+  if (mappingResult.mappedComponent !== undefined) {
+    if (
+      mappingResult.mappedComponent === 'recipe' ||
+      mappingResult.mappedComponent === 'container'
+    ) {
+      return toContainer(
+        mappingResult.mappedComponent,
+        node,
+        params,
+        mappingResult.properties
+      );
+    }
+    if (mappingResult.mappedComponent === 'columns') {
+      return toColumns(
+        node,
+        mappingResult.mapping,
+        params,
+        mappingResult.properties
+      );
+    }
+    if (mappingResult.mappedComponent === 'live_container') {
+      return toLiveContainer(
+        node,
+        mappingResult.mapping,
+        params,
+        mappingResult.properties
+      );
+    }
+    if (mappingResult.mappedComponent === 'gallery') {
+      return toGalleryFromMapping(
+        node,
+        mappingResult.mapping,
+        params,
+        mappingResult.properties
+      );
+    }
+    if (mappingResult.mappedComponent === 'custom') {
+      return toCustom(node, mappingResult.properties);
+    }
+
+    return toText(
+      node,
+      mappingResult.mappedComponent,
+      mappingResult.properties
+    );
+  }
+
+  if (tagName === 'figure') {
+    return toFigureContainer(node, params);
+  }
+
+  if (tagName === 'a') {
+    return toLinkContainer(node, params);
+  }
+
+  if (tagName === 'img') {
+    return toImg(node);
+  }
+
+  if (tagName === 'picture') {
+    return toImage(node);
+  }
+
+  // This section validates text tags
+  const textType = TEXT_TAG_MAPPING[tagName];
+  if (textType !== undefined) {
+    return toText(node, textType);
+  }
+
+  if (node.children) {
+    const components: Array<Component> = [];
+    for (const n of node.children) {
+      const c = fromNode(n, params, _depth + 1);
+      if (!c) continue;
+      if (Array.isArray(c)) {
+        if (!c.length) continue;
+        components.push(...c);
+      } else {
+        components.push(c);
+      }
+    }
+
+    return components;
+  }
+
+  /* v8 ignore next -- element nodes always expose a children array */
+  return null;
+}
+
+/**
+ * It returns `true` if the node has a button as a children
+ *
+ * @param {ElementNode} node
+ * @returns {boolean}
+ */
+function hasButton(node: ElementNode): boolean {
+  for (const child of node.children) {
+    if (child.type === 'element' && child.tagName === 'button') {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Check whether `mapping` matches the expected `{ mappings: Mapping[] }` shape.
+ *
+ * @param {unknown} mapping
+ * @returns {boolean}
+ */
+export function isValidMapping(mapping: unknown): boolean {
+  return z.object({ mappings: z.array(MappingSchema) }).safeParse(mapping)
+    .success;
+}
+
+export type Params = z.infer<typeof ParamsSchema>;
+
+/**
+ * Filter the nodes that has empty text node
+ *
+ * @param {Node} node
+ * @returns {boolean}
+ */
+export function filterEmptyTextNode(node: Node): boolean {
+  if (node.type === 'comment') return false;
+  if (node.type !== 'text') return true;
+
+  const { content } = node;
+  if (!content) return false;
+
+  return !isEmpty(content);
+}
+
+/**
+ * Check if a param is valid
+ *
+ * @param {unknown} params
+ * @returns {boolean}
+ */
+export function isValidParams(params: unknown): boolean {
+  return ParamsSchema.safeParse(params).success;
+}
+
+/**
+ * Parse and return typed `Params`, throwing if `params` is invalid.
+ *
+ * @param {unknown} params
+ * @returns {Params}
+ */
+export function validateParams(params: unknown): Params {
+  const result = ParamsSchema.safeParse(params);
+  if (!result.success) {
+    throw new Error(result.error.message);
+  }
+  return result.data;
+}
+
+type MappingComponentResponse =
+  | {
+      mappedComponent: 'columns';
+      mapping: ColumnsMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | {
+      mappedComponent: 'live_container';
+      mapping: LiveContainerMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | {
+      mappedComponent: 'gallery';
+      mapping: GalleryMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | {
+      mappedComponent: 'recipe';
+      mapping: RecipeMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | {
+      mappedComponent: 'container';
+      mapping: ContainerMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | {
+      mappedComponent: 'custom';
+      mapping: CustomMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | {
+      mappedComponent: TextType;
+      mapping: TextMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | { mappedComponent: undefined; mapping: undefined; properties: undefined };
+
+function getMappingComponent(
+  node: ElementNode,
+  mappings?: ComponentMapping[]
+): MappingComponentResponse {
+  if (!mappings || !mappings.length) {
+    return {
+      mappedComponent: undefined,
+      mapping: undefined,
+      properties: undefined,
+    };
+  }
+
+  for (const mapping of mappings) {
+    const { match, filters, properties } = mapping;
+    const matched =
+      (match === 'all' && filterAllMapping(node, filters)) ||
+      (match === 'any' && filterAnyMapping(node, filters));
+    if (!matched) continue;
+
+    switch (mapping.component) {
+      case 'columns':
+        return { mappedComponent: 'columns', mapping, properties };
+      case 'live_container':
+        return { mappedComponent: 'live_container', mapping, properties };
+      case 'gallery':
+        return { mappedComponent: 'gallery', mapping, properties };
+      case 'recipe':
+        return { mappedComponent: 'recipe', mapping, properties };
+      case 'container':
+        return { mappedComponent: 'container', mapping, properties };
+      case 'custom':
+        return { mappedComponent: 'custom', mapping, properties };
+      default:
+        return { mappedComponent: mapping.component, mapping, properties };
+    }
+  }
+
+  return {
+    mappedComponent: undefined,
+    mapping: undefined,
+    properties: undefined,
+  };
+}
