@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 🏷️ 2.0.3
+
+_July 28, 2026_
+
+🧹 Chores
+
+- (ci) Upgrade actions/checkout and actions/setup-node to v7 ([`d6c7f4f`](https://github.com/Canvasflow/feed/commit/d6c7f4f1646d808e4e0b6afee3e74787c101100e))
+- (hooks) Mark post-merge hook as executable ([`eb247e5`](https://github.com/Canvasflow/feed/commit/eb247e551a4c24f15d2f13ad7c0035ecb02e45f5))
+- (deps) Upgrade typescript, cz-conventional-changelog, @types/node ([`36030bd`](https://github.com/Canvasflow/feed/commit/36030bd109b8ea1c98eb9ae3ce14df915a27aa13))
+- (hooks) Chmod +x all hooks in prepare script ([`35e280b`](https://github.com/Canvasflow/feed/commit/35e280b03fb46dd75c50f9659191a02096c1ca49))
+- (hooks) Mark pre-push hook as executable ([`c697ce4`](https://github.com/Canvasflow/feed/commit/c697ce4949c995dd2c7e9be960beb4924bd5f02f))
+
 ## 🏷️ 2.0.2
 
 _July 28, 2026_
