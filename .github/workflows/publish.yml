@@ -49,7 +49,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: write
     steps:
       - uses: actions/checkout@v7
 
@@ -76,7 +75,7 @@ jobs:
         run: npm pack --dry-run
 
       - name: 🚀 Publish
-        run: npm publish --provenance
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
