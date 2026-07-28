@@ -60,7 +60,14 @@ export function toText(
     typeof rawText === 'string'
       ? rawText.trim().replace(/\s{2,}/g, ' ')
       : rawText;
-  if (!text) return null;
+  const visibleContent =
+    typeof text === 'string'
+      ? text
+          .replace(/<[^>]*>/g, '')
+          .replace(/&nbsp;/g, ' ')
+          .trim()
+      : '';
+  if (!visibleContent) return null;
 
   const id = attributes.get('id');
   const role = attributes.get('role');

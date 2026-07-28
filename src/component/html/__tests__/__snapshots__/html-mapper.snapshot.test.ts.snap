@@ -14515,25 +14515,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       "tag": "a",
     },
     "errors": [],
-    "id": undefined,
-    "properties": undefined,
-    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4"><p> </p></a>",
-    "warnings": [],
-  },
-  {
-    "component": "body",
-    "element": {
-      "attributes": {
-        "data-cta-id": "US-EN_ESPN Sports_HTW_ctawidget_v2",
-        "data-cta-type": "cta_widget_v4",
-        "data-item-name": "ALL OF ESPN. ALL IN ONE PLACE.",
-        "href": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
-        "rel": "noopener",
-        "target": "_blank",
-      },
-      "tag": "a",
-    },
-    "errors": [],
     "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4">ALL OF ESPN. ALL IN                            ONE                            PLACE.</a>",
     "warnings": [],
   },
@@ -14579,25 +14560,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
     "id": undefined,
     "imageurl": "https://library-staging.ng-sportingnews.com/styles/crop_style_16_9_desktop_webp/s3/2025-08/ESPN%20logo%20%28Red%29.png.webp",
     "link": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
-    "warnings": [],
-  },
-  {
-    "component": "body",
-    "element": {
-      "attributes": {
-        "data-cta-id": "US-EN_ESPN Sports_HTW_ctawidget_v2",
-        "data-cta-type": "cta_widget_v4",
-        "data-item-name": "ALL OF ESPN. ALL IN ONE PLACE.",
-        "href": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
-        "rel": "noopener",
-        "target": "_blank",
-      },
-      "tag": "a",
-    },
-    "errors": [],
-    "id": undefined,
-    "properties": undefined,
-    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4"><p> </p></a>",
     "warnings": [],
   },
   {
@@ -14665,22 +14627,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
     "component": "body",
     "element": {
       "attributes": {
-        "href": "https://go.web.plus.espn.com/c/image-link",
-        "rel": "noopener",
-        "target": "_blank",
-      },
-      "tag": "a",
-    },
-    "errors": [],
-    "id": undefined,
-    "properties": undefined,
-    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/image-link" target="_blank"><p> </p></a>",
-    "warnings": [],
-  },
-  {
-    "component": "body",
-    "element": {
-      "attributes": {
         "href": "https://go.web.plus.espn.com/c/game-link",
         "rel": "noopener",
         "target": "_blank",
@@ -14732,25 +14678,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
     "id": undefined,
     "imageurl": "https://library-staging.ng-sportingnews.com/styles/crop_style_16_9_desktop_webp/s3/2025-08/ESPN%20logo%20%28Red%29.png.webp",
     "link": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
-    "warnings": [],
-  },
-  {
-    "component": "body",
-    "element": {
-      "attributes": {
-        "data-cta-id": "US-EN_ESPN Sports_HTW_ctawidget_v2",
-        "data-cta-type": "cta_widget_v4",
-        "data-item-name": "ALL OF ESPN. ALL IN ONE PLACE.",
-        "href": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
-        "rel": "noopener",
-        "target": "_blank",
-      },
-      "tag": "a",
-    },
-    "errors": [],
-    "id": undefined,
-    "properties": undefined,
-    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4"><p> </p></a>",
     "warnings": [],
   },
   {
