@@ -37,7 +37,7 @@ jobs:
         run: node scripts/bench-summary.mjs >> "$GITHUB_STEP_SUMMARY"
 
       - name: 📤 Upload results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: bench-results-node${{ matrix.node-version }}
           path: bench-results.json
