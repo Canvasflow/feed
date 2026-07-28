@@ -73,10 +73,10 @@
     "@commitlint/config-conventional": "^21.1.0",
     "@types/he": "^1.2.3",
     "@types/luxon": "^3.7.2",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.1.2",
     "@vitest/coverage-v8": "^4.1.10",
     "@vitest/ui": "^4.1.10",
-    "cz-conventional-changelog": "^3.0.1",
+    "cz-conventional-changelog": "^3.3.0",
     "publint": "^0.3.22",
     "typescript": "~6.0.3",
     "vite-plus": "^0.2.6"
