@@ -619,6 +619,18 @@ export function isContainerComponent(
   );
 }
 
+export function isColumnsComponent(
+  object: unknown
+): object is ColumnsComponent {
+  const potential = object as Record<string, unknown>;
+
+  return (
+    typeof object === 'object' &&
+    object !== null &&
+    potential.component === 'columns'
+  );
+}
+
 /** Type guard that narrows `object` to a link container component. */
 export function isLinkContainerComponent(
   object: unknown

@@ -14,6 +14,9 @@ import {
   isImageComponent,
   isTextComponent,
   isVideoComponent,
+  isContainerComponent,
+  isColumnsComponent,
+  isCustomComponent,
 } from '../component';
 import {
   type ElementNode,
@@ -137,21 +140,29 @@ export function toColumns(
   const attributes = getAttributes(node.attributes);
   const id = attributes.get('id');
 
-  const columnNodes: ElementNode[] = node.children
-    ? node.children
-        .reduce(findDescendants(filterColumnsDescendants(mapping, params)), [])
-        .filter((node: Node) => node.type === 'element')
+  const columnEntries: ColumnEntry[] = node.children
+    ? collectColumnEntries(node.children, mapping, params, null)
     : /* v8 ignore next -- children is always defined on an element node */ [];
 
-  if (!columnNodes.length) {
+  if (!columnEntries.length) {
     errors.push(
       errorIssue('MISSING_CHILDREN', 'HTML node do not have children')
     );
   }
 
-  const columns: Component[][] = columnNodes.map((node) =>
-    node.children.reduce(reduceComponents(params), [])
-  );
+  const columns: Component[][] = columnEntries.map(({ node, anchor }) => {
+    if (!anchor) return node.children.reduce(reduceComponents(params), []);
+    const anchorWithColumnChildren: ElementNode = {
+      ...anchor,
+      children: node.children,
+    };
+    const resolved: Component[] = [];
+    appendLinkContainerComponents(
+      resolved,
+      toLinkContainer(anchorWithColumnChildren, params)
+    );
+    return resolved;
+  });
 
   for (const [i, column] of columns.entries()) {
     if (!column.length) {
@@ -176,45 +187,40 @@ export function toColumns(
   };
 }
 
-/**
- * Filter the html nodes that match a column
- *
- * @param {ColumnsMapping} mapping
- * @param {Params} [params]
- * @returns {NodeFilterFn}
- */
-function filterColumnsDescendants(
+type ColumnEntry = { node: ElementNode; anchor: ElementNode | null };
+
+function collectColumnEntries(
+  nodes: Node[],
   mapping: ColumnsMapping,
-  params?: Params
-): NodeFilterFn {
-  return (node: Node): boolean => {
-    const { type } = node;
-    /* v8 ignore next -- findDescendants only ever passes element nodes */
-    if (type !== 'element') return false;
-    // Exclude the nodes that we need to ignore
-    if (params?.excludes?.length) {
-      const isNodeExcluded = excludeNode(node, params.excludes);
-      if (isNodeExcluded) {
-        return false;
-      }
-    }
+  params: Params | undefined,
+  closestAnchor: ElementNode | null
+): ColumnEntry[] {
+  const result: ColumnEntry[] = [];
+
+  for (const node of nodes) {
+    if (node.type !== 'element') continue;
+
+    if (params?.excludes?.length && excludeNode(node, params.excludes))
+      continue;
 
     const { column } = mapping;
     const { match, filters } = column;
+    const matched =
+      (match === 'all' && filterAllMapping(node, filters)) ||
+      (match === 'any' && filterAnyMapping(node, filters));
 
-    if (match === 'all') {
-      if (filterAllMapping(node, filters)) {
-        return true;
-      }
-    }
-    if (match === 'any') {
-      if (filterAnyMapping(node, filters)) {
-        return true;
-      }
+    if (matched) {
+      result.push({ node, anchor: closestAnchor });
+      continue;
     }
 
-    return false;
-  };
+    const nextAnchor = node.tagName === 'a' ? node : closestAnchor;
+    result.push(
+      ...collectColumnEntries(node.children, mapping, params, nextAnchor)
+    );
+  }
+
+  return result;
 }
 
 /**
@@ -699,6 +705,46 @@ function reduceLinkContainerComponent(
         component.link = link;
         component.errors = [];
       }
+    }
+
+    if (isContainerComponent(component)) {
+      const linkContainer: LinkContainerComponent = {
+        component: 'container',
+        type: 'link',
+        link: link ?? '',
+        attributes: attributes ?? new Map(),
+        components: component.components,
+        errors: [],
+        warnings: [],
+        element,
+      };
+      const resolved: Component[] = [];
+      appendLinkContainerComponents(resolved, linkContainer);
+      component.components = resolved;
+    }
+
+    if (isCustomComponent(component)) {
+      if (link) {
+        component.content = `<a href="${link}">${component.content}</a>`;
+      }
+    }
+
+    if (isColumnsComponent(component)) {
+      component.columns = component.columns.map((column) => {
+        const linkContainer: LinkContainerComponent = {
+          component: 'container',
+          type: 'link',
+          link: link ?? '',
+          attributes: attributes ?? new Map(),
+          components: column,
+          errors: [],
+          warnings: [],
+          element,
+        };
+        const resolved: Component[] = [];
+        appendLinkContainerComponents(resolved, linkContainer);
+        return resolved;
+      });
     }
 
     acc.push(component);
