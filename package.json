@@ -56,7 +56,7 @@
     "commit": "cz",
     "format": "vp fmt .",
     "changelog": "node scripts/update-changelog.mjs",
-    "prepare": "git rev-parse --git-dir > /dev/null 2>&1 && git config core.hooksPath .vite-hooks || true"
+    "prepare": "git rev-parse --git-dir > /dev/null 2>&1 && git config core.hooksPath .vite-hooks && chmod +x .vite-hooks/* || true"
   },
   "config": {
     "commitizen": {
