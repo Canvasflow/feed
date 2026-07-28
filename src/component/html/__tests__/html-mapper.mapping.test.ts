@@ -12,6 +12,8 @@ import {
   type TextComponent,
   type ContainerComponent,
   type ImageComponent,
+  type ColumnsComponent,
+  type Component,
 } from '../../component';
 
 describe('Mapping', () => {
@@ -663,6 +665,245 @@ describe('HTML Articles', () => {
       });
 
       expect(components.length).toBe(117);
+    }
+  );
+
+  test(
+    `Link container wrapping a column container`,
+    { tags: ['html', 'unit'] },
+    async () => {
+      const htmlFilePath = join(
+        htmlDirPath,
+        `link-container-wrap-column-container.html`
+      );
+      const htmlContent = readFileSync(htmlFilePath, 'utf-8');
+
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'columns',
+          match: 'all',
+          properties: {
+            collapsetype: 'responsive',
+            colsplit: '1-4-1',
+            styles: ['30073'],
+          },
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'all',
+              items: ['affiliate-widget'],
+            },
+          ],
+          column: {
+            match: 'any',
+            filters: [
+              {
+                type: 'class',
+                match: 'any',
+                items: [
+                  'image-wrapper',
+                  'stream-cta-game',
+                  'stream-cta-button',
+                ],
+              },
+            ],
+          },
+        },
+        {
+          component: 'custom',
+          match: 'all',
+          properties: {
+            style: 30124,
+            pagetarget: 'external',
+            resource: 'url',
+            component: 'button',
+          },
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['stream-cta-button__text'],
+            },
+          ],
+        },
+      ];
+
+      const components = HTMLMapper.toComponents(htmlContent, {
+        mappings,
+      });
+
+      expect(components.length).toBe(3);
+
+      const firstAdComponent = components[0] as ColumnsComponent;
+      expect(firstAdComponent.component).toBe('columns');
+      expect(firstAdComponent.columns.length).toBe(3);
+
+      const firstColumn = firstAdComponent.columns[0] as Component[];
+      const imageComponent = firstColumn[
+        firstColumn.length - 1
+      ] as ImageComponent;
+      expect(imageComponent.component).toBe('image');
+      expect(imageComponent.link).toBe(
+        'https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb'
+      );
+    }
+  );
+
+  test(
+    `Link container — anchor wraps the columns root`,
+    { tags: ['html', 'unit'] },
+    async () => {
+      const htmlFilePath = join(
+        htmlDirPath,
+        `link-container-wrap-column-container.html`
+      );
+      const htmlContent = readFileSync(htmlFilePath, 'utf-8');
+
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'columns',
+          match: 'all',
+          properties: {
+            collapsetype: 'responsive',
+            colsplit: '1-4-1',
+            styles: ['30073'],
+          },
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'all',
+              items: ['affiliate-widget'],
+            },
+          ],
+          column: {
+            match: 'any',
+            filters: [
+              {
+                type: 'class',
+                match: 'any',
+                items: [
+                  'image-wrapper',
+                  'stream-cta-game',
+                  'stream-cta-button',
+                ],
+              },
+            ],
+          },
+        },
+        {
+          component: 'custom',
+          match: 'all',
+          properties: {
+            style: 30124,
+            pagetarget: 'external',
+            resource: 'url',
+            component: 'button',
+          },
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['stream-cta-button__text'],
+            },
+          ],
+        },
+      ];
+
+      const components = HTMLMapper.toComponents(htmlContent, {
+        mappings,
+      });
+
+      expect(components.length).toBe(3);
+
+      const secondAdComponent = components[1];
+
+      // TODO: add expects
+      expect(secondAdComponent).toBeDefined();
+    }
+  );
+
+  test(
+    `Link container — each column has its own anchor`,
+    { tags: ['html', 'unit'] },
+    async () => {
+      const htmlFilePath = join(
+        htmlDirPath,
+        `link-container-wrap-column-container.html`
+      );
+      const htmlContent = readFileSync(htmlFilePath, 'utf-8');
+
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'columns',
+          match: 'all',
+          properties: {
+            collapsetype: 'responsive',
+            colsplit: '1-4-1',
+            styles: ['30073'],
+          },
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'all',
+              items: ['affiliate-widget'],
+            },
+          ],
+          column: {
+            match: 'any',
+            filters: [
+              {
+                type: 'class',
+                match: 'any',
+                items: [
+                  'image-wrapper',
+                  'stream-cta-game',
+                  'stream-cta-button',
+                ],
+              },
+            ],
+          },
+        },
+        {
+          component: 'custom',
+          match: 'all',
+          properties: {
+            style: 30124,
+            pagetarget: 'external',
+            resource: 'url',
+            component: 'button',
+          },
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['stream-cta-button__text'],
+            },
+          ],
+        },
+      ];
+
+      const components = HTMLMapper.toComponents(htmlContent, {
+        mappings,
+      });
+
+      expect(components.length).toBe(3);
+
+      const thirdAdComponent = components[2] as ColumnsComponent;
+
+      // TODO: add expects
+      expect(thirdAdComponent).toBeDefined();
     }
   );
 });
