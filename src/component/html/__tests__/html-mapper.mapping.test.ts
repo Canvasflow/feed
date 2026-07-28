@@ -13,6 +13,7 @@ import {
   type ContainerComponent,
   type ImageComponent,
   type ColumnsComponent,
+  type CustomComponent,
   type Component,
 } from '../../component';
 
@@ -742,14 +743,22 @@ describe('HTML Articles', () => {
       expect(firstAdComponent.component).toBe('columns');
       expect(firstAdComponent.columns.length).toBe(3);
 
-      const firstColumn = firstAdComponent.columns[0] as Component[];
-      const imageComponent = firstColumn[
-        firstColumn.length - 1
-      ] as ImageComponent;
-      expect(imageComponent.component).toBe('image');
-      expect(imageComponent.link).toBe(
-        'https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb'
-      );
+      const sharedUrl =
+        'https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb';
+
+      const col0 = firstAdComponent.columns[0] as Component[];
+      const imageCol0 = col0.find(
+        (c) => c.component === 'image'
+      ) as ImageComponent;
+      expect(imageCol0.link).toBe(sharedUrl);
+
+      const col1 = firstAdComponent.columns[1] as Component[];
+      const textCol1 = col1[0] as TextComponent;
+      expect(textCol1.text).toContain(sharedUrl);
+
+      const col2 = firstAdComponent.columns[2] as Component[];
+      const customCol2 = col2[0] as CustomComponent;
+      expect(customCol2.content).toContain(sharedUrl);
     }
   );
 
@@ -823,10 +832,26 @@ describe('HTML Articles', () => {
 
       expect(components.length).toBe(3);
 
-      const secondAdComponent = components[1];
+      const secondAdComponent = components[1] as ColumnsComponent;
+      expect(secondAdComponent.component).toBe('columns');
+      expect(secondAdComponent.columns.length).toBe(3);
 
-      // TODO: add expects
-      expect(secondAdComponent).toBeDefined();
+      const sharedUrl =
+        'https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb';
+
+      const col0 = secondAdComponent.columns[0] as Component[];
+      const imageCol0 = col0.find(
+        (c) => c.component === 'image'
+      ) as ImageComponent;
+      expect(imageCol0.link).toBe(sharedUrl);
+
+      const col1 = secondAdComponent.columns[1] as Component[];
+      const textCol1 = col1[0] as TextComponent;
+      expect(textCol1.text).toContain(sharedUrl);
+
+      const col2 = secondAdComponent.columns[2] as Component[];
+      const customCol2 = col2[0] as CustomComponent;
+      expect(customCol2.content).toContain(sharedUrl);
     }
   );
 
@@ -901,9 +926,26 @@ describe('HTML Articles', () => {
       expect(components.length).toBe(3);
 
       const thirdAdComponent = components[2] as ColumnsComponent;
+      expect(thirdAdComponent.component).toBe('columns');
+      expect(thirdAdComponent.columns.length).toBe(3);
 
-      // TODO: add expects
-      expect(thirdAdComponent).toBeDefined();
+      const col0 = thirdAdComponent.columns[0] as Component[];
+      const imageCol0 = col0.find(
+        (c) => c.component === 'image'
+      ) as ImageComponent;
+      expect(imageCol0.link).toBe('https://go.web.plus.espn.com/c/image-link');
+
+      const col1 = thirdAdComponent.columns[1] as Component[];
+      const textCol1 = col1[0] as TextComponent;
+      expect(textCol1.text).toContain(
+        'https://go.web.plus.espn.com/c/game-link'
+      );
+
+      const col2 = thirdAdComponent.columns[2] as Component[];
+      const customCol2 = col2[0] as CustomComponent;
+      expect(customCol2.content).toContain(
+        'https://go.web.plus.espn.com/c/button-link'
+      );
     }
   );
 });

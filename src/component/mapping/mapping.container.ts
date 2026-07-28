@@ -16,6 +16,7 @@ import {
   isVideoComponent,
   isContainerComponent,
   isColumnsComponent,
+  isCustomComponent,
 } from '../component';
 import {
   type ElementNode,
@@ -710,8 +711,28 @@ function reduceLinkContainerComponent(
       console.log(component);
     }
 
+    if (isCustomComponent(component)) {
+      if (link) {
+        component.content = `<a href="${link}">${component.content}</a>`;
+      }
+    }
+
     if (isColumnsComponent(component)) {
-      console.log(component);
+      component.columns = component.columns.map((column) => {
+        const linkContainer: LinkContainerComponent = {
+          component: 'container',
+          type: 'link',
+          link: link ?? '',
+          attributes: attributes ?? new Map(),
+          components: column,
+          errors: [],
+          warnings: [],
+          element,
+        };
+        const resolved: Component[] = [];
+        appendLinkContainerComponents(resolved, linkContainer);
+        return resolved;
+      });
     }
 
     acc.push(component);
