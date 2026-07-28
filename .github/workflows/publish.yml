@@ -97,7 +97,7 @@ jobs:
           fetch-depth: 0
           ref: develop
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
 
