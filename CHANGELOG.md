@@ -1,33 +1,33 @@
 # CHANGELOG
 
-## Migration guide — structured `FeedIssue` errors/warnings (next major)
+## 🏷️ 2.0.0
 
-Section 3 of the improvement plan (`improvements/03-api-robustness.md`)
-replaces every `errors`/`warnings` string array with a `FeedIssue[]`:
+_July 27, 2026_
+
+### 💥 Breaking changes
+
+#### `errors` and `warnings` are now `FeedIssue[]` (was `string[]`)
+
+Every `errors` and `warnings` array across the public API has changed type
+from `string[]` to `FeedIssue[]`. This affects `RSS`, `Channel`, `Item`,
+`Enclosure`, `MediaGroup`, `MediaContent`, `RSSFeed.errors`,
+`RSSFeed.validateParams()`, and every `Component` produced by
+`HTMLMapper.toComponents()`.
 
 ```ts
 interface FeedIssue {
-  code: FeedIssueCode; // stable, switchable string union — see src/feed-issue.ts
+  code: FeedIssueCode; // stable, switchable string union
   severity: 'error' | 'warning';
   message: string;
   path?: string;
 }
 ```
 
-This affects `RSS.errors`/`warnings`, `Channel.errors`/`warnings`,
-`Item.errors`/`warnings`, `Enclosure`/`MediaGroup`/`MediaContent`
-`errors`/`warnings`, `RSSFeed.errors`, `RSSFeed.validateParams()`'s return
-value, and `errors`/`warnings` on every `Component` produced by
-`HTMLMapper.toComponents()` (image, video, gallery, embeds, containers,
-buttons, text, tables, ...).
-
 **Before:**
 
 ```ts
 const rss = await feed.build();
-if (
-  rss.channel.items[0].errors.includes('Required property "url" is missing')
-) {
+if (rss.channel.items[0].errors.includes('Required property "url" is missing')) {
   // ...
 }
 ```
@@ -42,25 +42,152 @@ if (rss.channel.items[0].errors.some((e) => e.code === 'MISSING_URL')) {
 // e.message still carries the human-readable text for logging/display.
 ```
 
-Consumers that render `errors`/`warnings` as plain strings should switch to
-reading `.message`; consumers that branch on specific error text should
-switch to branching on `.code` (see `FeedIssueCode` in `src/feed-issue.ts`
-for the full list, e.g. `XML_PARSE_ERROR`, `INVALID_PARAMS`,
-`MISSING_IMAGE_SRC`, `INVALID_YOUTUBE_URL`, ...).
+Consumers that render issues as plain strings should switch to `.message`;
+consumers that branch on specific text should switch to `.code`. See
+`FeedIssueCode` in `src/feed-issue.ts` for the full list (e.g.
+`XML_PARSE_ERROR`, `INVALID_PARAMS`, `MISSING_IMAGE_SRC`,
+`INVALID_YOUTUBE_URL`, ...). See ADR-0007 and ADR-0008 in `docs/adr/` for
+rationale.
 
-Also in this pass: `build()` no longer throws on any unparseable URL
-reachable from feed content (channel `<link>`, iframe embeds, TikTok/YouTube
-anchors, relative media URLs); the `RSSFeed` constructor never throws on
-malformed XML; invalid `params` passed to the constructor are always
-reported by `build()` instead of being silently dropped; `validate()` no
-longer mutates parsed input and is idempotent across repeated calls;
-`getRecipeFromUrl`/`getHtmlContent` moved to `src/rss/recipe.ts` (exported
-from the package root) with an injectable `fetch`, a timeout, a
-response-status check, and a body-size cap — `RSSFeed.getRecipeFromUrl`/
-`getHtmlContent` remain as deprecated wrappers.
+#### Internal helpers removed from public exports
 
-See ADR-0007 (`docs/adr/0007-throw-surface-inventory.md`) and ADR-0008
-(`docs/adr/0008-keep-validate-build-async.md`) for the full rationale.
+`src/index.ts` now uses explicit named exports. The following were previously
+exported and are no longer part of the public API:
+
+- **Zod schemas:** `*Schema` exports (`ImageComponentSchema`,
+  `MappingSchema`, etc.) — use the inferred TypeScript types instead.
+- **Issue constructors:** `feedIssue`, `errorIssue`, `warningIssue` — build
+  `FeedIssue` objects directly.
+- **Pipeline internals:** `reduceComponents`, `fromNode`.
+- **Utilities:** `processTextLinks`, `isEmpty`, `mapLivePost`, `toCustom`.
+- **Constants:** `textTags`, `MAX_TEXT`.
+
+If you were importing any of these, copy the relevant logic into your own
+project (these were always implementation details, not part of the supported
+API surface).
+
+#### `readonly` arrays on component and feed types
+
+Arrays on `Component`, `Item`, `Enclosure`, `MediaGroup`, and `MediaContent`
+are now typed as `readonly`. TypeScript will reject direct mutation (`.push`,
+`.splice`, index assignment). Use the new `clone()` utility to get a fully
+mutable deep copy when you need to post-process an item:
+
+```ts
+import { clone } from '@canvasflow/feed';
+
+const item = rss.channel.items[0];
+const mutableItem = clone(item); // MutableItem — all arrays mutable
+mutableItem.components.push(myComponent);
+```
+
+#### Network I/O moved out of `RSSFeed`
+
+`RSSFeed.getRecipeFromUrl` and `RSSFeed.getHtmlContent` are now `@deprecated`
+wrappers. Import from `src/rss/recipe.ts` (re-exported from the package root)
+instead. The new functions accept an injected `fetch`, a configurable timeout
+(default 10 s), a `response.ok` check, and a body-size cap (default 5 MB):
+
+**Before:**
+
+```ts
+const recipe = await RSSFeed.getRecipeFromUrl(url);
+```
+
+**After:**
+
+```ts
+import { getRecipeFromUrl } from '@canvasflow/feed';
+
+const recipe = await getRecipeFromUrl(url);
+// With options:
+const recipe = await getRecipeFromUrl(url, {
+  fetch: customFetch,
+  timeoutMs: 5000,
+  maxBodyBytes: 2 * 1024 * 1024,
+});
+```
+
+#### Runtime requirement: Node.js >= 20.19.2
+
+The `engines` field now declares `"node": ">=20.19.2"`. Older Node versions
+are no longer tested or supported.
+
+#### HTML depth capped at 256 levels
+
+`HTMLMapper.toComponents()` now silently drops HTML elements nested beyond
+256 levels (the `MAX_FROMNODE_DEPTH` limit). Real-world feed content is never
+this deep; this guards against pathological inputs causing stack overflows.
+The constant is exported if you need to inspect or document it.
+
+---
+
+### ✨ New exports
+
+- **`FeedIssue`**, **`FeedIssueCode`**, **`FeedIssueSeverity`** — the new
+  error/warning type and its stable code union (use for `switch`/`if` guards).
+- **`clone(item: Item): MutableItem`** — returns a fully mutable deep copy of
+  a built `Item`.
+- **`MutableItem`** — the `DeepMutable<Item>` type alias for post-processing.
+- **`getRecipeFromUrl(url, options?)`** and **`getHtmlContent(url, options?)`**
+  from `src/rss/recipe.ts` — network utilities with injectable fetch, timeout,
+  and body cap.
+- **`MAX_FROMNODE_DEPTH`** — the 256-level depth limit constant.
+- **`buildItem`** — now an exported function (useful for testing custom build
+  pipelines).
+
+---
+
+### 🐛 Fixed
+
+- (rss) `RSSFeed` constructor never throws on malformed XML — parse errors are
+  captured in `feed.errors` and `rss.errors` instead of propagating.
+- (rss) `build()` never throws on any invalid URL reachable from feed content
+  (channel `<link>`, iframe embeds, TikTok/YouTube anchors, relative media URLs).
+- (rss) Invalid `params` passed to the constructor are always reported by
+  `build()`, not silently dropped.
+- (rss) `validate()` is now idempotent — repeated calls no longer produce
+  duplicate warnings.
+- (rss) `dc:creator` parsed as `[object Object]` in autosport/motorsport-style
+  feeds is now correctly extracted as a string.
+- (html) `JSON.parse` on JSON-LD script content is now guarded against
+  malformed `<script type="application/ld+json">` blocks.
+
+---
+
+### ⚡️ Performance
+
+- (node-helpers) `findDescendants`/`removeDescendants` no longer allocate a
+  new reducer closure per tree level (+24–39% throughput on depth-6 trees).
+- (mapping) Attribute-map allocation per node reduced via a `WeakMap` cache;
+  +19–25% throughput on large HTML with many filter calls per node.
+- (mapping) `patternCache` bounded at 500 entries with oldest-entry eviction —
+  prevents unbounded memory growth when many unique regex patterns are used.
+
+---
+
+### ♻️ Refactor
+
+- (rss) `src/rss/narrow.ts` boundary module introduced; `as` casts eliminated
+  at the XML parser boundary.
+- (mapping) `MappingComponentResponse` is now a discriminated union; downstream
+  `as` casts in `fromNode` eliminated.
+- (html) HTML pipeline unified to a single parse of the input string; all
+  pre-processing steps run as pure `Node[] → Node[]` tree passes.
+
+---
+
+### 🧹 Chores
+
+- `"module"` field removed from `package.json` (redundant with the `exports`
+  map; `main` and `types` kept for `moduleResolution: node10` compatibility).
+- `"sideEffects": false` declared — enables full tree-shaking for consumers
+  who bundle this library.
+- Runtime dependencies reduced from 7 to 5: `himalaya` and `sanitize-html`
+  (and their transitive tree: `postcss`, `deepmerge`, `parse-srcset`, `launder`,
+  `dayjs`) have been removed.
+
+---
 
 ## 🏷️ 1.17.4
 

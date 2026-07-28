@@ -42,8 +42,8 @@ against the repo on 2026-07-24.
 - [x] `himalaya` removed and `src/himalaya.d.ts` deleted _(verified: file does not exist; `himalaya` absent from `package.json`)_
 - [x] `sanitize-html` removed — replaced by allow-list AST serialization in `src/component/html/sanitize-html.ts` _(verified: package absent from `package.json`)_
 - [x] `zod` **kept in full** (not migrated to `zod/mini`) per ADR-0006 — recursive/lazy schema risk + being the public type-derivation mechanism made the mechanical migration not worth it now
-- [ ] CI guard: `dependencies` changes require an ADR in the same PR _(not done — no CI workflow enforces this yet; only `publish.yml` exists, see Section 7)_
-- [ ] Before/after install size, pack size, and dep count recorded in `01-dependency-diet.md` _(baseline recorded; "after" numbers not yet captured)_
+- [ ] CI guard: `dependencies` changes require an ADR in the same PR _(explicitly deferred — enforcing this in CI requires a custom script that diffs `package.json` and checks for a matching ADR file; low ROI given the ADR discipline is already established. See `01-dependency-diet.md` § Actionable plan step 7 if this ever needs to be wired up)_
+- [x] Before/after install size, pack size, and dep count recorded in `01-dependency-diet.md` _("after" numbers recorded 2026-07-27: 5 runtime deps, packed 49.8 KB / unpacked 297.8 KB, runtime dep tree ~14.8 MB; see `01-dependency-diet.md` § After numbers)_
 - [x] All tests + differential snapshots pass with no unexplained changes _(661 tests pass; 4 fixture divergences from the parser swap documented in ADR-0004)_
 
 ## Section 2 — HTML Pipeline Unification ✅ ([02-html-pipeline.md](02-html-pipeline.md))
@@ -114,9 +114,9 @@ against the repo on 2026-07-24.
 - [x] API surface guard in CI (api-extractor report or expect-type tests) _(`src/__tests__/api-surface.test.ts` added: assertions covering return types of `validate()`/`build()`, readonly vs mutable array contracts on `Item`/`MutableItem`/`Enclosure`/`MediaContent`, `clone` signature, all `is*` guard predicates, `FeedIssue` field types, `HTMLMapper.toComponents`, mapping validators, network utilities, `buildItem`, and a union-type import-existence guard that catches any removed or renamed type export. Type-level conditional checks (`T extends U ? true : false`) used for assertions involving `FeedIssue[]` — the large `FeedIssueCode` union exceeds what `toEqualTypeOf`/`toMatchTypeOf` can represent without a TS2344 false positive. 1004 tests pass, 6 skipped.)_
 - [x] JSDoc `@param {type}` annotations kept intentionally (maintainers can add per-parameter descriptions alongside the types) _(Decision: keep as-is — no cleanup needed.)_
 
-## Section 5 — Performance & Memory ([05-performance.md](05-performance.md))
+## Section 5 — Performance & Memory ✅ ([05-performance.md](05-performance.md))
 
-> **Status: In progress** _(2026-07-27 — all implementation items done in code; not yet committed)_.
+> **Status: Complete** _(2026-07-27 — all implementation items committed; bench suite, depth guard, patternCache bound, WeakMap attribute cache, heap check, and Performance wiki all verified in repo)_.
 
 **Study**
 

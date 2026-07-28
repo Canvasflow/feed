@@ -10,7 +10,7 @@
 - [x] `he` is wrapped behind `decodeEntities()` in `src/rss/entities.ts` with its own test suite. See [ADR-0003](https://github.com/canvasflow/feed/blob/main/docs/adr/0003-keep-he-wrapped-behind-decodeEntities.md).
 - [x] `luxon` is wrapped behind `parseDate()` in `src/rss/date.ts` with its own test suite. See [ADR-0005](https://github.com/canvasflow/feed/blob/main/docs/adr/0005-keep-luxon-wrapped-behind-parseDate.md).
 - [x] `zod` usage is either migrated to `zod/mini` (or a hand-rolled validator) or a decision record justifies keeping full zod. See [ADR-0006](https://github.com/canvasflow/feed/blob/main/docs/adr/0006-keep-zod-over-zod-mini.md).
-- [ ] Install size and bundle size are measured before/after and recorded (target: ≥50 % reduction in `node_modules` weight for consumers).
+- [x] Install size and bundle size are measured before/after and recorded _(2026-07-27: runtime dep tree ≈ 14.8 MB after vs ≈ 22 MB before; −7.2 MB / −33% in dep weight; pack size grew from 37.9 KB → 49.8 KB due to new source modules from Sections 1–7, not dep bloat — see "After numbers" table below)_.
 - [x] All existing tests pass and the differential snapshots (see 06) show no unexplained output change. _(661 tests pass; the 4 fixture divergences from the parser swap are documented and explained in ADR-0004 — no unexplained regressions)_
 
 ## Overview
@@ -82,6 +82,35 @@ Measured baseline (`npm ls --all --omit=dev`, `du -sh`, current lockfile):
 | Single largest packages                                             | `zod` 6.3 MB, `luxon` 4.5 MB, `linkedom` 2.5 MB, `dayjs` 1.9 MB (transitive via `sanitize-html`)                                                                                   |
 | `himalaya` last real release                                        | `1.1.1`, published 2019 (npm's `time.modified` shows a 2025-04-04 registry metadata touch, not a code release — confirmed via `npm view himalaya versions`, unchanged since 1.1.1) |
 | `npm pack` size today                                               | 37.9 kB tarball / 205.9 kB unpacked (this is `dist/` only — the dependency weight shown above is what a _consumer's_ `npm install` pays, not what ships in the package itself)     |
+
+### After numbers (2026-07-27 — post Sections 1 & 2)
+
+`himalaya` and `sanitize-html` removed (along with their transitive tree:
+`postcss`, `deepmerge`, `parse-srcset`, `launder`, `dayjs`). 5 runtime deps
+remain.
+
+| Metric                                                              | Before   | After    | Delta      |
+| ------------------------------------------------------------------- | -------- | -------- | ---------- |
+| Runtime dep count                                                   | 7        | 5        | −2         |
+| `node_modules` weight of runtime deps (direct, `du -sh`)           | ≈ 22 MB  | ≈ 14.8 MB | −7.2 MB   |
+| `npm pack` tarball size                                             | 37.9 KB  | 49.8 KB  | +11.9 KB ¹ |
+| `npm pack` unpacked size                                            | 205.9 KB | 297.8 KB | +92 KB ¹   |
+
+¹ Pack size grew because Sections 1–7 added new source files (`src/utils/`,
+`src/rss/recipe.ts`, `src/feed-issue.ts`, etc.) that are compiled into
+`dist/`. The consumer-facing runtime dep weight is what shrank; the pack
+size reflects the new code, not dependency bloat. The pack budget
+(75 KB / 460 KB) is comfortably met with significant headroom.
+
+Runtime dep breakdown after:
+
+| Package          | Size   |
+| ---------------- | ------ |
+| `zod`            | 6.3 MB |
+| `luxon`          | 4.5 MB |
+| `linkedom`       | 2.5 MB |
+| `fast-xml-parser`| 1.4 MB |
+| `he`             | 132 KB |
 
 Revised priority order by (size saved × risk × independence from Section 2):
 
