@@ -89,12 +89,12 @@ Measured baseline (`npm ls --all --omit=dev`, `du -sh`, current lockfile):
 `postcss`, `deepmerge`, `parse-srcset`, `launder`, `dayjs`). 5 runtime deps
 remain.
 
-| Metric                                                              | Before   | After    | Delta      |
-| ------------------------------------------------------------------- | -------- | -------- | ---------- |
-| Runtime dep count                                                   | 7        | 5        | −2         |
-| `node_modules` weight of runtime deps (direct, `du -sh`)           | ≈ 22 MB  | ≈ 14.8 MB | −7.2 MB   |
-| `npm pack` tarball size                                             | 37.9 KB  | 49.8 KB  | +11.9 KB ¹ |
-| `npm pack` unpacked size                                            | 205.9 KB | 297.8 KB | +92 KB ¹   |
+| Metric                                                   | Before   | After     | Delta      |
+| -------------------------------------------------------- | -------- | --------- | ---------- |
+| Runtime dep count                                        | 7        | 5         | −2         |
+| `node_modules` weight of runtime deps (direct, `du -sh`) | ≈ 22 MB  | ≈ 14.8 MB | −7.2 MB    |
+| `npm pack` tarball size                                  | 37.9 KB  | 49.8 KB   | +11.9 KB ¹ |
+| `npm pack` unpacked size                                 | 205.9 KB | 297.8 KB  | +92 KB ¹   |
 
 ¹ Pack size grew because Sections 1–7 added new source files (`src/utils/`,
 `src/rss/recipe.ts`, `src/feed-issue.ts`, etc.) that are compiled into
@@ -104,13 +104,13 @@ size reflects the new code, not dependency bloat. The pack budget
 
 Runtime dep breakdown after:
 
-| Package          | Size   |
-| ---------------- | ------ |
-| `zod`            | 6.3 MB |
-| `luxon`          | 4.5 MB |
-| `linkedom`       | 2.5 MB |
-| `fast-xml-parser`| 1.4 MB |
-| `he`             | 132 KB |
+| Package           | Size   |
+| ----------------- | ------ |
+| `zod`             | 6.3 MB |
+| `luxon`           | 4.5 MB |
+| `linkedom`        | 2.5 MB |
+| `fast-xml-parser` | 1.4 MB |
+| `he`              | 132 KB |
 
 Revised priority order by (size saved × risk × independence from Section 2):
 

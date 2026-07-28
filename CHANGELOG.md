@@ -27,7 +27,9 @@ interface FeedIssue {
 
 ```ts
 const rss = await feed.build();
-if (rss.channel.items[0].errors.includes('Required property "url" is missing')) {
+if (
+  rss.channel.items[0].errors.includes('Required property "url" is missing')
+) {
   // ...
 }
 ```
