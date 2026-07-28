@@ -708,7 +708,19 @@ function reduceLinkContainerComponent(
     }
 
     if (isContainerComponent(component)) {
-      console.log(component);
+      const linkContainer: LinkContainerComponent = {
+        component: 'container',
+        type: 'link',
+        link: link ?? '',
+        attributes: attributes ?? new Map(),
+        components: component.components,
+        errors: [],
+        warnings: [],
+        element,
+      };
+      const resolved: Component[] = [];
+      appendLinkContainerComponents(resolved, linkContainer);
+      component.components = resolved;
     }
 
     if (isCustomComponent(component)) {

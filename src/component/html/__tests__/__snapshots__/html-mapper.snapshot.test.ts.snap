@@ -14722,6 +14722,91 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
 ]
 `;
 
+exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-wrap-container-component.html 1`] = `
+[
+  {
+    "alt": "",
+    "component": "image",
+    "errors": [],
+    "html": "                                                                                                            ",
+    "id": undefined,
+    "imageurl": "https://library-staging.ng-sportingnews.com/styles/crop_style_16_9_desktop_webp/s3/2025-08/ESPN%20logo%20%28Red%29.png.webp",
+    "link": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
+    "warnings": [],
+  },
+  {
+    "component": "body",
+    "element": {
+      "attributes": {
+        "data-cta-id": "US-EN_ESPN Sports_HTW_ctawidget_v2",
+        "data-cta-type": "cta_widget_v4",
+        "data-item-name": "ALL OF ESPN. ALL IN ONE PLACE.",
+        "href": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
+        "rel": "noopener",
+        "target": "_blank",
+      },
+      "tag": "a",
+    },
+    "errors": [],
+    "id": undefined,
+    "properties": undefined,
+    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4"><p>                </p></a>",
+    "warnings": [],
+  },
+  {
+    "component": "body",
+    "element": {
+      "attributes": {
+        "data-cta-id": "US-EN_ESPN Sports_HTW_ctawidget_v2",
+        "data-cta-type": "cta_widget_v4",
+        "data-item-name": "ALL OF ESPN. ALL IN ONE PLACE.",
+        "href": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
+        "rel": "noopener",
+        "target": "_blank",
+      },
+      "tag": "a",
+    },
+    "errors": [],
+    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4">ALL OF ESPN. ALL IN                        ONE                        PLACE.</a>",
+    "warnings": [],
+  },
+  {
+    "component": "body",
+    "element": {
+      "attributes": {
+        "data-cta-id": "US-EN_ESPN Sports_HTW_ctawidget_v2",
+        "data-cta-type": "cta_widget_v4",
+        "data-item-name": "ALL OF ESPN. ALL IN ONE PLACE.",
+        "href": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
+        "rel": "noopener",
+        "target": "_blank",
+      },
+      "tag": "a",
+    },
+    "errors": [],
+    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4">LIMITED TIME                        OFFER:                        Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle</a>",
+    "warnings": [],
+  },
+  {
+    "component": "body",
+    "element": {
+      "attributes": {
+        "data-cta-id": "US-EN_ESPN Sports_HTW_ctawidget_v2",
+        "data-cta-type": "cta_widget_v4",
+        "data-item-name": "ALL OF ESPN. ALL IN ONE PLACE.",
+        "href": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
+        "rel": "noopener",
+        "target": "_blank",
+      },
+      "tag": "a",
+    },
+    "errors": [],
+    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4">Watch Now</a>",
+    "warnings": [],
+  },
+]
+`;
+
 exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intelligence-and-siri-confirmed-by-google.html 1`] = `
 [
   {

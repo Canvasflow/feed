@@ -948,6 +948,78 @@ describe('HTML Articles', () => {
       );
     }
   );
+
+  test(
+    `Link container — anchor wraps a container component`,
+    { tags: ['html', 'unit'] },
+    async () => {
+      const htmlFilePath = join(
+        htmlDirPath,
+        `link-container-wrap-container-component.html`
+      );
+      const htmlContent = readFileSync(htmlFilePath, 'utf-8');
+
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'container',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'class',
+              match: 'all',
+              items: ['affiliate-widget'],
+            },
+          ],
+        },
+        {
+          component: 'custom',
+          match: 'all',
+          properties: {
+            style: 30124,
+            pagetarget: 'external',
+            resource: 'url',
+            component: 'button',
+          },
+          filters: [
+            {
+              type: 'class',
+              match: 'any',
+              items: ['stream-cta-button__text'],
+            },
+          ],
+        },
+      ];
+
+      const components = HTMLMapper.toComponents(htmlContent, { mappings });
+
+      expect(components.length).toBe(1);
+
+      const containerComponent = components[0] as ContainerComponent;
+      expect(containerComponent.component).toBe('container');
+
+      const sharedUrl =
+        'https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb';
+
+      const imageComponent = containerComponent.components.find(
+        (c) => c.component === 'image'
+      ) as ImageComponent;
+      expect(imageComponent.link).toBe(sharedUrl);
+
+      const textComponent = containerComponent.components.find(
+        (c) => c.component === 'body'
+      ) as TextComponent;
+      expect(textComponent.text).toContain(sharedUrl);
+
+      const customComponent = containerComponent.components.find(
+        (c) => c.component === 'custom'
+      ) as CustomComponent;
+      expect(customComponent.content).toContain(sharedUrl);
+    }
+  );
 });
 
 describe('splitParagraphImages', () => {
