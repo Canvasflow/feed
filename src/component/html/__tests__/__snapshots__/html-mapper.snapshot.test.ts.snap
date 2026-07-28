@@ -14534,7 +14534,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       "tag": "a",
     },
     "errors": [],
-    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4">ALL OF ESPN. ALL IN ONE                            PLACE.</a>",
+    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4">ALL OF ESPN. ALL IN                            ONE                            PLACE.</a>",
     "warnings": [],
   },
   {
@@ -14551,7 +14551,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       "tag": "a",
     },
     "errors": [],
-    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4">LIMITED TIME OFFER:                            Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle</a>",
+    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4">LIMITED TIME                            OFFER:                            Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle</a>",
     "warnings": [],
   },
   {
@@ -14614,7 +14614,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       "tag": "a",
     },
     "errors": [],
-    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4">ALL OF ESPN. ALL IN ONE                            PLACE.</a>",
+    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4">ALL OF ESPN. ALL IN                            ONE                            PLACE.</a>",
     "warnings": [],
   },
   {
@@ -14631,7 +14631,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       "tag": "a",
     },
     "errors": [],
-    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4">LIMITED TIME OFFER:                            Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle</a>",
+    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb" target="_blank" data-item-name="ALL OF ESPN. ALL IN ONE PLACE." data-cta-id="US-EN_ESPN Sports_HTW_ctawidget_v2" data-cta-type="cta_widget_v4">LIMITED TIME                            OFFER:                            Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle</a>",
     "warnings": [],
   },
   {
@@ -14688,7 +14688,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       "tag": "a",
     },
     "errors": [],
-    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/game-link" target="_blank">ALL OF ESPN. ALL IN ONE                            PLACE.</a>",
+    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/game-link" target="_blank">ALL OF ESPN. ALL IN                            ONE                            PLACE.</a>",
     "warnings": [],
   },
   {
@@ -14702,7 +14702,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       "tag": "a",
     },
     "errors": [],
-    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/game-link" target="_blank">LIMITED TIME OFFER:                            Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle</a>",
+    "text": "<a rel="noopener" href="https://go.web.plus.espn.com/c/game-link" target="_blank">LIMITED TIME                            OFFER:                            Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle</a>",
     "warnings": [],
   },
   {
