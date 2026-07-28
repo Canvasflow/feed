@@ -62,7 +62,11 @@ export class HTMLMapper {
       nodes = rootNode ? [rootNode] : [];
     }
 
-    return nodes.reduce(reduceComponents(params), []).filter((i) => !!i);
+    const components: Component[] = nodes
+      .reduce(reduceComponents(params), [])
+      .filter((i) => !!i);
+
+    return components;
   }
 }
 
