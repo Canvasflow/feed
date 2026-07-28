@@ -5,7 +5,7 @@ name: '🔍 CI'
 # after this gate has already passed on the tip commit.
 on:
   push:
-    branches: [main, develop, 'feature/**']
+    branches: [main, develop, 'feature/**', 'release/**']
   pull_request:
     branches: [main, develop]
 

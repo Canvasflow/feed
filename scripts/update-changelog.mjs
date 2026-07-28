@@ -178,6 +178,22 @@ let body = existsSync(CHANGELOG)
 if (!body.startsWith(HEADER)) body = `${HEADER}\n\n${body}`;
 
 const after = body.slice(HEADER.length).replace(/^\n+/, '');
+
+// If the existing section for this version is a hand-crafted major release
+// entry (contains ### subheadings), preserve it and skip auto-generation.
+const existingSection =
+  after.match(
+    new RegExp(
+      `^## 🏷️ ${version.replace(/\./g, '\\.')}\\b[\\s\\S]*?(?=\\n## |$)`
+    )
+  )?.[0] ?? '';
+if (existingSection.includes('\n### ')) {
+  console.error(
+    `changelog: ${version} already has a hand-crafted entry (contains ### subheadings); skipping auto-generation.`
+  );
+  process.exit(0);
+}
+
 // Drop an existing leading section for the same version so re-runs are idempotent.
 const sameVersion = new RegExp(
   `^## 🏷️ ${version.replace(/\./g, '\\.')}\\b[\\s\\S]*?(?=\\n## |$)`
