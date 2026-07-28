@@ -1,5 +1,28 @@
 # CHANGELOG
 
+## 🏷️ 2.0.2
+
+_July 28, 2026_
+
+✨ Features
+
+- (mapping) Apply link resolution to ContainerComponent in reduceLinkContainerComponent ([`32e9ae5`](https://github.com/Canvasflow/feed/commit/32e9ae512ef50576ad15a4df78ef142eac78c973))
+- (mapping) Resolve closest anchor per column node in toColumns ([`b3f5b15`](https://github.com/Canvasflow/feed/commit/b3f5b15a3cc6af1a2e4dc8536bdad00e1addc857))
+
+🐛 Fixed
+
+- (mapping) Filter text components whose visible content is empty ([`b6f0cdd`](https://github.com/Canvasflow/feed/commit/b6f0cddf7ad196b77e31ddc88d89969947365a95))
+- (mapping) Collapse consecutive whitespace in text components ([`790d6e0`](https://github.com/Canvasflow/feed/commit/790d6e0a92c9318d3cc198832a93d832ee879616))
+- (mapping) Return null from toText when sanitized text is empty ([`44e4dd1`](https://github.com/Canvasflow/feed/commit/44e4dd17ac72903a0dcc38fb9bb1cefa58a90d37))
+
+🧪 Tests
+
+- (mapping) Assert shared and per-column links across all three anchor cases ([`cbda229`](https://github.com/Canvasflow/feed/commit/cbda229dce38b533c22b04d5c2ecf5f06ab9399d))
+
+🧹 Chores
+
+- (test) Update snapshot for link-container-wrap-column-container fixture ([`12625f3`](https://github.com/Canvasflow/feed/commit/12625f3535341a544e0da50075b6aa091320a894))
+
 ## 🏷️ 2.0.1
 
 _July 27, 2026_
