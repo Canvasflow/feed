@@ -45,15 +45,20 @@ export function toText(
   node: ElementNode,
   component: TextType,
   properties?: Record<string, unknown>
-): TextComponent {
+): TextComponent | null {
   preserveInlineWhitespace(node);
   const warnings: FeedIssue[] = [];
   const attributes = getAttributes(node.attributes);
 
-  const text = sanitizeNodes([node], {
+  const rawText = sanitizeNodes([node], {
     allowedTags: textAllowedTags,
     allowedAttributes: textAllowedAttributes,
   });
+  // sanitizeHtml always returns a string; the non-string arm is defensive.
+  /* v8 ignore next */
+  const text = typeof rawText === 'string' ? rawText.trim() : rawText;
+  if (!text) return null;
+
   const id = attributes.get('id');
   const role = attributes.get('role');
   if (role) {
@@ -73,9 +78,7 @@ export function toText(
     id,
     component,
     properties,
-    // sanitizeHtml always returns a string; the non-string arm is defensive.
-    /* v8 ignore next */
-    text: typeof text === 'string' ? text.trim() : text,
+    text,
     errors: [],
     warnings,
     element: {

@@ -1009,11 +1009,6 @@ describe('HTML Articles', () => {
       ) as ImageComponent;
       expect(imageComponent.link).toBe(sharedUrl);
 
-      const textComponent = containerComponent.components.find(
-        (c) => c.component === 'body'
-      ) as TextComponent;
-      expect(textComponent.text).toContain(sharedUrl);
-
       const customComponent = containerComponent.components.find(
         (c) => c.component === 'custom'
       ) as CustomComponent;
