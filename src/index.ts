@@ -131,4 +131,5 @@ export {
   isValidParams,
   validateParams,
   isValidMapping,
+  processTextLinks,
 } from './component/mapping/mapping';
