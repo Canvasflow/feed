@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 🏷️ 2.0.4
+
+_July 29, 2026_
+
+🐛 Fixed
+
+- (api) Re-export processTextLinks in public API ([`a560546`](https://github.com/Canvasflow/feed/commit/a5605464279951497663f0129fc30b74400d5f4e))
+
 ## 🏷️ 2.0.3
 
 _July 28, 2026_
