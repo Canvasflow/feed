@@ -6,7 +6,7 @@ _July 29, 2026_
 
 🐛 Fixed
 
-- (api) Re-export processTextLinks in public API ([`a560546`](https://github.com/Canvasflow/feed/commit/a5605464279951497663f0129fc30b74400d5f4e))
+- (api) Re-export processTextLinks in public API ([`a560546`](https://github.com/canvasflow/feed/commit/a5605464279951497663f0129fc30b74400d5f4e))
 
 ## 🏷️ 2.0.3
 
