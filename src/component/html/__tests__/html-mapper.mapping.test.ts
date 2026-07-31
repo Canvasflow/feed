@@ -147,14 +147,21 @@ describe('Mapping', () => {
           ],
         },
       ];
+      // `equal` is the strict form of `all`: exactly these classes, in the
+      // order they were declared.
       const content = `
+        <p class="head story">Text example</p>
         <p class="story head">Text example</p>
         <p class="head story headline">Text example</p>
       `;
       const components = HTMLMapper.toComponents(content, { mappings });
-      expect(components.length).toBe(2);
+      expect(components.length).toBe(3);
+      // Exact classes in the declared order — matches.
       expect(components[0]!.component).toBe('text36');
+      // Same classes, wrong order — does not match.
       expect(components[1]!.component).toBe('body');
+      // Declared classes plus an extra one — does not match.
+      expect(components[2]!.component).toBe('body');
     }
   );
 
