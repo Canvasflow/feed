@@ -125,7 +125,10 @@ With a resolved link:
   "link": "https://example.com/gallery",
   "errors": [],
   "warnings": [],
-  "element": { "tag": "img", "attributes": { "src": "https://example.com/photo.jpg" } }
+  "element": {
+    "tag": "img",
+    "attributes": { "src": "https://example.com/photo.jpg" }
+  }
 }
 ```
 
@@ -512,10 +515,20 @@ A generic container that holds nested components.
   "component": "columns",
   "columns": [
     [
-      { "component": "body", "text": "Left column text.", "errors": [], "warnings": [] }
+      {
+        "component": "body",
+        "text": "Left column text.",
+        "errors": [],
+        "warnings": []
+      }
     ],
     [
-      { "component": "image", "imageurl": "https://example.com/side.jpg", "errors": [], "warnings": [] }
+      {
+        "component": "image",
+        "imageurl": "https://example.com/side.jpg",
+        "errors": [],
+        "warnings": []
+      }
     ]
   ],
   "errors": [],
@@ -548,8 +561,18 @@ A generic container that holds nested components.
     {
       "component": "live_post",
       "components": [
-        { "component": "headline", "text": "Update 2 — 14:32", "errors": [], "warnings": [] },
-        { "component": "body", "text": "Officials confirm the situation is under control.", "errors": [], "warnings": [] }
+        {
+          "component": "headline",
+          "text": "Update 2 — 14:32",
+          "errors": [],
+          "warnings": []
+        },
+        {
+          "component": "body",
+          "text": "Officials confirm the situation is under control.",
+          "errors": [],
+          "warnings": []
+        }
       ],
       "errors": [],
       "warnings": []
@@ -557,8 +580,18 @@ A generic container that holds nested components.
     {
       "component": "live_post",
       "components": [
-        { "component": "headline", "text": "Update 1 — 13:15", "errors": [], "warnings": [] },
-        { "component": "body", "text": "Incident reported downtown.", "errors": [], "warnings": [] }
+        {
+          "component": "headline",
+          "text": "Update 1 — 13:15",
+          "errors": [],
+          "warnings": []
+        },
+        {
+          "component": "body",
+          "text": "Incident reported downtown.",
+          "errors": [],
+          "warnings": []
+        }
       ],
       "errors": [],
       "warnings": []
@@ -590,11 +623,25 @@ A generic container that holds nested components.
     "prepTime": "PT15M",
     "cookTime": "PT1H",
     "ingredients": ["3 ripe bananas", "1½ cups flour", "½ cup sugar"],
-    "steps": ["Preheat oven to 175°C.", "Mash bananas.", "Mix all ingredients and bake for 60 minutes."]
+    "steps": [
+      "Preheat oven to 175°C.",
+      "Mash bananas.",
+      "Mix all ingredients and bake for 60 minutes."
+    ]
   },
   "components": [
-    { "component": "headline", "text": "Banana Bread", "errors": [], "warnings": [] },
-    { "component": "body", "text": "3 ripe bananas, 1½ cups flour, ½ cup sugar.", "errors": [], "warnings": [] }
+    {
+      "component": "headline",
+      "text": "Banana Bread",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "component": "body",
+      "text": "3 ripe bananas, 1½ cups flour, ½ cup sugar.",
+      "errors": [],
+      "warnings": []
+    }
   ],
   "errors": [],
   "warnings": []
@@ -626,8 +673,18 @@ A `ContainerComponent` with `type: "link"`. Represents an `<a>` element wrapping
   "type": "link",
   "link": "https://example.com/story",
   "components": [
-    { "component": "image", "imageurl": "https://example.com/thumb.jpg", "errors": [], "warnings": [] },
-    { "component": "body", "text": "Read the full story.", "errors": [], "warnings": [] }
+    {
+      "component": "image",
+      "imageurl": "https://example.com/thumb.jpg",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "component": "body",
+      "text": "Read the full story.",
+      "errors": [],
+      "warnings": []
+    }
   ],
   "errors": [],
   "warnings": []
