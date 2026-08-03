@@ -305,19 +305,15 @@ TikTok:
 
 `component`: `"twitter"`
 
-| Field         | Type                                | Description                        |
-| ------------- | ----------------------------------- | ---------------------------------- |
-| `height`      | `string`                            | Embed height.                      |
-| `fixedheight` | `"on" \| "off"`                     | Whether the height is fixed.       |
-| `bleed`       | `"on" \| "off"`                     | Whether the embed bleeds to edges. |
-| `params`      | `{ id?: string; account?: string }` | Tweet ID and/or account.           |
+| Field    | Type                                | Description              |
+| -------- | ----------------------------------- | ------------------------ |
+| `height` | `string`                            | Embed height.            |
+| `params` | `{ id?: string; account?: string }` | Tweet ID and/or account. |
 
 ```json
 {
   "component": "twitter",
-  "height": "400",
-  "fixedheight": "off",
-  "bleed": "off",
+  "height": "350",
   "params": { "id": "1234567890123456789" },
   "errors": [],
   "warnings": []
