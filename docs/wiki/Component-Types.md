@@ -45,7 +45,7 @@ type ComponentLink = {
 
 `ComponentType` is the union of every component kind. It includes `TextType` plus the structural/media kinds:
 
-- **Text** (`TextType`): `headline`, `title`, `subtitle`, `intro`, `body`, `crosshead`, `byline`, `blockquote`, `footer`, `imagecaption`, and `text1`–`text60`.
+- **Text** (`TextType`): `headline`, `title`, `subtitle`, `intro`, `body`, `crosshead`, `byline`, `blockquote`, `footer`, `imagecaption`, or `text1`–`text60`.
 - **Media / embed**: `image`, `gallery`, `video`, `audio`, `twitter`, `instagram`, `tiktok`, `infogram`.
 - **Structural**: `container`, `columns`, `live_container`, `live_post`, `htmltable`, `recipe`, `custom`, `button`, `anchor`, `advert`, `spacer`, `divider`, `map`, `table`.
 
@@ -66,6 +66,35 @@ type ComponentLink = {
 
 Default HTML → component mappings: `h1` → `headline`, `h2` → `title`, `h3` → `subtitle`, `h4` → `intro`, `p` → `body`, `blockquote` → `blockquote`, `footer` → `footer`. The `role` attribute on any element overrides the mapping (e.g. `<p role="crosshead">` → `crosshead`).
 
+```json
+{
+  "component": "body",
+  "text": "The <strong>quick</strong> brown fox.",
+  "errors": [],
+  "warnings": [],
+  "element": { "tag": "p" }
+}
+```
+
+With a resolved link:
+
+```json
+{
+  "component": "body",
+  "text": "Read the full report.",
+  "link": {
+    "href": "https://example.com/report",
+    "element": {
+      "tag": "a",
+      "attributes": { "href": "https://example.com/report", "target": "_blank" }
+    }
+  },
+  "errors": [],
+  "warnings": [],
+  "element": { "tag": "p" }
+}
+```
+
 ---
 
 ### `ImageComponent`
@@ -83,6 +112,22 @@ Default HTML → component mappings: `h1` → `headline`, `h2` → `title`, `h3`
 | `height`   | `number` _(optional)_ | Intrinsic height in pixels. |
 
 > **Note:** A `<figure>` wrapping an `<img>` or `<picture>` produces a `FigureContainerComponent` (see [Transient components](#transient-components)) that holds the `ImageComponent` as a child. A bare `<img>` outside a `<figure>` produces a standalone `ImageComponent`.
+
+```json
+{
+  "component": "image",
+  "imageurl": "https://example.com/photo.jpg",
+  "alt": "A mountain at sunset",
+  "caption": "The Rockies at dusk.",
+  "credit": "Jane Doe / Getty Images",
+  "width": 1920,
+  "height": 1080,
+  "link": "https://example.com/gallery",
+  "errors": [],
+  "warnings": [],
+  "element": { "tag": "img", "attributes": { "src": "https://example.com/photo.jpg" } }
+}
+```
 
 ---
 
@@ -109,6 +154,32 @@ Default HTML → component mappings: `h1` → `headline`, `h2` → `title`, `h3`
 | `credit`   | `string` _(optional)_ | Credit text.            |
 | `width`    | `number` _(optional)_ | Width in pixels.        |
 | `height`   | `number` _(optional)_ | Height in pixels.       |
+
+```json
+{
+  "component": "gallery",
+  "role": "default",
+  "animation": "slide",
+  "direction": "horizontal",
+  "images": [
+    {
+      "imageurl": "https://example.com/img1.jpg",
+      "alt": "First slide",
+      "caption": "Opening shot",
+      "credit": "AP Photo",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "imageurl": "https://example.com/img2.jpg",
+      "alt": "Second slide",
+      "link": "https://example.com/article"
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}
+```
 
 ---
 
@@ -139,6 +210,52 @@ The base shape covers hosted/direct video files. Platform-specific variants add 
 | `DailymotionComponent` | `"dailymotion"` | `{ id: string }`                   |
 | `TikTokComponent`      | `"tiktok"`      | `{ id: string; username: string }` |
 
+Hosted video:
+
+```json
+{
+  "component": "video",
+  "movietype": "hosted",
+  "url": "https://example.com/clip.mp4",
+  "poster": "https://example.com/clip-poster.jpg",
+  "controls": true,
+  "autoplay": false,
+  "loop": false,
+  "muted": false,
+  "caption": "Highlights from the match.",
+  "errors": [],
+  "warnings": []
+}
+```
+
+YouTube:
+
+```json
+{
+  "component": "video",
+  "vidtype": "youtube",
+  "params": { "id": "dQw4w9WgXcQ" },
+  "controls": true,
+  "autoplay": false,
+  "loop": false,
+  "muted": false,
+  "errors": [],
+  "warnings": []
+}
+```
+
+TikTok:
+
+```json
+{
+  "component": "video",
+  "vidtype": "tiktok",
+  "params": { "id": "7123456789012345678", "username": "someuser" },
+  "errors": [],
+  "warnings": []
+}
+```
+
 ---
 
 ### `AudioComponent`
@@ -155,6 +272,20 @@ The base shape covers hosted/direct video files. Platform-specific variants add 
 | `caption`  | `string` _(optional)_ | Caption.              |
 | `credit`   | `string` _(optional)_ | Credit.               |
 
+```json
+{
+  "component": "audio",
+  "url": "https://example.com/episode-42.mp3",
+  "controls": true,
+  "autoplay": false,
+  "loop": false,
+  "muted": false,
+  "caption": "Episode 42 — Full interview",
+  "errors": [],
+  "warnings": []
+}
+```
+
 ---
 
 ### `TwitterComponent`
@@ -168,6 +299,18 @@ The base shape covers hosted/direct video files. Platform-specific variants add 
 | `bleed`       | `"on" \| "off"`                     | Whether the embed bleeds to edges. |
 | `params`      | `{ id?: string; account?: string }` | Tweet ID and/or account.           |
 
+```json
+{
+  "component": "twitter",
+  "height": "400",
+  "fixedheight": "off",
+  "bleed": "off",
+  "params": { "id": "1234567890123456789" },
+  "errors": [],
+  "warnings": []
+}
+```
+
 ---
 
 ### `InstagramComponent`
@@ -179,6 +322,16 @@ The base shape covers hosted/direct video files. Platform-specific variants add 
 | `id`   | `string`                   | Instagram media ID. |
 | `type` | `"post" \| "reel" \| "tv"` | Content type.       |
 
+```json
+{
+  "component": "instagram",
+  "id": "CxYzAbCdEfG",
+  "type": "post",
+  "errors": [],
+  "warnings": []
+}
+```
+
 ---
 
 ### `InfogramComponent`
@@ -188,6 +341,19 @@ The base shape covers hosted/direct video files. Platform-specific variants add 
 | Field    | Type                                              | Description                |
 | -------- | ------------------------------------------------- | -------------------------- |
 | `params` | `{ id: string; parentUrl: string; src: "embed" }` | Infogram embed parameters. |
+
+```json
+{
+  "component": "infogram",
+  "params": {
+    "id": "my-infographic-slug",
+    "parentUrl": "https://example.com/article",
+    "src": "embed"
+  },
+  "errors": [],
+  "warnings": []
+}
+```
 
 ---
 
@@ -201,6 +367,16 @@ The base shape covers hosted/direct video files. Platform-specific variants add 
 | `caption` | `string` _(optional)_ | Table caption.                                       |
 | `credit`  | `string` _(optional)_ | Credit.                                              |
 
+```json
+{
+  "component": "htmltable",
+  "html": "<table><thead><tr><th>Name</th><th>Score</th></tr></thead><tbody><tr><td>Alice</td><td>98</td></tr></tbody></table>",
+  "caption": "Q1 results",
+  "errors": [],
+  "warnings": []
+}
+```
+
 ---
 
 ### `ButtonComponent`
@@ -212,6 +388,16 @@ The base shape covers hosted/direct video files. Platform-specific variants add 
 | `text` | `string` _(optional)_ | Button label.    |
 | `link` | `string` _(optional)_ | Destination URL. |
 
+```json
+{
+  "component": "button",
+  "text": "Subscribe now",
+  "link": "https://example.com/subscribe",
+  "errors": [],
+  "warnings": []
+}
+```
+
 ---
 
 ### `SpacerComponent`
@@ -221,6 +407,15 @@ The base shape covers hosted/direct video files. Platform-specific variants add 
 | Field    | Type                                                                      | Description            |
 | -------- | ------------------------------------------------------------------------- | ---------------------- |
 | `margin` | `"margin-1" \| "margin-20" \| "margin-50" \| "margin-75" \| "margin-100"` | Vertical spacing size. |
+
+```json
+{
+  "component": "spacer",
+  "margin": "margin-50",
+  "errors": [],
+  "warnings": []
+}
+```
 
 ---
 
@@ -236,6 +431,37 @@ Used for elements that do not match any built-in mapping rule.
 | `node`    | `unknown`                    | The raw `ElementNode` AST node from the himalaya parser. Useful for consumers that need to traverse the original tree.                                     |
 | `link`    | `ComponentLink` _(optional)_ | Present when the element was wrapped in an `<a>` ancestor during mapping. The `content` field is **not** modified — read the link from this field instead. |
 
+```json
+{
+  "component": "custom",
+  "content": "<div class=\"pullquote\"><span>The future is already here.</span></div>",
+  "html": "<div class=\"pullquote\"><span>The future is already here.</span></div>",
+  "errors": [],
+  "warnings": [],
+  "element": { "tag": "div", "attributes": { "class": "pullquote" } }
+}
+```
+
+With a resolved link:
+
+```json
+{
+  "component": "custom",
+  "content": "<div class=\"promo\">Exclusive offer</div>",
+  "html": "<div class=\"promo\">Exclusive offer</div>",
+  "link": {
+    "href": "https://example.com/offer",
+    "element": {
+      "tag": "a",
+      "attributes": { "href": "https://example.com/offer" }
+    }
+  },
+  "errors": [],
+  "warnings": [],
+  "element": { "tag": "div", "attributes": { "class": "promo" } }
+}
+```
+
 ---
 
 ### `ContainerComponent`
@@ -249,6 +475,28 @@ A generic container that holds nested components.
 | `type`       | `"link" \| "figure"` _(optional)_ | Sub-type discriminator. Absent on plain containers. |
 | `components` | `Component[]`                     | Nested child components.                            |
 
+```json
+{
+  "component": "container",
+  "components": [
+    {
+      "component": "headline",
+      "text": "Breaking News",
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "component": "body",
+      "text": "Details are still emerging.",
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}
+```
+
 ---
 
 ### `ColumnsComponent`
@@ -258,6 +506,22 @@ A generic container that holds nested components.
 | Field     | Type            | Description                                  |
 | --------- | --------------- | -------------------------------------------- |
 | `columns` | `Component[][]` | Each inner array is one column's components. |
+
+```json
+{
+  "component": "columns",
+  "columns": [
+    [
+      { "component": "body", "text": "Left column text.", "errors": [], "warnings": [] }
+    ],
+    [
+      { "component": "image", "imageurl": "https://example.com/side.jpg", "errors": [], "warnings": [] }
+    ]
+  ],
+  "errors": [],
+  "warnings": []
+}
+```
 
 ---
 
@@ -269,8 +533,6 @@ A generic container that holds nested components.
 | ------- | --------------------- | ------------------- |
 | `posts` | `LivePostComponent[]` | Ordered live posts. |
 
----
-
 ### `LivePostComponent`
 
 `component`: `"live_post"`
@@ -278,6 +540,34 @@ A generic container that holds nested components.
 | Field        | Type          | Description                  |
 | ------------ | ------------- | ---------------------------- |
 | `components` | `Component[]` | Components within this post. |
+
+```json
+{
+  "component": "live_container",
+  "posts": [
+    {
+      "component": "live_post",
+      "components": [
+        { "component": "headline", "text": "Update 2 — 14:32", "errors": [], "warnings": [] },
+        { "component": "body", "text": "Officials confirm the situation is under control.", "errors": [], "warnings": [] }
+      ],
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "component": "live_post",
+      "components": [
+        { "component": "headline", "text": "Update 1 — 13:15", "errors": [], "warnings": [] },
+        { "component": "body", "text": "Incident reported downtown.", "errors": [], "warnings": [] }
+      ],
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}
+```
 
 ---
 
@@ -290,6 +580,26 @@ A generic container that holds nested components.
 | `recipe`     | `Recipe` _(optional)_ | Structured recipe data (ingredients, steps, etc.). Defined by `RecipeSchema` in `schema/recipe-schema.ts`. |
 | `url`        | `string` _(optional)_ | Canonical URL of the recipe.                                                                               |
 | `components` | `Component[]`         | Fallback component representation of the recipe content.                                                   |
+
+```json
+{
+  "component": "recipe",
+  "url": "https://example.com/recipes/banana-bread",
+  "recipe": {
+    "name": "Banana Bread",
+    "prepTime": "PT15M",
+    "cookTime": "PT1H",
+    "ingredients": ["3 ripe bananas", "1½ cups flour", "½ cup sugar"],
+    "steps": ["Preheat oven to 175°C.", "Mash bananas.", "Mix all ingredients and bake for 60 minutes."]
+  },
+  "components": [
+    { "component": "headline", "text": "Banana Bread", "errors": [], "warnings": [] },
+    { "component": "body", "text": "3 ripe bananas, 1½ cups flour, ½ cup sugar.", "errors": [], "warnings": [] }
+  ],
+  "errors": [],
+  "warnings": []
+}
+```
 
 ---
 
@@ -310,6 +620,20 @@ A `ContainerComponent` with `type: "link"`. Represents an `<a>` element wrapping
 | `link`       | `string` _(optional)_              | The anchor's `href`.                        |
 | `attributes` | `Map<string, string>` _(optional)_ | All attributes of the source `<a>` element. |
 
+```json
+{
+  "component": "container",
+  "type": "link",
+  "link": "https://example.com/story",
+  "components": [
+    { "component": "image", "imageurl": "https://example.com/thumb.jpg", "errors": [], "warnings": [] },
+    { "component": "body", "text": "Read the full story.", "errors": [], "warnings": [] }
+  ],
+  "errors": [],
+  "warnings": []
+}
+```
+
 ### `FigureContainerComponent`
 
 A `ContainerComponent` with `type: "figure"`. Produced by every `<figure>` element during mapping. Caption and credit are extracted from `<figcaption>` children (credit matched by `<small>`, `role="credit"`, or `class="credit"`), then this wrapper is resolved into its final container form.
@@ -320,6 +644,27 @@ A `ContainerComponent` with `type: "figure"`. Produced by every `<figure>` eleme
 | `components` | `Component[]`         | Media and other children inside the figure. |
 | `caption`    | `string` _(optional)_ | Extracted caption text.                     |
 | `credit`     | `string` _(optional)_ | Extracted credit text.                      |
+
+```json
+{
+  "component": "container",
+  "type": "figure",
+  "caption": "Crowds gather outside the courthouse.",
+  "credit": "Reuters",
+  "components": [
+    {
+      "component": "image",
+      "imageurl": "https://example.com/courthouse.jpg",
+      "width": 1600,
+      "height": 900,
+      "errors": [],
+      "warnings": []
+    }
+  ],
+  "errors": [],
+  "warnings": []
+}
+```
 
 ---
 
