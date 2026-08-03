@@ -470,9 +470,10 @@ describe('Link container components', () => {
       expect(isTextComponent(textComponent)).toBe(true);
       expect(textComponent.component).toBe(mappings[0]!.component);
       expect(textComponent.properties).toEqual(mappings[0]!.properties);
-      expect(textComponent.text).toBe(
-        `<a href="${link}" target="_blank">Test</a>`
-      );
+      // The anchor is recorded on `link` rather than wrapping the text.
+      expect(textComponent.text).toBe('Test');
+      expect(textComponent.link?.href).toBe(link);
+      expect(textComponent.link?.element?.tag).toBe('a');
 
       const imageComponent = components[1] as ImageComponent;
       expect(isImageComponent(imageComponent)).toBe(true);
@@ -507,9 +508,8 @@ describe('Link container components', () => {
 
       const textComponent = components[0] as TextComponent;
       expect(isTextComponent(textComponent)).toBe(true);
-      expect(textComponent.text).toBe(
-        `<a href="${link}" target="_blank">Test</a>`
-      );
+      expect(textComponent.text).toBe('Test');
+      expect(textComponent.link?.href).toBe(link);
 
       const imageComponent = components[1] as ImageComponent;
       expect(isImageComponent(imageComponent)).toBe(true);
@@ -527,7 +527,7 @@ describe('Link container components', () => {
   );
 
   test(
-    'It should keep the text components wrapped in anchor tags',
+    'It should record the enclosing anchor on each text component link',
     { tags: ['unit', 'html'] },
     () => {
       const mappings: Array<ComponentMapping> = [];
@@ -542,23 +542,18 @@ describe('Link container components', () => {
       const components = HTMLMapper.toComponents(content, { mappings });
       expect(components.length).toBe(3);
 
-      let textComponent = components[0] as TextComponent;
-      expect(isTextComponent(textComponent)).toBe(true);
-      expect(textComponent.text).toBe(
-        `<a href="${link}" target="_blank"><p>Example</p></a>`
-      );
-
-      textComponent = components[1] as TextComponent;
-      expect(isTextComponent(textComponent)).toBe(true);
-      expect(textComponent.text).toBe(
-        `<a href="${link}" target="_blank">Hello</a>`
-      );
-
-      textComponent = components[2] as TextComponent;
-      expect(isTextComponent(textComponent)).toBe(true);
-      expect(textComponent.text).toBe(
-        `<a href="${link}" target="_blank">Headline</a>`
-      );
+      // Every child carries the same anchor on `link`; the text is untouched.
+      for (const expected of ['<p>Example</p>', 'Hello', 'Headline']) {
+        const textComponent = components.shift() as TextComponent;
+        expect(isTextComponent(textComponent)).toBe(true);
+        expect(textComponent.text).toBe(expected);
+        expect(textComponent.link?.href).toBe(link);
+        expect(textComponent.link?.element?.tag).toBe('a');
+        expect(textComponent.link?.element?.attributes).toMatchObject({
+          href: link,
+          target: '_blank',
+        });
+      }
     }
   );
 
@@ -928,15 +923,19 @@ describe('Link container reduce paths', () => {
   const tags = { tags: ['unit', 'html'] };
 
   test(
-    'wraps a text component in an anchor carrying its attributes',
+    'records the anchor and its attributes on a text component link',
     tags,
     () => {
       const link = 'https://example.org';
       const content = `<a href="${link}" target="_blank"><div><h1>Heading</h1></div></a>`;
       const [component] = HTMLMapper.toComponents(content, { mappings: [] });
-      expect((component as unknown as { text: string }).text).toBe(
-        `<a href="${link}" target="_blank">Heading</a>`
-      );
+      const textComponent = component as TextComponent;
+      expect(textComponent.text).toBe('Heading');
+      expect(textComponent.link?.href).toBe(link);
+      expect(textComponent.link?.element).toEqual({
+        tag: 'a',
+        attributes: { href: link, target: '_blank' },
+      });
     }
   );
 

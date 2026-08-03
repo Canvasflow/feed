@@ -2,6 +2,7 @@ import {
   type ButtonComponent,
   type Component,
   type ColumnsComponent,
+  type ComponentLink,
   type ContainerComponent,
   type FigureContainerComponent,
   type LinkContainerComponent,
@@ -655,8 +656,27 @@ export function isButtonNode(node: ElementNode): boolean {
 }
 
 /**
+ * Build the `link` carried by text and custom components, recording both the
+ * destination and the anchor element it was resolved from.
+ *
+ * @param {string} href
+ * @param {{ tag: string; attributes?: Record<string, string> }} [element]
+ * @returns {ComponentLink}
+ */
+function toComponentLink(
+  href: string,
+  element?: {
+    tag: string;
+    attributes?: Record<string, string> | undefined;
+  }
+): ComponentLink {
+  return element ? { href, element } : { href };
+}
+
+/**
  * Build a reducer that applies a link container's `link` to each child
- * component: wrapping text in an anchor, setting image/button links.
+ * component: recording the link on text/custom components, setting
+ * image/button links.
  *
  * @param {string} [link]
  * @param {Map<string, string>} [attributes]
@@ -679,21 +699,7 @@ function reduceLinkContainerComponent(
     }
 
     if (isTextComponent(component)) {
-      if (attributes && attributes.size > 0) {
-        attributes.set('href', link);
-        const linkAttributes: string[] = [];
-        for (const [attr, value] of attributes) {
-          linkAttributes.push(`${attr}="${value}"`);
-        }
-        component.text = `<a ${linkAttributes.join(' ')}>${component.text}</a>`;
-        /* v8 ignore next 3 -- the link container always carries an href attribute */
-      } else {
-        component.text = `<a href="${link}">${component.text}</a>`;
-      }
-
-      if (element) {
-        component.element = element;
-      }
+      component.link = toComponentLink(link, element);
     }
 
     if (isImageComponent(component)) {
@@ -724,9 +730,7 @@ function reduceLinkContainerComponent(
     }
 
     if (isCustomComponent(component)) {
-      if (link) {
-        component.content = `<a href="${link}">${component.content}</a>`;
-      }
+      component.link = toComponentLink(link, element);
     }
 
     if (isColumnsComponent(component)) {

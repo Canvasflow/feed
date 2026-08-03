@@ -147,14 +147,21 @@ describe('Mapping', () => {
           ],
         },
       ];
+      // `equal` is the strict form of `all`: exactly these classes, in the
+      // order they were declared.
       const content = `
+        <p class="head story">Text example</p>
         <p class="story head">Text example</p>
         <p class="head story headline">Text example</p>
       `;
       const components = HTMLMapper.toComponents(content, { mappings });
-      expect(components.length).toBe(2);
+      expect(components.length).toBe(3);
+      // Exact classes in the declared order — matches.
       expect(components[0]!.component).toBe('text36');
+      // Same classes, wrong order — does not match.
       expect(components[1]!.component).toBe('body');
+      // Declared classes plus an extra one — does not match.
+      expect(components[2]!.component).toBe('body');
     }
   );
 
@@ -754,11 +761,11 @@ describe('HTML Articles', () => {
 
       const col1 = firstAdComponent.columns[1] as Component[];
       const textCol1 = col1[0] as TextComponent;
-      expect(textCol1.text).toContain(sharedUrl);
+      expect(textCol1.link?.href).toBe(sharedUrl);
 
       const col2 = firstAdComponent.columns[2] as Component[];
       const customCol2 = col2[0] as CustomComponent;
-      expect(customCol2.content).toContain(sharedUrl);
+      expect(customCol2.link?.href).toBe(sharedUrl);
     }
   );
 
@@ -847,11 +854,11 @@ describe('HTML Articles', () => {
 
       const col1 = secondAdComponent.columns[1] as Component[];
       const textCol1 = col1[0] as TextComponent;
-      expect(textCol1.text).toContain(sharedUrl);
+      expect(textCol1.link?.href).toBe(sharedUrl);
 
       const col2 = secondAdComponent.columns[2] as Component[];
       const customCol2 = col2[0] as CustomComponent;
-      expect(customCol2.content).toContain(sharedUrl);
+      expect(customCol2.link?.href).toBe(sharedUrl);
     }
   );
 
@@ -937,13 +944,13 @@ describe('HTML Articles', () => {
 
       const col1 = thirdAdComponent.columns[1] as Component[];
       const textCol1 = col1[0] as TextComponent;
-      expect(textCol1.text).toContain(
+      expect(textCol1.link?.href).toBe(
         'https://go.web.plus.espn.com/c/game-link'
       );
 
       const col2 = thirdAdComponent.columns[2] as Component[];
       const customCol2 = col2[0] as CustomComponent;
-      expect(customCol2.content).toContain(
+      expect(customCol2.link?.href).toBe(
         'https://go.web.plus.espn.com/c/button-link'
       );
     }
@@ -1012,7 +1019,7 @@ describe('HTML Articles', () => {
       const customComponent = containerComponent.components.find(
         (c) => c.component === 'custom'
       ) as CustomComponent;
-      expect(customComponent.content).toContain(sharedUrl);
+      expect(customComponent.link?.href).toBe(sharedUrl);
     }
   );
 });

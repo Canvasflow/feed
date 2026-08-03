@@ -32,6 +32,7 @@ export type {
   TextType,
   ComponentType,
   Component,
+  ComponentLink,
   GalleryImage,
   GalleryComponent,
   ImageComponent,

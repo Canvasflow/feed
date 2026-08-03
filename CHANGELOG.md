@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 🏷️ 2.0.5
+
+_August 3, 2026_
+
+✨ Features
+
+- (component) Carry resolved links on text and custom components ([`a22cf10`](https://github.com/canvasflow/feed/commit/a22cf10ad5bfbffff5feeb68c4e7ad6b93e3f1ef))
+- (mapping) Allow abbr, cite, u and time in text components ([`9d818d1`](https://github.com/canvasflow/feed/commit/9d818d194c6c8f04c53f6cc9d8b8be27254e512d))
+- (mapping) Make class filter equal match order-dependent ([`032130e`](https://github.com/canvasflow/feed/commit/032130e9449faadbe4b22e99a16ddc89e4451490))
+
+🐛 Fixed
+
+- Fix vulnerabilities in the package ([`d8d2b25`](https://github.com/canvasflow/feed/commit/d8d2b257b01ad364f19249f146c5e7447c3b51db))
+
 ## 🏷️ 2.0.4
 
 _July 29, 2026_
