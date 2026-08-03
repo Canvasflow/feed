@@ -1,5 +1,29 @@
 # CHANGELOG
 
+## 🏷️ 2.0.6
+
+_August 3, 2026_
+
+✨ Features
+
+- (component) Remove fixedheight and bleed from TwitterComponent ([`9ef8a62`](https://github.com/Canvasflow/feed/commit/9ef8a62fa127d54a912d0a97fd589758f8344001))
+
+📝 Docs
+
+- (wiki) Remove fixedheight and bleed from TwitterComponent ([`521def0`](https://github.com/Canvasflow/feed/commit/521def00a741bed298291f2f74cbe279a70de743))
+- (wiki) List default HTML mappings one per line ([`892ac47`](https://github.com/Canvasflow/feed/commit/892ac477ab4734caa00f69d10ce5f3d76848255a))
+- (wiki) Add JSON examples to every component type ([`c2bb247`](https://github.com/Canvasflow/feed/commit/c2bb24719aec13e1a17b248201189b448fd1388e))
+- (wiki) Add full component reference and transient component section ([`b1b583a`](https://github.com/Canvasflow/feed/commit/b1b583a97f1e60184cb526bfabd43cee5411fead))
+
+🎨 Style
+
+- (wiki) Apply formatter alignment to JSON examples ([`87cd0c7`](https://github.com/Canvasflow/feed/commit/87cd0c7f5f18a7614f50b568c75345a2ec336971))
+- (wiki) Apply formatter table alignment to Component-Types ([`018f504`](https://github.com/Canvasflow/feed/commit/018f504be52c5bf6bf4227e5b9552820b2a9ca75))
+
+🧹 Chores
+
+- Bump feed version ([`d77b486`](https://github.com/Canvasflow/feed/commit/d77b486c00d6713f8f5e8c9699ea89ee9c94a3c2))
+
 ## 🏷️ 2.0.5
 
 _August 3, 2026_

@@ -808,8 +808,6 @@ export function toTwitter(node: ElementNode | URL): TwitterComponent | null {
 
   return {
     height: '350',
-    fixedheight: 'on',
-    bleed: 'on',
     params,
     component: 'twitter',
     errors,
@@ -842,8 +840,6 @@ function toTweetFromUrl(uri: URL): TwitterComponent {
 
   return {
     height: '350',
-    fixedheight: 'on',
-    bleed: 'on',
     params,
     component: 'twitter',
     errors,

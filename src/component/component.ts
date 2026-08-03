@@ -287,8 +287,6 @@ export const ButtonComponentSchema = baseComponentObject.extend({
 export const TwitterComponentSchema = baseComponentObject.extend({
   component: z.literal('twitter'),
   height: z.string(),
-  fixedheight: z.enum(['on', 'off']),
-  bleed: z.enum(['on', 'off']),
   params: z.object({
     id: z.string().optional(),
     account: z.string().optional(),
