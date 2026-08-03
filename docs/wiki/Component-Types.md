@@ -64,7 +64,17 @@ type ComponentLink = {
 | `text` | `string`                     | Sanitized inner HTML of the element. Inline phrasing tags (`<a>`, `<strong>`, `<em>`, `<abbr>`, `<cite>`, `<u>`, `<time>`, etc.) are preserved; block elements and disallowed attributes are stripped. |
 | `link` | `ComponentLink` _(optional)_ | Present when the element was wrapped in an `<a>` ancestor during mapping. The text content itself is **not** wrapped in an anchor tag — read the link from this field instead.                         |
 
-Default HTML → component mappings: `h1` → `headline`, `h2` → `title`, `h3` → `subtitle`, `h4` → `intro`, `p` → `body`, `blockquote` → `blockquote`, `footer` → `footer`. The `role` attribute on any element overrides the mapping (e.g. `<p role="crosshead">` → `crosshead`).
+Default HTML → component mappings:
+
+- `h1` → `headline`
+- `h2` → `title`
+- `h3` → `subtitle`
+- `h4` → `intro`
+- `p` → `body`
+- `blockquote` → `blockquote`
+- `footer` → `footer`
+
+The `role` attribute on any element overrides the mapping (e.g. `<p role="crosshead">` → `crosshead`).
 
 ```json
 {
