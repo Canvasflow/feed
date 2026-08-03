@@ -402,7 +402,15 @@ describe('Text components', () => {
       return;
     }
     expect(component.component).toBe('body');
-    expect(component.text).toBe(content);
+    // The enclosing anchor is recorded on `link`, it does not wrap the text.
+    expect(component.text).toBe('<p>Hello world</p>');
+    expect(component.link?.href).toBe('https://example.com');
+    expect(component.link?.element?.tag).toBe('a');
+    expect(component.link?.element?.attributes).toMatchObject({
+      href: 'https://example.com',
+      target: '_blank',
+      rel: 'nofollow noopener',
+    });
   });
 
   test('Replace invalid links with #', { tags: ['unit', 'html'] }, () => {

@@ -26,6 +26,10 @@ export const mappingTagsSet: Set<string> = new Set([
 
 export const textAllowedAttributes: Record<string, Array<string>> = {
   a: ['href', 'target', 'rel'],
+  // `abbr` and `time` carry their meaning in these attributes; without them
+  // the tags survive sanitizing but lose the semantics they were kept for.
+  abbr: ['title'],
+  time: ['datetime'],
 };
 
 for (const tag of textTags) {
@@ -86,6 +90,10 @@ export const textAllowedTags = [
     'p',
     'span',
     'small',
+    'abbr',
+    'cite',
+    'u',
+    'time',
   ]),
 ];
 

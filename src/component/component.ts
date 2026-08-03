@@ -138,6 +138,12 @@ export type Component = {
 
 // Kept as a ZodObject so .extend() works on all derived schemas below.
 // The lazy/recursive schemas use baseComponentFields spread instead.
+// The HTML element a component was built from.
+const componentElementObject = z.object({
+  tag: z.string(),
+  attributes: z.record(z.string(), z.string()).optional(),
+});
+
 const baseComponentObject = z.object({
   id: z.string().optional(),
   component: ComponentTypeSchema,
@@ -145,12 +151,18 @@ const baseComponentObject = z.object({
   html: z.string().optional(),
   errors: z.array(FeedIssueSchema),
   warnings: z.array(FeedIssueSchema),
-  element: z
-    .object({
-      tag: z.string(),
-      attributes: z.record(z.string(), z.string()).optional(),
-    })
-    .optional(),
+  element: componentElementObject.optional(),
+});
+
+// ─── ComponentLink ───────────────────────────────────────────────────────────
+
+/**
+ * A link resolved from an enclosing `<a>` ancestor. `href` is the anchor's
+ * destination; `element` records the anchor the href was taken from.
+ */
+export const ComponentLinkSchema = z.object({
+  href: z.string(),
+  element: componentElementObject.optional(),
 });
 
 // Exported as ZodType<Component> — fully typed, compatible with recursive schema assignments.
@@ -200,6 +212,7 @@ export const ImageComponentSchema = baseComponentObject.extend({
 export const TextComponentSchema = baseComponentObject.extend({
   component: TextTypeSchema,
   text: z.string(),
+  link: ComponentLinkSchema.optional(),
 });
 
 // ─── HTMLTableComponent ──────────────────────────────────────────────────────
@@ -320,6 +333,7 @@ export const CustomComponentSchema = baseComponentObject.extend({
   component: z.literal('custom'),
   content: z.string(),
   node: z.unknown(), // ElementNode — define further if you have its shape
+  link: ComponentLinkSchema.optional(),
 });
 
 // ─── Container / Columns / Live ──────────────────────────────────────────────
@@ -425,6 +439,7 @@ export const RecipeComponentSchema: z.ZodType<
 
 // ─── Inferred types ──────────────────────────────────────────────────────────
 
+export type ComponentLink = z.infer<typeof ComponentLinkSchema>;
 export type GalleryImage = z.infer<typeof GalleryImageSchema>;
 export type GalleryComponent = z.infer<typeof GalleryComponentSchema>;
 export type ImageComponent = z.infer<typeof ImageComponentSchema>;
