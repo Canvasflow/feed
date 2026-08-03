@@ -14,6 +14,8 @@
 - [HTML Mapping](HTML-Mapping.md)
 - [Custom Mappings](Custom-Mappings.md)
 - [Component Types](Component-Types.md)
+  - [Component type reference](Component-Types.md#component-type-reference)
+  - [Transient components](Component-Types.md#transient-components)
 
 **Operations**
 
