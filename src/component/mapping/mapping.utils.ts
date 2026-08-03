@@ -295,11 +295,18 @@ function matchesFilter(
   // An element without a class attribute can never match a class filter.
   if (!classNames) return false;
   const itemsSet = getFilterItemsSet(filter);
-  const classesNamesSet: Set<string> = new Set(classNames.split(' '));
+  const classList = classNames.trim().split(/\s+/);
+  const classesNamesSet: Set<string> = new Set(classList);
   switch (filter.match) {
     case 'equal':
-      return SetUtils.equal(classesNamesSet, itemsSet);
+      // Strict version of `all`: the element must carry exactly the filter
+      // items and in the same order they were declared.
+      return (
+        classList.length === filter.items.length &&
+        classList.every((className, i) => className === filter.items[i])
+      );
     case 'all':
+      // Every filter item must be present, in any order.
       return SetUtils.subset(classesNamesSet, itemsSet);
     default:
       // Use match any as the default case

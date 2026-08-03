@@ -1,7 +1,7 @@
 {
   "name": "@canvasflow/feed",
   "description": "This is canvasflow utility for processing feeds",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "type": "module",
   "license": "UNLICENSED",
   "sideEffects": false,
@@ -76,7 +76,7 @@
     "@types/node": "^26.1.2",
     "@vitest/coverage-v8": "^4.1.10",
     "@vitest/ui": "^4.1.10",
-    "cz-conventional-changelog": "^3.3.0",
+    "cz-conventional-changelog": "^3.0.1",
     "publint": "^0.3.22",
     "typescript": "^7.0.2",
     "vite-plus": "^0.2.6"
