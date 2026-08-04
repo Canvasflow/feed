@@ -72,14 +72,14 @@
     "@commitlint/cli": "^21.2.1",
     "@commitlint/config-conventional": "^21.1.0",
     "@types/he": "^1.2.3",
-    "@types/luxon": "^3.7.2",
+    "@types/luxon": "^3.7.3",
     "@types/node": "^26.1.2",
     "@vitest/coverage-v8": "^4.1.10",
     "@vitest/ui": "^4.1.10",
-    "cz-conventional-changelog": "^3.0.1",
+    "cz-conventional-changelog": "^3.3.0",
     "publint": "^0.3.22",
     "typescript": "^7.0.2",
-    "vite-plus": "^0.2.6"
+    "vite-plus": "^0.2.7"
   },
   "engines": {
     "node": ">=20.19.2"
