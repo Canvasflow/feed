@@ -10,6 +10,7 @@ import {
 } from '../node/node-helpers';
 import { textAllowedTags, textAllowedAttributes } from './mapping.constants';
 import { sanitizeNodes } from '../html/sanitize-html';
+import { serializeOriginalHtml } from './mapping.utils';
 import { type FeedIssue, warningIssue } from '../../feed-issue';
 
 /**
@@ -89,6 +90,7 @@ export function toText(
     component,
     properties,
     text,
+    html: serializeOriginalHtml(node),
     errors: [],
     warnings,
     element: {
