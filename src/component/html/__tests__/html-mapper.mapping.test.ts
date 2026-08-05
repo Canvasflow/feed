@@ -306,6 +306,78 @@ describe('Mapping', () => {
   );
 
   test(
+    'It should map an affiliate hyperlink widget to a text component',
+    { tags: ['unit', 'html'] },
+    () => {
+      const mappings: Array<ComponentMapping> = [
+        {
+          component: 'text11',
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['div'],
+            },
+            {
+              type: 'attribute',
+              key: 'data-testid',
+              value: 'affiliate-widget--hyperlink',
+            },
+          ],
+        },
+      ];
+      const content = `<div class="affiliate-widget" data-testid="affiliate-widget--hyperlink">
+    <a
+        href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&amp;subId2=site-us-847615f86cdc8cae052b86cb"
+        target="_blank"
+        data-item-name="Liverpool vs. Barnsley LIVE on ESPN app"
+        data-cta-id="ESPN Sports_hyperlink_v2"
+        data-cta-type="link_line_v2"
+        rel="sponsored">
+        <div
+            class="affiliate-link-block border-y-2 border-l1 py-3 my-4 md:mx-4 mx-3 font-roboto text-base/22_4px md:leading-28_8px font-bold">
+            <div class="text-d3">
+                WATCH:
+                <span class="text-b1">Liverpool vs. Barnsley LIVE on ESPN app</span>
+            </div>
+        </div>
+    </a>
+</div>`;
+
+      const components = HTMLMapper.toComponents(content, { mappings });
+      expect(components.length).toBe(1);
+
+      const textComponent = components[0] as TextComponent;
+      // Matched on tag + attribute together, so the whole widget collapses
+      // into a single text component rather than being descended into.
+      expect(textComponent.component).toBe('text11');
+
+      // The anchor is a descendant, not an ancestor, so it stays inline in the
+      // text instead of being lifted onto `link`.
+      expect(textComponent.link).toBeUndefined();
+
+      // Wrapper divs are not phrasing content: the tags go, the content stays.
+      // On the anchor only href/target/rel survive — the data-* attributes and
+      // the span's class are stripped.
+      expect(textComponent.text).toBe(
+        '<a href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&amp;subId2=site-us-847615f86cdc8cae052b86cb" target="_blank" rel="sponsored"> WATCH: <span>Liverpool vs. Barnsley LIVE on ESPN app</span> </a>'
+      );
+
+      // `element` records the element the mapping matched, untouched.
+      expect(textComponent.element).toEqual({
+        tag: 'div',
+        attributes: {
+          class: 'affiliate-widget',
+          'data-testid': 'affiliate-widget--hyperlink',
+        },
+      });
+
+      expect(textComponent.errors).toEqual([]);
+      expect(textComponent.warnings).toEqual([]);
+    }
+  );
+
+  test(
     'It should map components with match all filters with properties',
     { tags: ['unit', 'html'] },
     () => {
