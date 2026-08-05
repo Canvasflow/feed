@@ -327,7 +327,23 @@ describe('Mapping', () => {
           ],
         },
       ];
-      const content = `<div class="affiliate-widget" data-testid="affiliate-widget--hyperlink">
+      // The widget is wrapped in a <p>, which would otherwise be consumed by
+      // the default `p -> body` rule before the walk ever reaches the div.
+      // Unwrapping it drops the <p> itself but keeps its children in place.
+      // <ad> needs no entry: it has no default mapping, so it is descended
+      // into already.
+      const unwrap: Array<Mapping> = [
+        {
+          match: 'all',
+          filters: [
+            {
+              type: 'tag',
+              items: ['p'],
+            },
+          ],
+        },
+      ];
+      const content = `<p><ad><div class="affiliate-widget" data-testid="affiliate-widget--hyperlink">
     <a
         href="https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&amp;subId2=site-us-847615f86cdc8cae052b86cb"
         target="_blank"
@@ -343,9 +359,11 @@ describe('Mapping', () => {
             </div>
         </div>
     </a>
-</div>`;
+</div></ad></p>`;
 
-      const components = HTMLMapper.toComponents(content, { mappings });
+      const components = HTMLMapper.toComponents(content, { mappings, unwrap });
+      // The unwrapped <p> contributes no component of its own — the widget is
+      // spliced in where it stood, so the result stays flat.
       expect(components.length).toBe(1);
 
       const textComponent = components[0] as TextComponent;
