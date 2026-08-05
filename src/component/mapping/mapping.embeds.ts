@@ -12,7 +12,7 @@ import {
   findDescendants,
   getAttributes,
 } from '../node/node-helpers';
-import { sanitizeContentHtml, isYoutubeUrl } from './mapping.utils';
+import { serializeOriginalHtml, isYoutubeUrl } from './mapping.utils';
 import { type FeedIssue, errorIssue } from '../../feed-issue';
 
 /**
@@ -30,6 +30,7 @@ export function toInstagram(node: ElementNode): InstagramComponent {
     type: 'post',
     errors,
     warnings,
+    html: serializeOriginalHtml(node),
     element: {
       tag: node.tagName,
     },
@@ -257,7 +258,7 @@ export function toYoutubeFromAnchor(node: ElementNode): YoutubeComponent {
     attributes: Object.fromEntries(attributes),
   };
   component.id = attributes.get('id');
-  component.html = sanitizeContentHtml(node);
+  component.html = serializeOriginalHtml(node);
   return component;
 }
 

@@ -30,7 +30,7 @@ import {
 import { escapeText } from '../html/parser';
 import {
   sanitizeNode,
-  sanitizeContentHtml,
+  serializeOriginalHtml,
   excludeNode,
   filterAllMapping,
   filterAnyMapping,
@@ -70,7 +70,7 @@ export function mapLivePost(params?: Params): MapLivePostComponentsFn {
     return {
       id,
       component: 'live_post',
-      html: sanitizeContentHtml(node),
+      html: serializeOriginalHtml(node),
       components,
       errors,
       warnings,
@@ -114,7 +114,7 @@ export function toContainer(
     errors: [],
     warnings,
     properties,
-    html: sanitizeContentHtml(node),
+    html: serializeOriginalHtml(node),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -176,7 +176,7 @@ export function toColumns(
   return {
     id,
     component: 'columns',
-    html: sanitizeContentHtml(node),
+    html: serializeOriginalHtml(node),
     columns,
     errors,
     warnings,
@@ -259,7 +259,7 @@ export function toLiveContainer(
   return {
     id,
     component: 'live_container',
-    html: sanitizeContentHtml(node),
+    html: serializeOriginalHtml(node),
     posts,
     errors,
     warnings,
@@ -353,6 +353,7 @@ export function toLinkContainer(
     errors,
     warnings,
     properties,
+    html: serializeOriginalHtml(node),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -436,6 +437,7 @@ export function toFigureContainer(
     errors,
     warnings,
     properties,
+    html: serializeOriginalHtml(node),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -553,6 +555,7 @@ export function toAnchorButton(node: ElementNode): ButtonComponent {
     link,
     errors,
     warnings,
+    html: serializeOriginalHtml(node),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -635,6 +638,7 @@ export function toButton(node: ElementNode): ButtonComponent {
     link,
     errors,
     warnings,
+    html: serializeOriginalHtml(node),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),

@@ -49,6 +49,7 @@ import {
   filterAnyMapping,
   trimAsciiWhitespace,
   collapseAsciiWhitespace,
+  serializeOriginalHtml,
 } from './mapping.utils';
 import {
   toInstagram,
@@ -283,7 +284,9 @@ export function fromNode(
       return null;
     }
 
-    const trimmed = escapeText(trimAsciiWhitespace(node.content));
+    const trimmed = escapeText(
+      trimAsciiWhitespace(node.content).replace(/\s{2,}/g, ' ')
+    );
     const text = params?.ignoreParagraphWrap ? trimmed : `<p>${trimmed}</p>`;
 
     const bodyComponent: TextComponent = {
@@ -291,6 +294,7 @@ export function fromNode(
       errors: [],
       warnings: [],
       text,
+      html: serializeOriginalHtml(node),
     };
     return bodyComponent;
   }
@@ -362,10 +366,12 @@ export function fromNode(
                 'cite'
               ),
         ],
+        html: serializeOriginalHtml(node),
       };
       return invalidTikTok;
     }
     const tiktokComponent = toTikTok(new URL(cite));
+    tiktokComponent.html = serializeOriginalHtml(node);
     if (tagName) {
       tiktokComponent.element = {
         tag: tagName,
