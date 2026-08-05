@@ -284,7 +284,9 @@ export function fromNode(
       return null;
     }
 
-    const trimmed = escapeText(trimAsciiWhitespace(node.content));
+    const trimmed = escapeText(
+      trimAsciiWhitespace(node.content).replace(/\s{2,}/g, ' ')
+    );
     const text = params?.ignoreParagraphWrap ? trimmed : `<p>${trimmed}</p>`;
 
     const bodyComponent: TextComponent = {

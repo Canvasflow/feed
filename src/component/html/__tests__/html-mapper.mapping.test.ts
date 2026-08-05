@@ -7,6 +7,7 @@ import {
   type Mapping,
   isValidParams,
   isValidMapping,
+  type ColumnsMapping,
 } from '../../mapping/mapping';
 import {
   type TextComponent,
@@ -517,6 +518,125 @@ describe('Mapping', () => {
       const textComponent = components.shift() as TextComponent;
       expect(textComponent).toBeDefined();
       expect(textComponent.component).toBe('footer');
+    }
+  );
+
+  test(
+    'It should map a recirculation aside widget without a mapping',
+    { tags: ['unit', 'html'] },
+    () => {
+      const columnMapping: ColumnsMapping = {
+        component: 'columns',
+        match: 'all',
+        filters: [
+          {
+            type: 'tag',
+            items: ['ul'],
+          },
+        ],
+        column: {
+          match: 'any',
+          filters: [
+            {
+              type: 'tag',
+              items: ['li'],
+            },
+          ],
+        },
+      };
+
+      const content = `<aside data-component-name="Recirculation:ArticleRiver" data-recirculation-type="inline"
+    data-mrf-recirculation="Trending Bar" data-nosnippet="" class="clear-both pt-2 pb-0 mb-4">
+    <span class="
+            flex
+            after:content-[''] after:flex-1 after:ml-4 after:my-[0.7rem] after:border-t after:border-solid after:border-[#333]
+            before:content-[''] before:flex-1 before:mr-4 before:my-[0.7rem] before:border-t before:border-solid before:border-[#333]
+            font-article-heading pb-0 text-[length:var(--article-river-title--font-size,1em)] uppercase sm:text-[length:var(--article-river-title--font-size,0.875em)] font-normal
+        ">
+        You may like
+    </span>
+    <ul class="flex flex-col gap-0 m-0 max-w-full">
+        <li class="m-0 list-none border-b border-solid border-[#ededed] py-2.5"
+            data-recirculation-id="recirculation-card-1" id="recirculation-inline-1"
+            data-analytics-id="recirculation-inline-1" analytics-label=""
+            data-mrf-recirculation="recirculation-inline-1">
+            <a href="https://www.t3.com/features/best-wired-headphones-and-wired-earbuds"
+                class="flex gap-2 items-center no-underline text-inherit flex-row"
+                data-before-rewrite-localise="https://www.t3.com/features/best-wired-headphones-and-wired-earbuds">
+                <picture data-new-v2-image="true" class="aspect-square size-[85px] md:size-20 shrink-0">
+                    <source type="image/webp"
+                        srcset="https://cdn.mos.cms.futurecdn.net/BR49VWc3SroSAKDGd9RyWd-250-80.jpg.webp 250w, https://cdn.mos.cms.futurecdn.net/BR49VWc3SroSAKDGd9RyWd-150-80.jpg.webp 150w"
+                        sizes="150px">
+                    <img src="https://cdn.mos.cms.futurecdn.net/BR49VWc3SroSAKDGd9RyWd.jpg" alt="Grado SR325 headphones"
+                        srcset="https://cdn.mos.cms.futurecdn.net/BR49VWc3SroSAKDGd9RyWd-250-80.jpg 250w, https://cdn.mos.cms.futurecdn.net/BR49VWc3SroSAKDGd9RyWd-150-80.jpg 150w"
+                        sizes="150px" loading="lazy" data-new-v2-image="true"
+                        data-original-mos="https://cdn.mos.cms.futurecdn.net/BR49VWc3SroSAKDGd9RyWd.jpg"
+                        data-pin-media="https://cdn.mos.cms.futurecdn.net/BR49VWc3SroSAKDGd9RyWd.jpg"
+                        class="rounded-[var(--image--border-radius,0)] aspect-square size-[85px] md:size-20 object-cover shrink-0"
+                        data-pin-nopin="true">
+                </picture>
+                <span
+                    class="w-full text-base font-[var(--article-river-item--font-weight,500)] font-article-heading line-clamp-3 md:line-clamp-2">Best
+                    wired headphones 2026: Perfect picks for every price point</span>
+            </a>
+        </li>
+        <li class="m-0 list-none border-b border-solid border-[#ededed] py-2.5"
+            data-recirculation-id="recirculation-card-2" id="recirculation-inline-2"
+            data-analytics-id="recirculation-inline-2" analytics-label=""
+            data-mrf-recirculation="recirculation-inline-2">
+            <a href="https://www.t3.com/features/best-headphones"
+                class="flex gap-2 items-center no-underline text-inherit flex-row"
+                data-before-rewrite-localise="https://www.t3.com/features/best-headphones">
+                <picture data-new-v2-image="true" class="aspect-square size-[85px] md:size-20 shrink-0">
+                    <source type="image/webp"
+                        srcset="https://cdn.mos.cms.futurecdn.net/56P7NkUx84aMC3sdFdzdtg-250-80.jpg.webp 250w, https://cdn.mos.cms.futurecdn.net/56P7NkUx84aMC3sdFdzdtg-150-80.jpg.webp 150w"
+                        sizes="150px">
+                    <img src="https://cdn.mos.cms.futurecdn.net/56P7NkUx84aMC3sdFdzdtg.jpg"
+                        alt="Sony 1000X The Collexion"
+                        srcset="https://cdn.mos.cms.futurecdn.net/56P7NkUx84aMC3sdFdzdtg-250-80.jpg 250w, https://cdn.mos.cms.futurecdn.net/56P7NkUx84aMC3sdFdzdtg-150-80.jpg 150w"
+                        sizes="150px" loading="lazy" data-new-v2-image="true"
+                        data-original-mos="https://cdn.mos.cms.futurecdn.net/56P7NkUx84aMC3sdFdzdtg.jpg"
+                        data-pin-media="https://cdn.mos.cms.futurecdn.net/56P7NkUx84aMC3sdFdzdtg.jpg"
+                        class="rounded-[var(--image--border-radius,0)] aspect-square size-[85px] md:size-20 object-cover shrink-0"
+                        data-pin-nopin="true">
+                </picture>
+                <span
+                    class="w-full text-base font-[var(--article-river-item--font-weight,500)] font-article-heading line-clamp-3 md:line-clamp-2">Best
+                    headphones 2026: All the top over-ear and in-ear options, as tested by our expert team</span>
+            </a>
+        </li>
+        <li class="m-0 list-none border-b border-solid border-[#333] py-2.5"
+            data-recirculation-id="recirculation-card-3" id="recirculation-inline-3"
+            data-analytics-id="recirculation-inline-3" analytics-label=""
+            data-mrf-recirculation="recirculation-inline-3">
+            <a href="https://www.t3.com/tech/headphones/3-of-the-best-wireless-home-hifi-headphones-options-for-all-budgets"
+                class="flex gap-2 items-center no-underline text-inherit flex-row"
+                data-before-rewrite-localise="https://www.t3.com/tech/headphones/3-of-the-best-wireless-home-hifi-headphones-options-for-all-budgets">
+                <picture data-new-v2-image="true" class="aspect-square size-[85px] md:size-20 shrink-0">
+                    <source type="image/webp"
+                        srcset="https://cdn.mos.cms.futurecdn.net/SwhWpmVudP9aSv3Bmz59W8-250-80.jpg.webp 250w, https://cdn.mos.cms.futurecdn.net/SwhWpmVudP9aSv3Bmz59W8-150-80.jpg.webp 150w"
+                        sizes="150px">
+                    <img src="https://cdn.mos.cms.futurecdn.net/SwhWpmVudP9aSv3Bmz59W8.jpg"
+                        alt="A photo of Sennheiser and Hifiman headphones. "
+                        srcset="https://cdn.mos.cms.futurecdn.net/SwhWpmVudP9aSv3Bmz59W8-250-80.jpg 250w, https://cdn.mos.cms.futurecdn.net/SwhWpmVudP9aSv3Bmz59W8-150-80.jpg 150w"
+                        sizes="150px" loading="lazy" data-new-v2-image="true"
+                        data-original-mos="https://cdn.mos.cms.futurecdn.net/SwhWpmVudP9aSv3Bmz59W8.jpg"
+                        data-pin-media="https://cdn.mos.cms.futurecdn.net/SwhWpmVudP9aSv3Bmz59W8.jpg"
+                        class="rounded-[var(--image--border-radius,0)] aspect-square size-[85px] md:size-20 object-cover shrink-0"
+                        data-pin-nopin="true">
+                </picture>
+                <span
+                    class="w-full text-base font-[var(--article-river-item--font-weight,500)] font-article-heading line-clamp-3 md:line-clamp-2">3
+                    of the best wireless home hifi headphones - options for all budgets </span>
+            </a>
+        </li>
+    </ul>
+</aside>`;
+
+      const components = HTMLMapper.toComponents(content, {
+        mappings: [columnMapping],
+      });
+      expect(components.length).toBe(2);
     }
   );
 

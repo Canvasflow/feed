@@ -1522,7 +1522,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/theenglishhome.
       },
       "href": "/seasonal-living/outdoor-living/oka-parasol/",
     },
-    "text": "This is the one garden buy everyone will be talking about: OKA’s new parasol is basically outdoor art  – and the detail underneath is what really sets it apart",
+    "text": "This is the one garden buy everyone will be talking about: OKA’s new parasol is basically outdoor art – and the detail underneath is what really sets it apart",
     "warnings": [],
   },
   {
@@ -1728,7 +1728,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Access Available",
-    "text": "<p>Access                                                Available</p>",
+    "text": "<p>Access Available</p>",
     "warnings": [],
   },
   {
@@ -1742,7 +1742,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Active Members",
-    "text": "<p>Active                                                Members</p>",
+    "text": "<p>Active Members</p>",
     "warnings": [],
   },
   {
@@ -1941,14 +1941,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "GET CLUB ACCESS QUICK",
-    "text": "<p>GET                                            CLUB ACCESS QUICK</p>",
+    "text": "<p>GET CLUB ACCESS QUICK</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "For the fastest way to join Tom's Guide Club enter your email below. We'll send you a confirmation and sign you up to our newsletter to keep you updated on all the latest news.",
-    "text": "<p>For the fastest                                            way to join Tom's Guide Club enter your email below. We'll send you a                                            confirmation and sign you up to our newsletter to keep you updated on all                                            the latest news.</p>",
+    "text": "<p>For the fastest way to join Tom's Guide Club enter your email below. We'll send you a confirmation and sign you up to our newsletter to keep you updated on all the latest news.</p>",
     "warnings": [],
   },
   {
@@ -2019,14 +2019,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "FIND OUT ABOUT OUR MAGAZINE",
-    "text": "<p>FIND OUT ABOUT OUR                                            MAGAZINE</p>",
+    "text": "<p>FIND OUT ABOUT OUR MAGAZINE</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "Want to subscribe to the magazine? Click the button below to find out more information.",
-    "text": "<p>Want to subscribe to the                                            magazine? Click the button below to                                            find out more information.</p>",
+    "text": "<p>Want to subscribe to the magazine? Click the button below to find out more information.</p>",
     "warnings": [],
   },
   {
@@ -2215,7 +2215,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": " to Tom's Guide Club",
-    "text": "<p>to                                                Tom's Guide Club</p>",
+    "text": "<p>to Tom's Guide Club</p>",
     "warnings": [],
   },
   {
@@ -2313,7 +2313,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": " Earn your first badge ",
-    "text": "<p>Earn your first                                                badge</p>",
+    "text": "<p>Earn your first badge</p>",
     "warnings": [],
   },
   {
@@ -2751,7 +2751,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com",
     },
-    "text": "Upgrade                            your life",
+    "text": "Upgrade your life",
     "warnings": [],
   },
   {
@@ -3058,7 +3058,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Sign in",
-    "text": "<p>Sign                        in</p>",
+    "text": "<p>Sign in</p>",
     "warnings": [],
   },
   {
@@ -3713,7 +3713,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/wellness/running/11-best-on-running-shoe-deals-get-up-to-40-percent-off-right-now",
     },
-    "text": "13                                            best On running shoe deals — get up to 40% off right now",
+    "text": "13 best On running shoe deals — get up to 40% off right now",
     "warnings": [],
   },
   {
@@ -3775,7 +3775,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/wellness/fitness/new-balance-running-shoes-are-up-to-44-percent-off-13-spring-deals-to-get-outdoors",
     },
-    "text": "New                                            Balance running shoes are up to 44% off — 15 spring deals to get                                            outdoors",
+    "text": "New Balance running shoes are up to 44% off — 15 spring deals to get outdoors",
     "warnings": [],
   },
   {
@@ -3837,7 +3837,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/wellness/running/15-best-walking-shoe-deals-from-hoka-asics-and-nike-spring-deals-with-up-to-47-percent-off",
     },
-    "text": "17                                            best walking shoe deals from Hoka, Asics, and Nike — spring deals with                                            up to 47% off",
+    "text": "17 best walking shoe deals from Hoka, Asics, and Nike — spring deals with up to 47% off",
     "warnings": [],
   },
   {
@@ -3899,7 +3899,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/home/outdoors/17-best-patagonia-deals-to-shop-for-spring-save-up-to-50-percent-on-rain-jackets-fleeces-and-more",
     },
-    "text": "19                                            best Patagonia deals to shop for spring — save up to 50% on rain                                            jackets, fleeces and more",
+    "text": "19 best Patagonia deals to shop for spring — save up to 50% on rain jackets, fleeces and more",
     "warnings": [],
   },
   {
@@ -3961,7 +3961,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/wellness/running/hoka-asics-and-nike-are-slashing-prices-on-running-shoes-29-spring-deals-with-up-to-50-percent-off",
     },
-    "text": "Hoka,                                            Asics and Nike are slashing prices on running shoes — 29 spring deals                                            with up to 50% off",
+    "text": "Hoka, Asics and Nike are slashing prices on running shoes — 29 spring deals with up to 50% off",
     "warnings": [],
   },
   {
@@ -3997,7 +3997,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/live/news/amazon-spring-prime-day-last-minute-deals-worth-buying-picked-by-deals-experts",
     },
-    "text": "Sales                                            Events",
+    "text": "Sales Events",
     "warnings": [],
   },
   {
@@ -4023,7 +4023,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/live/news/amazon-spring-prime-day-last-minute-deals-worth-buying-picked-by-deals-experts",
     },
-    "text": "Amazon                                            Big Spring Sale LIVE: 71 deals you can still get that wowed our shopping                                            editors",
+    "text": "Amazon Big Spring Sale LIVE: 71 deals you can still get that wowed our shopping editors",
     "warnings": [],
   },
   {
@@ -4085,7 +4085,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/wellness/running/asics-just-dropped-a-huge-spring-sneaker-sale-11-running-and-walking-deals-from-usd59",
     },
-    "text": "Asics                                            just dropped a huge spring sneaker sale — 17 running and walking deals                                            from $59",
+    "text": "Asics just dropped a huge spring sneaker sale — 17 running and walking deals from $59",
     "warnings": [],
   },
   {
@@ -4147,7 +4147,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/home/outdoors/im-stuffing-my-basket-with-these-5-crocs-deals-with-up-to-60-percent-off-at-amazon",
     },
-    "text": "I'm                                            stuffing my basket with these 5 Crocs deals, with up to 60% off at                                            Amazon",
+    "text": "I'm stuffing my basket with these 5 Crocs deals, with up to 60% off at Amazon",
     "warnings": [],
   },
   {
@@ -4209,7 +4209,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/wellness/running/amazon-just-dropped-the-price-on-some-of-the-most-popular-asics-running-shoes-3-pairs-id-add-to-my-cart-right-now",
     },
-    "text": "Amazon                                            just dropped the price on some of the most popular Asics running shoes                                            — 3 pairs I'd add to my cart right now",
+    "text": "Amazon just dropped the price on some of the most popular Asics running shoes — 3 pairs I'd add to my cart right now",
     "warnings": [],
   },
   {
@@ -4271,7 +4271,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/home/outdoors/im-shopping-patagonias-easter-sale-here-are-15-spring-styles-up-to-50-percent-off",
     },
-    "text": "I'm                                            shopping the best Patagonia deals for Easter weekend — save up to 50%                                            on these spring styles right now",
+    "text": "I'm shopping the best Patagonia deals for Easter weekend — save up to 50% on these spring styles right now",
     "warnings": [],
   },
   {
@@ -4307,7 +4307,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/sales-events/amazons-spring-sale-knocks-up-to-50-percent-off-patio-furniture-and-gardening-essentials-13-deals-id-buy-for-my-backyard",
     },
-    "text": "Sales                                            Events",
+    "text": "Sales Events",
     "warnings": [],
   },
   {
@@ -4333,7 +4333,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/sales-events/amazons-spring-sale-knocks-up-to-50-percent-off-patio-furniture-and-gardening-essentials-13-deals-id-buy-for-my-backyard",
     },
-    "text": "Amazon's                                            spring sale knocks up to 50% off patio furniture and gardening essentials                                            — 13 deals I'd buy for my backyard",
+    "text": "Amazon's spring sale knocks up to 50% off patio furniture and gardening essentials — 13 deals I'd buy for my backyard",
     "warnings": [],
   },
   {
@@ -4395,7 +4395,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/wellness/running/running-season-is-almost-here-15-asics-sneaker-deals-that-runners-swear-by",
     },
-    "text": "Running                                            season is almost here: 15 Asics sneaker deals that runners swear by",
+    "text": "Running season is almost here: 15 Asics sneaker deals that runners swear by",
     "warnings": [],
   },
   {
@@ -4457,7 +4457,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/wellness/running/31-best-running-shoe-deals-for-spring-save-up-to-50-percent-on-hoka-asics-nike-and-more",
     },
-    "text": "41                                            best running shoe deals for spring — save up to 50% on Hoka, Asics,                                            Nike and more",
+    "text": "41 best running shoe deals for spring — save up to 50% on Hoka, Asics, Nike and more",
     "warnings": [],
   },
   {
@@ -4519,7 +4519,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/home/outdoors/these-15-patagonia-deals-will-transition-you-from-winter-to-spring-and-theyre-up-to-50-percent-off-now",
     },
-    "text": "These                                            15 Patagonia deals will transition you from winter to spring — and                                            they’re up to 50% off now",
+    "text": "These 15 Patagonia deals will transition you from winter to spring — and they’re up to 50% off now",
     "warnings": [],
   },
   {
@@ -4581,7 +4581,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/wellness/running/i-found-the-35-best-running-shoe-deals-for-spring-save-up-to-50-percent-on-nike-hoka-and-asics",
     },
-    "text": "I                                            found the 35 best running shoe deals for spring — save up to 50% on                                            Nike, Hoka and Asics",
+    "text": "I found the 35 best running shoe deals for spring — save up to 50% on Nike, Hoka and Asics",
     "warnings": [],
   },
   {
@@ -4652,7 +4652,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/author/olivia-halevy",
     },
-    "text": "Olivia                                                    Halevy",
+    "text": "Olivia Halevy",
     "warnings": [],
   },
   {
@@ -4749,7 +4749,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Jump to:",
-    "text": "<p>Jump                                                to:</p>",
+    "text": "<p>Jump to:</p>",
     "warnings": [],
   },
   {
@@ -5009,7 +5009,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": " Sign up to get the BEST of Tom's Guide direct to your inbox.",
-    "text": "<p>Sign up to get the BEST of Tom's Guide direct to your                                                                inbox.</p>",
+    "text": "<p>Sign up to get the BEST of Tom's Guide direct to your inbox.</p>",
     "warnings": [],
   },
   {
@@ -5061,14 +5061,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": " Contact me with news and offers from other Future brands ",
-    "text": "<p>Contact me with news and offers from other                                                                            Future brands</p>",
+    "text": "<p>Contact me with news and offers from other Future brands</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": " Receive email from us on behalf of our trusted partners or sponsors ",
-    "text": "<p>Receive email from us on behalf of our                                                                            trusted partners or sponsors</p>",
+    "text": "<p>Receive email from us on behalf of our trusted partners or sponsors</p>",
     "warnings": [],
   },
   {
@@ -5123,7 +5123,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": " and are aged 16 or over. ",
-    "text": "<p>and are aged                                                                    16 or over.</p>",
+    "text": "<p>and are aged 16 or over.</p>",
     "warnings": [],
   },
   {
@@ -5559,7 +5559,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": " An account already exists for this email address, please log in.",
-    "text": "<p>An                                                                        account already exists for this email address,                                                                        please log in.</p>",
+    "text": "<p>An account already exists for this email address, please log in.</p>",
     "warnings": [],
   },
   {
@@ -5715,7 +5715,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-2639313205859489754&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-arizona-vintage-bold-grip-sandal-men%2F8714048%3F",
     },
-    "text": "Birkenstock                                                                    Arizona Vintage Bold Grip Sandal (Men's):",
+    "text": "Birkenstock Arizona Vintage Bold Grip Sandal (Men's):",
     "warnings": [],
   },
   {
@@ -5749,7 +5749,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-2639313205859489754&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-arizona-vintage-bold-grip-sandal-men%2F8714048%3F",
     },
-    "text": "was                                                                    $135",
+    "text": "was $135",
     "warnings": [],
   },
   {
@@ -5783,7 +5783,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-2639313205859489754&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-arizona-vintage-bold-grip-sandal-men%2F8714048%3F",
     },
-    "text": "now                                                                        $89",
+    "text": "now $89",
     "warnings": [],
   },
   {
@@ -5817,7 +5817,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-2639313205859489754&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-arizona-vintage-bold-grip-sandal-men%2F8714048%3F",
     },
-    "text": "at                                                                        Nordstrom Rack",
+    "text": "at Nordstrom Rack",
     "warnings": [],
   },
   {
@@ -5839,14 +5839,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Read more",
-    "text": "<p>Read                                                                        more</p>",
+    "text": "<p>Read more</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "Read less",
-    "text": "<p>Read                                                                        less</p>",
+    "text": "<p>Read less</p>",
     "warnings": [],
   },
   {
@@ -5945,7 +5945,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-8281606209856383572&url=https://www.zappos.com/p/womens-birkenstock-papillio-by-birkenstock-florida-platform-nubuck-pure-sage/product/9985783/color/1097063",
     },
-    "text": "Birkenstock                                                                    Papilio Florida Platform:",
+    "text": "Birkenstock Papilio Florida Platform:",
     "warnings": [],
   },
   {
@@ -5979,7 +5979,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-8281606209856383572&url=https://www.zappos.com/p/womens-birkenstock-papillio-by-birkenstock-florida-platform-nubuck-pure-sage/product/9985783/color/1097063",
     },
-    "text": "was                                                                    $140",
+    "text": "was $140",
     "warnings": [],
   },
   {
@@ -6014,7 +6014,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-8281606209856383572&url=https://www.zappos.com/p/womens-birkenstock-papillio-by-birkenstock-florida-platform-nubuck-pure-sage/product/9985783/color/1097063",
     },
-    "text": "now                                                                        $98",
+    "text": "now $98",
     "warnings": [],
   },
   {
@@ -6049,7 +6049,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-8281606209856383572&url=https://www.zappos.com/p/womens-birkenstock-papillio-by-birkenstock-florida-platform-nubuck-pure-sage/product/9985783/color/1097063",
     },
-    "text": "at                                                                        Zappos",
+    "text": "at Zappos",
     "warnings": [],
   },
   {
@@ -6071,14 +6071,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Read more",
-    "text": "<p>Read                                                                        more</p>",
+    "text": "<p>Read more</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "Read less",
-    "text": "<p>Read                                                                        less</p>",
+    "text": "<p>Read less</p>",
     "warnings": [],
   },
   {
@@ -6119,7 +6119,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-8281606209856383572&url=https://www.zappos.com/p/womens-birkenstock-papillio-by-birkenstock-florida-platform-nubuck-pure-sage/product/9985783/color/1097063",
     },
-    "text": "View                                                                        Deal",
+    "text": "View Deal",
     "warnings": [],
   },
   {
@@ -6177,7 +6177,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-4882900030929919438&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-kyoto-desert-slide-sandal-men%2F7353187%3F",
     },
-    "text": "Birkenstock                                                                    Kyoto Desert Slide Sandal (Men's):",
+    "text": "Birkenstock Kyoto Desert Slide Sandal (Men's):",
     "warnings": [],
   },
   {
@@ -6211,7 +6211,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-4882900030929919438&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-kyoto-desert-slide-sandal-men%2F7353187%3F",
     },
-    "text": "was                                                                    $155",
+    "text": "was $155",
     "warnings": [],
   },
   {
@@ -6245,7 +6245,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-4882900030929919438&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-kyoto-desert-slide-sandal-men%2F7353187%3F",
     },
-    "text": "now                                                                        $99",
+    "text": "now $99",
     "warnings": [],
   },
   {
@@ -6279,7 +6279,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-4882900030929919438&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-kyoto-desert-slide-sandal-men%2F7353187%3F",
     },
-    "text": "at                                                                        Nordstrom Rack",
+    "text": "at Nordstrom Rack",
     "warnings": [],
   },
   {
@@ -6301,14 +6301,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Read more",
-    "text": "<p>Read                                                                        more</p>",
+    "text": "<p>Read more</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "Read less",
-    "text": "<p>Read                                                                        less</p>",
+    "text": "<p>Read less</p>",
     "warnings": [],
   },
   {
@@ -6407,7 +6407,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-1183367925398076241&url=https://www.zappos.com/p/womens-birkenstock-madrid-big-buckle-high-shine-light-rose/product/9916546/color/15293?",
     },
-    "text": "Birkenstock                                                                    Madrid Big Buckle Slide Sandal (Women's):",
+    "text": "Birkenstock Madrid Big Buckle Slide Sandal (Women's):",
     "warnings": [],
   },
   {
@@ -6441,7 +6441,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-1183367925398076241&url=https://www.zappos.com/p/womens-birkenstock-madrid-big-buckle-high-shine-light-rose/product/9916546/color/15293?",
     },
-    "text": "was                                                                    $150",
+    "text": "was $150",
     "warnings": [],
   },
   {
@@ -6475,7 +6475,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-1183367925398076241&url=https://www.zappos.com/p/womens-birkenstock-madrid-big-buckle-high-shine-light-rose/product/9916546/color/15293?",
     },
-    "text": "now                                                                        $105",
+    "text": "now $105",
     "warnings": [],
   },
   {
@@ -6509,7 +6509,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-1183367925398076241&url=https://www.zappos.com/p/womens-birkenstock-madrid-big-buckle-high-shine-light-rose/product/9916546/color/15293?",
     },
-    "text": "at                                                                        Zappos",
+    "text": "at Zappos",
     "warnings": [],
   },
   {
@@ -6531,14 +6531,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Read more",
-    "text": "<p>Read                                                                        more</p>",
+    "text": "<p>Read more</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "Read less",
-    "text": "<p>Read                                                                        less</p>",
+    "text": "<p>Read less</p>",
     "warnings": [],
   },
   {
@@ -6579,7 +6579,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-1183367925398076241&url=https://www.zappos.com/p/womens-birkenstock-madrid-big-buckle-high-shine-light-rose/product/9916546/color/15293?",
     },
-    "text": "View                                                                        Deal",
+    "text": "View Deal",
     "warnings": [],
   },
   {
@@ -6637,7 +6637,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-5950554879015617952&url=https://www.zappos.com/p/womens-birkenstock-florida-nubuck-stone-blue/product/7128742/color/6449?",
     },
-    "text": "Birkenstock                                                                    Florida Sandal (Women's):",
+    "text": "Birkenstock Florida Sandal (Women's):",
     "warnings": [],
   },
   {
@@ -6671,7 +6671,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-5950554879015617952&url=https://www.zappos.com/p/womens-birkenstock-florida-nubuck-stone-blue/product/7128742/color/6449?",
     },
-    "text": "was                                                                    $150",
+    "text": "was $150",
     "warnings": [],
   },
   {
@@ -6705,7 +6705,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-5950554879015617952&url=https://www.zappos.com/p/womens-birkenstock-florida-nubuck-stone-blue/product/7128742/color/6449?",
     },
-    "text": "now                                                                        $120",
+    "text": "now $120",
     "warnings": [],
   },
   {
@@ -6739,7 +6739,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-5950554879015617952&url=https://www.zappos.com/p/womens-birkenstock-florida-nubuck-stone-blue/product/7128742/color/6449?",
     },
-    "text": "at                                                                        Zappos",
+    "text": "at Zappos",
     "warnings": [],
   },
   {
@@ -6761,14 +6761,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Read more",
-    "text": "<p>Read                                                                        more</p>",
+    "text": "<p>Read more</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "Read less",
-    "text": "<p>Read                                                                        less</p>",
+    "text": "<p>Read less</p>",
     "warnings": [],
   },
   {
@@ -6809,7 +6809,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-5950554879015617952&url=https://www.zappos.com/p/womens-birkenstock-florida-nubuck-stone-blue/product/7128742/color/6449?",
     },
-    "text": "View                                                                        Deal",
+    "text": "View Deal",
     "warnings": [],
   },
   {
@@ -6867,7 +6867,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-2530405199407433526&url=https://www.zappos.com/p/womens-birkenstock-arizona-big-buckle-nubuck-leather-stone-coin/product/9092609/color/1055663?",
     },
-    "text": "Birkenstock                                                                    Arizona Big Buckle Nubuck Leather                                                                    (Women's):",
+    "text": "Birkenstock Arizona Big Buckle Nubuck Leather (Women's):",
     "warnings": [],
   },
   {
@@ -6901,7 +6901,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-2530405199407433526&url=https://www.zappos.com/p/womens-birkenstock-arizona-big-buckle-nubuck-leather-stone-coin/product/9092609/color/1055663?",
     },
-    "text": "was                                                                    $170",
+    "text": "was $170",
     "warnings": [],
   },
   {
@@ -6935,7 +6935,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-2530405199407433526&url=https://www.zappos.com/p/womens-birkenstock-arizona-big-buckle-nubuck-leather-stone-coin/product/9092609/color/1055663?",
     },
-    "text": "now                                                                        $122",
+    "text": "now $122",
     "warnings": [],
   },
   {
@@ -6969,7 +6969,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-2530405199407433526&url=https://www.zappos.com/p/womens-birkenstock-arizona-big-buckle-nubuck-leather-stone-coin/product/9092609/color/1055663?",
     },
-    "text": "at                                                                        Zappos",
+    "text": "at Zappos",
     "warnings": [],
   },
   {
@@ -6991,14 +6991,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Read more",
-    "text": "<p>Read                                                                        more</p>",
+    "text": "<p>Read more</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "Read less",
-    "text": "<p>Read                                                                        less</p>",
+    "text": "<p>Read less</p>",
     "warnings": [],
   },
   {
@@ -7039,7 +7039,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-2530405199407433526&url=https://www.zappos.com/p/womens-birkenstock-arizona-big-buckle-nubuck-leather-stone-coin/product/9092609/color/1055663?",
     },
-    "text": "View                                                                        Deal",
+    "text": "View Deal",
     "warnings": [],
   },
   {
@@ -7097,7 +7097,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-1457756816075297545&url=https://www.zappos.com/p/womens-birkenstock-arizona-big-buckle-high-shine-light-rose/product/9916533/color/15293",
     },
-    "text": "Birkenstock                                                                    Arizona Big Buckle High Shine (Women's):",
+    "text": "Birkenstock Arizona Big Buckle High Shine (Women's):",
     "warnings": [],
   },
   {
@@ -7131,7 +7131,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-1457756816075297545&url=https://www.zappos.com/p/womens-birkenstock-arizona-big-buckle-high-shine-light-rose/product/9916533/color/15293",
     },
-    "text": "was                                                                    $170",
+    "text": "was $170",
     "warnings": [],
   },
   {
@@ -7165,7 +7165,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-1457756816075297545&url=https://www.zappos.com/p/womens-birkenstock-arizona-big-buckle-high-shine-light-rose/product/9916533/color/15293",
     },
-    "text": "now                                                                        $122",
+    "text": "now $122",
     "warnings": [],
   },
   {
@@ -7199,7 +7199,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-1457756816075297545&url=https://www.zappos.com/p/womens-birkenstock-arizona-big-buckle-high-shine-light-rose/product/9916533/color/15293",
     },
-    "text": "at                                                                        Zappos",
+    "text": "at Zappos",
     "warnings": [],
   },
   {
@@ -7221,14 +7221,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Read more",
-    "text": "<p>Read                                                                        more</p>",
+    "text": "<p>Read more</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "Read less",
-    "text": "<p>Read                                                                        less</p>",
+    "text": "<p>Read less</p>",
     "warnings": [],
   },
   {
@@ -7269,7 +7269,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-1457756816075297545&url=https://www.zappos.com/p/womens-birkenstock-arizona-big-buckle-high-shine-light-rose/product/9916533/color/15293",
     },
-    "text": "View                                                                        Deal",
+    "text": "View Deal",
     "warnings": [],
   },
   {
@@ -7327,7 +7327,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-9310059097265102067&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-gizeh-big-buckle-slide-sandal-women%2F5759527%3F",
     },
-    "text": "Birkenstock                                                                    Gizeh Big Buckle Flip Flop (Women's):",
+    "text": "Birkenstock Gizeh Big Buckle Flip Flop (Women's):",
     "warnings": [],
   },
   {
@@ -7361,7 +7361,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-9310059097265102067&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-gizeh-big-buckle-slide-sandal-women%2F5759527%3F",
     },
-    "text": "was                                                                    $164",
+    "text": "was $164",
     "warnings": [],
   },
   {
@@ -7395,7 +7395,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-9310059097265102067&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-gizeh-big-buckle-slide-sandal-women%2F5759527%3F",
     },
-    "text": "now                                                                        $124",
+    "text": "now $124",
     "warnings": [],
   },
   {
@@ -7429,7 +7429,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-9310059097265102067&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-gizeh-big-buckle-slide-sandal-women%2F5759527%3F",
     },
-    "text": "at                                                                        Nordstrom Rack",
+    "text": "at Nordstrom Rack",
     "warnings": [],
   },
   {
@@ -7451,14 +7451,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Read more",
-    "text": "<p>Read                                                                        more</p>",
+    "text": "<p>Read more</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "Read less",
-    "text": "<p>Read                                                                        less</p>",
+    "text": "<p>Read less</p>",
     "warnings": [],
   },
   {
@@ -7557,7 +7557,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-1822617561572863274&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-milano-big-buckle-slingback-sandal-women%2F7403736%3F",
     },
-    "text": "Birkenstock                                                                    Milano Big Buckle Slingback Sandal                                                                    (Women's):",
+    "text": "Birkenstock Milano Big Buckle Slingback Sandal (Women's):",
     "warnings": [],
   },
   {
@@ -7591,7 +7591,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-1822617561572863274&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-milano-big-buckle-slingback-sandal-women%2F7403736%3F",
     },
-    "text": "was                                                                    $170",
+    "text": "was $170",
     "warnings": [],
   },
   {
@@ -7625,7 +7625,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-1822617561572863274&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-milano-big-buckle-slingback-sandal-women%2F7403736%3F",
     },
-    "text": "now                                                                        $134",
+    "text": "now $134",
     "warnings": [],
   },
   {
@@ -7659,7 +7659,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-1822617561572863274&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-milano-big-buckle-slingback-sandal-women%2F7403736%3F",
     },
-    "text": "at                                                                        Nordstrom Rack",
+    "text": "at Nordstrom Rack",
     "warnings": [],
   },
   {
@@ -7681,14 +7681,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Read more",
-    "text": "<p>Read                                                                        more</p>",
+    "text": "<p>Read more</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "Read less",
-    "text": "<p>Read                                                                        less</p>",
+    "text": "<p>Read less</p>",
     "warnings": [],
   },
   {
@@ -7787,7 +7787,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-9181465255603243319&url=https://www.zappos.com/p/womens-birkenstock-boston-big-buckle-nubuck-leather-stone-coin/product/9419616/color/1055663?",
     },
-    "text": "Birkenstock                                                                    Boston Big Buckle Nubuck Leather                                                                    (Women's):",
+    "text": "Birkenstock Boston Big Buckle Nubuck Leather (Women's):",
     "warnings": [],
   },
   {
@@ -7821,7 +7821,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-9181465255603243319&url=https://www.zappos.com/p/womens-birkenstock-boston-big-buckle-nubuck-leather-stone-coin/product/9419616/color/1055663?",
     },
-    "text": "was                                                                    $179",
+    "text": "was $179",
     "warnings": [],
   },
   {
@@ -7855,7 +7855,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-9181465255603243319&url=https://www.zappos.com/p/womens-birkenstock-boston-big-buckle-nubuck-leather-stone-coin/product/9419616/color/1055663?",
     },
-    "text": "now                                                                        $134",
+    "text": "now $134",
     "warnings": [],
   },
   {
@@ -7889,7 +7889,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-9181465255603243319&url=https://www.zappos.com/p/womens-birkenstock-boston-big-buckle-nubuck-leather-stone-coin/product/9419616/color/1055663?",
     },
-    "text": "at                                                                        Zappos",
+    "text": "at Zappos",
     "warnings": [],
   },
   {
@@ -7911,14 +7911,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Read more",
-    "text": "<p>Read                                                                        more</p>",
+    "text": "<p>Read more</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "Read less",
-    "text": "<p>Read                                                                        less</p>",
+    "text": "<p>Read less</p>",
     "warnings": [],
   },
   {
@@ -7959,7 +7959,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.anrdoezrs.net/click-8900245-8417500?sid=tomsguide-us-9181465255603243319&url=https://www.zappos.com/p/womens-birkenstock-boston-big-buckle-nubuck-leather-stone-coin/product/9419616/color/1055663?",
     },
-    "text": "View                                                                        Deal",
+    "text": "View Deal",
     "warnings": [],
   },
   {
@@ -8017,7 +8017,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-1244607485531941018&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-st-barths-exquisite-slide-sandal-women%2F7717703%3F",
     },
-    "text": "Birkenstock                                                                    St. Barths Exquisite Slide Sandal                                                                    (Women's):",
+    "text": "Birkenstock St. Barths Exquisite Slide Sandal (Women's):",
     "warnings": [],
   },
   {
@@ -8051,7 +8051,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-1244607485531941018&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-st-barths-exquisite-slide-sandal-women%2F7717703%3F",
     },
-    "text": "was                                                                    $230",
+    "text": "was $230",
     "warnings": [],
   },
   {
@@ -8085,7 +8085,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-1244607485531941018&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-st-barths-exquisite-slide-sandal-women%2F7717703%3F",
     },
-    "text": "now                                                                        $159",
+    "text": "now $159",
     "warnings": [],
   },
   {
@@ -8119,7 +8119,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://nordstromrack.sjv.io/c/221109/1961164/23941?subId1=tomsguide-us-1244607485531941018&sharedId=hawk&u=https%3A%2F%2Fwww.nordstromrack.com%2Fs%2Fbirkenstock-st-barths-exquisite-slide-sandal-women%2F7717703%3F",
     },
-    "text": "at                                                                        Nordstrom Rack",
+    "text": "at Nordstrom Rack",
     "warnings": [],
   },
   {
@@ -8141,14 +8141,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Read more",
-    "text": "<p>Read                                                                        more</p>",
+    "text": "<p>Read more</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "Read less",
-    "text": "<p>Read                                                                        less</p>",
+    "text": "<p>Read less</p>",
     "warnings": [],
   },
   {
@@ -8196,7 +8196,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Sign up to get the BEST of Tom's Guide direct to your inbox.",
-    "text": "<p>Sign up to get the BEST of Tom's                                                    Guide direct to your inbox.</p>",
+    "text": "<p>Sign up to get the BEST of Tom's Guide direct to your inbox.</p>",
     "warnings": [],
   },
   {
@@ -8218,14 +8218,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "component": "body",
     "errors": [],
     "html": "Contact me with news and offers from other Future brands",
-    "text": "<p>Contact me with news and                                                            offers from other Future brands</p>",
+    "text": "<p>Contact me with news and offers from other Future brands</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "Receive email from us on behalf of our trusted partners or sponsors",
-    "text": "<p>Receive email from us on                                                            behalf of our trusted partners or                                                            sponsors</p>",
+    "text": "<p>Receive email from us on behalf of our trusted partners or sponsors</p>",
     "warnings": [],
   },
   {
@@ -8270,7 +8270,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/author/olivia-halevy",
     },
-    "text": "Olivia                                                        Halevy",
+    "text": "Olivia Halevy",
     "warnings": [],
   },
   {
@@ -8455,7 +8455,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/sales-events/7-birkenstock-deals-that-are-perfect-for-spring-save-up-to-40-percent-on-stylish-sandals-and-clogs",
     },
-    "text": "7                                                        Birkenstock deals that are perfect for spring — save up to                                                        40% on stylish sandals and clogs",
+    "text": "7 Birkenstock deals that are perfect for spring — save up to 40% on stylish sandals and clogs",
     "warnings": [],
   },
   {
@@ -8529,7 +8529,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/home/home-appliances/the-birkenstock-deals-that-everyone-is-adding-to-their-carts-up-to-50-percent-off-now",
     },
-    "text": "The                                                        Birkenstock deals that everyone is adding to their carts —                                                        up to 50% off now",
+    "text": "The Birkenstock deals that everyone is adding to their carts — up to 50% off now",
     "warnings": [],
   },
   {
@@ -8603,7 +8603,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/home/outdoors/i-tried-amazons-best-birkenstock-lookalikes-7-styles-that-are-actually-worth-it-from-usd21",
     },
-    "text": "I                                                        tried Amazon's best Birkenstock lookalikes — 7 styles that                                                        are actually worth it from $21",
+    "text": "I tried Amazon's best Birkenstock lookalikes — 7 styles that are actually worth it from $21",
     "warnings": [],
   },
   {
@@ -8677,7 +8677,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/sales-events/crocs-just-dropped-a-spring-sale-with-an-extra-30-percent-off-footwear-here-are-my-7-favorite-style",
     },
-    "text": "Crocs                                                        just dropped a spring sale with an extra 30% off footwear                                                        — here are my 7 favorite style",
+    "text": "Crocs just dropped a spring sale with an extra 30% off footwear — here are my 7 favorite style",
     "warnings": [],
   },
   {
@@ -8751,7 +8751,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/home/outdoors/im-stuffing-my-basket-with-these-5-crocs-deals-with-up-to-60-percent-off-at-amazon",
     },
-    "text": "I'm                                                        stuffing my basket with these 5 Crocs deals, with up to 60% off                                                        at Amazon",
+    "text": "I'm stuffing my basket with these 5 Crocs deals, with up to 60% off at Amazon",
     "warnings": [],
   },
   {
@@ -8825,7 +8825,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/wellness/fitness/hey-dudes-viral-slip-on-shoes-are-up-to-60-percent-off-in-this-spring-sale-here-are-my-9-favorite-styles",
     },
-    "text": "Hey                                                        Dude’s viral slip-on shoes are up to 60% off in this                                                        spring sale — here are my 9 favorite styles",
+    "text": "Hey Dude’s viral slip-on shoes are up to 60% off in this spring sale — here are my 9 favorite styles",
     "warnings": [],
   },
   {
@@ -8906,7 +8906,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/sales-events/these-best-selling-brooks-running-shoes-just-dropped-to-usd119-at-amazon-and-they-come-in-tons-of-colors",
     },
-    "text": "These                                                        best-selling Brooks running shoes just dropped to $119 at Amazon                                                        — and they come in tons of colors",
+    "text": "These best-selling Brooks running shoes just dropped to $119 at Amazon — and they come in tons of colors",
     "warnings": [],
   },
   {
@@ -8980,7 +8980,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/sales-events/killer-columbia-sale-takes-up-to-60-percent-off-at-amazon-best-deals-on-rain-jackets-hiking-boots-and-more",
     },
-    "text": "Killer                                                        Columbia sale takes up to 60% off at Amazon — best deals                                                        on rain jackets, hiking boots and more",
+    "text": "Killer Columbia sale takes up to 60% off at Amazon — best deals on rain jackets, hiking boots and more",
     "warnings": [],
   },
   {
@@ -9054,7 +9054,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/sales-events/amazons-lowest-prices-in-365-days-5-cheapest-ever-deals-to-beat-inflation-right-now",
     },
-    "text": "Amazon's                                                        lowest prices in 365 days — 5 cheapest ever deals to beat                                                        inflation right now",
+    "text": "Amazon's lowest prices in 365 days — 5 cheapest ever deals to beat inflation right now",
     "warnings": [],
   },
   {
@@ -9128,7 +9128,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/sales-events/i-dug-through-amazons-weekend-sale-these-41-deals-are-actually-worth-it",
     },
-    "text": "I                                                        dug through Amazon’s weekend sale — these 41 deals                                                        are actually worth it",
+    "text": "I dug through Amazon’s weekend sale — these 41 deals are actually worth it",
     "warnings": [],
   },
   {
@@ -9202,7 +9202,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/sales-events/lowes-springfest-beats-home-depots-spring-black-friday-sale-15-deals-to-upgrade-your-home-with-up-to-50-percent-off",
     },
-    "text": "Lowe's                                                        SpringFest beats Home Depot's Spring Black Friday sale —                                                        21 deals to upgrade your home with up to 50% off",
+    "text": "Lowe's SpringFest beats Home Depot's Spring Black Friday sale — 21 deals to upgrade your home with up to 50% off",
     "warnings": [],
   },
   {
@@ -9276,7 +9276,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/sales-events/lululemon-just-dropped-new-styles-for-spring-here-are-my-12-favorite-fitness-finds",
     },
-    "text": "Lululemon                                                        just dropped new styles for spring — here are my 12                                                        favorite fitness finds",
+    "text": "Lululemon just dropped new styles for spring — here are my 12 favorite fitness finds",
     "warnings": [],
   },
   {
@@ -9357,7 +9357,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/home/outdoors/i-found-11-of-the-best-amazon-patio-and-garden-deals-under-usd50-perfect-for-a-spring-refresh",
     },
-    "text": "I                                                        found 11 of the best Amazon patio and garden deals under $50                                                        — perfect for a spring refresh",
+    "text": "I found 11 of the best Amazon patio and garden deals under $50 — perfect for a spring refresh",
     "warnings": [],
   },
   {
@@ -9431,7 +9431,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/sales-events/these-best-selling-brooks-running-shoes-just-dropped-to-usd119-at-amazon-and-they-come-in-tons-of-colors",
     },
-    "text": "These                                                        best-selling Brooks running shoes just dropped to $119 at Amazon                                                        — and they come in tons of colors",
+    "text": "These best-selling Brooks running shoes just dropped to $119 at Amazon — and they come in tons of colors",
     "warnings": [],
   },
   {
@@ -9505,7 +9505,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/sales-events/killer-columbia-sale-takes-up-to-60-percent-off-at-amazon-best-deals-on-rain-jackets-hiking-boots-and-more",
     },
-    "text": "Killer                                                        Columbia sale takes up to 60% off at Amazon — best deals                                                        on rain jackets, hiking boots and more",
+    "text": "Killer Columbia sale takes up to 60% off at Amazon — best deals on rain jackets, hiking boots and more",
     "warnings": [],
   },
   {
@@ -9579,7 +9579,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/mattresses/saatvas-best-five-star-luxury-hotel-mattress-is-back-on-sale-but-should-you-wait-to-buy-the-classic-in-the-memorial-day-sales",
     },
-    "text": "Saatva's                                                        best five-star luxury hotel mattress is back on sale, but should                                                        you wait to buy the Classic in the Memorial Day sales?",
+    "text": "Saatva's best five-star luxury hotel mattress is back on sale, but should you wait to buy the Classic in the Memorial Day sales?",
     "warnings": [],
   },
   {
@@ -9653,7 +9653,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/mattresses/pillows-bedding/heatwaves-are-coming-but-you-can-sleep-cool-with-up-to-50-percent-off-brooklinens-bedding-sale",
     },
-    "text": "Heatwaves                                                        are coming but you can sleep cool with up to 50% off                                                        Brooklinen's bedding sale",
+    "text": "Heatwaves are coming but you can sleep cool with up to 50% off Brooklinen's bedding sale",
     "warnings": [],
   },
   {
@@ -9727,7 +9727,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       },
       "href": "https://www.tomsguide.com/computing/antivirus/webroot-is-knocking-50-percent-off-its-essentials-plan-heres-how-to-get-yours",
     },
-    "text": "Webroot                                                        is knocking 50% off its Essentials plan — here's how to                                                        get yours",
+    "text": "Webroot is knocking 50% off its Essentials plan — here's how to get yours",
     "warnings": [],
   },
   {
@@ -16177,7 +16177,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       },
       "href": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
     },
-    "text": "ALL OF ESPN. ALL IN                            ONE                            PLACE.",
+    "text": "ALL OF ESPN. ALL IN ONE PLACE.",
     "warnings": [],
   },
   {
@@ -16198,7 +16198,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       },
       "href": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
     },
-    "text": "LIMITED TIME                            OFFER:                            Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle",
+    "text": "LIMITED TIME OFFER: Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle",
     "warnings": [],
   },
   {
@@ -16250,7 +16250,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       },
       "href": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
     },
-    "text": "ALL OF ESPN. ALL IN                            ONE                            PLACE.",
+    "text": "ALL OF ESPN. ALL IN ONE PLACE.",
     "warnings": [],
   },
   {
@@ -16271,7 +16271,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       },
       "href": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
     },
-    "text": "LIMITED TIME                            OFFER:                            Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle",
+    "text": "LIMITED TIME OFFER: Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle",
     "warnings": [],
   },
   {
@@ -16320,7 +16320,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       },
       "href": "https://go.web.plus.espn.com/c/game-link",
     },
-    "text": "ALL OF ESPN. ALL IN                            ONE                            PLACE.",
+    "text": "ALL OF ESPN. ALL IN ONE PLACE.",
     "warnings": [],
   },
   {
@@ -16338,7 +16338,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       },
       "href": "https://go.web.plus.espn.com/c/game-link",
     },
-    "text": "LIMITED TIME                            OFFER:                            Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle",
+    "text": "LIMITED TIME OFFER: Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle",
     "warnings": [],
   },
   {
@@ -16392,7 +16392,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       },
       "href": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
     },
-    "text": "ALL OF ESPN. ALL IN                        ONE                        PLACE.",
+    "text": "ALL OF ESPN. ALL IN ONE PLACE.",
     "warnings": [],
   },
   {
@@ -16413,7 +16413,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/link-container-w
       },
       "href": "https://go.web.plus.espn.com/c/2436205/535101/9070?subId1=sports&subId2=simplefeedvmgapple-us-847615f86cdc8cae052b86cb",
     },
-    "text": "LIMITED TIME                        OFFER:                        Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle",
+    "text": "LIMITED TIME OFFER: Save over 39% per month for a year on the Disney+, Hulu, ESPN Unlimited bundle",
     "warnings": [],
   },
   {
@@ -17187,7 +17187,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/iphones/apple-turns-its-back-on-starlink-and-musk-for-future-iphone-satellite-features-signs-with-tech-rival-instead",
     },
-    "text": "Apple turns its back on Starlink and Musk for future                      iPhone satellite features – signs with tech rival                      instead",
+    "text": "Apple turns its back on Starlink and Musk for future iPhone satellite features – signs with tech rival instead",
     "warnings": [],
   },
   {
@@ -17249,7 +17249,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/apps/apples-next-major-ios-update-bringing-controversial-new-feature-to-your-iphone",
     },
-    "text": "Apple's next major iOS update bringing controversial new                      feature to your iPhone",
+    "text": "Apple's next major iOS update bringing controversial new feature to your iPhone",
     "warnings": [],
   },
   {
@@ -17311,7 +17311,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/laptops/forget-apple-intelligence-google-just-upgraded-your-macs-ai-capabilities",
     },
-    "text": "Forget Apple Intelligence, Google just stealth upgraded                      your Mac",
+    "text": "Forget Apple Intelligence, Google just stealth upgraded your Mac",
     "warnings": [],
   },
   {
@@ -17373,7 +17373,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/tvs/new-apple-tv-4k-and-homepod-poised-for-launch-theres-just-one-thing-thats-been-holding-them-back",
     },
-    "text": "New Apple TV 4K and HomePod poised for launch –                      there's just one thing that's been holding them back",
+    "text": "New Apple TV 4K and HomePod poised for launch – there's just one thing that's been holding them back",
     "warnings": [],
   },
   {
@@ -17435,7 +17435,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/ai/gemini-can-now-search-your-phones-photo-library-to-make-better-images",
     },
-    "text": "Gemini can now search your phone's photo library to make                      better images",
+    "text": "Gemini can now search your phone's photo library to make better images",
     "warnings": [],
   },
   {
@@ -17497,7 +17497,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/laptops/who-is-new-apple-ceo-john-ternus-and-what-product-changes-can-we-expect",
     },
-    "text": "Who is new Apple CEO John Ternus and what product changes                      can we expect?",
+    "text": "Who is new Apple CEO John Ternus and what product changes can we expect?",
     "warnings": [],
   },
   {
@@ -17559,7 +17559,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/vr/gucci-plans-its-own-android-smart-glasses-and-im-totally-down-for-that",
     },
-    "text": "Gucci plans its own Android smart glasses and I'm totally                      down for that",
+    "text": "Gucci plans its own Android smart glasses and I'm totally down for that",
     "warnings": [],
   },
   {
@@ -17621,7 +17621,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/iphones/iphone-should-catch-up-in-the-ultra-camera-wars-just-not-this-year",
     },
-    "text": "iPhone should catch up in the Ultra camera wars, just not                      this year",
+    "text": "iPhone should catch up in the Ultra camera wars, just not this year",
     "warnings": [],
   },
   {
@@ -17683,7 +17683,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/auto/apple-carplay-just-got-a-feature-update-weve-been-waiting-for-but-the-best-is-still-to-come",
     },
-    "text": "Apple CarPlay just got a feature update we've been                      waiting for – but the best is still to come",
+    "text": "Apple CarPlay just got a feature update we've been waiting for – but the best is still to come",
     "warnings": [],
   },
   {
@@ -17745,7 +17745,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/android-phones/google-pixel-11-could-beat-iphone-18-pro-to-advanced-display-tech-and-its-all-thanks-to-samsung",
     },
-    "text": "Google Pixel 11 could beat iPhone 18 Pro to advanced                      display tech – and it's all thanks to Samsung",
+    "text": "Google Pixel 11 could beat iPhone 18 Pro to advanced display tech – and it's all thanks to Samsung",
     "warnings": [],
   },
   {
@@ -17807,7 +17807,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/ai/apples-future-ai-products-could-include-smart-glasses-new-airpods-and-wearable-jewellery-that-isnt-a-ring",
     },
-    "text": "Apple's future AI products could include smart glasses,                      new AirPods and wearable jewellery that isn't a ring",
+    "text": "Apple's future AI products could include smart glasses, new AirPods and wearable jewellery that isn't a ring",
     "warnings": [],
   },
   {
@@ -17869,7 +17869,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/iphones/your-iphone-is-getting-a-major-new-update-soon-here-are-the-new-features-to-expect",
     },
-    "text": "Your iPhone is getting a major new update soon –                      here are the new features to expect",
+    "text": "Your iPhone is getting a major new update soon – here are the new features to expect",
     "warnings": [],
   },
   {
@@ -17931,7 +17931,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/auto/apple-carplay-ultra-finally-set-to-appear-in-a-more-affordable-car-this-year-but-which-one",
     },
-    "text": "Apple CarPlay Ultra finally set to appear in a more                      affordable car this year – but which one?",
+    "text": "Apple CarPlay Ultra finally set to appear in a more affordable car this year – but which one?",
     "warnings": [],
   },
   {
@@ -17993,7 +17993,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/iphones/your-iphone-is-about-to-get-a-bundle-of-new-features-for-free-heres-when-to-expect-the-update",
     },
-    "text": "Your iPhone is about to get a bundle of new features for                      free – here's when to expect the update",
+    "text": "Your iPhone is about to get a bundle of new features for free – here's when to expect the update",
     "warnings": [],
   },
   {
@@ -18055,7 +18055,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/auto/heres-what-nvidia-and-qualcomm-just-revealed-for-the-future-of-automotive-intelligence",
     },
-    "text": "Here’s what Nvidia and Qualcomm just revealed for                      the future of automotive intelligence",
+    "text": "Here’s what Nvidia and Qualcomm just revealed for the future of automotive intelligence",
     "warnings": [],
   },
   {
@@ -18688,7 +18688,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     "component": "body",
     "errors": [],
     "html": " Sign up to the T3 newsletter for smarter living straight to your inbox ",
-    "text": "<p>Sign up to the T3 newsletter for smarter                                    living straight to your inbox</p>",
+    "text": "<p>Sign up to the T3 newsletter for smarter living straight to your inbox</p>",
     "warnings": [],
   },
   {
@@ -18710,21 +18710,21 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     "component": "body",
     "errors": [],
     "html": " Contact me with news and offers from other Future brands ",
-    "text": "<p>Contact me with news and offers from                                          other Future brands</p>",
+    "text": "<p>Contact me with news and offers from other Future brands</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": " Receive email from us on behalf of our trusted partners or sponsors ",
-    "text": "<p>Receive email from us on behalf of our                                          trusted partners or sponsors</p>",
+    "text": "<p>Receive email from us on behalf of our trusted partners or sponsors</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": " By submitting your information you agree to the ",
-    "text": "<p>By submitting your information you agree                                      to the</p>",
+    "text": "<p>By submitting your information you agree to the</p>",
     "warnings": [],
   },
   {
@@ -18809,7 +18809,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     "component": "body",
     "errors": [],
     "html": " An account already exists for this email address, please log in. ",
-    "text": "<p>An account already exists for this email                                        address, please log in.</p>",
+    "text": "<p>An account already exists for this email address, please log in.</p>",
     "warnings": [],
   },
   {
@@ -19004,7 +19004,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     "component": "body",
     "errors": [],
     "html": " Sign up to the T3 newsletter for smarter living straight to your inbox ",
-    "text": "<p>Sign up to the T3 newsletter for smarter living                                straight to your inbox</p>",
+    "text": "<p>Sign up to the T3 newsletter for smarter living straight to your inbox</p>",
     "warnings": [],
   },
   {
@@ -19026,14 +19026,14 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     "component": "body",
     "errors": [],
     "html": "Contact me with news and offers from other Future brands",
-    "text": "<p>Contact me with news and offers from other                                    Future brands</p>",
+    "text": "<p>Contact me with news and offers from other Future brands</p>",
     "warnings": [],
   },
   {
     "component": "body",
     "errors": [],
     "html": "Receive email from us on behalf of our trusted partners or sponsors",
-    "text": "<p>Receive email from us on behalf of our                                    trusted partners or sponsors</p>",
+    "text": "<p>Receive email from us on behalf of our trusted partners or sponsors</p>",
     "warnings": [],
   },
   {
@@ -20892,7 +20892,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     "component": "body",
     "errors": [],
     "html": " We check over 250 million products every day for the best prices ",
-    "text": "<p>We check over 250 million products every day for                              the best prices</p>",
+    "text": "<p>We check over 250 million products every day for the best prices</p>",
     "warnings": [],
   },
   {
@@ -21134,7 +21134,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/ai/gemini-powered-siri-still-on-track-for-2026-release-apple-tells-major-outlet",
     },
-    "text": "Gemini-powered Siri "still on track" for 2026                            release – Apple tells major outlet",
+    "text": "Gemini-powered Siri "still on track" for 2026 release – Apple tells major outlet",
     "warnings": [],
   },
   {
@@ -21194,7 +21194,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/iphones/apple-could-reveal-new-gemini-powered-siri-in-less-than-a-month-iphone-updates-could-even-arrive-soon",
     },
-    "text": "Apple could reveal new Gemini-powered Siri in "less                            than a month" – iPhone updates could even                            arrive soon",
+    "text": "Apple could reveal new Gemini-powered Siri in "less than a month" – iPhone updates could even arrive soon",
     "warnings": [],
   },
   {
@@ -21268,7 +21268,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/laptops/why-wait-for-super-powered-siri-gemini-for-macos-already-enters-beta-test-phase",
     },
-    "text": "Why wait for super-powered Siri, Gemini for macOS                            already enters beta test phase",
+    "text": "Why wait for super-powered Siri, Gemini for macOS already enters beta test phase",
     "warnings": [],
   },
   {
@@ -21328,7 +21328,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/iphones/apple-just-updated-your-iphone-with-new-features-but-you-have-to-wait-a-bit-longer-for-new-ai-siri",
     },
-    "text": "Apple just updated your iPhone with new features                            – but you have to wait a bit longer for new AI                            Siri",
+    "text": "Apple just updated your iPhone with new features – but you have to wait a bit longer for new AI Siri",
     "warnings": [],
   },
   {
@@ -21409,7 +21409,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/ai/gemini-can-now-search-your-phones-photo-library-to-make-better-images",
     },
-    "text": "Gemini can now search your phone's photo library to                            make better images",
+    "text": "Gemini can now search your phone's photo library to make better images",
     "warnings": [],
   },
   {
@@ -21469,7 +21469,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/ai/robot-dogs-powered-by-ai-to-guide-blind-people-yup-theyre-a-thing-now",
     },
-    "text": "Robot dogs powered by AI to guide blind people?                            Yup, they're a thing now",
+    "text": "Robot dogs powered by AI to guide blind people? Yup, they're a thing now",
     "warnings": [],
   },
   {
@@ -21543,7 +21543,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/ai/your-ai-clone-can-now-appear-on-youtube-heres-how-to-create-your-own-ai-avatar",
     },
-    "text": "Your AI clone can now appear on YouTube –                            here's how to create your own AI Avatar",
+    "text": "Your AI clone can now appear on YouTube – here's how to create your own AI Avatar",
     "warnings": [],
   },
   {
@@ -21603,7 +21603,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/ai/perplexity-health-ai-is-like-having-a-search-engine-for-your-fitness-and-wellbeing",
     },
-    "text": "Perplexity Health AI is like having a search engine                            for your fitness and wellbeing",
+    "text": "Perplexity Health AI is like having a search engine for your fitness and wellbeing",
     "warnings": [],
   },
   {
@@ -21684,7 +21684,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/home-living/smart-home/ive-been-waiting-3-months-for-govees-first-ever-solar-outdoor-smart-lights-and-theyre-finally-here",
     },
-    "text": "I've been waiting 3 months for Govee's first-ever                            solar outdoor smart lights – and they're                            finally here",
+    "text": "I've been waiting 3 months for Govee's first-ever solar outdoor smart lights – and they're finally here",
     "warnings": [],
   },
   {
@@ -21744,7 +21744,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/active/outerwear/the-north-face-x-sky-high-farm-goods-collection-0246",
     },
-    "text": "The North Face just made farming gear cool                            again",
+    "text": "The North Face just made farming gear cool again",
     "warnings": [],
   },
   {
@@ -21818,7 +21818,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/home-living/smart-home/google-upgrades-gemini-for-home-so-you-can-chat-with-gemini-for-longer",
     },
-    "text": "Google upgrades Gemini for Home so you can chat                            with Gemini for longer",
+    "text": "Google upgrades Gemini for Home so you can chat with Gemini for longer",
     "warnings": [],
   },
   {
@@ -21878,7 +21878,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
       },
       "href": "https://www.t3.com/tech/drones/dji-lito-1-lito-x1-launch-0426",
     },
-    "text": "DJI split its most popular beginner drone into two                            and both beat the Mini 4K",
+    "text": "DJI split its most popular beginner drone into two and both beat the Mini 4K",
     "warnings": [],
   },
   {
