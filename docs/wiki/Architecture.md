@@ -75,10 +75,11 @@ XML attributes from the parser use the `@_` prefix convention (e.g. `@_url`, `@_
 `reduceComponents` walks the node tree and, for each element, evaluates (in order):
 
 1. **Exclusion** — `excludes` mappings or the `data-cf-ignore` attribute.
-2. **Built-in detection** — social embeds, `<table>`, `<video>`, `<audio>`, `<iframe>`, buttons, images (`<img>`, `<picture>`), galleries, and `<figure>` (always routed to `toFigureContainer` → `FigureContainerComponent`).
-3. **Custom mappings** — each `mappings` entry in order; first match wins.
-4. **Default text rules** — the `h1→headline … p→body` table.
-5. **Descend** — otherwise ignore the element and evaluate its children.
+2. **Unwrap** — `unwrap` mappings; the element is dropped but its children are kept and evaluated in its place.
+3. **Built-in detection** — social embeds, `<table>`, `<video>`, `<audio>`, `<iframe>`, buttons, images (`<img>`, `<picture>`), galleries, and `<figure>` (always routed to `toFigureContainer` → `FigureContainerComponent`).
+4. **Custom mappings** — each `mappings` entry in order; first match wins.
+5. **Default text rules** — the `h1→headline … p→body` table.
+6. **Descend** — otherwise ignore the element and evaluate its children.
 
 The recursive core (`reduceComponents`/`fromNode`) lives in `mapping.ts`. The per-family converters are split into sibling modules — `mapping.media.ts`, `mapping.embeds.ts`, `mapping.container.ts`, `mapping.table.ts`, `mapping.custom.ts`, `mapping.text.ts` — alongside the leaf concerns (`mapping.constants.ts`, `mapping.utils.ts`, `mapping.schema.ts`). `mapping.ts` imports them and re-exports their public helpers so the API surface is unchanged. See [HTML Mapping](HTML-Mapping.md) and [Custom Mappings](Custom-Mappings.md).
 

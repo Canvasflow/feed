@@ -35,10 +35,13 @@ The HTML pipeline parses the input **exactly once** and applies all transformati
 For each element the reducer tries, in order:
 
 1. **Exclusion** — matches an `excludes` mapping, or has `data-cf-ignore` → element and children skipped.
-2. **Built-in detection** — social embeds (Instagram, Twitter/X, TikTok, YouTube, Vimeo, Dailymotion, Infogram, Apple Podcasts), `<table>`, `<video>`, `<audio>`, `<iframe>`, buttons, images (`<img>`, `<picture>`), `<figure>` (always produces a `FigureContainerComponent`), and `role="gallery"`/`role="mosaic"`.
-3. **Custom mappings** — each `mappings` entry, **in order**; the first match wins.
-4. **Default text rules** — the tag → text-component table below.
-5. **Descend** — otherwise ignore the element and evaluate its children.
+2. **Unwrap** — matches an [`unwrap`](Custom-Mappings.md#unwrap) mapping → the element is dropped but its children are kept and evaluated in its place. Checked ahead of everything below, so it can pierce a wrapper whose tag would otherwise consume the subtree (e.g. `<p>`).
+3. **Built-in detection** — social embeds (Instagram, Twitter/X, TikTok, YouTube, Vimeo, Dailymotion, Infogram, Apple Podcasts), `<table>`, `<video>`, `<audio>`, `<iframe>`, buttons, images (`<img>`, `<picture>`), `<figure>` (always produces a `FigureContainerComponent`), and `role="gallery"`/`role="mosaic"`.
+4. **Custom mappings** — each `mappings` entry, **in order**; the first match wins.
+5. **Default text rules** — the tag → text-component table below.
+6. **Descend** — otherwise ignore the element and evaluate its children.
+
+> A custom mapping is only tested against the element currently being visited — never against its descendants. Combined with step 5, that means a wrapper with a default text mapping swallows everything inside it; `unwrap` is how you reach that content without editing the HTML.
 
 ## Default text mapping
 

@@ -539,6 +539,160 @@ describe('Mapping', () => {
     }
   );
 
+  describe('unwrap', { tags: ['unit', 'html'] }, () => {
+    const unwrapParagraph: Array<Mapping> = [
+      {
+        match: 'all',
+        filters: [
+          {
+            type: 'tag',
+            items: ['p'],
+          },
+        ],
+      },
+    ];
+
+    const widgetMappings: Array<ComponentMapping> = [
+      {
+        component: 'text11',
+        match: 'all',
+        filters: [
+          {
+            type: 'tag',
+            items: ['div'],
+          },
+          {
+            type: 'attribute',
+            key: 'data-testid',
+            value: 'one',
+          },
+        ],
+      },
+      {
+        component: 'text12',
+        match: 'all',
+        filters: [
+          {
+            type: 'tag',
+            items: ['div'],
+          },
+          {
+            type: 'attribute',
+            key: 'data-testid',
+            value: 'two',
+          },
+        ],
+      },
+    ];
+
+    // A `<p>` is auto-closed by the HTML parser before block-level children,
+    // so an `<ad>` (an unknown element, which does not close it) is what keeps
+    // the widget genuinely nested inside the paragraph — the same shape real
+    // publisher markup uses.
+    const nestedContent = `<p><ad><div data-testid="one">One</div><div data-testid="two">Two</div></ad></p>`;
+
+    test(
+      'It should drop the matched element but keep its children',
+      { tags: ['unit', 'html'] },
+      () => {
+        const components = HTMLMapper.toComponents(nestedContent, {
+          mappings: widgetMappings,
+          unwrap: unwrapParagraph,
+        });
+
+        // The <p> contributes no component of its own; both children are
+        // spliced in where it stood, so the result stays flat.
+        expect(components.length).toBe(2);
+        expect(components[0]!.component).toBe('text11');
+        expect(components[1]!.component).toBe('text12');
+      }
+    );
+
+    test(
+      'It should let a mapping match an element the wrapper would have consumed',
+      { tags: ['unit', 'html'] },
+      () => {
+        // Without unwrap the default `p -> body` rule consumes the whole
+        // subtree before the walk ever reaches the divs, so neither mapping
+        // can match.
+        const withoutUnwrap = HTMLMapper.toComponents(nestedContent, {
+          mappings: widgetMappings,
+        });
+        expect(withoutUnwrap.length).toBe(1);
+        expect(withoutUnwrap[0]!.component).toBe('body');
+
+        const withUnwrap = HTMLMapper.toComponents(nestedContent, {
+          mappings: widgetMappings,
+          unwrap: unwrapParagraph,
+        });
+        expect(withUnwrap.map((c) => c.component)).toEqual([
+          'text11',
+          'text12',
+        ]);
+      }
+    );
+
+    test(
+      'It should leave elements that do not match untouched',
+      { tags: ['unit', 'html'] },
+      () => {
+        const unwrapAd: Array<Mapping> = [
+          {
+            match: 'all',
+            filters: [
+              {
+                type: 'tag',
+                items: ['ad'],
+              },
+            ],
+          },
+        ];
+        const content = `<p>First</p><p>Second</p>`;
+        const components = HTMLMapper.toComponents(content, {
+          unwrap: unwrapAd,
+        });
+
+        // Nothing matches `ad`, so the paragraphs map normally.
+        expect(components.length).toBe(2);
+        expect(components[0]!.component).toBe('body');
+        expect(components[1]!.component).toBe('body');
+      }
+    );
+
+    test(
+      'It should keep excludes winning over unwrap',
+      { tags: ['unit', 'html'] },
+      () => {
+        const content = `${nestedContent}<h2>Kept</h2>`;
+        const components = HTMLMapper.toComponents(content, {
+          mappings: widgetMappings,
+          excludes: unwrapParagraph,
+          unwrap: unwrapParagraph,
+        });
+
+        // `excludes` is evaluated first, so the <p> and its children are
+        // removed entirely rather than unwrapped.
+        expect(components.length).toBe(1);
+        expect(components[0]!.component).toBe('title');
+      }
+    );
+
+    test(
+      'It should validate as part of Params',
+      { tags: ['unit', 'html'] },
+      () => {
+        expect(isValidParams({ unwrap: unwrapParagraph })).toBe(true);
+        // `unwrap` entries are base mappings — a `component` field is not
+        // part of the shape, and a malformed filter is rejected.
+        expect(
+          isValidParams({
+            unwrap: [{ match: 'all', filters: [{ type: 'nope' }] }],
+          })
+        ).toBe(false);
+      }
+    );
+  });
+
   test(
     'It should map a recirculation aside widget without a mapping',
     { tags: ['unit', 'html'] },

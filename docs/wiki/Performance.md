@@ -29,13 +29,13 @@ invokes `fast-xml-parser` independently. If you only need `build()`, skip
 
 ## Complexity
 
-| Operation                               | Dominant cost                                     | Complexity                                      |
-| --------------------------------------- | ------------------------------------------------- | ----------------------------------------------- |
-| `RSSFeed.build()`                       | `fast-xml-parser` XML parse                       | O(n) in document size                           |
-| `HTMLMapper.toComponents()`             | HTML parse + 3 tree passes + `fromNode` traversal | O(n · m) where n = nodes, m = mappings/excludes |
-| `filterAnyMapping` / `filterAllMapping` | linear scan over `filters[]` per node             | O(m) per node                                   |
-| `findDescendants` / `removeDescendants` | full subtree traversal                            | O(n) in subtree size                            |
-| `patternCache` lookup                   | Map get/set                                       | O(1) amortized                                  |
+| Operation                               | Dominant cost                                     | Complexity                                             |
+| --------------------------------------- | ------------------------------------------------- | ------------------------------------------------------ |
+| `RSSFeed.build()`                       | `fast-xml-parser` XML parse                       | O(n) in document size                                  |
+| `HTMLMapper.toComponents()`             | HTML parse + 3 tree passes + `fromNode` traversal | O(n · m) where n = nodes, m = mappings/excludes/unwrap |
+| `filterAnyMapping` / `filterAllMapping` | linear scan over `filters[]` per node             | O(m) per node                                          |
+| `findDescendants` / `removeDescendants` | full subtree traversal                            | O(n) in subtree size                                   |
+| `patternCache` lookup                   | Map get/set                                       | O(1) amortized                                         |
 
 The dominant cost in a full `build()` is the XML parse + `fast-xml-parser`'s
 attribute extraction, not the component mapping. `toComponents` on large HTML
