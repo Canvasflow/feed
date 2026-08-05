@@ -1,7 +1,7 @@
 {
   "name": "@canvasflow/feed",
   "description": "This is canvasflow utility for processing feeds",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "type": "module",
   "license": "UNLICENSED",
   "sideEffects": false,
