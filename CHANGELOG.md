@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 🏷️ 2.0.8
+
+_August 5, 2026_
+
+✨ Features
+
+- (deps) Use latest vite-plus, drop Node 20 support ([`f0eab95`](https://github.com/Canvasflow/feed/commit/f0eab9595d840616695188181328639818b13967))
+
+🎨 Style
+
+- (docs) Reformat wiki table column widths ([`988aa10`](https://github.com/Canvasflow/feed/commit/988aa10077a5a69f132d8bb6e0b8c030d99a959c))
+
 ## 🏷️ 2.0.7
 
 _August 5, 2026_
