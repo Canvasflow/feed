@@ -10,8 +10,8 @@ import {
   getAttributes,
   SetUtils,
 } from '../node/node-helpers';
+import { stringify } from '../html/parser';
 import {
-  allowedTags,
   textAllowedTags,
   textAllowedAttributes,
   allowedFigcaptionTags,
@@ -30,19 +30,19 @@ export function sanitizeNode(node: Node, options: SanitizeHTMLOptions): string {
 }
 
 /**
- * Serialize a node to sanitized HTML using the default content policy — the
- * shared `allowedTags` allow-list with every attribute stripped. This is the
- * common case used by component builders to populate their `html` field; it
- * keeps the sanitization policy in a single place.
+ * Serialize a node back to HTML exactly as it appeared in the source — every
+ * tag and attribute preserved — normalizing only insignificant whitespace:
+ * breaklines and tabs are removed, and runs of 2+ spaces collapse to one.
+ * This is what component builders use to populate the `html` field with the
+ * original markup of the element they matched.
  *
  * @param {Node} node
  * @returns {string}
  */
-export function sanitizeContentHtml(node: Node): string {
-  return sanitizeNode(node, {
-    allowedTags,
-    allowedAttributes: false,
-  });
+export function serializeOriginalHtml(node: Node): string {
+  return stringify([node])
+    .replace(/\r\n|\n|\r|\t/g, '')
+    .replace(/ {2,}/g, ' ');
 }
 
 // Evict the oldest entry once this limit is reached. Prevents unbounded

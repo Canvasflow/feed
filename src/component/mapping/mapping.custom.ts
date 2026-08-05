@@ -2,7 +2,7 @@ import { stringify } from '../html/parser';
 
 import { type CustomComponent } from '../component';
 import { type ElementNode, getAttributes } from '../node/node-helpers';
-import { sanitizeContentHtml } from './mapping.utils';
+import { serializeOriginalHtml } from './mapping.utils';
 
 /**
  * Transform an html node into a Canvasflow Custom Component
@@ -26,7 +26,7 @@ export function toCustom(
     content,
     node,
     properties,
-    html: sanitizeContentHtml(node),
+    html: serializeOriginalHtml(node),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
