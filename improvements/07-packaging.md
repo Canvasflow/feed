@@ -9,7 +9,7 @@
 - [ ] A size budget (`size-limit` or `npm pack` byte check) is enforced in CI, with the current baseline recorded.
 - [ ] npm provenance (`npm publish --provenance`) is enabled in the publish workflow.
 - [ ] A `CHANGELOG`-visible deprecation/versioning policy exists (what constitutes breaking for types, error strings, component output shapes).
-- [ ] `README.md` / wiki install docs cover consumer setup for GitHub Packages registry auth, minimal usage, and the support matrix (Node ≥ 20.19.2, ESM-only) — verified against a scratch consumer project.
+- [ ] `README.md` / wiki install docs cover consumer setup for GitHub Packages registry auth, minimal usage, and the support matrix (Node ≥ 22.0.0, ESM-only) — verified against a scratch consumer project.
 
 ## Overview
 

@@ -62,7 +62,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [20, 22, 24]
+        # Node 20 dropped — vite-plus's bundled tsdown/rolldown requires
+        # Promise.withResolvers (V8 >= 12.1), which the entire Node 20.x line
+        # never received (frozen at V8 11.3). See engines.node in package.json.
+        node: [22, 24]
     steps:
       - uses: actions/checkout@v7
 

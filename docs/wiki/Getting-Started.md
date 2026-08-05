@@ -6,7 +6,7 @@ This page takes a consumer from zero to parsing a feed, and a contributor from a
 
 ## Requirements
 
-- **Node.js** `>=20.19.2` (enforced via the `engines` field in [`package.json`](https://github.com/canvasflow/feed/blob/main/package.json)).
+- **Node.js** `>=22.0.0` (enforced via the `engines` field in [`package.json`](https://github.com/canvasflow/feed/blob/main/package.json)).
 - **npm** (the project uses the committed `package-lock.json`).
 - For installation: access to the `@canvasflow` scope on **GitHub Packages**.
 

@@ -29,7 +29,7 @@ The package is published as an **ESM** module (with TypeScript declarations) to
 
 ## Requirements
 
-- **Node.js** `>=20.19.2`
+- **Node.js** `>=22.0.0`
 - Access to the `@canvasflow` scope on GitHub Packages (for installation).
 
 ## Installation
