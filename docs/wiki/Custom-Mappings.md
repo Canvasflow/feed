@@ -6,11 +6,12 @@ Mappings tell Canvasflow how to recognise an HTML element as a specific componen
 
 ## Params
 
-| Property              | Required | Description                                                                      |
-| --------------------- | -------- | -------------------------------------------------------------------------------- |
-| `mappings`            | No       | Component mappings — how to detect components from HTML.                         |
-| `excludes`            | No       | Base mappings (`match` + `filters` only); matches are removed with all children. |
-| `ignoreParagraphWrap` | No       | When `true`, extracted text is not wrapped in paragraph tags.                    |
+| Property              | Required | Description                                                                       |
+| --------------------- | -------- | --------------------------------------------------------------------------------- |
+| `mappings`            | No       | Component mappings — how to detect components from HTML.                          |
+| `excludes`            | No       | Base mappings (`match` + `filters` only); matches are removed with all children.  |
+| `unwrap`              | No       | Base mappings; matches are removed but their **children are kept** and processed. |
+| `ignoreParagraphWrap` | No       | When `true`, extracted text is not wrapped in paragraph tags.                     |
 
 > Elements can also be excluded directly in the HTML with the `data-cf-ignore` attribute.
 
@@ -400,6 +401,52 @@ Numbered slots: `text1` through `text60`.
   ]
 }
 ```
+
+## Unwrap
+
+`unwrap` takes the same base-mapping shape as `excludes` (`match` + `filters`, no `component`). Both remove the matched element itself; they differ in what happens to its children:
+
+| Option     | Matched element | Its children                   |
+| ---------- | --------------- | ------------------------------ |
+| `excludes` | removed         | removed                        |
+| `unwrap`   | removed         | **kept, spliced in its place** |
+
+Use it to reach content trapped inside a wrapper. A custom mapping is only tested against the element currently being visited, and the [default text rules](HTML-Mapping.md#default-text-mapping) are applied before the reducer descends into children. So a wrapper whose own tag has a default mapping consumes its whole subtree, and nothing inside it can ever be matched:
+
+```html
+<!-- The <p> maps to `body` and swallows everything; the div is never reached. -->
+<p>
+  <ad>
+    <div data-testid="affiliate-widget">…</div>
+  </ad>
+</p>
+```
+
+Unwrapping the `<p>` lets the walk continue to the div, so a mapping can match it:
+
+```json
+{
+  "unwrap": [
+    {
+      "match": "all",
+      "filters": [
+        {
+          "type": "tag",
+          "items": ["p"]
+        }
+      ]
+    }
+  ]
+}
+```
+
+The result is **flat** — the unwrapped element adds no component of its own, so the matched div appears at the top level rather than nested inside a wrapper component.
+
+> `<ad>` needs no entry here. Only tags with a default mapping (`p`, `h1`–`h6`, `ol`, `ul`, `a`, `blockquote`, `footer`) consume their subtree; anything else is already descended into.
+
+**Evaluation order.** `unwrap` is checked after `excludes`/`data-cf-ignore` but before all built-in detection and custom mappings, so it wins over the default text rules — that is what makes it able to pierce a `<p>`. If the same element matches both `excludes` and `unwrap`, `excludes` wins and the subtree is dropped.
+
+> ⚠️ Scope `unwrap` filters narrowly. A bare `{ "type": "tag", "items": ["p"] }` unwraps **every** paragraph in the content, dissolving legitimate body copy into its inline children. Prefer pairing the tag with a class or attribute filter that identifies the specific wrapper.
 
 ## Validation
 

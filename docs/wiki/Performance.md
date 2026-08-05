@@ -18,7 +18,7 @@ Recorded **2026-07-27** on Apple M-series, Node 20. Run with `npm run bench`.
 | `HTMLMapper.toComponents()` — small HTML (~26 KB), no params      | ~175  | ~5.7      |
 
 > Numbers vary by hardware. Pin Node version in CI for repeatable comparisons
-> (`node: '20'` in the bench workflow). Re-run with `npm run bench:save` to
+> (`node-version: '22'` in the bench workflow). Re-run with `npm run bench:save` to
 > capture a baseline before making changes; use `--compare bench-results.json`
 > afterwards to diff.
 
@@ -29,13 +29,13 @@ invokes `fast-xml-parser` independently. If you only need `build()`, skip
 
 ## Complexity
 
-| Operation                               | Dominant cost                                     | Complexity                                      |
-| --------------------------------------- | ------------------------------------------------- | ----------------------------------------------- |
-| `RSSFeed.build()`                       | `fast-xml-parser` XML parse                       | O(n) in document size                           |
-| `HTMLMapper.toComponents()`             | HTML parse + 3 tree passes + `fromNode` traversal | O(n · m) where n = nodes, m = mappings/excludes |
-| `filterAnyMapping` / `filterAllMapping` | linear scan over `filters[]` per node             | O(m) per node                                   |
-| `findDescendants` / `removeDescendants` | full subtree traversal                            | O(n) in subtree size                            |
-| `patternCache` lookup                   | Map get/set                                       | O(1) amortized                                  |
+| Operation                               | Dominant cost                                     | Complexity                                             |
+| --------------------------------------- | ------------------------------------------------- | ------------------------------------------------------ |
+| `RSSFeed.build()`                       | `fast-xml-parser` XML parse                       | O(n) in document size                                  |
+| `HTMLMapper.toComponents()`             | HTML parse + 3 tree passes + `fromNode` traversal | O(n · m) where n = nodes, m = mappings/excludes/unwrap |
+| `filterAnyMapping` / `filterAllMapping` | linear scan over `filters[]` per node             | O(m) per node                                          |
+| `findDescendants` / `removeDescendants` | full subtree traversal                            | O(n) in subtree size                                   |
+| `patternCache` lookup                   | Map get/set                                       | O(1) amortized                                         |
 
 The dominant cost in a full `build()` is the XML parse + `fast-xml-parser`'s
 attribute extraction, not the component mapping. `toComponents` on large HTML
