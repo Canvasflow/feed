@@ -38,16 +38,16 @@ This wiki is the onboarding entry point. If you are new, read the pages top-to-b
 
 ## At a glance
 
-| Concern           | Tool               | Version     |
-| ----------------- | ------------------ | ----------- |
-| Language          | TypeScript         | ~6.0        |
-| Runtime (min)     | Node.js            | `>=22.0.0`  |
-| Build / tasks     | Vite+ (`vp`)       | 0.1.x       |
-| Test runner       | Vitest (via Vite+) | 4.x         |
-| XML parsing       | fast-xml-parser    | 5.x         |
-| HTML AST          | himalaya           | 1.x         |
-| HTML sanitizing   | sanitize-html      | 2.x         |
-| Schema validation | zod                | 4.x         |
+| Concern           | Tool               | Version    |
+| ----------------- | ------------------ | ---------- |
+| Language          | TypeScript         | ~6.0       |
+| Runtime (min)     | Node.js            | `>=22.0.0` |
+| Build / tasks     | Vite+ (`vp`)       | 0.1.x      |
+| Test runner       | Vitest (via Vite+) | 4.x        |
+| XML parsing       | fast-xml-parser    | 5.x        |
+| HTML AST          | himalaya           | 1.x        |
+| HTML sanitizing   | sanitize-html      | 2.x        |
+| Schema validation | zod                | 4.x        |
 
 ```bash
 npm install @canvasflow/feed   # from GitHub Packages — see Getting Started
