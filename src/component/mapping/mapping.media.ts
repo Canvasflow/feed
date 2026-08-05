@@ -25,7 +25,7 @@ import {
 import { sanitizeHTML as sanitizeHtml } from '../html/sanitize-html';
 import { imageTags, allowedCaptionTags } from './mapping.constants';
 import {
-  sanitizeContentHtml,
+  serializeOriginalHtml,
   excludeNode,
   filterAllMapping,
   filterAnyMapping,
@@ -94,6 +94,7 @@ export function toImg(node: ElementNode): ImageComponent {
     height,
     errors,
     warnings,
+    html: serializeOriginalHtml(node),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -148,6 +149,7 @@ export function toImage(node: ElementNode): ImageComponent {
     height: height ? parseInt(`${height}`, 10) : undefined,
     errors,
     warnings,
+    html: serializeOriginalHtml(node),
   };
 }
 
@@ -198,7 +200,7 @@ function fromPicture(node: ElementNode): ImageComponent {
   return {
     component: 'image',
     imageurl,
-    html: sanitizeContentHtml(node),
+    html: serializeOriginalHtml(node),
     alt,
     errors,
     warnings,
@@ -350,7 +352,7 @@ function fromFigure(
 
   return {
     component: 'image',
-    html: sanitizeContentHtml(node),
+    html: serializeOriginalHtml(node),
     imageurl,
     alt,
     link,
@@ -488,7 +490,7 @@ export function toVideo(node: ElementNode): VideoComponent {
     movietype: 'hosted',
     errors,
     warnings,
-    html: sanitizeContentHtml(node),
+    html: serializeOriginalHtml(node),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -544,7 +546,7 @@ export function toAudio(node: ElementNode): AudioComponent {
     loop,
     errors,
     warnings,
-    html: sanitizeContentHtml(node),
+    html: serializeOriginalHtml(node),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -588,7 +590,7 @@ export function toApplePodcast(node: ElementNode): AudioComponent {
     loop: false,
     errors,
     warnings,
-    html: sanitizeContentHtml(node),
+    html: serializeOriginalHtml(node),
   };
 }
 
@@ -642,6 +644,7 @@ export function toGallery(node: ElementNode): GalleryComponent {
     errors,
     warnings,
     caption,
+    html: serializeOriginalHtml(node),
     element: {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -694,7 +697,7 @@ export function toGalleryFromMapping(
     role: 'default',
     images,
     properties,
-    html: sanitizeContentHtml(node),
+    html: serializeOriginalHtml(node),
     errors,
     warnings,
   };
@@ -812,6 +815,7 @@ export function toTwitter(node: ElementNode | URL): TwitterComponent | null {
     component: 'twitter',
     errors,
     warnings,
+    html: serializeOriginalHtml(node),
     element: {
       tag: node.tagName,
       attributes: attrs,
@@ -919,7 +923,7 @@ export function fromIframe(
         tag: node.tagName,
         attributes: Object.fromEntries(attributes),
       };
-      builtComponent.html = sanitizeContentHtml(node);
+      builtComponent.html = serializeOriginalHtml(node);
       return builtComponent;
     case 'https://www.youtube.com':
       builtComponent = toYoutube(url);
@@ -927,7 +931,7 @@ export function fromIframe(
         tag: node.tagName,
         attributes: Object.fromEntries(attributes),
       };
-      builtComponent.html = sanitizeContentHtml(node);
+      builtComponent.html = serializeOriginalHtml(node);
       builtComponent.id = id;
       return builtComponent;
     case 'https://embed.podcasts.apple.com':
@@ -952,7 +956,7 @@ export function fromIframe(
     URL.canParse(searchParams.src)
   ) {
     builtComponent = toYoutube(new URL(searchParams.src));
-    builtComponent.html = sanitizeContentHtml(node);
+    builtComponent.html = serializeOriginalHtml(node);
     builtComponent.element = {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -968,7 +972,7 @@ export function fromIframe(
     URL.canParse(searchParams.url)
   ) {
     builtComponent = toTikTok(new URL(searchParams.url));
-    builtComponent.html = sanitizeContentHtml(node);
+    builtComponent.html = serializeOriginalHtml(node);
     builtComponent.element = {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
@@ -988,7 +992,7 @@ export function fromIframe(
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
     };
-    builtComponent.html = sanitizeContentHtml(node);
+    builtComponent.html = serializeOriginalHtml(node);
     builtComponent.id = id;
     return builtComponent;
   }
@@ -1004,7 +1008,7 @@ export function fromIframe(
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),
     };
-    builtComponent.html = sanitizeContentHtml(node);
+    builtComponent.html = serializeOriginalHtml(node);
     builtComponent.id = id;
     return builtComponent;
   }
@@ -1018,7 +1022,7 @@ export function fromIframe(
     builtComponent = toTwitter(new URL(searchParams.url));
     if (!builtComponent) return builtComponent;
 
-    builtComponent.html = sanitizeContentHtml(node);
+    builtComponent.html = serializeOriginalHtml(node);
     builtComponent.element = {
       tag: node.tagName,
       attributes: Object.fromEntries(attributes),

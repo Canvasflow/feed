@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## 🏷️ 2.0.7
+
+_August 5, 2026_
+
+✨ Features
+
+- (mapping) Populate html with the verbatim original markup ([`05556ae`](https://github.com/Canvasflow/feed/commit/05556ae8f0b9efc96c9ac624f3b1359e2479d609))
+
+🐛 Fixed
+
+- (mapping) Collapse whitespace in bare text-node body components ([`4452f08`](https://github.com/Canvasflow/feed/commit/4452f08b7d98d22a97793fcfc58788d9ee9dd368))
+
+🧪 Tests
+
+- (mapping) Cover affiliate hyperlink widget matched by tag+attribute ([`1c2dc10`](https://github.com/Canvasflow/feed/commit/1c2dc109a09236c10e95ccb4d2a4ef999956947d))
+
+🧹 Chores
+
+- (deps) Bump dependencies and realign the vite override ([`6c1793b`](https://github.com/Canvasflow/feed/commit/6c1793b59014abee9832d4ce89f9a68f992a3adc))
+
 ## 🏷️ 2.0.6
 
 _August 3, 2026_
