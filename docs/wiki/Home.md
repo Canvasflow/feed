@@ -41,7 +41,7 @@ This wiki is the onboarding entry point. If you are new, read the pages top-to-b
 | Concern           | Tool               | Version     |
 | ----------------- | ------------------ | ----------- |
 | Language          | TypeScript         | ~6.0        |
-| Runtime (min)     | Node.js            | `>=20.19.2` |
+| Runtime (min)     | Node.js            | `>=22.0.0`  |
 | Build / tasks     | Vite+ (`vp`)       | 0.1.x       |
 | Test runner       | Vitest (via Vite+) | 4.x         |
 | XML parsing       | fast-xml-parser    | 5.x         |
