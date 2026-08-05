@@ -18,7 +18,7 @@ Recorded **2026-07-27** on Apple M-series, Node 20. Run with `npm run bench`.
 | `HTMLMapper.toComponents()` — small HTML (~26 KB), no params      | ~175  | ~5.7      |
 
 > Numbers vary by hardware. Pin Node version in CI for repeatable comparisons
-> (`node: '20'` in the bench workflow). Re-run with `npm run bench:save` to
+> (`node-version: '22'` in the bench workflow). Re-run with `npm run bench:save` to
 > capture a baseline before making changes; use `--compare bench-results.json`
 > afterwards to diff.
 
