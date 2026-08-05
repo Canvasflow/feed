@@ -120,6 +120,7 @@ export const ComponentMappingSchema = z.union([
 export const ParamsSchema = z.object({
   mappings: z.array(ComponentMappingSchema).optional(),
   excludes: z.array(MappingSchema).optional(),
+  unwrap: z.array(MappingSchema).optional(),
   ignoreParagraphWrap: z.boolean().optional(),
 });
 

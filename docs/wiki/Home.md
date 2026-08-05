@@ -22,7 +22,7 @@ This wiki is the onboarding entry point. If you are new, read the pages top-to-b
 | [API Reference](API-Reference.md)     | The public exports: `RSSFeed` / `HTMLMapper` methods, helper functions, and the exported types. |
 | [RSS Feeds](RSS-Feeds.md)             | `RSSFeed.validate()` / `build()`, plus the supported RSS structure and namespaces.              |
 | [HTML Mapping](HTML-Mapping.md)       | The `HTMLMapper.toComponents()` pipeline and the default HTML → component table.                |
-| [Custom Mappings](Custom-Mappings.md) | The `Params`/`Mapping` model: filters, match modes, excludes, and component mappings.           |
+| [Custom Mappings](Custom-Mappings.md) | The `Params`/`Mapping` model: filters, match modes, excludes, unwrap, and component mappings.   |
 | [Component Types](Component-Types.md) | The `ComponentType`/`TextType` unions, component interfaces, and the `is*` type guards.         |
 
 ## 🛠 Operations

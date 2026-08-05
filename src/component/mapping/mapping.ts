@@ -319,6 +319,24 @@ export function fromNode(
     return null;
   }
 
+  // Unwrap: the element itself yields no component, but its children are still
+  // processed and spliced in where it stood. Checked ahead of every built-in
+  // detection so a wrapper can be pierced even when its own tag would
+  // otherwise consume the whole subtree (e.g. `p` -> body).
+  if (params?.unwrap?.length && excludeNode(node, params.unwrap)) {
+    const unwrapped: Array<Component> = [];
+    for (const n of node.children) {
+      const c = fromNode(n, params, _depth + 1);
+      if (!c) continue;
+      if (Array.isArray(c)) {
+        unwrapped.push(...c);
+      } else {
+        unwrapped.push(c);
+      }
+    }
+    return unwrapped;
+  }
+
   const role = attributes.get('role');
 
   if (tagName === 'a' && isYoutubeUrl(attributes.get('href') || '')) {
