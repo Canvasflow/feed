@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 🏷️ 2.0.9
+
+_August 5, 2026_
+
+✨ Features
+
+- (mapping) Add unwrap param to pierce wrapper elements ([`0d173d7`](https://github.com/Canvasflow/feed/commit/0d173d7a7c5e8025cc9461dd45e9e8ae533349ba))
+
+🧪 Tests
+
+- (mapping) Cover unwrap semantics and document the param ([`b1834c2`](https://github.com/Canvasflow/feed/commit/b1834c2cb3c8afec53dfca414e673ab9e7d3356a))
+
+🐳 CI
+
+- (bench) Drop Node 20 from the benchmark matrix ([`c746583`](https://github.com/Canvasflow/feed/commit/c746583dcca9982ba4c503c2bfa48af186c944e6))
+
 ## 🏷️ 2.0.8
 
 _August 5, 2026_
