@@ -36,6 +36,7 @@ export type {
   GalleryImage,
   GalleryComponent,
   ImageComponent,
+  ImageSource,
   TextComponent,
   HTMLTableComponent,
   VideoComponent,
