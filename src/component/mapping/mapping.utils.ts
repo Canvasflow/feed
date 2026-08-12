@@ -98,10 +98,22 @@ export function matchesPattern(value: string, pattern: string): boolean {
  * @returns {boolean}
  */
 export function isYoutubeUrl(url: string): boolean {
-  const regExp =
-    /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  if (!URL.canParse(url)) {
+    return false;
+  }
 
-  return regExp.test(url);
+  const { hostname, pathname, searchParams } = new URL(url);
+  const host = hostname.replace(/^(www|m)\./, '');
+
+  if (host === 'youtu.be') {
+    return true;
+  }
+
+  if (host !== 'youtube.com') {
+    return false;
+  }
+
+  return /^\/(embed|v|u\/\w)\//.test(pathname) || searchParams.has('v');
 }
 
 /**
