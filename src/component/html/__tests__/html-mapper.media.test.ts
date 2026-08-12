@@ -57,6 +57,55 @@ describe('Image component', () => {
   );
 
   test(
+    'It should carry every <source> candidate and the fallback <img> srcset on a picture element',
+    { tags: ['unit', 'html'] },
+    () => {
+      const content = `<picture>
+        <source media="(max-width:575px)"
+            srcset="https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-342x300.jpg, https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-685x600.jpg 2x">
+        <source media="(max-width:991px)"
+            srcset="https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-913x800.jpg, https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-1370x1200.jpg 2x">
+        <source media="(min-width:992px)"
+            srcset="https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-1233x1080.jpg, https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-1849x1620.jpg 2x">
+        <img decoding="async"
+            src="https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-342x300.jpg"
+            srcset="https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-342x300.jpg, https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-685x600.jpg 2x"
+            class="attachment-148013" alt="" width="400" height="300">
+    </picture>`;
+      const components = HTMLMapper.toComponents(content);
+      expect(components.length).toBe(1);
+      const component = components.pop() as ImageComponent;
+      expect(component).toBeDefined();
+      expect(component.component).toBe('image');
+      expect(component?.imageurl).toBe(
+        'https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-342x300.jpg'
+      );
+      expect(component?.width).toBe(400);
+      expect(component?.height).toBe(300);
+      expect(component?.srcset).toBe(
+        'https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-342x300.jpg, https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-685x600.jpg 2x'
+      );
+      expect(component?.sources).toEqual([
+        {
+          media: '(max-width:575px)',
+          srcset:
+            'https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-342x300.jpg, https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-685x600.jpg 2x',
+        },
+        {
+          media: '(max-width:991px)',
+          srcset:
+            'https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-913x800.jpg, https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-1370x1200.jpg 2x',
+        },
+        {
+          media: '(min-width:992px)',
+          srcset:
+            'https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-1233x1080.jpg, https://www.wanderlustmagazine.com/wp-content/uploads/2026/08/HR-W1PCHR-1-1849x1620.jpg 2x',
+        },
+      ]);
+    }
+  );
+
+  test(
     'It should process a simple picture element with valid caption',
     { tags: ['unit', 'html'] },
     () => {

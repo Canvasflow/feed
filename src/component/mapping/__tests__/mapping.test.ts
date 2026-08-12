@@ -235,6 +235,25 @@ describe('Mapping — social blockquotes and anchors', () => {
   });
 
   test(
+    'non-youtube anchor whose href happens to contain "v/" is not treated as a youtube embed',
+    tags,
+    () => {
+      // Regression test: a naive substring match on "v/" false-matched
+      // author-slug hrefs like ".../antoniopequenoiv/..." (ends in "iv/")
+      // and misrouted them into a broken youtube video component instead
+      // of a plain link/text anchor.
+      const href =
+        'https://www.forbes.com/sites/antoniopequenoiv/2025/10/30/nba-approves-10-billion-lakers-sale-to-dodgers-owner-mark-walter/';
+      const components = convert(
+        `<a href="${href}" aria-label="NBA Approves $10 Billion Lakers Sale">
+          <small>FORBES | By Antonio Pequeño IV</small><br><span>NBA Approves $10 Billion Lakers Sale</span>
+        </a>`
+      );
+      expect(components.some((c) => c && c.component === 'video')).toBe(false);
+    }
+  );
+
+  test(
     'tiktok blockquote with unparseable cite reports an error instead of throwing',
     tags,
     () => {

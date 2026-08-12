@@ -171,6 +171,22 @@ export const ComponentSchema: z.ZodType<Component> = baseComponentObject;
 // Plain shape spread used inside z.lazy() to avoid the ZodType<T> .extend() issue.
 const baseComponentFields = baseComponentObject.shape;
 
+// ─── ImageSource ─────────────────────────────────────────────────────────────
+
+/**
+ * A `<picture>` `<source>` candidate: an alternate rendition of an image
+ * gated by media query and/or MIME type, offered alongside the fallback
+ * `<img>`.
+ */
+export const ImageSourceSchema = z.object({
+  srcset: z.string(),
+  media: z.string().optional(),
+  type: z.string().optional(),
+  sizes: z.string().optional(),
+});
+
+export type ImageSource = z.infer<typeof ImageSourceSchema>;
+
 // ─── GalleryImage ────────────────────────────────────────────────────────────
 
 export const GalleryImageSchema = z.object({
@@ -205,6 +221,8 @@ export const ImageComponentSchema = baseComponentObject.extend({
   credit: z.string().optional(),
   width: z.number().optional(),
   height: z.number().optional(),
+  srcset: z.string().optional(),
+  sources: z.array(ImageSourceSchema).optional(),
 });
 
 // ─── TextComponent ───────────────────────────────────────────────────────────

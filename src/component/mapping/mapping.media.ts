@@ -6,6 +6,7 @@ import {
   type GalleryComponent,
   type GalleryImage,
   type ImageComponent,
+  type ImageSource,
   type InfogramComponent,
   type TikTokComponent,
   type TwitterComponent,
@@ -154,6 +155,39 @@ export function toImage(node: ElementNode): ImageComponent {
 }
 
 /**
+ * Extract every `<source>` child of a `<picture>` element into `ImageSource`
+ * candidates, in document order. Sources without a `srcset` are dropped —
+ * they carry nothing a consumer could render.
+ *
+ * @param {ElementNode} node
+ * @returns {ImageSource[]}
+ */
+function getImageSources(node: ElementNode): ImageSource[] {
+  const sourceNodes = node.children.filter(
+    (n): n is ElementNode => n.type === 'element' && n.tagName === 'source'
+  );
+
+  const sources: ImageSource[] = [];
+  for (const n of sourceNodes) {
+    const attributes = getAttributes(n.attributes);
+    const srcset = attributes.get('srcset');
+    if (!srcset) continue;
+
+    const source: ImageSource = { srcset };
+    const media = attributes.get('media');
+    if (media) source.media = media;
+    const type = attributes.get('type');
+    if (type) source.type = type;
+    const sizes = attributes.get('sizes');
+    if (sizes) source.sizes = sizes;
+
+    sources.push(source);
+  }
+
+  return sources;
+}
+
+/**
  * It process a picture node and get back a Canvasflow Image component
  *
  * @param {ElementNode} node
@@ -162,8 +196,13 @@ export function toImage(node: ElementNode): ImageComponent {
 function fromPicture(node: ElementNode): ImageComponent {
   let imageurl = '';
   let alt: string | undefined;
+  let width: number | undefined;
+  let height: number | undefined;
+  let srcset: string | undefined;
   const errors: FeedIssue[] = [];
   const warnings: FeedIssue[] = [];
+
+  const sources = getImageSources(node);
 
   // Handle image
   const imageNodes = node.children.reduce(findDescendants('img'), []);
@@ -188,6 +227,22 @@ function fromPicture(node: ElementNode): ImageComponent {
     }
 
     alt = attributes.get('alt');
+    srcset = attributes.get('srcset');
+
+    const widthAttr = attributes.get('width');
+    if (widthAttr) {
+      const w = parseInt(`${widthAttr}`, 10);
+      if (!Number.isNaN(w)) {
+        width = w;
+      }
+    }
+    const heightAttr = attributes.get('height');
+    if (heightAttr) {
+      const h = parseInt(`${heightAttr}`, 10);
+      if (!Number.isNaN(h)) {
+        height = h;
+      }
+    }
 
     imageurl = src ?? '';
     break;
@@ -202,6 +257,10 @@ function fromPicture(node: ElementNode): ImageComponent {
     imageurl,
     html: serializeOriginalHtml(node),
     alt,
+    width,
+    height,
+    srcset,
+    sources: sources.length ? sources : undefined,
     errors,
     warnings,
   };
@@ -225,6 +284,8 @@ function fromFigure(
   let alt: string | undefined;
   let width: number | undefined;
   let height: number | undefined;
+  let srcset: string | undefined;
+  let sources: ImageSource[] | undefined;
 
   // Handle caption
   if (node.type === 'element') {
@@ -342,6 +403,10 @@ function fromFigure(
       imageurl = picture.imageurl;
       alt = picture.alt;
       link = picture.link;
+      width = picture.width;
+      height = picture.height;
+      srcset = picture.srcset;
+      sources = picture.sources;
       break;
     }
   }
@@ -358,6 +423,8 @@ function fromFigure(
     link,
     width,
     height,
+    srcset,
+    sources,
     errors,
     warnings,
     caption: caption
