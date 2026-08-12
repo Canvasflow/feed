@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 🏷️ 2.0.10
+
+_August 12, 2026_
+
+✨ Features
+
+- (mapping) Expose picture <source> candidates on ImageComponent ([`3ae58b2`](https://github.com/Canvasflow/feed/commit/3ae58b20402d4bd2ba1fee9f6f73798c3a32e2d2))
+
+🐛 Fixed
+
+- (mapping) Scope isYoutubeUrl to the actual youtube hostname ([`6206331`](https://github.com/Canvasflow/feed/commit/6206331d58c138e1b6390141ff5504af839dbd4f))
+
 ## 🏷️ 2.0.9
 
 _August 5, 2026_
