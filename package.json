@@ -69,23 +69,23 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
-    "@commitlint/cli": "^21.2.1",
+    "@commitlint/cli": "^21.2.2",
     "@commitlint/config-conventional": "^21.1.0",
     "@types/he": "^1.2.3",
-    "@types/luxon": "^3.7.3",
-    "@types/node": "^26.1.2",
-    "@vitest/coverage-v8": "^4.1.10",
-    "@vitest/ui": "^4.1.10",
+    "@types/luxon": "^3.7.5",
+    "@types/node": "^26.2.0",
+    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/ui": "^4.1.11",
     "cz-conventional-changelog": "^3.3.0",
-    "publint": "^0.3.22",
+    "publint": "^0.3.24",
     "typescript": "^7.0.2",
-    "vite-plus": "^0.2.8"
+    "vite-plus": "^0.2.9"
   },
   "engines": {
     "node": ">=22.0.0"
   },
   "dependencies": {
-    "fast-xml-parser": "^5.10.1",
+    "fast-xml-parser": "^5.11.0",
     "he": "^1.2.0",
     "linkedom": "^0.18.13",
     "luxon": "^3.6.1",
