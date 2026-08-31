@@ -78,23 +78,23 @@ _August 3, 2026_
 
 ✨ Features
 
-- (component) Remove fixedheight and bleed from TwitterComponent ([`9ef8a62`](https://github.com/canvasflow/feed/commit/9ef8a62fa127d54a912d0a97fd589758f8344001))
+- (component) Remove fixedheight and bleed from TwitterComponent ([`9ef8a62`](https://github.com/Canvasflow/feed/commit/9ef8a62fa127d54a912d0a97fd589758f8344001))
 
 📝 Docs
 
-- (wiki) Remove fixedheight and bleed from TwitterComponent ([`521def0`](https://github.com/canvasflow/feed/commit/521def00a741bed298291f2f74cbe279a70de743))
-- (wiki) List default HTML mappings one per line ([`892ac47`](https://github.com/canvasflow/feed/commit/892ac477ab4734caa00f69d10ce5f3d76848255a))
-- (wiki) Add JSON examples to every component type ([`c2bb247`](https://github.com/canvasflow/feed/commit/c2bb24719aec13e1a17b248201189b448fd1388e))
-- (wiki) Add full component reference and transient component section ([`b1b583a`](https://github.com/canvasflow/feed/commit/b1b583a97f1e60184cb526bfabd43cee5411fead))
+- (wiki) Remove fixedheight and bleed from TwitterComponent ([`521def0`](https://github.com/Canvasflow/feed/commit/521def00a741bed298291f2f74cbe279a70de743))
+- (wiki) List default HTML mappings one per line ([`892ac47`](https://github.com/Canvasflow/feed/commit/892ac477ab4734caa00f69d10ce5f3d76848255a))
+- (wiki) Add JSON examples to every component type ([`c2bb247`](https://github.com/Canvasflow/feed/commit/c2bb24719aec13e1a17b248201189b448fd1388e))
+- (wiki) Add full component reference and transient component section ([`b1b583a`](https://github.com/Canvasflow/feed/commit/b1b583a97f1e60184cb526bfabd43cee5411fead))
 
 🎨 Style
 
-- (wiki) Apply formatter alignment to JSON examples ([`87cd0c7`](https://github.com/canvasflow/feed/commit/87cd0c7f5f18a7614f50b568c75345a2ec336971))
-- (wiki) Apply formatter table alignment to Component-Types ([`018f504`](https://github.com/canvasflow/feed/commit/018f504be52c5bf6bf4227e5b9552820b2a9ca75))
+- (wiki) Apply formatter alignment to JSON examples ([`87cd0c7`](https://github.com/Canvasflow/feed/commit/87cd0c7f5f18a7614f50b568c75345a2ec336971))
+- (wiki) Apply formatter table alignment to Component-Types ([`018f504`](https://github.com/Canvasflow/feed/commit/018f504be52c5bf6bf4227e5b9552820b2a9ca75))
 
 🧹 Chores
 
-- Bump feed version ([`d77b486`](https://github.com/canvasflow/feed/commit/d77b486c00d6713f8f5e8c9699ea89ee9c94a3c2))
+- Bump feed version ([`d77b486`](https://github.com/Canvasflow/feed/commit/d77b486c00d6713f8f5e8c9699ea89ee9c94a3c2))
 
 ## 🏷️ 2.0.5
 
@@ -102,13 +102,13 @@ _August 3, 2026_
 
 ✨ Features
 
-- (component) Carry resolved links on text and custom components ([`a22cf10`](https://github.com/canvasflow/feed/commit/a22cf10ad5bfbffff5feeb68c4e7ad6b93e3f1ef))
-- (mapping) Allow abbr, cite, u and time in text components ([`9d818d1`](https://github.com/canvasflow/feed/commit/9d818d194c6c8f04c53f6cc9d8b8be27254e512d))
-- (mapping) Make class filter equal match order-dependent ([`032130e`](https://github.com/canvasflow/feed/commit/032130e9449faadbe4b22e99a16ddc89e4451490))
+- (component) Carry resolved links on text and custom components ([`a22cf10`](https://github.com/Canvasflow/feed/commit/a22cf10ad5bfbffff5feeb68c4e7ad6b93e3f1ef))
+- (mapping) Allow abbr, cite, u and time in text components ([`9d818d1`](https://github.com/Canvasflow/feed/commit/9d818d194c6c8f04c53f6cc9d8b8be27254e512d))
+- (mapping) Make class filter equal match order-dependent ([`032130e`](https://github.com/Canvasflow/feed/commit/032130e9449faadbe4b22e99a16ddc89e4451490))
 
 🐛 Fixed
 
-- Fix vulnerabilities in the package ([`d8d2b25`](https://github.com/canvasflow/feed/commit/d8d2b257b01ad364f19249f146c5e7447c3b51db))
+- Fix vulnerabilities in the package ([`d8d2b25`](https://github.com/Canvasflow/feed/commit/d8d2b257b01ad364f19249f146c5e7447c3b51db))
 
 ## 🏷️ 2.0.4
 
@@ -116,7 +116,7 @@ _July 29, 2026_
 
 🐛 Fixed
 
-- (api) Re-export processTextLinks in public API ([`a560546`](https://github.com/canvasflow/feed/commit/a5605464279951497663f0129fc30b74400d5f4e))
+- (api) Re-export processTextLinks in public API ([`a560546`](https://github.com/Canvasflow/feed/commit/a5605464279951497663f0129fc30b74400d5f4e))
 
 ## 🏷️ 2.0.3
 
@@ -127,6 +127,31 @@ _July 28, 2026_
 - (ci) Upgrade actions/checkout and actions/setup-node to v7 ([`d6c7f4f`](https://github.com/Canvasflow/feed/commit/d6c7f4f1646d808e4e0b6afee3e74787c101100e))
 - (hooks) Mark post-merge hook as executable ([`eb247e5`](https://github.com/Canvasflow/feed/commit/eb247e551a4c24f15d2f13ad7c0035ecb02e45f5))
 - (deps) Upgrade typescript, cz-conventional-changelog, @types/node ([`36030bd`](https://github.com/Canvasflow/feed/commit/36030bd109b8ea1c98eb9ae3ce14df915a27aa13))
+- (hooks) Chmod +x all hooks in prepare script ([`35e280b`](https://github.com/Canvasflow/feed/commit/35e280b03fb46dd75c50f9659191a02096c1ca49))
+- (hooks) Mark pre-push hook as executable ([`c697ce4`](https://github.com/Canvasflow/feed/commit/c697ce4949c995dd2c7e9be960beb4924bd5f02f))
+
+## 🏷️ 2.0.2
+
+_July 28, 2026_
+
+✨ Features
+
+- (mapping) Apply link resolution to ContainerComponent in reduceLinkContainerComponent ([`32e9ae5`](https://github.com/Canvasflow/feed/commit/32e9ae512ef50576ad15a4df78ef142eac78c973))
+- (mapping) Resolve closest anchor per column node in toColumns ([`b3f5b15`](https://github.com/Canvasflow/feed/commit/b3f5b15a3cc6af1a2e4dc8536bdad00e1addc857))
+
+🐛 Fixed
+
+- (mapping) Filter text components whose visible content is empty ([`b6f0cdd`](https://github.com/Canvasflow/feed/commit/b6f0cddf7ad196b77e31ddc88d89969947365a95))
+- (mapping) Collapse consecutive whitespace in text components ([`790d6e0`](https://github.com/Canvasflow/feed/commit/790d6e0a92c9318d3cc198832a93d832ee879616))
+- (mapping) Return null from toText when sanitized text is empty ([`44e4dd1`](https://github.com/Canvasflow/feed/commit/44e4dd17ac72903a0dcc38fb9bb1cefa58a90d37))
+
+🧪 Tests
+
+- (mapping) Assert shared and per-column links across all three anchor cases ([`cbda229`](https://github.com/Canvasflow/feed/commit/cbda229dce38b533c22b04d5c2ecf5f06ab9399d))
+
+🧹 Chores
+
+- (test) Update snapshot for link-container-wrap-column-container fixture ([`12625f3`](https://github.com/Canvasflow/feed/commit/12625f3535341a544e0da50075b6aa091320a894))
 
 ## 🏷️ 2.0.1
 
