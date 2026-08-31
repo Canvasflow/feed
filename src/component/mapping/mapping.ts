@@ -33,6 +33,8 @@ import {
   ComponentMappingSchema,
   LinkResponseSchema,
   GalleryMappingSchema,
+  DividerMappingSchema,
+  SpacerMappingSchema,
 } from './mapping.schema';
 import {
   textTags,
@@ -84,6 +86,7 @@ import {
 import { toHTMLTable } from './mapping.table';
 import { toCustom } from './mapping.custom';
 import { toText } from './mapping.text';
+import { toDivider, toSpacer } from './mapping.divider';
 import { errorIssue } from '../../feed-issue';
 
 // Re-export the publicly consumed constants and helpers so the package surface
@@ -96,6 +99,7 @@ export { textTags, textTagsSet, mappingTagsSet };
 export { processTextLinks, isEmpty };
 export { mapLivePost } from './mapping.container';
 export { toCustom } from './mapping.custom';
+export { toDivider, toSpacer } from './mapping.divider';
 
 export type Filter = z.infer<typeof FilterSchema>;
 export type TagFilter = z.infer<typeof TagFilterSchema>;
@@ -118,6 +122,8 @@ export type ContainerMapping = z.infer<typeof ContainerMappingSchema>;
 export type CustomMapping = z.infer<typeof CustomMappingSchema>;
 export type TextMapping = z.infer<typeof TextMappingSchema>;
 export type GalleryMapping = z.infer<typeof GalleryMappingSchema>;
+export type DividerMapping = z.infer<typeof DividerMappingSchema>;
+export type SpacerMapping = z.infer<typeof SpacerMappingSchema>;
 
 /**
  * It gets the root node from a list of nodes
@@ -465,12 +471,26 @@ export function fromNode(
     if (mappingResult.mappedComponent === 'custom') {
       return toCustom(node, mappingResult.properties);
     }
+    if (mappingResult.mappedComponent === 'divider') {
+      return toDivider(node, mappingResult.properties);
+    }
+    if (mappingResult.mappedComponent === 'spacer') {
+      return toSpacer(node, mappingResult.properties);
+    }
 
     return toText(
       node,
       mappingResult.mappedComponent,
       mappingResult.properties
     );
+  }
+
+  if (tagName === 'hr') {
+    return toDivider(node);
+  }
+
+  if (tagName === 'br') {
+    return toSpacer(node);
   }
 
   if (tagName === 'figure') {
@@ -615,6 +635,16 @@ type MappingComponentResponse =
       properties?: Record<string, unknown> | undefined;
     }
   | {
+      mappedComponent: 'divider';
+      mapping: DividerMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | {
+      mappedComponent: 'spacer';
+      mapping: SpacerMapping;
+      properties?: Record<string, unknown> | undefined;
+    }
+  | {
       mappedComponent: TextType;
       mapping: TextMapping;
       properties?: Record<string, unknown> | undefined;
@@ -653,6 +683,10 @@ function getMappingComponent(
         return { mappedComponent: 'container', mapping, properties };
       case 'custom':
         return { mappedComponent: 'custom', mapping, properties };
+      case 'divider':
+        return { mappedComponent: 'divider', mapping, properties };
+      case 'spacer':
+        return { mappedComponent: 'spacer', mapping, properties };
       default:
         return { mappedComponent: mapping.component, mapping, properties };
     }
