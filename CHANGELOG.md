@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 🏷️ 2.0.11
+
+_August 31, 2026_
+
+✨ Features
+
+- (mapping) Add divider and spacer component support ([`da3bb2b`](https://github.com/Canvasflow/feed/commit/da3bb2b8b268c48fe1dd1638f31438ee9ba045b1))
+
+🧪 Tests
+
+- Update snapshots for divider/spacer component mapping ([`6971091`](https://github.com/Canvasflow/feed/commit/6971091519653900b31791edd9e9a164045bb6fd))
+
 ## 🏷️ 2.0.10
 
 _August 12, 2026_
