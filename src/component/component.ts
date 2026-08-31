@@ -343,6 +343,12 @@ export const SpacerComponentSchema = baseComponentObject.extend({
   ]),
 });
 
+// ─── DividerComponent ────────────────────────────────────────────────────────
+
+export const DividerComponentSchema = baseComponentObject.extend({
+  component: z.literal('divider'),
+});
+
 // ─── CustomComponent ─────────────────────────────────────────────────────────
 
 export const CustomComponentSchema = baseComponentObject.extend({
@@ -472,6 +478,7 @@ export type TwitterComponent = z.infer<typeof TwitterComponentSchema>;
 export type InstagramComponent = z.infer<typeof InstagramComponentSchema>;
 export type InfogramComponent = z.infer<typeof InfogramComponentSchema>;
 export type SpacerComponent = z.infer<typeof SpacerComponentSchema>;
+export type DividerComponent = z.infer<typeof DividerComponentSchema>;
 export type CustomComponent = z.infer<typeof CustomComponentSchema>;
 export type RecipeComponent = z.infer<typeof RecipeComponentSchema>;
 export type ColumnsComponent = z.infer<typeof ColumnsComponentSchema>;
@@ -768,5 +775,18 @@ export function isCustomComponent(object: unknown): object is CustomComponent {
     typeof object === 'object' &&
     object !== null &&
     potential.component === 'custom'
+  );
+}
+
+/** Type guard that narrows `object` to a divider component. */
+export function isDividerComponent(
+  object: unknown
+): object is DividerComponent {
+  const potential = object as Record<string, unknown>;
+
+  return (
+    typeof object === 'object' &&
+    object !== null &&
+    potential.component === 'divider'
   );
 }

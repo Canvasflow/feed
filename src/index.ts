@@ -50,6 +50,7 @@ export type {
   InstagramComponent,
   InfogramComponent,
   SpacerComponent,
+  DividerComponent,
   CustomComponent,
   RecipeComponent,
   ColumnsComponent,
@@ -82,6 +83,7 @@ export {
   isInstagramComponent,
   isInfogramComponent,
   isSpacerComponent,
+  isDividerComponent,
   isCustomComponent,
 } from './component/component';
 
@@ -125,6 +127,8 @@ export type {
   ContainerMapping,
   CustomMapping,
   TextMapping,
+  DividerMapping,
+  SpacerMapping,
   RecipeMapping,
   LinkResponse,
 } from './component/mapping/mapping';

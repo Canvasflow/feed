@@ -97,6 +97,16 @@ export const TextMappingSchema = MappingSchema.extend({
   component: TextTypeSchema,
 });
 
+export const DividerMappingSchema = MappingSchema.extend({
+  name: z.string().optional(),
+  component: z.literal('divider'),
+});
+
+export const SpacerMappingSchema = MappingSchema.extend({
+  name: z.string().optional(),
+  component: z.literal('spacer'),
+});
+
 export const GalleryMappingSchema = MappingSchema.extend({
   name: z.string().optional(),
   component: z.literal('gallery'),
@@ -114,6 +124,8 @@ export const ComponentMappingSchema = z.union([
   CustomMappingSchema,
   TextMappingSchema,
   GalleryMappingSchema,
+  DividerMappingSchema,
+  SpacerMappingSchema,
 ]);
 
 // Params
