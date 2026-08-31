@@ -174,6 +174,18 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/theenglishhome.
     "warnings": [],
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {},
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "Houses",
@@ -504,6 +516,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/theenglishhome.
     "errors": [],
     "html": "14 April 2026",
     "text": "<p>14 April 2026</p>",
+    "warnings": [],
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "xl:mt-9 lg:mt-5 md:mt-5 xs:mt-7 xs:mb-2",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='xl:mt-9 lg:mt-5 md:mt-5 xs:mt-7 xs:mb-2'>",
+    "id": undefined,
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -1151,6 +1177,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/theenglishhome.
     "warnings": [],
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "border-primary xl:mb-9 md:mx-0 xs:-mx-2 xs:mb-7",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='border-primary xl:mb-9 md:mx-0 xs:-mx-2 xs:mb-7'>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "Advertisement",
@@ -1216,6 +1256,18 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/theenglishhome.
     "width": 1234,
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {},
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "Everyone asks why my home smells amazing whenever they visit – I can’t gatekeep the White Company candle responsible now it’s finally in the sale",
@@ -1257,6 +1309,18 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/theenglishhome.
     "link": "/news-and-insights/latest-news/the-white-company-candle/",
     "warnings": [],
     "width": 2000,
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {},
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
   },
   {
     "component": "body",
@@ -1302,6 +1366,18 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/theenglishhome.
     "width": 3200,
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {},
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "I’ve finally found a dog bed that doesn’t ruin my aesthetic – and it might be the most stylish pet buy of the year",
@@ -1343,6 +1419,18 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/theenglishhome.
     "link": "/news-and-insights/latest-news/oka-dog-bed/",
     "warnings": [],
     "width": 2400,
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {},
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
   },
   {
     "component": "body",
@@ -1388,6 +1476,18 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/theenglishhome.
     "width": 2400,
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {},
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "Le Creuset has just unveiled a Mediterranean-inspired new colour – and it might be the dreamiest shade the brand has ever released ",
@@ -1431,6 +1531,48 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/theenglishhome.
     "width": 800,
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "mb-1 md:mx-0 xs:-mx-2",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='mb-1 md:mx-0 xs:-mx-2'>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "mb-1 md:mx-0 xs:-mx-2",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='mb-1 md:mx-0 xs:-mx-2'>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "mb-1 md:mx-0 xs:-mx-2",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='mb-1 md:mx-0 xs:-mx-2'>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "title",
     "element": {
       "attributes": {
@@ -1443,6 +1585,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/theenglishhome.
     "id": undefined,
     "properties": undefined,
     "text": "More from The English Home",
+    "warnings": [],
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "text-primary border-y md:mx-0 xs:-mx-2",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='text-primary border-y md:mx-0 xs:-mx-2'>",
+    "id": undefined,
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -1641,6 +1797,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/theenglishhome.
       "href": "/interiors/room-inspiration/utility-room-ideas/",
     },
     "text": "18 Beautiful utility room ideas that actually work – finally get organised without wasting time or money",
+    "warnings": [],
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "text-primary border-y md:mx-0 xs:-mx-2",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='text-primary border-y md:mx-0 xs:-mx-2'>",
+    "id": undefined,
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -2352,6 +2522,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "warnings": [],
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "md:mt-7 md:mb-7 mt-5 mb-5 border-[var(--flcw-membership-slide-out-divider-color,gray-200)]",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='md:mt-7 md:mb-7 mt-5 mb-5 border-[var(--flcw-membership-slide-out-divider-color,gray-200)]'>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "alt": "Badge picture",
     "component": "image",
     "element": {
@@ -2602,6 +2786,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     ],
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "md:mt-7 md:mb-7 mt-5 mb-5 border-[var(--flcw-membership-slide-out-divider-color,gray-200)]",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='md:mt-7 md:mb-7 mt-5 mb-5 border-[var(--flcw-membership-slide-out-divider-color,gray-200)]'>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": " See what you’ve unlocked. ",
@@ -2719,6 +2917,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
       "href": "https://www.tomsguide.com/my-account/rewards",
     },
     "text": "See rewards",
+    "warnings": [],
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "md:mt-7 md:mb-7 mt-5 mb-5 border-[var(--flcw-membership-slide-out-divider-color,gray-200)]",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='md:mt-7 md:mb-7 mt-5 mb-5 border-[var(--flcw-membership-slide-out-divider-color,gray-200)]'>",
+    "id": undefined,
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -5307,6 +5519,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "warnings": [],
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "modal_hr mt-3 mb-4 h-px bg-gray-300 border-0",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='modal_hr mt-3 mb-4 h-px bg-gray-300 border-0'>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": " By submitting your information you agree to the ",
@@ -5389,6 +5615,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "id": undefined,
     "properties": undefined,
     "text": "<p class="text-gray-600 mb-4 text-sm sm:text-base">Your newsletter sign-up was successful</p>",
+    "warnings": [],
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "my-2 h-px bg-gray-300 border-0",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='my-2 h-px bg-gray-300 border-0'>",
+    "id": undefined,
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -5787,6 +6027,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     ],
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "my-4 h-px bg-gray-300 border-0",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='my-4 h-px bg-gray-300 border-0'>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "element": {
       "attributes": {
@@ -5828,6 +6082,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "html": "<button class='rounded-full bg-primary-500 px-4 py-2 text-sm'><a href='https://www.tomsguide.com/membership' class='text-white' data-before-rewrite-localise='/membership'>Explore</a></button>",
     "link": "https://www.tomsguide.com/membership",
     "text": "Explore",
+    "warnings": [],
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "my-5 h-px bg-gray-300 border-0",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='my-5 h-px bg-gray-300 border-0'>",
+    "id": undefined,
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -8766,6 +9034,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -8847,6 +9128,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -8934,6 +9228,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -9015,6 +9322,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -9102,6 +9422,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -9183,6 +9516,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -9277,6 +9623,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -9358,6 +9717,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -9445,6 +9817,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -9526,6 +9911,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -9613,6 +10011,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -9694,6 +10105,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -9788,6 +10212,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -9869,6 +10306,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -9956,6 +10406,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -10037,6 +10500,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -10124,6 +10600,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -10205,6 +10694,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -11073,6 +11575,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "warnings": [],
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "md:mt-7 md:mb-7 mt-5 mb-5 border-[var(--flcw-membership-slide-out-divider-color,gray-200)]",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='md:mt-7 md:mb-7 mt-5 mb-5 border-[var(--flcw-membership-slide-out-divider-color,gray-200)]'>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "alt": "Badge picture",
     "component": "image",
     "element": {
@@ -11323,6 +11839,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     ],
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "md:mt-7 md:mb-7 mt-5 mb-5 border-[var(--flcw-membership-slide-out-divider-color,gray-200)]",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='md:mt-7 md:mb-7 mt-5 mb-5 border-[var(--flcw-membership-slide-out-divider-color,gray-200)]'>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "See what you’ve unlocked.",
@@ -11440,6 +11970,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
       "href": "https://www.tomsguide.com/my-account/rewards",
     },
     "text": "See rewards",
+    "warnings": [],
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "md:mt-7 md:mb-7 mt-5 mb-5 border-[var(--flcw-membership-slide-out-divider-color,gray-200)]",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='md:mt-7 md:mb-7 mt-5 mb-5 border-[var(--flcw-membership-slide-out-divider-color,gray-200)]'>",
+    "id": undefined,
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -13913,6 +14457,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "warnings": [],
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "modal_hr mt-3 mb-4 h-px bg-gray-300 border-0",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='modal_hr mt-3 mb-4 h-px bg-gray-300 border-0'>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "By submitting your information you agree to the ",
@@ -13995,6 +14553,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "id": undefined,
     "properties": undefined,
     "text": "<p class="text-gray-600 mb-4 text-sm sm:text-base">Your newsletter sign-up was successful</p>",
+    "warnings": [],
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "my-2 h-px bg-gray-300 border-0",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='my-2 h-px bg-gray-300 border-0'>",
+    "id": undefined,
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -14393,6 +14965,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     ],
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "my-4 h-px bg-gray-300 border-0",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='my-4 h-px bg-gray-300 border-0'>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "element": {
       "attributes": {
@@ -14434,6 +15020,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "html": "<button class='rounded-full bg-primary-500 px-4 py-2 text-sm'><a href='https://www.tomsguide.com/membership' class='text-white' data-before-rewrite-localise='/membership'>Explore</a></button>",
     "link": "https://www.tomsguide.com/membership",
     "text": "Explore",
+    "warnings": [],
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "my-5 h-px bg-gray-300 border-0",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='my-5 h-px bg-gray-300 border-0'>",
+    "id": undefined,
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -14925,6 +15525,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "warnings": [],
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "id": "elk-57d111a6-6659-4d87-ba6c-fa547207427a",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr id='elk-57d111a6-6659-4d87-ba6c-fa547207427a'>",
+    "id": "elk-57d111a6-6659-4d87-ba6c-fa547207427a",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "alt": "Google News",
     "caption": "",
     "component": "image",
@@ -14959,6 +15573,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "id": "elk-1487754f-5d0e-4d2e-a9c0-c374dfd625d6",
     "properties": undefined,
     "text": "<p id="elk-1487754f-5d0e-4d2e-a9c0-c374dfd625d6"><em>Follow </em><a href="https://news.google.com/publications/CAAqKAgKIiJDQklTRXdnTWFnOEtEWFJ2YlhObmRXbGtaUzVqYjIwb0FBUAE" target="_blank"><em>Tom's Guide on Google News</em></a> and<em> </em><a href="https://google.com/preferences/source?q=tomsguide.com" target="_blank"><em>add us as a preferred source</em></a><em> to get our up-to-date news, analysis, and reviews in your feeds. Subscribe to Tom's Guide on </em><a href="https://www.youtube.com/channel/UCik8xvfR6s8GQ74QNEGNzwg" target="_blank"><em>YouTube</em></a><em> and follow us on </em><a href="https://www.tiktok.com/@tomsguide" target="_blank"><em>TikTok</em></a><em>.</em></p>",
+    "warnings": [],
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "id": "elk-49f5acbc-b01f-4076-b9fe-898e6b12196f",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr id='elk-49f5acbc-b01f-4076-b9fe-898e6b12196f'>",
+    "id": "elk-49f5acbc-b01f-4076-b9fe-898e6b12196f",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -15262,6 +15890,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -15343,6 +15984,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -15430,6 +16084,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -15511,6 +16178,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -15598,6 +16278,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -15679,6 +16372,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -15773,6 +16479,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -15854,6 +16573,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -15941,6 +16673,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -16022,6 +16767,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -16109,6 +16867,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -16190,6 +16961,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -16284,6 +17068,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -16365,6 +17162,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -16452,6 +17262,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -16533,6 +17356,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -16620,6 +17456,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -16701,6 +17550,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -19993,6 +20855,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     "warnings": [],
   },
   {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "modal_hr mt-3 mb-4 h-px bg-gray-300 border-0",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='modal_hr mt-3 mb-4 h-px bg-gray-300 border-0'>",
+    "id": undefined,
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": " By submitting your information you agree to the ",
@@ -20075,6 +20951,20 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     "id": undefined,
     "properties": undefined,
     "text": "<p class="text-gray-600 mb-4 text-sm sm:text-base"> Your newsletter sign-up was successful </p>",
+    "warnings": [],
+  },
+  {
+    "component": "divider",
+    "element": {
+      "attributes": {
+        "class": "my-5 h-px bg-gray-300 border-0",
+      },
+      "tag": "hr",
+    },
+    "errors": [],
+    "html": "<hr class='my-5 h-px bg-gray-300 border-0'>",
+    "id": undefined,
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -22522,6 +23412,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -22673,6 +23576,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -22837,6 +23753,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -22988,6 +23917,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
@@ -23152,6 +24094,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     "warnings": [],
   },
   {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
+    "warnings": [],
+  },
+  {
     "component": "body",
     "errors": [],
     "html": "&#160;",
@@ -23303,6 +24258,19 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     "errors": [],
     "html": "&#160;",
     "text": "<p>&#160;</p>",
+    "warnings": [],
+  },
+  {
+    "component": "spacer",
+    "element": {
+      "attributes": {},
+      "tag": "br",
+    },
+    "errors": [],
+    "html": "<br>",
+    "id": undefined,
+    "margin": "margin-20",
+    "properties": undefined,
     "warnings": [],
   },
   {
