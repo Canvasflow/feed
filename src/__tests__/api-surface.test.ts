@@ -46,8 +46,12 @@ import {
   isSpacerComponent,
   isCustomComponent,
   FeedIssueCodes,
+  fetchUrl,
+  getHtml,
   getHtmlContent,
+  getJson,
   getRecipeFromUrl,
+  nodeHttpsFetch,
 } from '../index';
 
 import type {
@@ -399,8 +403,29 @@ describe('Network utilities', () => {
     expectTypeOf(getRecipeFromUrl).parameter(0).toEqualTypeOf<string>();
   });
 
-  test('getHtmlContent first parameter is string', tags, () => {
-    expectTypeOf(getHtmlContent).parameter(0).toEqualTypeOf<string>();
+  test('fetchUrl first parameter is string', tags, () => {
+    expectTypeOf(fetchUrl).parameter(0).toEqualTypeOf<string>();
+  });
+
+  test('getHtml first parameter is string', tags, () => {
+    expectTypeOf(getHtml).parameter(0).toEqualTypeOf<string>();
+  });
+
+  test('getHtmlContent is the deprecated alias for getHtml', tags, () => {
+    expectTypeOf(getHtmlContent).toEqualTypeOf<typeof getHtml>();
+  });
+
+  test(
+    'getJson first parameter is string, returns unknown by default',
+    tags,
+    () => {
+      expectTypeOf(getJson).parameter(0).toEqualTypeOf<string>();
+      expectTypeOf(getJson<unknown>).returns.toEqualTypeOf<Promise<unknown>>();
+    }
+  );
+
+  test('nodeHttpsFetch returns a fetch-compatible function', tags, () => {
+    expectTypeOf(nodeHttpsFetch).returns.toEqualTypeOf<typeof fetch>();
   });
 });
 

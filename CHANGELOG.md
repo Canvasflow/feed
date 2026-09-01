@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 🏷️ 2.0.12
+
+_September 1, 2026_
+
+♻️ Refactor
+
+- (utils) Rename fetchText to fetchUrl, add getHtml/getJson validation ([`2afaf82`](https://github.com/Canvasflow/feed/commit/2afaf82944744452c0ead56b9475c3d7aa08450a))
+- (utils) Move getHtmlContent into utils/http, add nodeHttpsFetch ([`dd8a320`](https://github.com/Canvasflow/feed/commit/dd8a32078fdf6aca0c473b9016d339bedef0ee8b))
+
+🧹 Chores
+
+- (deps) Upgrade dependencies to latest ([`ed25535`](https://github.com/Canvasflow/feed/commit/ed255358a6ae540d5df49d7d68a2d3b1757cc1aa))
+
 ## 🏷️ 2.0.11
 
 _August 31, 2026_

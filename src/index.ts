@@ -23,8 +23,10 @@ export { FeedIssueCodes } from './feed-issue';
 
 // ─── Network / recipe utilities ───────────────────────────────────────────────
 
-export type { FetchOptions } from './rss/recipe';
-export { getHtmlContent, getRecipeFromUrl } from './rss/recipe';
+export type { FetchOptions } from './utils/http';
+export { fetchUrl, getHtml, getHtmlContent, getJson } from './utils/http';
+export { nodeHttpsFetch } from './utils/node-https-fetch';
+export { getRecipeFromUrl } from './rss/recipe';
 
 // ─── Component types ──────────────────────────────────────────────────────────
 
