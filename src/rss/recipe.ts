@@ -1,7 +1,7 @@
 import { parseHTML } from 'linkedom';
 
 import type { Recipe } from '../component/schema/recipe-schema';
-import { getHtmlContent, type FetchOptions } from '../utils/http';
+import { fetchUrl, type FetchOptions } from '../utils/http';
 
 /**
  * Fetch `url` and extract the first LD+JSON `Recipe` found in a
@@ -17,7 +17,7 @@ export async function getRecipeFromUrl(
   url: string,
   options: FetchOptions = {}
 ): Promise<Recipe | null> {
-  const html = await getHtmlContent(url, options);
+  const html = await fetchUrl(url, options);
   const { document } = parseHTML(html);
   const scripts = document.querySelectorAll(
     'script[type="application/ld+json"]'

@@ -1,23 +1,25 @@
 import { test, expect, describe } from 'vite-plus/test';
 
-import { getHtmlContent } from '../http';
+import { fetchUrl, getHtml, getHtmlContent, getJson } from '../http';
 
 const tags = { tags: ['unit', 'rss'] };
 
 function fakeResponse(
   body: string,
-  init: { ok?: boolean; status?: number } = {}
+  init: { ok?: boolean; status?: number; headers?: Record<string, string> } = {}
 ): Response {
+  const headers = new Headers(init.headers);
   return {
     ok: init.ok ?? true,
     status: init.status ?? 200,
     url: 'https://example.com/r',
+    headers,
     text: async () => body,
     body: null,
   } as unknown as Response;
 }
 
-describe('getHtmlContent', () => {
+describe('fetchUrl', () => {
   test('uses an injected fetch instead of globalThis.fetch', tags, async () => {
     let calledWith: [string, RequestInit | undefined] | undefined;
     const fetchStub = (async (
@@ -28,7 +30,7 @@ describe('getHtmlContent', () => {
       return fakeResponse('<html>ok</html>');
     }) as typeof fetch;
 
-    const html = await getHtmlContent('https://example.com/page', {
+    const html = await fetchUrl('https://example.com/page', {
       fetch: fetchStub,
     });
     expect(html).toBe('<html>ok</html>');
@@ -42,7 +44,7 @@ describe('getHtmlContent', () => {
       return fakeResponse('ok');
     }) as typeof fetch;
 
-    await getHtmlContent('https://example.com', {
+    await fetchUrl('https://example.com', {
       fetch: fetchStub,
       timeoutMs: 50,
     });
@@ -59,7 +61,7 @@ describe('getHtmlContent', () => {
     }) as typeof fetch;
 
     await expect(
-      getHtmlContent('https://example.com', { fetch: fetchStub, timeoutMs: 10 })
+      fetchUrl('https://example.com', { fetch: fetchStub, timeoutMs: 10 })
     ).rejects.toThrow();
   });
 
@@ -68,9 +70,25 @@ describe('getHtmlContent', () => {
       fakeResponse('server error', { ok: false, status: 500 })) as typeof fetch;
 
     await expect(
-      getHtmlContent('https://example.com', { fetch: fetchStub })
+      fetchUrl('https://example.com', { fetch: fetchStub })
     ).rejects.toThrow('failed with status 500');
   });
+
+  test(
+    'does not care what the Content-Type is, unlike getHtml/getJson',
+    tags,
+    async () => {
+      const fetchStub = (async () =>
+        fakeResponse('{"not":"html"}', {
+          headers: { 'content-type': 'application/json' },
+        })) as typeof fetch;
+
+      const text = await fetchUrl('https://example.com', {
+        fetch: fetchStub,
+      });
+      expect(text).toBe('{"not":"html"}');
+    }
+  );
 
   test(
     'caps the response body at maxBytes when a stream is available',
@@ -93,13 +111,14 @@ describe('getHtmlContent', () => {
         ok: true,
         status: 200,
         url: 'https://example.com',
+        headers: new Headers(),
         body,
         text: async () => 'a'.repeat(50),
       } as unknown as Response;
       const fetchStub = (async () => response) as typeof fetch;
 
       await expect(
-        getHtmlContent('https://example.com', {
+        fetchUrl('https://example.com', {
           fetch: fetchStub,
           maxBytes: 10,
         })
@@ -129,12 +148,13 @@ describe('getHtmlContent', () => {
         ok: true,
         status: 200,
         url: 'https://example.com',
+        headers: new Headers(),
         body,
         text: async () => text,
       } as unknown as Response;
       const fetchStub = (async () => response) as typeof fetch;
 
-      const html = await getHtmlContent('https://example.com', {
+      const html = await fetchUrl('https://example.com', {
         fetch: fetchStub,
         maxBytes: 1024,
       });
@@ -143,126 +163,201 @@ describe('getHtmlContent', () => {
   );
 });
 
-// Debugging aid for a specific real-world 403, not a regression test with a
-// fixed expected outcome. Tagged `integration` per convention (real network
-// I/O), but the tag alone does NOT keep it out of a plain `npm test`/CI run
-// in this repo — `vp test`/`vp test --coverage` (what `npm test`/CI's
-// `npm run coverage` actually invoke) apply no tag filter unless one is
-// passed explicitly, despite CLAUDE.md describing `integration` as "skipped
-// by default." Gated behind `RUN_NETWORK_TESTS` instead, which is a real
-// opt-in: run with `RUN_NETWORK_TESTS=1 npx vitest run
-// src/utils/__tests__/http.test.ts -t wanderlustmagazine --reporter=verbose`
-// (the `--reporter=verbose` is what actually surfaces the `console.log`
-// diagnostics below — the default reporter hides stdout on a passing test).
-//
-// What this found, isolated by comparing against `getLinkContent` in
-// canvasflow/transformer's RssStandardService.ts (axios, header
-// `User-Agent: Canvasflow`) against the exact same URL:
-//
-//   - It is NOT the missing `User-Agent` header: `fetch(url, { headers: {
-//     'User-Agent': 'Canvasflow' } })` — the *same* header axios sends —
-//     still gets the 403.
-//   - It is NOT HTTP/2 vs HTTP/1.1: undici's default `Agent` already has
-//     `allowH2: false` (Node's `fetch` is HTTP/1.1-only by default), so
-//     `fetch` and axios are both already on HTTP/1.1 here, and `fetch`
-//     still gets the 403.
-//   - It IS something about the TLS/HTTP connection fingerprint itself.
-//     Cloudflare's bot-mitigation (`server: cloudflare`,
-//     `cf-mitigated: challenge` — the "Just a moment..." JS interstitial)
-//     scores requests on their TLS ClientHello (JA3/JA4 — cipher order,
-//     extensions) and HTTP header shape (order/casing/defaults), which
-//     differ between undici (`fetch`'s implementation) and Node's classic
-//     `http`/`https` module (what axios uses) even for byte-identical
-//     headers and the same protocol version. `curl --http1.1` also passes
-//     and `curl --http2` also fails against this same URL — another distinct
-//     TLS stack producing yet another split — which is consistent with a
-//     fingerprint-based check rather than anything in the request undici
-//     controls.
-//
-// This is not a bug in `getHtmlContent` to fix by copying one specific
-// header — it's a bot-mitigation wall that scores the underlying HTTP
-// client, which `getHtmlContent` has no visibility into or control over via
-// the `fetch` API surface. It's also not something this library should try
-// to spoof further (mimicking a specific TLS/HTTP fingerprint on purpose is
-// a bot-detection bypass, out of scope here). The actionable fix is
-// `nodeHttpsFetch` (`../node-https-fetch.ts`, see its own test file) — an
-// exported `FetchOptions.fetch` implementation for exactly this situation.
-describe.skipIf(!process.env.RUN_NETWORK_TESTS)(
-  'getHtmlContent — wanderlustmagazine.com 403 (real network)',
-  { tags: ['integration'] },
-  () => {
-    const url =
-      'https://www.wanderlustmagazine.com/inspiration/us-national-parks-what-you-need-to-know-about-visiting-in-2025/';
+describe('getHtml', () => {
+  test('returns the body when Content-Type is text/html', tags, async () => {
+    const fetchStub = (async () =>
+      fakeResponse('<html>ok</html>', {
+        headers: { 'content-type': 'text/html' },
+      })) as typeof fetch;
 
-    // Reproduces the reported bug as-is: no custom headers, same call shape
-    // as any caller (RSSFeed's shouldFetchRemote path, the `tools` app's
-    // proxy) invoking `getHtmlContent(url)` with defaults.
-    test(
-      'fails with a 403 using default fetch, no headers',
-      { tags: ['integration'] },
-      async () => {
-        await expect(getHtmlContent(url)).rejects.toThrow(
-          'failed with status 403'
-        );
+    const html = await getHtml('https://example.com', { fetch: fetchStub });
+    expect(html).toBe('<html>ok</html>');
+  });
+
+  test('ignores Content-Type parameters like charset', tags, async () => {
+    const fetchStub = (async () =>
+      fakeResponse('<html>ok</html>', {
+        headers: { 'content-type': 'text/html; charset=utf-8' },
+      })) as typeof fetch;
+
+    const html = await getHtml('https://example.com', { fetch: fetchStub });
+    expect(html).toBe('<html>ok</html>');
+  });
+
+  test(
+    'throws when a 2xx response Content-Type is not text/html',
+    tags,
+    async () => {
+      const fetchStub = (async () =>
+        fakeResponse('{"not":"html"}', {
+          headers: { 'content-type': 'application/json' },
+        })) as typeof fetch;
+
+      await expect(
+        getHtml('https://example.com', { fetch: fetchStub })
+      ).rejects.toThrow('is not HTML');
+    }
+  );
+
+  test('throws when Content-Type is missing entirely', tags, async () => {
+    const fetchStub = (async () => fakeResponse('ok')) as typeof fetch;
+
+    await expect(
+      getHtml('https://example.com', { fetch: fetchStub })
+    ).rejects.toThrow('is not HTML');
+  });
+
+  test(
+    'still throws on a non-ok status before checking Content-Type',
+    tags,
+    async () => {
+      const fetchStub = (async () =>
+        fakeResponse('server error', {
+          ok: false,
+          status: 500,
+        })) as typeof fetch;
+
+      await expect(
+        getHtml('https://example.com', { fetch: fetchStub })
+      ).rejects.toThrow('failed with status 500');
+    }
+  );
+});
+
+describe('getJson', () => {
+  test(
+    'parses the body when Content-Type is application/json',
+    tags,
+    async () => {
+      const fetchStub = (async () =>
+        fakeResponse('{"a":1,"b":"two"}', {
+          headers: { 'content-type': 'application/json' },
+        })) as typeof fetch;
+
+      const parsed = await getJson<{ a: number; b: string }>(
+        'https://example.com',
+        { fetch: fetchStub }
+      );
+      expect(parsed).toEqual({ a: 1, b: 'two' });
+    }
+  );
+
+  test('ignores Content-Type parameters like charset', tags, async () => {
+    const fetchStub = (async () =>
+      fakeResponse('{"a":1}', {
+        headers: { 'content-type': 'application/json; charset=utf-8' },
+      })) as typeof fetch;
+
+    const parsed = await getJson('https://example.com', { fetch: fetchStub });
+    expect(parsed).toEqual({ a: 1 });
+  });
+
+  test(
+    'throws when a 2xx response Content-Type is not application/json',
+    tags,
+    async () => {
+      const fetchStub = (async () =>
+        fakeResponse('<html>not json</html>', {
+          headers: { 'content-type': 'text/html' },
+        })) as typeof fetch;
+
+      await expect(
+        getJson('https://example.com', { fetch: fetchStub })
+      ).rejects.toThrow('is not JSON');
+    }
+  );
+
+  test('throws when Content-Type is missing entirely', tags, async () => {
+    const fetchStub = (async () => fakeResponse('{}')) as typeof fetch;
+
+    await expect(
+      getJson('https://example.com', { fetch: fetchStub })
+    ).rejects.toThrow('is not JSON');
+  });
+
+  test(
+    'still throws on a non-ok status before checking Content-Type',
+    tags,
+    async () => {
+      const fetchStub = (async () =>
+        fakeResponse('server error', {
+          ok: false,
+          status: 500,
+        })) as typeof fetch;
+
+      await expect(
+        getJson('https://example.com', { fetch: fetchStub })
+      ).rejects.toThrow('failed with status 500');
+    }
+  );
+});
+
+test('getHtmlContent is a deprecated alias for getHtml', tags, () => {
+  expect(getHtmlContent).toBe(getHtml);
+});
+
+// A real-world case worth its own coverage: some sites' bot-mitigation
+// (Cloudflare's managed/JS challenge in particular — discovered debugging a
+// live 403 from wanderlustmagazine.com against `fetchUrl`/`getHtml`)
+// responds with a "successful" HTTP response that's actually a challenge
+// page, not the real content — `server: cloudflare` +
+// `cf-mitigated: challenge` headers and a "Just a moment..." title.
+// `fakeResponse` fabricates that exact shape so this is a deterministic,
+// offline unit test instead of a real network call to a live,
+// rate-limit-sensitive third-party site: it verifies `fetchUrl` surfaces
+// this as the same "non-ok" failure it already handles for a plain 403,
+// which is genuinely all `fetchUrl` itself can do here (the response *is*
+// non-2xx) — see `nodeHttpsFetch`
+// (`../node-https-fetch.ts`/`../__tests__/node-https-fetch.test.ts`) for
+// the actual fix a caller can plug in via `FetchOptions.fetch`. A
+// Cloudflare challenge that instead came back as a 2xx (some deployments
+// do) is exactly what `getHtml`'s own Content-Type check above additionally
+// guards against.
+describe('fetchUrl — a Cloudflare bot-mitigation challenge response', () => {
+  const cloudflareChallengeResponse = () =>
+    fakeResponse(
+      '<html><head><title>Just a moment...</title></head><body></body></html>',
+      {
+        ok: false,
+        status: 403,
+        headers: { server: 'cloudflare', 'cf-mitigated': 'challenge' },
       }
     );
 
-    // Isolates the header question and reports whatever actually happens —
-    // purely observational, no fixed pass/fail assertion. Sends the *exact*
-    // header (`User-Agent: Canvasflow`) that makes axios/`node:https` reliably
-    // succeed (see `../node-https-fetch.test.ts`) through plain `fetch`
-    // instead. Three outcomes have all been observed across separate runs of
-    // this same test during this investigation: a 403 Cloudflare challenge,
-    // a connection-level `fetch failed`/`ETIMEDOUT` (Cloudflare or the
-    // runner's network path blocking the connection outright), and —
-    // occasionally — an actual 200 with the real article. That third
-    // outcome is what confirms this is genuinely probabilistic bot-scoring,
-    // not a hard rule: plain `fetch` sometimes gets through, it just scores
-    // worse / less reliably than `node:https` (axios's underlying client)
-    // does, which is exactly why `nodeHttpsFetch` exists as the fix rather
-    // than "this one header."
-    test(
-      'reports whatever fetch does with the same User-Agent axios uses',
-      { tags: ['integration'] },
-      async () => {
-        try {
-          const html = await getHtmlContent(url, {
-            headers: { 'User-Agent': 'Canvasflow' },
-          });
-          console.log(
-            'fetch succeeded — title:',
-            /<title>(.*?)<\/title>/.exec(html)?.[1]
-          );
-        } catch (err) {
-          console.log('fetch failed:', err);
-        }
-      }
-    );
+  test(
+    'surfaces the challenge as a "failed with status 403" error',
+    tags,
+    async () => {
+      const fetchStub = (async () =>
+        cloudflareChallengeResponse()) as typeof fetch;
 
-    // Bypasses `getHtmlContent` (which only exposes `response.ok`/`status`
-    // on failure, and gives up entirely on a connection-level error) to
-    // inspect the raw response/error for diagnosis — same three possible
-    // outcomes as the previous test, all just logged rather than asserted.
-    test(
-      'inspects the raw response/error for diagnosis',
-      { tags: ['integration'] },
-      async () => {
-        try {
-          const response = await fetch(url, {
-            headers: { 'User-Agent': 'Canvasflow' },
-          });
-          console.log('status:', response.status);
-          console.log('server:', response.headers.get('server'));
-          console.log('cf-mitigated:', response.headers.get('cf-mitigated'));
-          const body = await response.text();
-          console.log('body <title>:', /<title>(.*?)<\/title>/.exec(body)?.[1]);
-        } catch (err) {
-          // The connection-level failure mode (`fetch failed`/`ETIMEDOUT`/
-          // `ENETUNREACH`) — logged instead of re-thrown so the test still
-          // reports which failure mode actually happened.
-          console.log('fetch threw instead of resolving:', err);
-        }
-      }
-    );
-  }
-);
+      await expect(
+        fetchUrl('https://example.com/article', { fetch: fetchStub })
+      ).rejects.toThrow('failed with status 403');
+    }
+  );
+
+  test(
+    'fails the same way even with a realistic User-Agent header',
+    tags,
+    async () => {
+      // Mirrors what the real investigation found: sending a header alone
+      // (the same `User-Agent: Canvasflow` transformer's `getLinkContent`
+      // sends via axios) does not change the outcome through `fetch` — the
+      // challenge is scored on the underlying HTTP client, not the header.
+      let sawHeaders: HeadersInit | undefined;
+      const fetchStub = (async (_url, init?: RequestInit) => {
+        sawHeaders = init?.headers;
+        return cloudflareChallengeResponse();
+      }) as typeof fetch;
+
+      await expect(
+        fetchUrl('https://example.com/article', {
+          fetch: fetchStub,
+          headers: { 'User-Agent': 'Canvasflow' },
+        })
+      ).rejects.toThrow('failed with status 403');
+      expect(new Headers(sawHeaders).get('User-Agent')).toBe('Canvasflow');
+    }
+  );
+});

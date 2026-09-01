@@ -24,7 +24,7 @@ export { FeedIssueCodes } from './feed-issue';
 // ─── Network / recipe utilities ───────────────────────────────────────────────
 
 export type { FetchOptions } from './utils/http';
-export { getHtmlContent } from './utils/http';
+export { fetchUrl, getHtml, getHtmlContent, getJson } from './utils/http';
 export { nodeHttpsFetch } from './utils/node-https-fetch';
 export { getRecipeFromUrl } from './rss/recipe';
 

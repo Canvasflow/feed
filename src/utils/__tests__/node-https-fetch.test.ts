@@ -3,15 +3,15 @@ import * as http from 'node:http';
 import type { AddressInfo } from 'node:net';
 
 import { nodeHttpsFetch } from '../node-https-fetch';
-import { getHtmlContent } from '../http';
+import { fetchUrl } from '../http';
 
 const tags = { tags: ['unit', 'rss'] };
 
 // A real local HTTP server (no TLS — `nodeHttpsFetch` dispatches on
 // `url.protocol`, and `http:` needs no certificate) so these tests exercise
 // `nodeHttpsFetch`'s actual `node:http` request/response handling —
-// redirects, header passthrough, aborts, streaming — without any real
-// network I/O, unlike the `RUN_NETWORK_TESTS`-gated suite below.
+// redirects, header passthrough, aborts, streaming, and a faked
+// Cloudflare-style bot-gate — entirely offline, with no real network I/O.
 describe('nodeHttpsFetch', () => {
   let server: http.Server;
   let baseUrl: string;
@@ -50,6 +50,46 @@ describe('nodeHttpsFetch', () => {
         return;
       }
 
+      if (url.pathname === '/echo-body') {
+        let received = '';
+        req.setEncoding('utf8');
+        req.on('data', (chunk: string) => {
+          received += chunk;
+        });
+        req.on('end', () => {
+          res.writeHead(200, { 'content-type': 'text/plain' });
+          res.end(received);
+        });
+        return;
+      }
+
+      // Fakes the exact real-world shape a Cloudflare-gated site returns:
+      // 403 + `cf-mitigated: challenge` for a request without the expected
+      // `User-Agent`, 200 with the real content once it's sent — modeling
+      // what the actual investigation found against wanderlustmagazine.com
+      // (see `./http.test.ts`'s own Cloudflare-challenge test) without any
+      // live network call.
+      if (url.pathname === '/bot-gated') {
+        if (req.headers['user-agent'] !== 'Canvasflow') {
+          res.writeHead(403, {
+            server: 'cloudflare',
+            'cf-mitigated': 'challenge',
+            'content-type': 'text/html',
+          });
+          res.end('<html><head><title>Just a moment...</title></head></html>');
+          return;
+        }
+        res.writeHead(200, { 'content-type': 'text/html' });
+        res.end('<html><body>the real article content</body></html>');
+        return;
+      }
+
+      if (url.pathname === '/multi-header') {
+        res.writeHead(200, { 'set-cookie': ['a=1', 'b=2'] });
+        res.end('ok');
+        return;
+      }
+
       res.writeHead(200, { 'content-type': 'text/plain' });
       res.end('hello from ' + url.pathname);
     });
@@ -71,6 +111,28 @@ describe('nodeHttpsFetch', () => {
     expect(await response.text()).toBe('hello from /target');
   });
 
+  test('accepts a Request object, not just a URL string', tags, async () => {
+    const response = await nodeHttpsFetch()(new Request(`${baseUrl}/target`));
+    expect(await response.text()).toBe('hello from /target');
+  });
+
+  test('dispatches an https: URL through node:https', tags, async () => {
+    // No real TLS server here — this only proves the `https:` branch of
+    // `performRequest`'s module dispatch is taken (a connection error
+    // rather than the `http:` fixture server's own response), not that a
+    // TLS handshake actually completes.
+    await expect(nodeHttpsFetch()('https://127.0.0.1:1/')).rejects.toThrow();
+  });
+
+  test(
+    'collects a repeated response header into one Headers entry',
+    tags,
+    async () => {
+      const response = await nodeHttpsFetch()(`${baseUrl}/multi-header`);
+      expect(response.headers.getSetCookie()).toEqual(['a=1', 'b=2']);
+    }
+  );
+
   test('forwards request headers to the server', tags, async () => {
     const response = await nodeHttpsFetch()(`${baseUrl}/echo-headers`, {
       headers: { 'User-Agent': 'Canvasflow', 'X-Test': 'abc' },
@@ -88,7 +150,7 @@ describe('nodeHttpsFetch', () => {
 
   test('surfaces a non-2xx status without throwing itself', tags, async () => {
     // `nodeHttpsFetch` only adapts the transport — turning a non-2xx into a
-    // thrown error is `getHtmlContent`'s job (`response.ok`), so the raw
+    // thrown error is `fetchUrl`'s job (`response.ok`), so the raw
     // adapter just reports the status as-is.
     const response = await nodeHttpsFetch()(`${baseUrl}/not-found`);
     expect(response.status).toBe(404);
@@ -105,11 +167,31 @@ describe('nodeHttpsFetch', () => {
   });
 
   test(
-    'streams the body so getHtmlContent.maxBytes still applies',
+    'rejects immediately for a signal that is already aborted',
+    tags,
+    async () => {
+      const controller = new AbortController();
+      controller.abort();
+      await expect(
+        nodeHttpsFetch()(`${baseUrl}/target`, { signal: controller.signal })
+      ).rejects.toThrow();
+    }
+  );
+
+  test('sends a string request body to the server', tags, async () => {
+    const response = await nodeHttpsFetch()(`${baseUrl}/echo-body`, {
+      method: 'POST',
+      body: 'hello server',
+    });
+    expect(await response.text()).toBe('hello server');
+  });
+
+  test(
+    'streams the body so fetchUrl.maxBytes still applies',
     tags,
     async () => {
       await expect(
-        getHtmlContent(`${baseUrl}/large`, {
+        fetchUrl(`${baseUrl}/large`, {
           fetch: nodeHttpsFetch(),
           maxBytes: 10,
         })
@@ -117,72 +199,41 @@ describe('nodeHttpsFetch', () => {
     }
   );
 
+  test('fetchUrl returns the full body via nodeHttpsFetch', tags, async () => {
+    const html = await fetchUrl(`${baseUrl}/target`, {
+      fetch: nodeHttpsFetch(),
+    });
+    expect(html).toBe('hello from /target');
+  });
+
+  // Models the actual scenario this adapter exists for — a
+  // Cloudflare-gated site that 403s a request missing the expected
+  // `User-Agent` and succeeds once it's sent (`/bot-gated` above, shaped
+  // after the real investigation against wanderlustmagazine.com; see
+  // `./http.test.ts`'s Cloudflare-challenge test) — through
+  // `fetchUrl(url, { fetch: nodeHttpsFetch(), headers })`, fully
+  // offline and deterministic.
   test(
-    'getHtmlContent returns the full body via nodeHttpsFetch',
+    'fetchUrl fails against the bot-gated route with no headers',
     tags,
     async () => {
-      const html = await getHtmlContent(`${baseUrl}/target`, {
+      await expect(
+        fetchUrl(`${baseUrl}/bot-gated`, { fetch: nodeHttpsFetch() })
+      ).rejects.toThrow('failed with status 403');
+    }
+  );
+
+  test(
+    'fetchUrl succeeds against the bot-gated route with the right User-Agent',
+    tags,
+    async () => {
+      const html = await fetchUrl(`${baseUrl}/bot-gated`, {
         fetch: nodeHttpsFetch(),
+        headers: { 'User-Agent': 'Canvasflow' },
       });
-      expect(html).toBe('hello from /target');
+
+      expect(html).toContain('the real article content');
+      expect(html).not.toContain('Just a moment');
     }
   );
 });
-
-// Debugging aid demonstrating the actual fix against the real, live site
-// that started this investigation — not a regression test with a fixed
-// expected outcome (see the equivalent comment in `./http.test.ts`). Tagged
-// `integration`, gated behind `RUN_NETWORK_TESTS` for the same reason as
-// `./http.test.ts`'s own network-gated suite: `npm test`/CI apply no tag
-// filter by default in this repo, and this hits a real, rate-limit-sensitive
-// third-party site. Run with `RUN_NETWORK_TESTS=1 npx vitest run
-// src/utils/__tests__/node-https-fetch.test.ts -t wanderlustmagazine
-// --reporter=verbose`.
-describe.skipIf(!process.env.RUN_NETWORK_TESTS)(
-  'getHtmlContent — succeeds against wanderlustmagazine.com via nodeHttpsFetch',
-  { tags: ['integration'] },
-  () => {
-    const url =
-      'https://www.wanderlustmagazine.com/inspiration/us-national-parks-what-you-need-to-know-about-visiting-in-2025/';
-
-    test(
-      'fails without a User-Agent header, same as plain fetch',
-      { tags: ['integration'] },
-      async () => {
-        // Only asserts "fails" rather than a specific error message — same
-        // reasoning as `./http.test.ts`: repeated requests against this URL
-        // during this investigation escalated from a 403 (`Response.ok`
-        // false, handled by `getHtmlContent`'s own status check) to a raw
-        // connection-level `ETIMEDOUT` (an `AggregateError` with an empty
-        // top-level `.message`, thrown before any response —
-        // `getHtmlContent` never gets the chance to turn it into its usual
-        // "failed with status N" message). Which shape of failure you get
-        // is itself part of what's non-deterministic about Cloudflare's
-        // mitigation, not a flaw in this test.
-        await expect(
-          getHtmlContent(url, { fetch: nodeHttpsFetch() })
-        ).rejects.toThrow();
-      }
-    );
-
-    // The actual fix, demonstrated end to end: pass `nodeHttpsFetch()` as
-    // the `fetch` implementation, plus the `User-Agent: Canvasflow` header
-    // (canvasflow/transformer's RssStandardService.ts `getLinkContent` uses
-    // this exact same header, via axios) — `getHtmlContent` now succeeds
-    // and returns the real article HTML instead of a Cloudflare challenge
-    // page, with zero new dependencies.
-    test(
-      'succeeds when given a User-Agent header, via nodeHttpsFetch instead of fetch',
-      { tags: ['integration'] },
-      async () => {
-        const html = await getHtmlContent(url, {
-          fetch: nodeHttpsFetch(),
-          headers: { 'User-Agent': 'Canvasflow' },
-        });
-
-        expect(html).toContain('US National Parks');
-        expect(html).not.toContain('Just a moment');
-      }
-    );
-  }
-);

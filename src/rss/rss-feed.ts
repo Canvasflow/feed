@@ -1,6 +1,6 @@
 import { decodeEntities } from '../utils/entities';
 import { parseDate } from '../utils/date';
-import { getHtmlContent } from '../utils/http';
+import { getHtml } from '../utils/http';
 import { XMLParser } from 'fast-xml-parser';
 import { getRecipeFromUrl } from './recipe';
 
@@ -152,13 +152,13 @@ export class RSSFeed {
   }
 
   /**
-   * @deprecated Thin backward-compatible wrapper around `getHtmlContent` in
-   * `../utils/http`. Prefer importing `getHtmlContent` from
-   * `@canvasflow/feed` directly, which also accepts an injected `fetch`, a
-   * timeout, and a body-size cap.
+   * @deprecated Thin backward-compatible wrapper around `getHtml` in
+   * `../utils/http`. Prefer importing `getHtml` from `@canvasflow/feed`
+   * directly, which also accepts an injected `fetch`, a timeout, and a
+   * body-size cap.
    */
   static async getHtmlContent(url: string, headers?: HeadersInit) {
-    return getHtmlContent(url, { headers });
+    return getHtml(url, { headers });
   }
 
   async validate(): Promise<void> {

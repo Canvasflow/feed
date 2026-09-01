@@ -13,14 +13,14 @@ import { Readable } from 'node:stream';
  *
  * `nodeHttpsFetch` is a `typeof fetch`-compatible adapter backed directly by
  * `node:http`/`node:https` for exactly that situation: pass it as
- * `FetchOptions.fetch` (see `./http`'s `getHtmlContent`, or any other
+ * `FetchOptions.fetch` (see `./http`'s `fetchUrl`, or any other
  * `fetch`-shaped call site) to route a request through Node's classic HTTP
  * client instead of undici, with no third-party dependency.
  *
  * Not a drop-in replacement for every `fetch` capability — no cookie jar,
  * no HTTP/2, no compression negotiation beyond whatever headers the caller
  * supplies — but it does follow redirects, stream the response body (so a
- * caller's own byte cap, like `getHtmlContent`'s `maxBytes`, still applies),
+ * caller's own byte cap, like `fetchUrl`'s `maxBytes`, still applies),
  * and honor an `AbortSignal`, which covers every real caller in this
  * codebase.
  *
@@ -71,10 +71,14 @@ function performRequest(
         return;
       }
 
+      // `res.headers`' type (`IncomingHttpHeaders`) marks every value as
+      // possibly `undefined` for defensive typing, but Node's own HTTP
+      // parser never actually populates an entry with `undefined` — an
+      // absent header is simply an absent key, never a key mapped to
+      // `undefined` — so this doesn't need its own `undefined` guard.
       const responseHeaders = new Headers();
       for (const [key, value] of Object.entries(res.headers)) {
-        if (value === undefined) continue;
-        for (const v of Array.isArray(value) ? value : [value]) {
+        for (const v of Array.isArray(value) ? value : [value as string]) {
           responseHeaders.append(key, v);
         }
       }
