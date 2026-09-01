@@ -1,104 +1,7 @@
 import { parseHTML } from 'linkedom';
 
 import type { Recipe } from '../component/schema/recipe-schema';
-
-/**
- * Network I/O extracted from `RSSFeed` (Section 3, "Network I/O extraction"):
- * a parsing library should not hide unbounded `fetch` calls behind its public
- * API. `RSSFeed.getRecipeFromUrl`/`getHtmlContent` remain as thin
- * backward-compatible wrappers around these functions.
- *
- * Every network-facing option is injectable so callers (and tests) never
- * need to touch `globalThis.fetch`.
- */
-export interface FetchOptions {
-  /** Defaults to `globalThis.fetch`, resolved at call time. */
-  fetch?: typeof fetch | undefined;
-  headers?: HeadersInit | undefined;
-  /** Abort the request after this many milliseconds. Default: 10s. */
-  timeoutMs?: number | undefined;
-  /** Reject once the response body exceeds this many bytes. Default: 5MB. */
-  maxBytes?: number | undefined;
-}
-
-const DEFAULT_TIMEOUT_MS = 10_000;
-const DEFAULT_MAX_BYTES = 5 * 1024 * 1024;
-
-/**
- * Fetch `url` and return its body as text, with a timeout, a response-status
- * check, and a body-size cap.
- *
- * @param {string} url
- * @param {FetchOptions} [options]
- * @returns {Promise<string>}
- */
-export async function getHtmlContent(
-  url: string,
-  options: FetchOptions = {}
-): Promise<string> {
-  const {
-    fetch: fetchImpl = globalThis.fetch,
-    headers,
-    timeoutMs = DEFAULT_TIMEOUT_MS,
-    maxBytes = DEFAULT_MAX_BYTES,
-  } = options;
-
-  const response = await fetchImpl(url, {
-    method: 'GET',
-    ...(headers ? { headers } : {}),
-    signal: AbortSignal.timeout(timeoutMs),
-  });
-
-  if (!response.ok) {
-    throw new Error(
-      `Request to "${url}" failed with status ${response.status}`
-    );
-  }
-
-  return readBodyCapped(response, maxBytes);
-}
-
-/**
- * Read a `Response` body as text, aborting once `maxBytes` is exceeded. Falls
- * back to `response.text()` when the response has no readable stream (e.g.
- * simplified fetch stubs in tests) — the cap only applies where a stream is
- * actually available to interrupt.
- *
- * @param {Response} response
- * @param {number} maxBytes
- * @returns {Promise<string>}
- */
-async function readBodyCapped(
-  response: Response,
-  maxBytes: number
-): Promise<string> {
-  const body = response.body;
-  /* v8 ignore next 3 -- real fetch responses always expose a body stream;
-     this fallback only serves simplified test stubs. */
-  if (!body || typeof body.getReader !== 'function') {
-    return response.text();
-  }
-
-  const reader = body.getReader();
-  const decoder = new TextDecoder();
-  let result = '';
-  let received = 0;
-
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    received += value.byteLength;
-    if (received > maxBytes) {
-      await reader.cancel();
-      throw new Error(
-        `Response body from "${response.url}" exceeded the ${maxBytes} byte limit`
-      );
-    }
-    result += decoder.decode(value, { stream: true });
-  }
-  result += decoder.decode();
-  return result;
-}
+import { fetchUrl, type FetchOptions } from '../utils/http';
 
 /**
  * Fetch `url` and extract the first LD+JSON `Recipe` found in a
@@ -114,7 +17,7 @@ export async function getRecipeFromUrl(
   url: string,
   options: FetchOptions = {}
 ): Promise<Recipe | null> {
-  const html = await getHtmlContent(url, options);
+  const html = await fetchUrl(url, options);
   const { document } = parseHTML(html);
   const scripts = document.querySelectorAll(
     'script[type="application/ld+json"]'

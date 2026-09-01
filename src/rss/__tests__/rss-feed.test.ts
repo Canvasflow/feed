@@ -2343,6 +2343,7 @@ describe('getHtmlContent with stubbed fetch', () => {
       globalThis.fetch = (async () =>
         ({
           ok: true,
+          headers: new Headers({ 'content-type': 'text/html' }),
           text: async () => '<html><body>Hello</body></html>',
         }) as Response) as typeof fetch;
       try {
@@ -2368,6 +2369,26 @@ describe('getHtmlContent with stubbed fetch', () => {
         await expect(
           RSSFeed.getHtmlContent('https://example.com')
         ).rejects.toThrow('failed with status 404');
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    }
+  );
+
+  test(
+    'It should throw on a 2xx response whose Content-Type is not HTML',
+    { tags: ['unit'] },
+    async () => {
+      globalThis.fetch = (async () =>
+        ({
+          ok: true,
+          headers: new Headers({ 'content-type': 'application/json' }),
+          text: async () => '{"not":"html"}',
+        }) as Response) as typeof fetch;
+      try {
+        await expect(
+          RSSFeed.getHtmlContent('https://example.com')
+        ).rejects.toThrow('is not HTML');
       } finally {
         globalThis.fetch = originalFetch;
       }
