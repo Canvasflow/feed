@@ -30,6 +30,7 @@ import {
   ParamsSchema,
 } from '../component/mapping/mapping.schema';
 import { sanitizeHTML as sanitizeHtml } from '../component/html/sanitize-html';
+import { resolveComponentMediaUrls } from '../component/mapping/mapping.utils';
 import type { ParsedXml, ParsedItem } from './parsed-xml';
 import { textOf } from './narrow';
 
@@ -606,6 +607,10 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
 
   if (contentEncoded) {
     response.components = HTMLMapper.toComponents(contentEncoded, params, root);
+
+    if (link && URL.canParse(link)) {
+      resolveComponentMediaUrls(response.components, new URL(link).origin);
+    }
   }
 
   return response;

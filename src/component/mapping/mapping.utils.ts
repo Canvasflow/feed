@@ -17,6 +17,7 @@ import {
   allowedFigcaptionTags,
 } from './mapping.constants';
 import type { Filter, Mapping } from './mapping';
+import type { Component } from '../component';
 
 /**
  * Serialize a node back to HTML and sanitize it with the given options.
@@ -479,4 +480,115 @@ export function filterClassNameDescendants(className: string): NodeFilterFn {
     if (!classNames) return false;
     return classNames.split(' ').includes(className);
   };
+}
+
+/**
+ * Resolve a single media URL against `origin`. Absolute `http(s)://` URLs are
+ * returned unchanged. A relative URL (with or without a leading slash) is
+ * prepended with `origin` — e.g. `/image.png` and `image.png` both become
+ * `${origin}/image.png`. An empty or invalid-against-`origin` URL is returned
+ * unchanged rather than throwing.
+ *
+ * @param {string} url
+ * @param {string} origin
+ * @returns {string}
+ */
+export function resolveMediaUrl(url: string, origin: string): string {
+  // Leave alone: empty, already absolute (http/https), and protocol-relative
+  // (`//host/path`) URLs — the last already names its own host and isn't a
+  // path relative to `origin`.
+  if (!url || /^https?:\/\//i.test(url) || url.startsWith('//')) {
+    return url;
+  }
+  if (!URL.canParse(url, origin)) {
+    return url;
+  }
+  return new URL(url, origin).href;
+}
+
+/**
+ * Walk a `Component[]` tree (recursing into containers, columns, live
+ * containers and recipes) and rewrite every relative image/gallery/video/
+ * audio URL to an absolute one, prepending `origin`. Mutates the components
+ * in place. A no-op when `origin` is undefined, so callers can pass through
+ * an item without a parseable `<link>` unconditionally.
+ *
+ * @param {readonly Component[]} components
+ * @param {string | undefined} origin
+ * @returns {void}
+ */
+export function resolveComponentMediaUrls(
+  components: readonly Component[],
+  origin: string | undefined
+): void {
+  if (!origin) return;
+  for (const component of components) {
+    resolveComponentMediaUrl(component, origin);
+  }
+}
+
+function resolveComponentMediaUrl(component: Component, origin: string): void {
+  const c = component as Record<string, unknown>;
+
+  switch (component.component) {
+    case 'image': {
+      if (typeof c.imageurl === 'string') {
+        c.imageurl = resolveMediaUrl(c.imageurl, origin);
+      }
+      break;
+    }
+    case 'gallery': {
+      const images = c.images as Array<Record<string, unknown>> | undefined;
+      if (images) {
+        for (const image of images) {
+          if (typeof image.imageurl === 'string') {
+            image.imageurl = resolveMediaUrl(image.imageurl, origin);
+          }
+        }
+      }
+      break;
+    }
+    case 'video': {
+      if (typeof c.url === 'string') {
+        c.url = resolveMediaUrl(c.url, origin);
+      }
+      if (typeof c.poster === 'string') {
+        c.poster = resolveMediaUrl(c.poster, origin);
+      }
+      break;
+    }
+    case 'audio': {
+      if (typeof c.url === 'string') {
+        c.url = resolveMediaUrl(c.url, origin);
+      }
+      break;
+    }
+    case 'container':
+    case 'recipe': {
+      const children = c.components as Component[] | undefined;
+      if (children) resolveComponentMediaUrls(children, origin);
+      break;
+    }
+    case 'columns': {
+      const columns = c.columns as Component[][] | undefined;
+      if (columns) {
+        for (const column of columns) {
+          resolveComponentMediaUrls(column, origin);
+        }
+      }
+      break;
+    }
+    case 'live_container': {
+      const posts = c.posts as Array<Record<string, unknown>> | undefined;
+      if (posts) {
+        for (const post of posts) {
+          const postComponents = post.components as Component[] | undefined;
+          if (postComponents) resolveComponentMediaUrls(postComponents, origin);
+        }
+      }
+      break;
+    }
+    default:
+      break;
+  }
 }
