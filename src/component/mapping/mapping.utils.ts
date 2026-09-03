@@ -17,7 +17,18 @@ import {
   allowedFigcaptionTags,
 } from './mapping.constants';
 import type { Filter, Mapping } from './mapping';
-import type { Component } from '../component';
+import type {
+  AudioComponent,
+  ColumnsComponent,
+  Component,
+  ContainerComponent,
+  GalleryComponent,
+  ImageComponent,
+  LiveContainerComponent,
+  LivePostComponent,
+  RecipeComponent,
+  VideoComponent,
+} from '../component';
 
 /**
  * Serialize a node back to HTML and sanitize it with the given options.
@@ -528,63 +539,51 @@ export function resolveComponentMediaUrls(
 }
 
 function resolveComponentMediaUrl(component: Component, origin: string): void {
-  const c = component as Record<string, unknown>;
-
   switch (component.component) {
     case 'image': {
-      if (typeof c.imageurl === 'string') {
-        c.imageurl = resolveMediaUrl(c.imageurl, origin);
-      }
+      const image = component as ImageComponent;
+      image.imageurl = resolveMediaUrl(image.imageurl, origin);
       break;
     }
     case 'gallery': {
-      const images = c.images as Array<Record<string, unknown>> | undefined;
-      if (images) {
-        for (const image of images) {
-          if (typeof image.imageurl === 'string') {
-            image.imageurl = resolveMediaUrl(image.imageurl, origin);
-          }
-        }
+      const gallery = component as GalleryComponent;
+      for (const image of gallery.images) {
+        image.imageurl = resolveMediaUrl(image.imageurl, origin);
       }
       break;
     }
     case 'video': {
-      if (typeof c.url === 'string') {
-        c.url = resolveMediaUrl(c.url, origin);
+      const video = component as VideoComponent;
+      if (video.url) {
+        video.url = resolveMediaUrl(video.url, origin);
       }
-      if (typeof c.poster === 'string') {
-        c.poster = resolveMediaUrl(c.poster, origin);
+      if (video.poster) {
+        video.poster = resolveMediaUrl(video.poster, origin);
       }
       break;
     }
     case 'audio': {
-      if (typeof c.url === 'string') {
-        c.url = resolveMediaUrl(c.url, origin);
-      }
+      const audio = component as AudioComponent;
+      audio.url = resolveMediaUrl(audio.url, origin);
       break;
     }
     case 'container':
     case 'recipe': {
-      const children = c.components as Component[] | undefined;
-      if (children) resolveComponentMediaUrls(children, origin);
+      const parent = component as ContainerComponent | RecipeComponent;
+      resolveComponentMediaUrls(parent.components, origin);
       break;
     }
     case 'columns': {
-      const columns = c.columns as Component[][] | undefined;
-      if (columns) {
-        for (const column of columns) {
-          resolveComponentMediaUrls(column, origin);
-        }
+      const columnsComponent = component as ColumnsComponent;
+      for (const column of columnsComponent.columns) {
+        resolveComponentMediaUrls(column, origin);
       }
       break;
     }
     case 'live_container': {
-      const posts = c.posts as Array<Record<string, unknown>> | undefined;
-      if (posts) {
-        for (const post of posts) {
-          const postComponents = post.components as Component[] | undefined;
-          if (postComponents) resolveComponentMediaUrls(postComponents, origin);
-        }
+      const liveContainer = component as LiveContainerComponent;
+      for (const post of liveContainer.posts as LivePostComponent[]) {
+        resolveComponentMediaUrls(post.components, origin);
       }
       break;
     }

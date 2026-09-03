@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 🏷️ 2.0.14
+
+_September 3, 2026_
+
+♻️ Refactor
+
+- (mapping) Type resolveComponentMediaUrl per component schema ([`94d73e6`](https://github.com/Canvasflow/feed/commit/94d73e60a4378b5e27d694dddbbd701fcc75f796))
+
+🧪 Tests
+
+- (mapping) Add direct unit tests for media URL resolution ([`3deae5a`](https://github.com/Canvasflow/feed/commit/3deae5a1d390097abe06a161f76b551a50e04ff6))
+
 ## 🏷️ 2.0.13
 
 _September 3, 2026_
