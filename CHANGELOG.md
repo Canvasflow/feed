@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 🏷️ 2.0.13
+
+_September 3, 2026_
+
+✨ Features
+
+- (rss) Resolve relative media URLs against the item link origin ([`e5c421a`](https://github.com/Canvasflow/feed/commit/e5c421a9715584dd69c0e723a38850ad80791780))
+
 ## 🏷️ 2.0.12
 
 _September 1, 2026_
