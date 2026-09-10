@@ -10,6 +10,7 @@ import type {
   Enclosure,
   MediaContent,
   MediaGroup,
+  Source,
   Thumbnail,
 } from './rss-types';
 import {
@@ -577,6 +578,7 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
     link,
     pubDate,
     enclosure: getEnclosure(item),
+    source: getSource(item),
     mediaGroup: getMediaGroup(item, origin),
     mediaContent,
     components: [],
@@ -808,6 +810,10 @@ function getEnclosure(item: ParsedItem): Array<Enclosure> {
   return item.enclosure ? toArray(item.enclosure).map(mapEnclosure) : [];
 }
 
+function getSource(item: ParsedItem): Source | undefined {
+  return item.source !== undefined ? mapSource(item.source) : undefined;
+}
+
 function getMediaGroup(
   item: ParsedItem,
   origin: string | undefined
@@ -863,6 +869,47 @@ function mapEnclosure(e: Attributes.Enclosure): Enclosure {
     length: e['@_length'] ? parseInt(`${e['@_length']}`, 10) : 0,
     type: e['@_type'] ?? '',
     url: e['@_url'] ?? '',
+    errors,
+    warnings,
+  };
+}
+
+/**
+ * Map a raw `<source>` value to a typed `Source`. The RSS spec requires the
+ * `url` attribute but only describes the element's text (the origin
+ * channel's name) without mandating it be present, so a missing url is an
+ * error while a missing title is only a suggestion. A bare `<source>Name
+ * </source>` with no `url` attribute at all arrives as a plain string from
+ * fast-xml-parser.
+ *
+ * @param {Attributes.Source | string} s
+ * @returns {Source}
+ */
+function mapSource(s: Attributes.Source | string): Source {
+  const errors: FeedIssue[] = [];
+  const warnings: FeedIssue[] = [];
+
+  const url = typeof s === 'string' ? undefined : s['@_url'];
+  const title = typeof s === 'string' ? s : s['#text'];
+
+  if (!url) {
+    errors.push(
+      errorIssue('MISSING_URL', `Required property "url" is missing`, 'url')
+    );
+  }
+  if (!title) {
+    warnings.push(
+      warningIssue(
+        'SUGGESTED_PROPERTY',
+        `Property "title" is suggested`,
+        'title'
+      )
+    );
+  }
+
+  return {
+    url: url ?? '',
+    title: title ? decodeEntities(`${title}`.trim()) : undefined,
     errors,
     warnings,
   };

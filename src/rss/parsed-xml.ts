@@ -71,6 +71,13 @@ export interface ParsedItem {
   author?: string;
   category?: string | Array<string | Record<string, unknown>>;
   enclosure?: Attributes.Enclosure | Attributes.Enclosure[];
+  /**
+   * A bare `<source url="...">Name</source>` still has an attribute, so
+   * fast-xml-parser always returns the `{ '@_url', '#text' }` object shape;
+   * the plain-string branch covers direct `buildItem` callers (e.g. unit
+   * tests) that construct a `ParsedItem` without an attribute-bearing value.
+   */
+  source?: Attributes.Source | string;
   'media:group'?: Attributes.MediaGroup | Attributes.MediaGroup[];
   'media:content'?: Attributes.MediaContent | Attributes.MediaContent[];
   /**

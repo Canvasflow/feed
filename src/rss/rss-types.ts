@@ -56,6 +56,7 @@ export interface Item {
   link?: string | undefined;
   description?: string | undefined;
   enclosure: readonly Enclosure[];
+  source?: Source | undefined;
   mediaGroup: readonly MediaGroup[];
   mediaContent: readonly MediaContent[];
   pubDate?: string | undefined;
@@ -94,6 +95,18 @@ export interface Enclosure {
   length: number;
   type: string;
   url: string;
+  errors: readonly FeedIssue[];
+  warnings: readonly FeedIssue[];
+}
+
+export interface Source {
+  url: string;
+  /**
+   * The name of the RSS channel the item came from. Optional per the RSS
+   * spec — it describes the intended value but doesn't require non-empty
+   * text, unlike `url`, which is a required attribute.
+   */
+  title?: string | undefined;
   errors: readonly FeedIssue[];
   warnings: readonly FeedIssue[];
 }
@@ -161,8 +174,9 @@ export type MutableItem = DeepMutable<Item>;
  * Deep-clone an {@link Item} into a fully mutable {@link MutableItem}.
  *
  * Every `readonly` array is copied into a fresh mutable array — `errors`,
- * `warnings`, `enclosure`, `mediaGroup`, `mediaContent`, `components`, and
- * `category`. Use this when you need to post-process a built item with
+ * `warnings`, `enclosure`, `source`, `mediaGroup`, `mediaContent`,
+ * `components`, and `category`. Use this when you need to post-process a
+ * built item with
  * `.push()` / `.splice()` / reassignment without TypeScript complaining.
  *
  * @example
@@ -182,6 +196,13 @@ export function clone(item: Item): MutableItem {
       errors: [...e.errors],
       warnings: [...e.warnings],
     })),
+    source: item.source
+      ? {
+          ...item.source,
+          errors: [...item.source.errors],
+          warnings: [...item.source.warnings],
+        }
+      : undefined,
     mediaGroup: item.mediaGroup.map((mg) => ({
       ...mg,
       errors: [...mg.errors],

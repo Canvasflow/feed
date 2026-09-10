@@ -33,6 +33,7 @@ export const Tag = {
           'link',
           'author',
           'enclosure',
+          'source',
           'content:encoded',
           'media:content',
           'media:group',
