@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 🏷️ 2.0.15
+
+_September 10, 2026_
+
+✨ Features
+
+- (rss) Parse the item-level <source> element ([`2c4ff95`](https://github.com/Canvasflow/feed/commit/2c4ff95059d1aa86abdec1a05916814d8f2ce3c0))
+
+🧪 Tests
+
+- (rss) Update snapshots for the new source field ([`747820f`](https://github.com/Canvasflow/feed/commit/747820fe46fa00b8a22d1aa5a0c3aa3d2306b4bd))
+
+🧹 Chores
+
+- Bump library version ([`5f24b86`](https://github.com/Canvasflow/feed/commit/5f24b866a2ca53138e1db43a65fd053c73a9ae18))
+
 ## 🏷️ 2.0.14
 
 _September 3, 2026_
