@@ -2112,6 +2112,120 @@ describe('enclosure mapping', () => {
   );
 });
 
+describe('source mapping', () => {
+  test(
+    'It should map a well-formed <source url="...">Name</source>',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(
+          `<source url="https://originaltechsite.com">Original Tech Journal</source>`
+        )
+      );
+      await feed.validate();
+      const rss = await feed.build();
+      const item = rss.channel.items[0]!;
+      expect(item.source).toEqual({
+        url: 'https://originaltechsite.com',
+        title: 'Original Tech Journal',
+        errors: [],
+        warnings: [],
+      });
+    }
+  );
+
+  test(
+    'It should error when <source> has no url attribute',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(`<source>Original Tech Journal</source>`)
+      );
+      await feed.validate();
+      const rss = await feed.build();
+      const item = rss.channel.items[0]!;
+      expect(item.source?.url).toBe('');
+      expect(item.source?.title).toBe('Original Tech Journal');
+      expect(
+        hasMessage(item.source!.errors, 'Required property "url" is missing')
+      ).toBe(true);
+    }
+  );
+
+  test(
+    'It should warn that title is suggested for a childless <source url="..."/>',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(`<source url="https://originaltechsite.com"/>`)
+      );
+      await feed.validate();
+      const rss = await feed.build();
+      const item = rss.channel.items[0]!;
+      expect(item.source?.url).toBe('https://originaltechsite.com');
+      expect(item.source?.title).toBeUndefined();
+      expect(item.source?.errors).toEqual([]);
+      expect(
+        hasMessage(item.source!.warnings, 'Property "title" is suggested')
+      ).toBe(true);
+    }
+  );
+
+  test(
+    'It should leave source undefined for an item without one',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(buildFeed(''));
+      await feed.validate();
+      const rss = await feed.build();
+      expect(rss.channel.items[0]!.source).toBeUndefined();
+    }
+  );
+
+  test(
+    'It should map <source> from a full feed document',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const xml = `<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Tech News Aggregator</title>
+    <link>https://example.com</link>
+    <description>A collection of the latest tech updates from around the web.</description>
+    <lastBuildDate>Thu, 10 Sep 2026 14:00:00 GMT</lastBuildDate>
+    <pubDate>Thu, 10 Sep 2026 14:00:00 GMT</pubDate>
+    <ttl>60</ttl>
+
+    <!-- Example Item using the <source> element -->
+    <item>
+      <title>Breaking: New Open Source Standard Announced</title>
+      <link>https://example.com/open-source-standard</link>
+      <description>A coalition of tech companies just announced a new open-source protocol...</description>
+      <pubDate>Thu, 10 Sep 2026 13:30:00 GMT</pubDate>
+      <guid>https://example.com/open-source-standard</guid>
+
+      <!-- The source element per Section 4.1.1.20.9 -->
+      <source url="https://originaltechsite.com">Original Tech Journal</source>
+    </item>
+
+  </channel>
+</rss>`;
+      const feed = new RSSFeed(xml);
+      await feed.validate();
+      const rss = await feed.build();
+      expect(rss.errors).toEqual([]);
+      const item = rss.channel.items[0]!;
+      expect(item.title).toBe('Breaking: New Open Source Standard Announced');
+      expect(item.source).toEqual({
+        url: 'https://originaltechsite.com',
+        title: 'Original Tech Journal',
+        errors: [],
+        warnings: [],
+      });
+    }
+  );
+});
+
 describe('media:group mapping', () => {
   test(
     'It should error when a media:group is missing media:content',

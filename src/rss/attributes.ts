@@ -92,3 +92,17 @@ export interface AtomLink {
   '@_rel': string;
   '@_type': string;
 }
+
+export interface Source {
+  /**
+   * Links to the XMLization of the source. (Required)
+   */
+  '@_url': string;
+  /**
+   * The name of the RSS channel the item came from, derived from its
+   * <title>. (Optional — the spec describes it but doesn't mandate
+   * non-empty text; fast-xml-parser omits `#text` for a childless
+   * `<source url="..."/>`.)
+   */
+  '#text'?: string;
+}

@@ -165,6 +165,105 @@ describe('buildItem — media:group', () => {
   );
 });
 
+describe('buildItem — source', () => {
+  test(
+    'a <source url="...">Name</source> is mapped with no errors or warnings',
+    { tags: ['unit', 'rss'] },
+    () => {
+      const item = buildItem(
+        {
+          ...base,
+          source: {
+            '@_url': 'https://originaltechsite.com',
+            '#text': 'Original Tech Journal',
+          },
+        },
+        ctx
+      );
+
+      expect(item.source).toEqual({
+        url: 'https://originaltechsite.com',
+        title: 'Original Tech Journal',
+        errors: [],
+        warnings: [],
+      });
+    }
+  );
+
+  test(
+    'the title is HTML-entity-decoded and trimmed',
+    { tags: ['unit', 'rss'] },
+    () => {
+      const item = buildItem(
+        {
+          ...base,
+          source: {
+            '@_url': 'https://example.com/feed.xml',
+            '#text': '  Tomalak&#8217;s Realm  ',
+          },
+        },
+        ctx
+      );
+
+      expect(item.source?.title).toBe('Tomalak’s Realm');
+    }
+  );
+
+  test(
+    'a childless <source url="..."/> has no title and warns it is suggested',
+    { tags: ['unit', 'rss'] },
+    () => {
+      const item = buildItem(
+        {
+          ...base,
+          source: { '@_url': 'https://example.com/feed.xml' },
+        },
+        ctx
+      );
+
+      expect(item.source?.url).toBe('https://example.com/feed.xml');
+      expect(item.source?.title).toBeUndefined();
+      expect(item.source?.errors).toEqual([]);
+      expect(
+        item.source?.warnings.some(
+          (w) => w.code === 'SUGGESTED_PROPERTY' && w.path === 'title'
+        )
+      ).toBe(true);
+    }
+  );
+
+  test(
+    'a <source> with no url attribute (parsed as a bare string) errors as missing url',
+    { tags: ['unit', 'rss'] },
+    () => {
+      const item = buildItem(
+        {
+          ...base,
+          source: 'Tomalak’s Realm',
+        },
+        ctx
+      );
+
+      expect(item.source?.url).toBe('');
+      expect(item.source?.title).toBe('Tomalak’s Realm');
+      expect(
+        item.source?.errors.some(
+          (e) => e.code === 'MISSING_URL' && e.path === 'url'
+        )
+      ).toBe(true);
+    }
+  );
+
+  test(
+    'an item without a <source> leaves source undefined',
+    { tags: ['unit', 'rss'] },
+    () => {
+      const item = buildItem(base, ctx);
+      expect(item.source).toBeUndefined();
+    }
+  );
+});
+
 describe('buildItem — does not mutate its input', () => {
   test('a single (non-array) enclosure is normalised to an array without mutating the input', () => {
     const input: ParsedItem = {
@@ -260,6 +359,24 @@ describe('clone', () => {
     const mutable = clone(item);
     expect(mutable.enclosure[0]).not.toBe(item.enclosure[0]);
     expect(mutable.enclosure[0]?.errors).not.toBe(item.enclosure[0]?.errors);
+  });
+
+  test('clones source errors/warnings', tags, () => {
+    const input: ParsedItem = {
+      ...base,
+      source: { '@_url': 'https://example.com/feed.xml' },
+    };
+    const item = buildItem(input, ctx);
+    const mutable = clone(item);
+    expect(mutable.source).not.toBe(item.source);
+    expect(mutable.source?.errors).not.toBe(item.source?.errors);
+    expect(mutable.source?.warnings).not.toBe(item.source?.warnings);
+  });
+
+  test('clone leaves source undefined when the item has none', tags, () => {
+    const item = buildItem(base, ctx);
+    const mutable = clone(item);
+    expect(mutable.source).toBeUndefined();
   });
 
   test('clones mediaContent errors/warnings', tags, () => {
