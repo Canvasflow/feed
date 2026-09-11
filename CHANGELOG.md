@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 🏷️ 2.0.16
+
+_September 11, 2026_
+
+🐛 Fixed
+
+- (index) Export Source type and isColumnsComponent guard ([`2f3df4f`](https://github.com/Canvasflow/feed/commit/2f3df4fb29fecc39782d6887593606d5744b3f6d))
+
+📝 Docs
+
+- Bring the wiki and root docs up to date with the current repo ([`066516a`](https://github.com/Canvasflow/feed/commit/066516a4ffb761d3ee19b1e9241ac9e93f225826))
+
 ## 🏷️ 2.0.15
 
 _September 10, 2026_
