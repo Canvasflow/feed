@@ -24,11 +24,11 @@ Only `dist/` is published (`files` in `package.json`). The package exposes `./di
 
 Every PR and push to `main`, `develop`, or `feature/**` triggers the **🔍 CI** workflow ([`.github/workflows/ci.yml`](https://github.com/canvasflow/feed/blob/main/.github/workflows/ci.yml)):
 
-| Job                         | What it does                                                      |
-| --------------------------- | ----------------------------------------------------------------- |
-| **🧹 Lint**                 | `npm run lint` — ESLint via vite-plus                             |
-| **📦 Package quality**      | `npm run build` → `publint` → `attw --pack .` → size budget check |
-| **🧪 Test (Node 20/22/24)** | `npm run coverage` on each Node version in the support matrix     |
+| Job                      | What it does                                                      |
+| ------------------------ | ----------------------------------------------------------------- |
+| **🧹 Lint**              | `npm run lint` — ESLint via vite-plus                             |
+| **📦 Package quality**   | `npm run build` → `publint` → `attw --pack .` → size budget check |
+| **🧪 Test (Node 22/24)** | `npm run coverage` on each Node version in the support matrix     |
 
 This workflow must pass before merging. Failures catch lint errors, packaging regressions, and test failures on the full Node matrix — not just at release time.
 
@@ -36,19 +36,20 @@ This workflow must pass before merging. Failures catch lint errors, packaging re
 
 Publishing is automated by the **🚀 Publish** workflow ([`.github/workflows/publish.yml`](https://github.com/canvasflow/feed/blob/main/.github/workflows/publish.yml)), triggered when a `v*` tag is pushed.
 
-| Job              | Trigger            | What it does                                                                                                                             |
-| ---------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| **🧪 Test**      | push of a `v*` tag | `npm ci`, then `npm run coverage` and append a coverage summary to the run summary.                                                      |
-| **🚀 Publish**   | after Test         | `npm ci` → `npm run build` → quality gates → `npm pack --dry-run` → `npm publish --provenance` to GitHub Packages (`@canvasflow` scope). |
-| **📚 Sync Wiki** | push of a `v*` tag | Mirror `docs/wiki/` into the repository's GitHub Wiki (independent of the other jobs).                                                   |
+| Job                      | Trigger                                | What it does                                                                                                                                                                               |
+| ------------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **🧪 Test (Node 22/24)** | push of a `v*` tag                     | `npm ci`, `npm run lint`, `npm run build`, then `npm run coverage` and append a coverage summary to the run summary.                                                                       |
+| **🚀 Publish**           | after Test                             | `npm ci` → `npm run build` → `check:publint`/`check:attw`/`check:size` → `npm pack --dry-run` → `npm publish` to GitHub Packages (`@canvasflow` scope), authenticated with `GITHUB_TOKEN`. |
+| **📝 Update CHANGELOG**  | after Publish                          | Diffs against the previous semver tag, runs `scripts/update-changelog.mjs`, and pushes a `docs(changelog): add vX.Y.Z release notes` commit to `develop` — a no-op if nothing changed.     |
+| **📚 Sync Wiki**         | push of a `v*` tag, or manual dispatch | Mirror `docs/wiki/` into the repository's GitHub Wiki — independent of the other jobs, so it still runs even if `test`/`release`/`changelog` fail.                                         |
 
-npm provenance attaches a signed SLSA attestation to every published version so consumers can verify the package was built from this repository's source. This requires `id-token: write` permission in the workflow (already set).
+Consult [`publish.yml`](https://github.com/canvasflow/feed/blob/main/.github/workflows/publish.yml) directly for the exact, current flags and permissions of each step.
 
 ### Releasing
 
-1. Land changes on `main`.
-2. Bump the version (`package.json`) and update `CHANGELOG.md` (`npm run changelog`).
-3. Tag a release `vX.Y.Z` and push the tag — the Publish workflow tests, builds, publishes, and syncs the wiki.
+1. Land changes on `main` (in practice via `git flow`: a `hotfix/X.Y.Z` branch is finished into both `main` and `develop` before tagging).
+2. Bump the version (`package.json`/`package-lock.json`) and refresh `CHANGELOG.md` (`npm run changelog`) as part of that branch, so the tagged commit on `main` already has both.
+3. Tag the resulting commit on `main` as `vX.Y.Z` and push the tag — the Publish workflow tests, builds, publishes, appends the release's CHANGELOG section to `develop` (idempotent if step 2 already covered it), and syncs the wiki.
 
 ## Wiki sync
 

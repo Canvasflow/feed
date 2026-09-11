@@ -11,19 +11,27 @@ Tests are colocated with the code they cover in a sibling `__tests__/` folder, a
 ```
 src/
 ├── rss/__tests__/rss-feed.test.ts
-├── rss/__tests__/rss-feed.coverage.test.ts
+├── rss/__tests__/rss-feed.snapshot.test.ts
+├── rss/__tests__/rss-feed.fuzz.test.ts
+├── rss/__tests__/build-item.test.ts
+├── rss/__tests__/relative-media-url.test.ts
+├── rss/__tests__/narrow.test.ts
+├── rss/__tests__/recipe.test.ts
 ├── component/__tests__/component.test.ts
-├── component/html/__tests__/html-mapper.{text,embeds,media,table,container,mapping}.test.ts
-├── component/html/__tests__/html-mapper.coverage.test.ts
+├── component/html/__tests__/html-mapper.{text,embeds,media,table,container,custom,divider,mapping}.test.ts
+├── component/html/__tests__/html-mapper.{fuzz,invariants,snapshot}.test.ts
 ├── component/mapping/__tests__/mapping.test.ts
-├── component/mapping/__tests__/mapping.coverage.test.ts
+├── component/mapping/__tests__/mapping.referential.test.ts
+├── component/mapping/__tests__/media-url.test.ts
+├── component/mapping/__tests__/{depth-guard,pattern-cache}.test.ts
 ├── component/node/__tests__/node-helpers.test.ts
 └── component/schema/__tests__/recipe-schema.test.ts
 ```
 
 > The large `HTMLMapper` suite is split into per-component-family files under
-> `component/html/__tests__/` (text, embeds, media, table, container, mapping). The
-> `*.coverage.test.ts` files target otherwise-uncovered branches. File names are
+> `component/html/__tests__/` (text, embeds, media, table, container, custom,
+> divider, mapping), plus `.fuzz`/`.invariants`/`.snapshot` files that target
+> whole-pipeline properties rather than one family. File names are
 > kebab-case, enforced by `unicorn/filename-case` in `vite.config.ts` — see
 > [ADR-0001](https://github.com/canvasflow/feed/blob/main/docs/adr/0001-kebab-case-naming-and-colocated-test-conventions.md).
 
@@ -127,15 +135,15 @@ The suite has five layers. Use the right layer for each kind of assertion — th
 ### Adding a new test
 
 1. **Bug or feature** — write a unit test in the nearest `__tests__/` sibling. Tag it `unit` (and `rss`/`html` as appropriate).
-2. **New fixture** — use `node scripts/add-fixture.mjs <url-or-path>` to fetch or copy a feed into `src/support/feeds/`, then run `npm test -- --update-snapshot` to add it to the snapshot baseline.
-3. **New network-dependent flow** — store a representative HTML response in `src/support/http/`, stub `fetch` via `getRecipeFromUrl`/`getHtmlContent`'s injected-fetch option (see `recipe.ts`), and tag the test `unit` (not `integration`).
+2. **New fixture** — use `node scripts/add-fixture.mjs <url-or-path>` to fetch or copy a feed into `src/support/feeds/`, then run `npm test -- --update` to add it to the snapshot baseline.
+3. **New network-dependent flow** — store a representative HTML response in `src/support/http/`, stub `fetch` via `getRecipeFromUrl`/`getHtml`'s injected-fetch option (see `recipe.ts`), and tag the test `unit` (not `integration`).
 
 ### Snapshot review discipline
 
 A snapshot diff is a **question**, not a failure. When a snapshot changes:
 
 1. Read the diff — understand what output changed and why.
-2. If the change is intentional (parser upgrade, bug fix, new field): update with `npm test -- --update-snapshot`.
+2. If the change is intentional (parser upgrade, bug fix, new field): update with `npm test -- --update`.
 3. If the change is unintentional: that is a regression — fix the code, not the snapshot.
 
 Never blindly accept snapshot updates without reading the diff.
@@ -145,4 +153,4 @@ Never blindly accept snapshot updates without reading the diff.
 - RSS feeds live in `src/support/feeds/*.rss`; HTML fixtures for `toComponents` testing live in `src/support/feeds/*.html` and `src/support/html/*.html`.
 - HTTP response fixtures (for offline recipe/integration tests) live in `src/support/http/`.
 - Strip any personally identifying information or auth tokens before committing a fixture.
-- Run `npm test -- --update-snapshot` after adding a fixture to establish the baseline.
+- Run `npm test -- --update` after adding a fixture to establish the baseline.

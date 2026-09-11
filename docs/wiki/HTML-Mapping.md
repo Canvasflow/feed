@@ -51,11 +51,18 @@ For each element the reducer tries, in order:
 | `h2`         | `title`        |
 | `h3`         | `subtitle`     |
 | `h4`         | `intro`        |
+| `h5`         | `crosshead`    |
+| `h6`         | `byline`       |
 | `p`          | `body`         |
+| `ol`         | `body`         |
+| `ul`         | `body`         |
+| `a`          | `body`         |
 | `blockquote` | `blockquote`   |
 | `footer`     | `footer`       |
 
 Any text element's `role` attribute overrides the default (e.g. `<p role="crosshead">` → `crosshead`, `<p role="text12">` → `text12`).
+
+`<hr>` and `<br>` follow a similar but separate default rule — `<hr>` → `divider`, `<br>` → `spacer` (`margin: "margin-20"`) — and can likewise be matched by any other element via a `divider`/`spacer` [custom mapping](Custom-Mappings.md#divider--spacer).
 
 ## Text sanitizing
 
@@ -75,3 +82,7 @@ Text components keep only [phrasing content](https://developer.mozilla.org/en-US
 | Button  | `<a role="button">` or `<button><a></button>`.                                                                                                                                                                                                                                                                                              |
 
 To recognise content that does not follow these conventions, define a [custom mapping](Custom-Mappings.md).
+
+## Relative media URLs
+
+`HTMLMapper.toComponents()` does **not** rewrite relative `src`/`imageurl` values — it has no item URL to resolve them against. That resolution (image/gallery/video/audio URLs made absolute against an item's `<link>` origin) only happens one layer up, as part of `RSSFeed.build()`. See [RSS Feeds](RSS-Feeds.md#how-items-become-components).

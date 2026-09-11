@@ -22,12 +22,17 @@ rss/
 ├── rss-types.ts         # Typed RSS / Channel / Item / media interfaces
 ├── parsed-xml.ts        # Typed view of the raw fast-xml-parser output
 ├── tag.ts                # Required-tag & valid-tag allow-lists (rss / channel / item)
-├── attributes.ts         # Attribute helpers for fast-xml-parser output
+├── attributes.ts         # Attribute helpers for fast-xml-parser output (Enclosure, Source, MediaContent…)
+├── narrow.ts              # XML boundary narrowing helpers (typed extraction from the dynamically-shaped parser output)
+├── recipe.ts             # getRecipeFromUrl — LD+JSON recipe extraction (network I/O)
 └── __tests__/
     ├── rss-feed.test.ts
-    ├── rss-feed.coverage.test.ts
     ├── rss-feed.snapshot.test.ts
+    ├── rss-feed.fuzz.test.ts
     ├── build-item.test.ts
+    ├── relative-media-url.test.ts
+    ├── narrow.test.ts
+    ├── recipe.test.ts
     └── __snapshots__/
 ```
 
@@ -43,7 +48,7 @@ component/
 │   ├── parser.ts             # parse(html)/stringify(nodes) — linkedom-backed Node[] adapter
 │   ├── sanitize-html.ts      # Inline sanitize-html implementation (replaces npm package)
 │   └── __tests__/
-│       └── html-mapper.*.test.ts # Tests split by component family (text/embeds/media/table/container/mapping)
+│       └── html-mapper.*.test.ts # Tests split by component family (text/embeds/media/table/container/custom/divider/mapping), plus .fuzz/.invariants/.snapshot
 ├── mapping/
 │   ├── mapping.ts             # reduceComponents reducer + the recursive detection engine
 │   ├── mapping.media.ts       # image / picture / figure / video / audio / gallery / iframe / twitter
@@ -52,12 +57,16 @@ component/
 │   ├── mapping.table.ts       # toHTMLTable (<table> → htmltable)
 │   ├── mapping.custom.ts      # toCustom (custom component)
 │   ├── mapping.text.ts        # toText (text components)
-│   ├── mapping.utils.ts       # Leaf helpers (sanitizeNode, sanitizeContentHtml, matchesPattern…)
+│   ├── mapping.divider.ts     # toDivider/toSpacer (<hr>/<br>, divider/spacer mappings)
+│   ├── mapping.utils.ts       # Leaf helpers (sanitizeNode, matchesPattern, resolveMediaUrl/resolveComponentMediaUrls…)
 │   ├── mapping.constants.ts   # Tag/attribute allow-lists
 │   ├── mapping.schema.ts      # Zod schemas: Params, Mapping, filters, component mappings
 │   └── __tests__/
 │       ├── mapping.test.ts
-│       └── mapping.coverage.test.ts
+│       ├── mapping.referential.test.ts
+│       ├── media-url.test.ts
+│       ├── depth-guard.test.ts
+│       └── pattern-cache.test.ts
 ├── node/
 │   ├── node-helpers.ts        # AST node types + helpers (getAttributes, findDescendants, removeDescendants, SetUtils; DescendantsReducer type)
 │   └── __tests__/

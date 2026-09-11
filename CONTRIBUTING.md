@@ -19,8 +19,8 @@ npm run coverage       # tests + threshold-gated coverage report
 npm run lint && npm run coverage
 ```
 
-Coverage is threshold-gated (statements 95 / branches 88 / functions 99 /
-lines 97). A pre-commit hook also formats, lints, and runs the suite on staged
+Coverage is threshold-gated (statements 95 / branches 95 / functions 95 /
+lines 95). A pre-commit hook also formats, lints, and runs the suite on staged
 files. Update tests (`*.test.ts`, tagged `unit` / `rss` / `html`) and any
 affected [wiki docs](https://github.com/Canvasflow/feed/wiki) in the same PR.
 
