@@ -16,10 +16,12 @@ For any string input and any `params`/`root` config, `new RSSFeed(...)`,
   `validate()`/`build()` still run to completion.
 - **Malformed URLs reachable from feed content** — the channel `<link>`,
   iframe embeds (YouTube/TikTok/Vimeo/Dailymotion/Twitter/Infogram/Apple
-  Podcasts), anchor-based embeds, and relative `media:content` URL
-  resolution are all guarded with `URL.canParse` before construction; an
-  unparseable URL becomes a warning or an error-annotated component instead
-  of throwing.
+  Podcasts), anchor-based embeds, relative `media:content` URL resolution, and
+  the item-`<link>`-based resolution of relative image/gallery/video/audio
+  URLs inside a built item's `components` (`resolveComponentMediaUrls`) are
+  all guarded with `URL.canParse` before construction; an unparseable URL
+  becomes a warning, is left untouched, or becomes an error-annotated
+  component instead of throwing.
 - **Invalid `params`/`root`** — never silently dropped. The constructor
   always stores what it's given; `build()` is the one place that validates
   them (`RSSFeed.validateParams`) and reports the result.
@@ -96,27 +98,38 @@ import { RSSFeed } from '@canvasflow/feed';
 | `validateParams`   | `(params?: Params, root?: Mapping) => FeedIssue[]`        | Validate params/root against the Zod schemas; returns structured issues (`code` is `'INVALID_PARAMS' \| 'INVALID_ROOT_MAPPING'`). |
 | `toJSON`           | `(rss: RSS) => unknown`                                   | Serialize then re-parse an `RSS` (round-trips errors via `toString`).                                                             |
 | `toString`         | `(rss: RSS) => string`                                    | JSON string of an `RSS` (Error values are flattened).                                                                             |
-| `getRecipeFromUrl` | `(url: string) => Promise<Recipe \| null>`                | **Deprecated** thin wrapper around `getRecipeFromUrl` from `./recipe` (see below).                                                |
-| `getHtmlContent`   | `(url: string, headers?: HeadersInit) => Promise<string>` | **Deprecated** thin wrapper around `getHtmlContent` from `./recipe` (see below).                                                  |
+| `getRecipeFromUrl` | `(url: string) => Promise<Recipe \| null>`                | **Deprecated** thin wrapper around `getRecipeFromUrl` from `../rss/recipe` (see below).                                           |
+| `getHtmlContent`   | `(url: string, headers?: HeadersInit) => Promise<string>` | **Deprecated** thin wrapper around `getHtml` from `../utils/http` (see below) — kept as an identical-behaviour alias.             |
 
 > `getRecipeFromUrl` / `getHtmlContent` perform network I/O (`fetch`); everything else is pure.
 
-## Network I/O (`src/rss/recipe.ts`)
+## Network I/O (`src/utils/http.ts`, `src/utils/node-https-fetch.ts`, `src/rss/recipe.ts`)
 
 Extracted out of `RSSFeed` (Section 3, "Network I/O extraction") so the
 XML-parsing library doesn't hide unbounded `fetch` calls behind its public
-API. Both are exported from `@canvasflow/feed` directly:
+API. All are exported from `@canvasflow/feed` directly:
 
 ```ts
-import { getHtmlContent, getRecipeFromUrl } from '@canvasflow/feed';
+import {
+  fetchUrl,
+  getHtml,
+  getHtmlContent,
+  getJson,
+  nodeHttpsFetch,
+  getRecipeFromUrl,
+} from '@canvasflow/feed';
 ```
 
 | Function                          | Signature                                                          | Description                                                                                                                 |
 | --------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `getHtmlContent(url, options?)`   | `(url: string, options?: FetchOptions) => Promise<string>`         | Fetch `url` as text. Rejects on a non-`ok` response or on exceeding `maxBytes`.                                             |
+| `fetchUrl(url, options?)`         | `(url: string, options?: FetchOptions) => Promise<string>`         | Fetch `url` as text — status check + body cap only, no `Content-Type` opinion.                                              |
+| `getHtml(url, options?)`          | `(url: string, options?: FetchOptions) => Promise<string>`         | `fetchUrl` plus a `Content-Type: text/html` check; rejects a 2xx response whose body isn't actually HTML.                   |
+| `getHtmlContent(url, options?)`   | same as `getHtml`                                                  | **Deprecated** alias for `getHtml`, kept for backward compatibility.                                                        |
+| `getJson<T>(url, options?)`       | `(url: string, options?: FetchOptions) => Promise<T>`              | `fetchUrl` plus a `Content-Type: application/json` check, then `JSON.parse`s the body.                                      |
+| `nodeHttpsFetch`                  | Node `https`-backed `fetch`-compatible implementation              | Injectable as `options.fetch` when the global `fetch` isn't suitable.                                                       |
 | `getRecipeFromUrl(url, options?)` | `(url: string, options?: FetchOptions) => Promise<Recipe \| null>` | Fetch `url` and extract the first LD+JSON `Recipe` (top-level or nested in `@graph`); malformed JSON-LD blocks are skipped. |
 
-`FetchOptions`: `{ fetch?: typeof fetch; headers?: HeadersInit; timeoutMs?: number /* default 10000 */; maxBytes?: number /* default 5MB */ }`. The request is aborted via `AbortSignal.timeout(timeoutMs)`; the response body is read through a size-capped stream.
+`FetchOptions`: `{ fetch?: typeof fetch; headers?: HeadersInit; timeoutMs?: number /* default 10000 */; maxBytes?: number /* default 5MB */ }`. The request is aborted via `AbortSignal.timeout(timeoutMs)`; the response body is read through a size-capped stream. `fetchUrl`/`getHtml`/`getJson` share one internal request helper and only differ in what they do with the response afterward.
 
 ## `HTMLMapper`
 
@@ -136,17 +149,13 @@ See [HTML Mapping](HTML-Mapping.md).
 
 From the mapping module:
 
-| Function                                                    | Purpose                                                            |
-| ----------------------------------------------------------- | ------------------------------------------------------------------ |
-| `reduceComponents(params?)`                                 | The reducer used by `toComponents`.                                |
-| `getRootElement(nodes, mapping)`                            | Node-level root lookup (the string version lives on `HTMLMapper`). |
-| `reduceEmptyTextNode`, `filterEmptyTextNode`, `mapLivePost` | Node-tree helpers used by the pipeline.                            |
-| `processTextLinks(html, link?)`                             | Rewrite relative/protocol-relative/unsafe links in text HTML.      |
-| `isEmpty(content)`                                          | Whether a string is effectively empty (whitespace only).           |
-| `isValidMapping(value)`, `isValidParams(value)`             | Boolean validation against the Zod schemas.                        |
-| `validateParams(value)`                                     | Parse-or-throw, returning a typed `Params`.                        |
+| Function                                        | Purpose                                                       |
+| ----------------------------------------------- | ------------------------------------------------------------- |
+| `processTextLinks(html, link?)`                 | Rewrite relative/protocol-relative/unsafe links in text HTML. |
+| `isValidMapping(value)`, `isValidParams(value)` | Boolean validation against the Zod schemas.                   |
+| `validateParams(value)`                         | Parse-or-throw, returning a typed `Params`.                   |
 
-Constants: `textTags`, `textTagsSet`, `mappingTagsSet`.
+These four are the only `mapping.ts` helpers re-exported from `src/index.ts`. `mapping.ts` and its sibling modules export a good deal more at the module level for use _within_ `src/` — `reduceComponents`, `fromNode`, `getRootElement` (the node-array version; `HTMLMapper.getRootElement` is the public string version), `reduceEmptyTextNode`/`filterEmptyTextNode`, `mapLivePost`, `resolveMediaUrl`/`resolveComponentMediaUrls`, `isEmpty`, and the `textTags`/`textTagsSet`/`mappingTagsSet` constants — but none of those are part of the published `@canvasflow/feed` package; they are internal implementation detail. See [Architecture](Architecture.md) if you're reading the source rather than consuming the package.
 
 ## Type guards
 
@@ -154,13 +163,13 @@ The `is*` component guards (e.g. `isImageComponent`, `isVideoComponent`) and `is
 
 ## Exported types
 
-| Group              | Types                                                                                                                                                           |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Feed               | `RSS`, `Channel`, `Item`, `Enclosure`, `MediaContent`, `MediaGroup`, `Thumbnail`                                                                                |
-| Errors             | `FeedIssue`, `FeedIssueCode`, `FeedIssueSeverity` — see "Error model" above                                                                                     |
-| Config             | `Params`, `Mapping`, `ComponentMapping`, `MatchType`, `Filter`, `TagFilter`, `ClassFilter`, `AttributeFilter`, `AttributeValueFilter`, `AttributePatternFilter` |
-| Component mappings | `ContainerMapping`, `ColumnsMapping`, `LiveContainerMapping`, `RecipeMapping`, `CustomMapping`, `TextMapping`, `GalleryMapping`                                 |
-| Components         | `Component`, `ComponentType`, `TextType`, and every `*Component` interface                                                                                      |
-| Schema             | `Recipe` and related schema types                                                                                                                               |
+| Group              | Types                                                                                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Feed               | `RSS`, `Channel`, `ChannelImage`, `Item`, `MutableItem`, `Thumbnail`, `Enclosure`, `Source`, `MediaContent`, `MediaGroup`                                          |
+| Errors             | `FeedIssue`, `FeedIssueCode`, `FeedIssueSeverity` — see "Error model" above                                                                                        |
+| Config             | `Params`, `Mapping`, `ComponentMapping`, `MatchType`, `Filter`, `TagFilter`, `ClassFilter`, `AttributeFilter`, `AttributeValueFilter`, `AttributePatternFilter`    |
+| Component mappings | `ContainerMapping`, `ColumnsMapping`, `LiveContainerMapping`, `RecipeMapping`, `CustomMapping`, `TextMapping`, `GalleryMapping`, `DividerMapping`, `SpacerMapping` |
+| Components         | `Component`, `ComponentType`, `TextType`, `ComponentLink`, `ImageSource`, `GalleryImage`, and every `*Component` interface                                         |
+| Schema             | `Recipe` and related schema types (`Thing`, `Person`, `Organization`, `NutritionInformation`, …)                                                                   |
 
-> Exact signatures are the source of truth — see [`src/index.ts`](https://github.com/canvasflow/feed/blob/main/src/index.ts) and the files it re-exports.
+> Exact signatures are the source of truth — see [`src/index.ts`](https://github.com/canvasflow/feed/blob/main/src/index.ts) and the files it re-exports. Note that none of the **Zod schema objects** (`ComponentSchema`, `ImageComponentSchema`, `MappingSchema`, `ParamsSchema`, `RecipeSchema`, etc.) are re-exported — they live in `component.ts`/`mapping.schema.ts`/`schema/recipe-schema.ts` for internal validation only. Use `isValidParams`/`isValidMapping`/`validateParams` (above) or the `is*Component` type guards instead of importing a schema directly.

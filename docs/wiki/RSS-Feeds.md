@@ -31,7 +31,7 @@ Validation is driven by allow-lists in [`tag.ts`](https://github.com/canvasflow/
 | --------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `rss`     | `channel`                  | `channel`                                                                                                                           |
 | `channel` | `title`, `item`            | `link`, `description`, `language`, `generator`, `docs`, `category`, `image`, `ttl`, `pubDate`, `lastBuildDate`, `atom:link`, `sy:*` |
-| `item`    | `title`, `guid`, `pubDate` | `link`, `description`, `category`, `author`, `enclosure`, `content:encoded`, `media:*`, `atom:*`, `dc:*`, `cf:*`                    |
+| `item`    | `title`, `guid`, `pubDate` | `link`, `description`, `category`, `author`, `enclosure`, `source`, `content:encoded`, `media:*`, `atom:*`, `dc:*`, `cf:*`          |
 
 ## Parser conventions
 
@@ -51,6 +51,23 @@ Canvasflow reads a curated subset of each namespace (anything else is ignored):
 | `media`   | Media RSS   | `media:content`, `media:group`, and nested `media:*` metadata.                                 |
 | `cf`      | Canvasflow  | `cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`. |
 
+## Item fields worth knowing
+
+Beyond the obvious `title`/`link`/`description`/`pubDate`/`category`, a built `Item` carries a few typed sub-objects — each with its own `errors`/`warnings`:
+
+| Field          | Type                     | From                                                                                                                                                                                                                                                                                                                                  |
+| -------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enclosure`    | `Enclosure[]`            | `<enclosure url="..." type="..." length="...">`. `url` is required (error if missing); `type`/`length` are suggested (warning).                                                                                                                                                                                                       |
+| `source`       | `Source \| undefined`    | `<source url="...">Name</source>` (RSS 2.0 §4.1.1.20.9). `url` is required (error if missing); the text/name is only suggested (warning if absent) — a bare `<source>` with no `url` attribute parses as plain text via `fast-xml-parser`, so `url` still ends up empty and errored. Absent entirely when the item has no `<source>`. |
+| `mediaGroup`   | `MediaGroup[]`           | `<media:group>`, each holding its own `mediaContent`.                                                                                                                                                                                                                                                                                 |
+| `mediaContent` | `MediaContent[]`         | `<media:content>` (top-level or nested in a group); relative `url`s are resolved against the **channel** `<link>`'s origin.                                                                                                                                                                                                           |
+| `cf:thumbnail` | `Thumbnail \| undefined` | `<cf:thumbnail url="..." width="..." height="..." type="..." fileSize="...">`.                                                                                                                                                                                                                                                        |
+| `components`   | `Component[]`            | The converted `content:encoded` HTML — see below.                                                                                                                                                                                                                                                                                     |
+
+`clone(item)` (exported from `@canvasflow/feed`) deep-copies an `Item` — including `source`'s `errors`/`warnings` — into a `MutableItem` whose `readonly` arrays become plain mutable arrays, for callers that need to `.push()`/`.splice()` post-build results.
+
 ## How items become components
 
 During `build()`, each item's `content:encoded` HTML is run through `HTMLMapper.toComponents(html, params)`. If a `Params` was passed to the constructor, it configures that conversion; if a `root` mapping is set, extraction is scoped to the matching sub-element first. See [HTML Mapping](HTML-Mapping.md) and [Custom Mappings](Custom-Mappings.md).
+
+Afterwards, if the item's own `<link>` is present and parseable, `build()` rewrites any relative image/gallery/video/audio URL found inside that `components` tree into an absolute one, prepended with the link's origin — e.g. an `<img src="/photo.jpg">` inside an item whose `<link>` is `https://example.org/article` becomes `https://example.org/photo.jpg`. Already-absolute (`http(s)://`) and protocol-relative (`//host/...`) URLs are left untouched, as is anything when the item has no parseable `<link>`. This is distinct from — and happens after — the channel-origin-based resolution `mediaContent` already gets (see the table above): the `components` resolution uses the **item's own** `<link>`, not the channel's.

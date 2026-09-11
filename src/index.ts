@@ -11,6 +11,7 @@ export type {
   MutableItem,
   Thumbnail,
   Enclosure,
+  Source,
   MediaGroup,
   MediaContent,
 } from './rss/rss-types';
@@ -77,6 +78,7 @@ export {
   isTikTokComponent,
   isRecipeComponent,
   isContainerComponent,
+  isColumnsComponent,
   isLinkContainerComponent,
   isFigureContainerComponent,
   isButtonComponent,
