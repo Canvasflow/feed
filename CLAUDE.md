@@ -21,7 +21,7 @@ npm run coverage       # vp test --coverage (v8, threshold-gated)
 Run a single test file:
 
 ```bash
-npx vitest run src/rss/RSSFeed.test.ts
+npx vitest run src/rss/__tests__/rss-feed.test.ts
 ```
 
 Run tests by tag (`vp test --tags-filter`), or via the prewired UI scripts:
@@ -47,9 +47,9 @@ This is a TypeScript library (`@canvasflow/feed`) that processes RSS/Atom feeds 
 `RSSFeed` wraps `fast-xml-parser` to parse XML. The two main methods are:
 
 - `validate()` — checks required tags against `tag.ts` allow-lists; populates `errors`/`warnings` arrays on the RSS, channel, and item objects.
-- `build()` — constructs a typed `RSS` object. Items have their `content:encoded` HTML field automatically converted to a `components` array via `HTMLMapper.toComponents()`.
+- `build()` — constructs a typed `RSS` object. Items have their `content:encoded` HTML field automatically converted to a `components` array via `HTMLMapper.toComponents()`. If the item's `<link>` is present and parseable, `build()` then rewrites any relative image/gallery/video/audio URL inside that component tree to an absolute one, prepended with the link's origin (`resolveComponentMediaUrls` in `mapping.utils.ts`); already-absolute (`http(s)://`) and protocol-relative (`//host/...`) URLs are left alone.
 
-XML attributes from the parser use the `@_` prefix convention (e.g., `@_url`, `@_type`). Canvasflow-specific RSS extensions use the `cf:` namespace (`cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`). The raw parser output is kept private (`RSSFeed.data`) and typed via `src/rss/parsed-xml.ts`; consumers read the typed `rss` property.
+XML attributes from the parser use the `@_` prefix convention (e.g., `@_url`, `@_type`). Canvasflow-specific RSS extensions use the `cf:` namespace (`cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`). Standard RSS 2.0 item sub-elements are also typed, including `<enclosure>` and the per-item `<source url="...">Name</source>` (RSS 2.0 §4.1.1.20.9 — `url` is required, the text/name is only suggested). The raw parser output is kept private (`RSSFeed.data`) and typed via `src/rss/parsed-xml.ts`; consumers read the typed `rss` property.
 
 An optional `Params` (from `mapping/mapping.ts`) can be passed to `RSSFeed` to configure how HTML is converted. An optional `root` setter accepts a `Mapping` to scope content extraction to a sub-element before conversion.
 
@@ -58,7 +58,7 @@ An optional `Params` (from `mapping/mapping.ts`) can be passed to `RSSFeed` to c
 `HTMLMapper.toComponents(html, params?)` is the core HTML→component pipeline:
 
 1. Pre-processes the HTML string (removes breaklines, sanitizes invalid hrefs, extracts `<a>` wrappers around images, splits `<p>` tags containing `<img>` elements).
-2. Parses with `himalaya` into a `Node[]` AST.
+2. Parses with `linkedom` (via `component/html/parser.ts`) into a `Node[]` AST — the same shape the project's previous `himalaya`-based parser produced (see ADR-0002).
 3. Reduces the node tree via `reduceComponents(params)` from `mapping/mapping.ts` into `Component[]`.
 
 ### Mapping (`src/component/mapping/`)
@@ -68,20 +68,27 @@ An optional `Params` (from `mapping/mapping.ts`) can be passed to `RSSFeed` to c
 - `mapping.media.ts` — image / picture / figure / video / audio / gallery / iframe / twitter
 - `mapping.embeds.ts` — Instagram / TikTok / YouTube / Vimeo / Dailymotion / Infogram
 - `mapping.container.ts` — container / columns / live_container / link & figure containers / buttons
-- `mapping.table.ts` (`toHTMLTable`), `mapping.custom.ts` (`toCustom`), `mapping.text.ts` (`toText`)
-- `mapping.utils.ts` (shared helpers: `sanitizeNode`, `sanitizeContentHtml`, `matchesPattern`, `fromFigcaption`, `filterClassNameDescendants`, `processTextLinks`, `isEmpty`, filter/exclude utilities), `mapping.constants.ts` (allow-lists), `mapping.schema.ts` (Zod schemas)
+- `mapping.table.ts` (`toHTMLTable`), `mapping.custom.ts` (`toCustom`), `mapping.text.ts` (`toText`), `mapping.divider.ts` (`toDivider`/`toSpacer`, for `<hr>`/`<br>` and `divider`/`spacer` custom mappings)
+- `mapping.utils.ts` (shared helpers: `sanitizeNode`, `serializeOriginalHtml`, `matchesPattern`, `fromFigcaption`, `filterClassNameDescendants`, `processTextLinks`, `isEmpty`, `resolveMediaUrl`/`resolveComponentMediaUrls` (relative media URL resolution used by the RSS pipeline, see below), and filter/exclude utilities), `mapping.constants.ts` (allow-lists), `mapping.schema.ts` (Zod schemas)
 
 The default HTML→Canvasflow component mapping is:
 
-| HTML         | Component type |
-| ------------ | -------------- |
-| `h1`         | `headline`     |
-| `h2`         | `title`        |
-| `h3`         | `subtitle`     |
-| `h4`         | `intro`        |
-| `p`          | `body`         |
-| `blockquote` | `blockquote`   |
-| `footer`     | `footer`       |
+| HTML         | Component type         |
+| ------------ | ---------------------- |
+| `h1`         | `headline`             |
+| `h2`         | `title`                |
+| `h3`         | `subtitle`             |
+| `h4`         | `intro`                |
+| `h5`         | `crosshead`            |
+| `h6`         | `byline`               |
+| `p`          | `body`                 |
+| `ol`         | `body`                 |
+| `ul`         | `body`                 |
+| `a`          | `body`                 |
+| `blockquote` | `blockquote`           |
+| `footer`     | `footer`               |
+| `hr`         | `divider`              |
+| `br`         | `spacer` (`margin-20`) |
 
 Any text element's `role` attribute overrides the default mapping (e.g., `<p role="crosshead">` → `crosshead`). Styles and classes are stripped; only `href`/`target`/`rel` survive on `<a>` elements.
 
@@ -89,7 +96,7 @@ All `<figure>` elements are routed to `toFigureContainer` (in `mapping.container
 
 ### Node helpers (`src/component/node/node-helpers.ts`)
 
-Provides the himalaya AST types (`Node`, `ElementNode`, `TextNode`, `CommentNode`, `Attribute`) and two tree-traversal reducers that share the `DescendantsReducer` type signature `(acc: Node[], node: Node) => Node[]`:
+Provides the AST types (`Node`, `ElementNode`, `TextNode`, `CommentNode`, `Attribute`) produced by the `linkedom`-backed parser in `component/html/parser.ts`, and two tree-traversal reducers that share the `DescendantsReducer` type signature `(acc: Node[], node: Node) => Node[]`:
 
 - `findDescendants(findFn)` — collects matching element nodes into a flat list. When the `findFn` is a function and returns `true`, the matched node is included but its children are not recursed.
 - `removeDescendants(findFn)` — returns a **new array of nodes** where matching elements (and their subtrees) are removed. Non-matching elements are returned as new objects with their children recursively filtered; text/comment nodes pass through unchanged. **Does not mutate the originals.**

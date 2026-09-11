@@ -91,6 +91,8 @@ Each component mapping extends the base mapping with a `component` field. Some t
 | `live_container` | `post`         | A sub-mapping describing each `live_post`.                                                                     |
 | `gallery`        | `slide`        | A sub-mapping describing each slide; only valid image slides become items.                                     |
 | `custom`         | —              | Preserves the matched element as raw/sanitized HTML instead of converting children.                            |
+| `divider`        | —              | Maps the matched element to a `divider` component, like the default `<hr>` rule.                               |
+| `spacer`         | —              | Maps the matched element to a `spacer` component (`margin: "margin-20"`), like the default `<br>` rule.        |
 | _text type_      | —              | Any text type (`headline`, `body`, `crosshead`, `text1`–`text60`, …) — an alternative to the `role` attribute. |
 
 ### `container`
@@ -346,6 +348,37 @@ Preserves the matched element as sanitized raw HTML rather than recursing into i
 <div class="third-party-embed">
   <span data-widget="poll" data-id="42">Loading…</span>
 </div>
+```
+
+### `divider` / `spacer`
+
+Route any element to a `DividerComponent` or `SpacerComponent`, the same shape produced by the default `<hr>`/`<br>` rules — useful when a publisher marks a visual break with something other than those tags (e.g. `<div class="section-break">`). Neither mapping type takes a sub-mapping or affects the component's fields: a `divider` mapping always produces `{ component: 'divider' }`, and a `spacer` mapping always produces `{ component: 'spacer', margin: 'margin-20' }`, regardless of which element matched.
+
+| Field        | Required | Description                                 |
+| ------------ | -------- | ------------------------------------------- |
+| `component`  | Yes      | `"divider"` or `"spacer"`.                  |
+| `match`      | Yes      | `"any"` or `"all"`.                         |
+| `filters`    | Yes      | Filters identifying the element.            |
+| `name`       | No       | Optional label for identification.          |
+| `properties` | No       | Arbitrary object copied onto the component. |
+
+```json
+{
+  "component": "divider",
+  "match": "all",
+  "filters": [
+    {
+      "type": "class",
+      "match": "any",
+      "items": ["section-break"]
+    }
+  ]
+}
+```
+
+```html
+<!-- Rendered as a divider component instead of being descended into -->
+<div class="section-break"></div>
 ```
 
 ### Text types

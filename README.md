@@ -16,7 +16,7 @@ The package is published as an **ESM** module (with TypeScript declarations) to
 
 ## Features
 
-- Parse and validate RSS/Atom feeds (`fast-xml-parser` under the hood).
+- Parse and validate RSS/Atom feeds (`fast-xml-parser` under the hood), including standard sub-elements like `<enclosure>` and the per-item `<source url="...">`.
 - Build a strongly-typed `RSS` object from raw feed XML.
 - Convert HTML into Canvasflow `Component[]` — images, galleries, video, audio,
   embeds (Twitter/X, Instagram, YouTube, TikTok, Vimeo, Dailymotion, Infogram,
@@ -105,7 +105,7 @@ src/
 ├── index.ts            # Public entry point (re-exports the API)
 ├── rss/                # Feed pipeline: RSSFeed, RSS/ParsedXml types, Tag allow-lists, Attributes
 └── component/
-    ├── Component.ts    # Component types and is* type guards
+    ├── component.ts    # Component types and is* type guards
     ├── html/           # HTMLMapper — HTML → Component[] entry point
     ├── mapping/        # Detection engine + per-family converters, Zod schemas, constants, utils
     ├── node/           # AST node helpers (Node, ElementNode, TextNode, tree traversal)
@@ -147,7 +147,7 @@ npm run lint       # lint the source
 npm run coverage   # run tests with a coverage report (v8, threshold-gated)
 ```
 
-Run a single test file with `npx vitest run src/rss/RSSFeed.test.ts`. The full
+Run a single test file with `npx vitest run src/rss/__tests__/rss-feed.test.ts`. The full
 script list, test tags, and coverage thresholds are documented on the
 [Testing](https://github.com/Canvasflow/feed/wiki/Testing) wiki page.
 

@@ -70,11 +70,13 @@ Default HTML → component mappings:
 - `h2` → `title`
 - `h3` → `subtitle`
 - `h4` → `intro`
-- `p` → `body`
+- `h5` → `crosshead`
+- `h6` → `byline`
+- `p`, `ol`, `ul`, `a` → `body`
 - `blockquote` → `blockquote`
 - `footer` → `footer`
 
-The `role` attribute on any element overrides the mapping (e.g. `<p role="crosshead">` → `crosshead`).
+The `role` attribute on any element overrides the mapping (e.g. `<p role="crosshead">` → `crosshead`). `<hr>` and `<br>` follow the same idea outside the text-component family — see `DividerComponent`/`SpacerComponent` below.
 
 ```json
 {
@@ -111,17 +113,28 @@ With a resolved link:
 
 `component`: `"image"`
 
-| Field      | Type                  | Description                 |
-| ---------- | --------------------- | --------------------------- |
-| `imageurl` | `string`              | Source URL of the image.    |
-| `link`     | `string` _(optional)_ | URL the image links to.     |
-| `alt`      | `string` _(optional)_ | Alt text.                   |
-| `caption`  | `string` _(optional)_ | Caption text.               |
-| `credit`   | `string` _(optional)_ | Credit / attribution text.  |
-| `width`    | `number` _(optional)_ | Intrinsic width in pixels.  |
-| `height`   | `number` _(optional)_ | Intrinsic height in pixels. |
+| Field      | Type                         | Description                                                                                                    |
+| ---------- | ---------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `imageurl` | `string`                     | Source URL of the image (the `<img>`'s `src`, or a `<picture>`'s fallback `<img>` `src`).                      |
+| `link`     | `string` _(optional)_        | URL the image links to.                                                                                        |
+| `alt`      | `string` _(optional)_        | Alt text.                                                                                                      |
+| `caption`  | `string` _(optional)_        | Caption text.                                                                                                  |
+| `credit`   | `string` _(optional)_        | Credit / attribution text.                                                                                     |
+| `width`    | `number` _(optional)_        | Intrinsic width in pixels.                                                                                     |
+| `height`   | `number` _(optional)_        | Intrinsic height in pixels.                                                                                    |
+| `srcset`   | `string` _(optional)_        | The `<img>`'s (or `<picture>`'s fallback `<img>`'s) `srcset` attribute, verbatim.                              |
+| `sources`  | `ImageSource[]` _(optional)_ | Only set for a `<picture>`: one entry per `<source>` child that has a `srcset`, in document order (see below). |
 
-> **Note:** A `<figure>` wrapping an `<img>` or `<picture>` produces a `FigureContainerComponent` (see [Transient components](#transient-components)) that holds the `ImageComponent` as a child. A bare `<img>` outside a `<figure>` produces a standalone `ImageComponent`.
+**`ImageSource`** — one `<picture>` `<source>` candidate:
+
+| Field    | Type                  | Description                                         |
+| -------- | --------------------- | --------------------------------------------------- |
+| `srcset` | `string`              | The `<source>`'s `srcset` attribute.                |
+| `media`  | `string` _(optional)_ | The `<source>`'s `media` attribute (a media query). |
+| `type`   | `string` _(optional)_ | The `<source>`'s `type` attribute (a MIME type).    |
+| `sizes`  | `string` _(optional)_ | The `<source>`'s `sizes` attribute.                 |
+
+> **Note:** A `<figure>` wrapping an `<img>` or `<picture>` produces a `FigureContainerComponent` (see [Transient components](#transient-components)) that holds the `ImageComponent` as a child. A bare `<img>` outside a `<figure>` produces a standalone `ImageComponent`. A `<picture>` with more than one `<img>` child records a `DUPLICATE_IMG_TAG` warning and keeps only the first.
 
 ```json
 {
@@ -426,6 +439,25 @@ TikTok:
 }
 ```
 
+`toSpacer` (the default `<br>` converter, also used by a `spacer` custom mapping) always sets `margin: "margin-20"` — there is currently no way to select a different margin from the HTML itself.
+
+---
+
+### `DividerComponent`
+
+`component`: `"divider"`
+
+No fields beyond the base shape — a divider carries no configuration of its own, just `id`/`properties`/`html`/`element`/`errors`/`warnings`.
+
+```json
+{
+  "component": "divider",
+  "errors": [],
+  "warnings": [],
+  "element": { "tag": "hr" }
+}
+```
+
 ---
 
 ### `CustomComponent`
@@ -437,7 +469,7 @@ Used for elements that do not match any built-in mapping rule.
 | Field     | Type                         | Description                                                                                                                                                |
 | --------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `content` | `string`                     | Raw re-serialized HTML of the matched element. Not sanitized — use the base `html` field for a sanitized version.                                          |
-| `node`    | `unknown`                    | The raw `ElementNode` AST node from the himalaya parser. Useful for consumers that need to traverse the original tree.                                     |
+| `node`    | `unknown`                    | The raw `ElementNode` AST node from the HTML parser (`component/html/parser.ts`). Useful for consumers that need to traverse the original tree.            |
 | `link`    | `ComponentLink` _(optional)_ | Present when the element was wrapped in an `<a>` ancestor during mapping. The `content` field is **not** modified — read the link from this field instead. |
 
 ```json
@@ -756,18 +788,18 @@ for (const c of components) {
 Available guards:
 
 ```
-isAudioComponent            isButtonComponent           isContainerComponent
-isColumnsComponent          isCustomComponent           isDailymotionComponent
-isFigureContainerComponent  isGalleryComponent          isGalleryImage
-isHTMLTableComponent        isImageComponent            isInfogramComponent
-isInstagramComponent        isLinkContainerComponent    isRecipeComponent
-isSpacerComponent           isTextComponent             isTikTokComponent
-isTwitterComponent          isValidTextRole             isVideoComponent
-isVimeoComponent            isYoutubeComponent
+isAudioComponent            isButtonComponent           isColumnsComponent
+isContainerComponent        isCustomComponent           isDailymotionComponent
+isDividerComponent          isFigureContainerComponent  isGalleryComponent
+isGalleryImage              isHTMLTableComponent        isImageComponent
+isInfogramComponent         isInstagramComponent        isLinkContainerComponent
+isRecipeComponent           isSpacerComponent           isTextComponent
+isTikTokComponent           isTwitterComponent          isValidTextRole
+isVideoComponent            isVimeoComponent            isYoutubeComponent
 ```
 
 ---
 
 ## Runtime schemas
 
-For validation, `component.ts` exports Zod schemas alongside every type: `ComponentSchema`, `ComponentTypeSchema`, `TextTypeSchema`, `ComponentLinkSchema`, and per-kind schemas such as `ImageComponentSchema`, `TextComponentSchema`, `CustomComponentSchema`. Recipe extraction has its own schemas in [`schema/recipe-schema.ts`](https://github.com/canvasflow/feed/blob/main/src/component/schema/recipe-schema.ts).
+Internally, `component.ts` defines a Zod schema alongside every type — `ComponentSchema`, `ComponentTypeSchema`, `TextTypeSchema`, `ComponentLinkSchema`, and per-kind schemas such as `ImageComponentSchema`, `TextComponentSchema`, `CustomComponentSchema` — and recipe extraction has its own in [`schema/recipe-schema.ts`](https://github.com/canvasflow/feed/blob/main/src/component/schema/recipe-schema.ts). **None of these schema objects are re-exported from `@canvasflow/feed`** — only the TypeScript types and the `is*` guards above are public. If you need to validate a `Component` from outside this library, narrow it with the `is*` guards rather than importing a schema.

@@ -29,7 +29,7 @@ Match the surrounding code: existing naming (`*Component`, `is*Component`, `Mapp
 - Don't throw for malformed input — accumulate `errors`/`warnings` so one bad element never aborts a conversion. See [Architecture](Architecture.md).
 - Reuse the Zod schemas in `mapping/mapping.schema.ts` for validation rather than re-deriving shapes.
 - Keep `mapping.ts` for the recursive detection engine; put leaf concerns (constants, pure utilities, embeds) in the sibling `Mapping.*` modules and re-export them so the public API is unchanged.
-- Add type guards (`is*Component`) alongside new component kinds in `component.ts`.
+- Add type guards (`is*Component`) alongside new component kinds in `component.ts`, and remember to add both the type and its guard to `src/index.ts`'s export lists — a type or guard that exists in `component.ts`/`rss-types.ts` but isn't re-exported there is invisible to consumers of the published package.
 
 ## Tests
 

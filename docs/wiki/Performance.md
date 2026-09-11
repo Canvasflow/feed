@@ -5,7 +5,9 @@ benchmarks, and known limits of `@canvasflow/feed`.
 
 ## Throughput reference numbers
 
-Recorded **2026-07-27** on Apple M-series, Node 20. Run with `npm run bench`.
+Recorded **2026-07-27** on Apple M-series, Node 20 (Node 20 has since been
+dropped from the supported matrix — see [Build & Publishing](Build-and-Publishing.md)
+— but these numbers weren't re-captured after that change). Run with `npm run bench`.
 
 | Workload                                                          | hz    | mean (ms) |
 | ----------------------------------------------------------------- | ----- | --------- |
@@ -80,10 +82,11 @@ npm run bench -- --compare bench-results.json
 ```
 
 The CI bench job (`.github/workflows/bench.yml`) runs on every push to
-`develop`, `main`, and `feature/**` branches across a Node matrix (20, 22, 24).
-It is informational only (`continue-on-error: true`) — a regression in bench
-numbers never blocks a merge. Results are posted per-node as a GitHub Actions
-step summary and uploaded as 90-day artifacts (`bench-results-node20`, etc.).
+`develop`, `main`, and `feature/**` branches across a Node matrix (22, 24),
+kept in step with `engines.node` and the CI test matrix. It is informational
+only (`continue-on-error: true`) — a regression in bench numbers never blocks
+a merge. Results are posted per-node as a GitHub Actions step summary and
+uploaded as 90-day artifacts (`bench-results-node22`, `bench-results-node24`).
 
 ## Known limits
 

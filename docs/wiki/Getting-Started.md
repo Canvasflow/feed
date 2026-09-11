@@ -10,7 +10,7 @@ This page takes a consumer from zero to parsing a feed, and a contributor from a
 - **npm** (the project uses the committed `package-lock.json`).
 - For installation: access to the `@canvasflow` scope on **GitHub Packages**.
 
-> The contributor toolchain is [`vite-plus`](https://www.npmjs.com/package/vite-plus) (`vp`) — a unified runner for building, testing, linting, and formatting. `vite` and `vitest` are aliased to `@voidzero-dev/vite-plus-*` packages through the `overrides` block in `package.json`.
+> The contributor toolchain is [`vite-plus`](https://www.npmjs.com/package/vite-plus) (`vp`) — a unified runner for building, testing, linting, and formatting. The `overrides` block in `package.json` pins `vite` to `@voidzero-dev/vite-plus-core` and `vitest` to a matching version, so every install resolves to the exact pair vite-plus expects.
 
 ## Installing the package (consumers)
 
@@ -93,7 +93,7 @@ A fuller table — including the tag-filtered test scripts — is in the [README
 ### Run a single test file
 
 ```bash
-npx vitest run src/rss/RSSFeed.test.ts
+npx vitest run src/rss/__tests__/rss-feed.test.ts
 ```
 
 ### The pre-merge gate
