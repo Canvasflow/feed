@@ -111,6 +111,12 @@ export type {
 // ─── HTML mapper ──────────────────────────────────────────────────────────────
 
 export { HTMLMapper, splitParagraphImages } from './component/html/html-mapper';
+// Rewrites explicitly self-closed non-void tags (`<audio ... />`) into an
+// empty tag pair before an HTML string reaches any HTML5-conformant parser
+// (this library's own `parse()`, or a consumer's own `DOMParser` for e.g.
+// a debug/preview view) — see parser.ts's doc comment for why this is
+// necessary and what it deliberately leaves alone.
+export { closeExplicitlySelfClosedTags } from './component/html/parser';
 
 // ─── Mapping / params ─────────────────────────────────────────────────────────
 
