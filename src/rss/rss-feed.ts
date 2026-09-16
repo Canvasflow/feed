@@ -34,6 +34,7 @@ import { sanitizeHTML as sanitizeHtml } from '../component/html/sanitize-html';
 import { resolveComponentMediaUrls } from '../component/mapping/mapping.utils';
 import type { ParsedXml, ParsedItem } from './parsed-xml';
 import { textOf } from './narrow';
+import { closeExplicitlySelfClosedTags } from '../component/html/parser';
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -522,7 +523,7 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
       ? item['content:encoded'].trim()
       : '';
 
-  const rawContent = `${contentEncoded}`;
+  const rawContent = closeExplicitlySelfClosedTags(`${contentEncoded}`);
   contentEncoded = decodeEntities(rawContent);
   if (root && contentEncoded) {
     const rootElement = HTMLMapper.getRootElement(contentEncoded, root);
