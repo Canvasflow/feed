@@ -260,17 +260,15 @@ export class RSSFeed {
     const { rss } = data;
     const { channel } = rss;
 
-    const {
-      title,
-      link,
-      description,
-      language,
-      image,
-      generator,
-      docs,
-      category,
-      ttl,
-    } = channel;
+    const { language, image, generator, docs, category, ttl } = channel;
+    // `title`/`link`/`description` are declared as `string` on `ParsedChannel`,
+    // but fast-xml-parser coerces purely-numeric tag content (e.g.
+    // `<title>2026</title>`) to a `number` at runtime — textOf() narrows
+    // that (and the `{ '#text' }` wrapper form) into a real string before
+    // any string method below runs on it.
+    const title = textOf(channel.title);
+    const link = textOf(channel.link);
+    const description = textOf(channel.description);
 
     const paramsErrors = RSSFeed.validateParams(this.params, this._root);
     if (paramsErrors.length) {
@@ -311,8 +309,9 @@ export class RSSFeed {
     this.rss.channel.lastBuildDate = lastBuildDate;
     this.rss.channel.docs = docs;
     this.rss.channel.category = category ? toArray(category) : undefined;
-    if (image?.title) {
-      image.title = decodeEntities(image.title);
+    const imageTitle = textOf(image?.title);
+    if (image && imageTitle) {
+      image.title = decodeEntities(imageTitle);
     }
     this.rss.channel.image = image;
     this.rss.channel.ttl = ttl;
@@ -513,11 +512,15 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
   const { origin, root, params } = ctx;
 
   const guid = typeof item.guid === 'string' ? item.guid : textOf(item.guid);
-  const title = item.title?.trim();
+  // `item.title`/`item.link` are declared as `string` on `ParsedItem`, but
+  // fast-xml-parser coerces purely-numeric tag content to a `number` at
+  // runtime — textOf() narrows that (and the `{ '#text' }` wrapper form)
+  // into a real string before `.trim()` runs on it.
+  const title = textOf(item.title)?.trim();
   const description = item.description
     ? removeHTMLTags(`${item.description}`)
     : undefined;
-  const link = item.link?.trim();
+  const link = textOf(item.link)?.trim();
   let contentEncoded =
     typeof item['content:encoded'] === 'string'
       ? item['content:encoded'].trim()
@@ -1012,13 +1015,12 @@ function mapMediaContent(
         tmpCredit = tmpCredit[0];
       }
 
-      if (typeof tmpCredit === 'string') {
-        credit = tmpCredit;
-      }
-
-      if (tmpCredit && tmpCredit['#text']) {
-        credit = tmpCredit['#text'];
-      }
+      // `#text` is typed as `string`, but fast-xml-parser coerces
+      // purely-numeric tag content to a `number` at runtime (e.g. a credit
+      // line that happens to be all digits) — textOf() narrows both shapes
+      // (and the bare-string form above) into a real string before it ever
+      // reaches a string method.
+      credit = textOf(tmpCredit);
     }
 
     let tmpThumbnail = mediaContent['media:thumbnail'];
@@ -1037,23 +1039,14 @@ function mapMediaContent(
       thumbnail = tmpThumbnail?.['@_url'];
     }
 
-    const tmpTitle = mediaContent['media:title'];
-    if (tmpTitle) {
-      if (typeof tmpTitle === 'string') {
-        title = tmpTitle;
-      } else {
-        title = tmpTitle['#text'];
-      }
-    }
-
-    const tmpDescription = mediaContent['media:description'];
-    if (tmpDescription) {
-      if (typeof tmpDescription === 'string') {
-        description = tmpDescription;
-      } else {
-        description = tmpDescription?.['#text'];
-      }
-    }
+    // Same reasoning as `credit` above: `media:title`/`media:description`
+    // text content can arrive as a `number` (or the `{ '#text' }` wrapper
+    // form) rather than the declared `string` when the tag body is
+    // purely numeric — e.g. <media:description>532457978</media:description>
+    // is a real-world case that used to throw `description.trim is not a
+    // function` further down, since a `number` has no `.trim`.
+    title = textOf(mediaContent['media:title']);
+    description = textOf(mediaContent['media:description']);
 
     if (url && !url.startsWith('http') && !url.startsWith('https')) {
       warnings.push(
