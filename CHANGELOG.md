@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 🏷️ 2.0.18
+
+_September 16, 2026_
+
+✨ Features
+
+- (html) Export closeExplicitlySelfClosedTags ([`bffac06`](https://github.com/Canvasflow/feed/commit/bffac061996c690240a181e1a30ea78602fc5fb9))
+
 ## 🏷️ 2.0.17
 
 _September 16, 2026_
