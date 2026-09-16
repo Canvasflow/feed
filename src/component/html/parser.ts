@@ -30,6 +30,101 @@ const VOID_TAGS = new Set([
 ]);
 
 /**
+ * Rewrite explicitly self-closed non-void start tags (`<audio ... />`,
+ * `<div />`, …) into an empty tag pair (`<audio ...></audio>`) before
+ * handing the string to linkedom.
+ *
+ * Per the HTML5 parsing algorithm — which linkedom follows, like every real
+ * browser — a trailing `/` on a *non-void* element's start tag is ignored;
+ * only elements on the fixed void-element list ever self-close. So
+ * `<audio src="..." />` opens a normal two-sided tag that keeps consuming
+ * every subsequent sibling as a *child* of `<audio>` until it finds a real
+ * `</audio>` — which publisher HTML using XHTML-style self-closing syntax
+ * on a non-void tag (a common pattern for widget embeds, e.g. an audio
+ * player) never supplies. Left unhandled, that swallows the rest of the
+ * document into the "self-closed" element.
+ *
+ * This restores the author's explicit intent — matching how the project's
+ * previous (himalaya-based) parser treated `/>` — without granting every
+ * tag void-element status: only a tag actually written with `/>` in the
+ * source is affected, and only when that `/` reads unambiguously as a
+ * self-close marker (immediately after the tag name, after whitespace, or
+ * after a quoted attribute value) rather than as the tail of a bare
+ * unquoted attribute value (`<div data-x=foo/>`, which HTML5 parses as
+ * `data-x="foo/"`, not as self-closing).
+ *
+ * @param {string} html
+ * @returns {string}
+ */
+function closeExplicitlySelfClosedTags(html: string): string {
+  const parts: string[] = [];
+  const { length } = html;
+  let i = 0;
+
+  while (i < length) {
+    const lt = html.indexOf('<', i);
+    if (lt === -1) {
+      parts.push(html.slice(i));
+      break;
+    }
+    parts.push(html.slice(i, lt));
+
+    // Only a start tag can be self-closed — end tags, comments, doctypes,
+    // and a stray '<' are copied through untouched.
+    const next = html[lt + 1];
+    if (next === undefined || !/[a-zA-Z]/.test(next)) {
+      parts.push('<');
+      i = lt + 1;
+      continue;
+    }
+
+    let nameEnd = lt + 1;
+    while (nameEnd < length && /[a-zA-Z0-9-]/.test(html[nameEnd]!)) nameEnd++;
+    const tagName = html.slice(lt + 1, nameEnd).toLowerCase();
+
+    // Scan to the matching unquoted '>', tracking quote state so a '>'
+    // inside an attribute value doesn't end the tag early.
+    let tagEnd = nameEnd;
+    let quote: string | null = null;
+    while (tagEnd < length) {
+      const ch = html[tagEnd]!;
+      if (quote) {
+        if (ch === quote) quote = null;
+      } else if (ch === '"' || ch === "'") {
+        quote = ch;
+      } else if (ch === '>') {
+        break;
+      }
+      tagEnd++;
+    }
+
+    if (tagEnd >= length) {
+      // Unterminated tag — nothing more to scan.
+      parts.push(html.slice(lt));
+      break;
+    }
+
+    // Find the last non-whitespace character before '>'. `slashPos` is
+    // always > lt here: nameEnd is at least lt + 2 (a tag name is never
+    // empty), so `slashPos - 1` is always a valid index into `html`.
+    let slashPos = tagEnd - 1;
+    while (slashPos > nameEnd && /\s/.test(html[slashPos]!)) slashPos--;
+    const isUnambiguousSelfClose =
+      html[slashPos] === '/' &&
+      (slashPos === nameEnd || /[\s"']/.test(html[slashPos - 1]!));
+
+    if (isUnambiguousSelfClose && !VOID_TAGS.has(tagName)) {
+      parts.push(`${html.slice(lt, slashPos)}></${tagName}>`);
+    } else {
+      parts.push(html.slice(lt, tagEnd + 1));
+    }
+    i = tagEnd + 1;
+  }
+
+  return parts.join('');
+}
+
+/**
  * Parse an HTML fragment into the flat `Node[]` AST the mapping engine
  * consumes — the same shape the previous himalaya `parse()` produced —
  * using linkedom as the underlying HTML parser.
@@ -42,7 +137,9 @@ export function parse(html: string): Node[] {
   // <html><body> is unreliable (it can nest an empty head/body inside the
   // first element instead of parsing it as document content), so the
   // fragment is parsed as a full document and unwrapped from document.body.
-  const { document } = parseHTML(`<html><body>${html}</body></html>`);
+  const { document } = parseHTML(
+    `<html><body>${closeExplicitlySelfClosedTags(html)}</body></html>`
+  );
   // linkedom's tokenizer splits text into separate sibling Text nodes at
   // decoded-entity boundaries (e.g. "a &amp; b" becomes three text nodes
   // instead of one) — normalize() merges them back, matching how every
