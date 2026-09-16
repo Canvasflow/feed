@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 🏷️ 2.0.20
+
+_September 16, 2026_
+
+✨ Features
+
+- (html) Add support for closeExplicitlySelfClosedTags in RSSFeed ([`7942829`](https://github.com/Canvasflow/feed/commit/79428291d8ce157c03721c7d8d383c94e130f736))
+
 ## 🏷️ 2.0.19
 
 _September 16, 2026_
