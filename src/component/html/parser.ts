@@ -73,7 +73,13 @@ function endsInUnquotedAttributeValue(
 
     i++; // consume '='
     while (i < pos && /\s/.test(html[i]!)) i++;
-    if (i >= pos) return false;
+    // The candidate '/' immediately follows an '=' (with or without
+    // intervening whitespace) and nothing else — per the HTML5 tokenizer
+    // this is still "before attribute value" state, which folds a `/` it
+    // finds there into the value (unquoted) rather than treating it as
+    // self-closing; only a `/` reached from "before attribute name" state
+    // (no `=` pending) is unambiguous. So this reads as *in* a value too.
+    if (i >= pos) return true;
 
     const quote = html[i];
     if (quote === '"' || quote === "'") {

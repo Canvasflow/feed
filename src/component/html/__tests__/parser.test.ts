@@ -128,6 +128,28 @@ describe('parse — explicitly self-closed non-void tags', () => {
   );
 
   test(
+    'an attribute with "=" immediately (or after whitespace) followed by "/" and no value is not self-close',
+    { tags: ['unit', 'html'] },
+    () => {
+      // Per the HTML5 tokenizer, an '=' — with or without trailing
+      // whitespace — puts the tokenizer in "before attribute value" state,
+      // which folds a `/` found there into the (unquoted) value rather than
+      // treating it as self-closing; confirmed against unmodified linkedom
+      // output for both variants. Only a `/` reached from "before
+      // attribute name" state (no pending '=') is unambiguous.
+      for (const html of [
+        '<div data-x=/><p>after</p>',
+        '<div data-x= /><p>after</p>',
+      ]) {
+        const nodes = parse(html);
+        expect(tagNames(nodes)).toEqual(['div']);
+        const div = nodes[0] as ElementNode;
+        expect(div.children.some((n) => n.type === 'element')).toBe(true);
+      }
+    }
+  );
+
+  test(
     'HTMLMapper.toComponents produces separate components for the audio and its sibling',
     { tags: ['unit', 'html'] },
     () => {
