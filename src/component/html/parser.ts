@@ -129,6 +129,8 @@ function endsInUnquotedAttributeValue(
  * @returns {string}
  */
 export function closeExplicitlySelfClosedTags(html: string): string {
+  if (!html) return '';
+
   const parts: string[] = [];
   const { length } = html;
   let i = 0;
