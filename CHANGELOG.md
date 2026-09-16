@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 🏷️ 2.0.19
+
+_September 16, 2026_
+
+🐛 Fixed
+
+- (html) Treat a boolean attribute directly followed by "/" as self-closing ([`bb0ca84`](https://github.com/Canvasflow/feed/commit/bb0ca84dee92cd22439430ada0aa75333bc28a32))
+
 ## 🏷️ 2.0.18
 
 _September 16, 2026_
