@@ -56,7 +56,7 @@ const VOID_TAGS = new Set([
  * @param {string} html
  * @returns {string}
  */
-function closeExplicitlySelfClosedTags(html: string): string {
+export function closeExplicitlySelfClosedTags(html: string): string {
   const parts: string[] = [];
   const { length } = html;
   let i = 0;
