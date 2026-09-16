@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 🏷️ 2.0.17
+
+_September 16, 2026_
+
+🐛 Fixed
+
+- (html) Honor explicit self-closing syntax on non-void tags ([`4f4159e`](https://github.com/Canvasflow/feed/commit/4f4159ebc4eb0f7824a887ae25c1e207acce8a18))
+
 ## 🏷️ 2.0.16
 
 _September 11, 2026_
