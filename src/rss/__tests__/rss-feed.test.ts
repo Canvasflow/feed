@@ -2331,6 +2331,32 @@ describe('media:content mapping', () => {
   );
 
   test(
+    // Real-world case (feeds.newsweek.com): fast-xml-parser coerces
+    // purely-numeric tag content to a `number`, which previously threw
+    // `description.trim is not a function` (and would have for title/credit
+    // too) since a number has no .trim(). build() must never throw.
+    'It should not throw when title, description, or credit are purely numeric',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(
+          `<media:content url="https://example.com/a.jpg" type="image/jpeg">
+            <media:title type="plain">123456</media:title>
+            <media:description type="plain">532457978</media:description>
+            <media:credit>789</media:credit>
+          </media:content>`
+        )
+      );
+      await feed.validate();
+      const rss = await feed.build();
+      const media = rss.channel.items[0]!.mediaContent[0]!;
+      expect(media.title).toBe('123456');
+      expect(media.description).toBe('532457978');
+      expect(media.credit).toBe('789');
+    }
+  );
+
+  test(
     'It should resolve a relative media url against the channel origin',
     { tags: ['unit', 'rss'] },
     async () => {
@@ -2348,6 +2374,62 @@ describe('media:content mapping', () => {
       ).toBe(true);
     }
   );
+});
+
+describe('numeric tag content does not throw', () => {
+  // fast-xml-parser coerces a tag whose text content is purely numeric to a
+  // `number` rather than a `string`; every field that later calls a string
+  // method (.trim(), decodeEntities(), removeHTMLTags()) on such a value
+  // must be guarded — build()/validate() must never throw. Real-world case:
+  // feeds.newsweek.com.
+  const tags = { tags: ['unit', 'rss'] };
+
+  test('a purely-numeric channel title/link/description', tags, async () => {
+    const xml = `<rss version="2.0"><channel><title>2026</title><link>1234</link>
+      <description>5678</description>
+      <item><title>Item</title><link>http://example.com/1</link>
+        <guid>1</guid>
+        <pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate>
+      </item></channel></rss>`;
+    const feed = new RSSFeed(xml);
+    await feed.validate();
+    const rss = await feed.build();
+    expect(rss.errors).toEqual([]);
+    expect(rss.channel.title).toBe('2026');
+    expect(rss.channel.link).toBe('1234');
+    expect(rss.channel.description).toBe('5678');
+  });
+
+  test('a purely-numeric channel image title', tags, async () => {
+    const xml = `<rss version="2.0"><channel><title>T</title><link>http://example.com</link>
+      <description>D</description>
+      <image><url>http://example.com/i.png</url><title>2026</title></image>
+      <item><title>Item</title><link>http://example.com/1</link>
+        <guid>1</guid>
+        <pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate>
+      </item></channel></rss>`;
+    const feed = new RSSFeed(xml);
+    await feed.validate();
+    const rss = await feed.build();
+    expect(rss.errors).toEqual([]);
+    expect(rss.channel.image?.title).toBe('2026');
+  });
+
+  test('a purely-numeric item title/link', tags, async () => {
+    const xml = `<rss version="2.0"><channel><title>T</title><link>http://example.com</link>
+      <description>D</description>
+      <item><title>2026</title><link>1234</link>
+        <guid>1</guid>
+        <pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate>
+      </item></channel></rss>`;
+    const feed = new RSSFeed(xml);
+    await feed.validate();
+    const rss = await feed.build();
+    const item = rss.channel.items[0]!;
+    expect(item.errors).toEqual([]);
+    expect(item.title).toBe('2026');
+    expect(item.link).toBe('1234');
+  });
 });
 
 describe('getRecipeFromUrl with stubbed fetch', () => {
