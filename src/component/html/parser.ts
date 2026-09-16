@@ -30,6 +30,76 @@ const VOID_TAGS = new Set([
 ]);
 
 /**
+ * Whether `pos` (the index of a candidate self-closing `/`) falls inside an
+ * *unquoted* attribute value that started earlier in `html[start..pos)` —
+ * the one case where a trailing `/` isn't a self-close marker but literally
+ * part of the value (`<div data-x=foo/>` parses as `data-x="foo/"` per
+ * HTML5, since the unquoted-value state only ends on whitespace or `>`).
+ *
+ * A bare boolean attribute with no `=` (`<audio muted/>`) does *not* count,
+ * even though nothing separates "muted" from "/": per the HTML5 tokenizer,
+ * finishing an attribute name with no `=` returns to the "before attribute
+ * name" state, where a `/` unambiguously starts self-closing — it only
+ * reads as part of a value when an `=` actually opened one.
+ *
+ * Walks `html[start..pos)` as a simplified attribute-name/attribute-value
+ * scanner (name → optional `=value`, quoted or unquoted) — good enough for
+ * real-world markup, not a full spec-compliant tokenizer.
+ */
+function endsInUnquotedAttributeValue(
+  html: string,
+  start: number,
+  pos: number
+): boolean {
+  let i = start;
+  while (i < pos) {
+    while (i < pos && /\s/.test(html[i]!)) i++;
+    if (i >= pos) break;
+
+    // Attribute name: any run of characters other than whitespace, '=',
+    // '/', or '>' — the same characters that end a name per the HTML5
+    // tokenizer's "attribute name state".
+    const nameStart = i;
+    while (i < pos && !/[\s=/>]/.test(html[i]!)) i++;
+    if (i === nameStart) {
+      // A stray '=' or similar with no name before it — not a real
+      // attribute; skip it so a malformed fragment can't hang the scan.
+      i++;
+      continue;
+    }
+
+    while (i < pos && /\s/.test(html[i]!)) i++;
+    if (html[i] !== '=') continue; // boolean attribute — no value to enter
+
+    i++; // consume '='
+    while (i < pos && /\s/.test(html[i]!)) i++;
+    // The candidate '/' immediately follows an '=' (with or without
+    // intervening whitespace) and nothing else — per the HTML5 tokenizer
+    // this is still "before attribute value" state, which folds a `/` it
+    // finds there into the value (unquoted) rather than treating it as
+    // self-closing; only a `/` reached from "before attribute name" state
+    // (no `=` pending) is unambiguous. So this reads as *in* a value too.
+    if (i >= pos) return true;
+
+    const quote = html[i];
+    if (quote === '"' || quote === "'") {
+      i++;
+      while (i < pos && html[i] !== quote) i++;
+      if (i < pos) i++; // consume the closing quote
+      continue;
+    }
+
+    // Unquoted value: consumes everything up to whitespace or `pos` — if
+    // it reaches `pos` (i.e. `html[pos]`, the candidate '/', immediately
+    // follows with no whitespace in between), that '/' is part of the value.
+    const valueStart = i;
+    while (i < pos && !/\s/.test(html[i]!)) i++;
+    if (i === pos && valueStart < pos) return true;
+  }
+  return false;
+}
+
+/**
  * Rewrite explicitly self-closed non-void start tags (`<audio ... />`,
  * `<div />`, …) into an empty tag pair (`<audio ...></audio>`) before
  * handing the string to linkedom.
@@ -48,10 +118,12 @@ const VOID_TAGS = new Set([
  * previous (himalaya-based) parser treated `/>` — without granting every
  * tag void-element status: only a tag actually written with `/>` in the
  * source is affected, and only when that `/` reads unambiguously as a
- * self-close marker (immediately after the tag name, after whitespace, or
- * after a quoted attribute value) rather than as the tail of a bare
- * unquoted attribute value (`<div data-x=foo/>`, which HTML5 parses as
- * `data-x="foo/"`, not as self-closing).
+ * self-close marker rather than as the tail of a bare unquoted attribute
+ * value (`<div data-x=foo/>`, which HTML5 parses as `data-x="foo/"`, not
+ * as self-closing) — see `endsInUnquotedAttributeValue` for how that's
+ * told apart from a boolean attribute directly followed by `/` (e.g.
+ * `<audio muted/>`), which *is* unambiguous despite having no preceding
+ * whitespace either.
  *
  * @param {string} html
  * @returns {string}
@@ -104,14 +176,12 @@ export function closeExplicitlySelfClosedTags(html: string): string {
       break;
     }
 
-    // Find the last non-whitespace character before '>'. `slashPos` is
-    // always > lt here: nameEnd is at least lt + 2 (a tag name is never
-    // empty), so `slashPos - 1` is always a valid index into `html`.
+    // Find the last non-whitespace character before '>'.
     let slashPos = tagEnd - 1;
     while (slashPos > nameEnd && /\s/.test(html[slashPos]!)) slashPos--;
     const isUnambiguousSelfClose =
       html[slashPos] === '/' &&
-      (slashPos === nameEnd || /[\s"']/.test(html[slashPos - 1]!));
+      !endsInUnquotedAttributeValue(html, nameEnd, slashPos);
 
     if (isUnambiguousSelfClose && !VOID_TAGS.has(tagName)) {
       parts.push(`${html.slice(lt, slashPos)}></${tagName}>`);

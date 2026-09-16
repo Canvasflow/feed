@@ -66,6 +66,28 @@ describe('parse — explicitly self-closed non-void tags', () => {
   );
 
   test(
+    'a boolean attribute directly followed by "/" (no space) still self-closes',
+    { tags: ['unit', 'html'] },
+    () => {
+      // Real-world case: publisher markup with no space before the self-close
+      // slash (`muted/>` rather than `muted />`). Unlike an unquoted
+      // *attribute value* ending in "/" (which HTML5 folds into the value —
+      // see the `data-x=foo/` case below), a bare boolean attribute has no
+      // `=`, so per the HTML5 tokenizer the `/` unambiguously starts
+      // self-closing regardless of the missing whitespace.
+      const html =
+        '<audio src="https://example.com/a.mp3" controls loop muted/>' +
+        '<section class="c">text</section>';
+
+      const nodes = parse(html);
+
+      expect(tagNames(nodes)).toEqual(['audio', 'section']);
+      const audio = nodes[0] as ElementNode;
+      expect(audio.children).toEqual([]);
+    }
+  );
+
+  test(
     'void elements are unaffected — already self-close regardless of `/`',
     { tags: ['unit', 'html'] },
     () => {
@@ -102,6 +124,28 @@ describe('parse — explicitly self-closed non-void tags', () => {
       // The <p> got consumed as a child, matching plain HTML5 parsing —
       // proof the ambiguous case was left alone rather than "fixed".
       expect(tagNames(nodes)).toEqual(['div']);
+    }
+  );
+
+  test(
+    'an attribute with "=" immediately (or after whitespace) followed by "/" and no value is not self-close',
+    { tags: ['unit', 'html'] },
+    () => {
+      // Per the HTML5 tokenizer, an '=' — with or without trailing
+      // whitespace — puts the tokenizer in "before attribute value" state,
+      // which folds a `/` found there into the (unquoted) value rather than
+      // treating it as self-closing; confirmed against unmodified linkedom
+      // output for both variants. Only a `/` reached from "before
+      // attribute name" state (no pending '=') is unambiguous.
+      for (const html of [
+        '<div data-x=/><p>after</p>',
+        '<div data-x= /><p>after</p>',
+      ]) {
+        const nodes = parse(html);
+        expect(tagNames(nodes)).toEqual(['div']);
+        const div = nodes[0] as ElementNode;
+        expect(div.children.some((n) => n.type === 'element')).toBe(true);
+      }
     }
   );
 
