@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 🏷️ 2.0.19
+
+_September 16, 2026_
+
+✨ Features
+
+- (html) Add support for lack of space in closing tag ([`2d9ca75`](https://github.com/Canvasflow/feed/commit/2d9ca75b6782c7933438100c30d571c3c5e46639))
+
+🐛 Fixed
+
+- (html) Treat a boolean attribute directly followed by "/" as self-closing ([`bb0ca84`](https://github.com/Canvasflow/feed/commit/bb0ca84dee92cd22439430ada0aa75333bc28a32))
+
 ## 🏷️ 2.0.18
 
 _September 16, 2026_
