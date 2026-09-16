@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 🏷️ 2.0.21
+
+_September 16, 2026_
+
+🐛 Fixed
+
+- (rss) Guard string methods against non-string XML tag content ([`76d31e5`](https://github.com/Canvasflow/feed/commit/76d31e55e97149437ca6dead1f7139a0d4cfd7fd))
+
 ## 🏷️ 2.0.20
 
 _September 16, 2026_
