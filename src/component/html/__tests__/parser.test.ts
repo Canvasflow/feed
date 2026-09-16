@@ -66,6 +66,28 @@ describe('parse — explicitly self-closed non-void tags', () => {
   );
 
   test(
+    'a boolean attribute directly followed by "/" (no space) still self-closes',
+    { tags: ['unit', 'html'] },
+    () => {
+      // Real-world case: publisher markup with no space before the self-close
+      // slash (`muted/>` rather than `muted />`). Unlike an unquoted
+      // *attribute value* ending in "/" (which HTML5 folds into the value —
+      // see the `data-x=foo/` case below), a bare boolean attribute has no
+      // `=`, so per the HTML5 tokenizer the `/` unambiguously starts
+      // self-closing regardless of the missing whitespace.
+      const html =
+        '<audio src="https://example.com/a.mp3" controls loop muted/>' +
+        '<section class="c">text</section>';
+
+      const nodes = parse(html);
+
+      expect(tagNames(nodes)).toEqual(['audio', 'section']);
+      const audio = nodes[0] as ElementNode;
+      expect(audio.children).toEqual([]);
+    }
+  );
+
+  test(
     'void elements are unaffected — already self-close regardless of `/`',
     { tags: ['unit', 'html'] },
     () => {
