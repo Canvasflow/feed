@@ -42,14 +42,14 @@ Validation is driven by allow-lists in [`tag.ts`](https://github.com/canvasflow/
 
 Canvasflow reads a curated subset of each namespace (anything else is ignored):
 
-| Prefix    | Namespace   | Used for                                                                                       |
-| --------- | ----------- | ---------------------------------------------------------------------------------------------- |
-| `atom`    | Atom        | `atom:link` (channel self-reference), `atom:author`, `atom:updated`.                           |
-| `dc`      | Dublin Core | `dc:creator`, `dc:date`, `dc:language`, `dcterms:modified`.                                    |
-| `sy`      | Syndication | `sy:updatePeriod`, `sy:updateFrequency`, `sy:updateBase`.                                      |
-| `content` | Content     | `content:encoded` — the full HTML body, source of `components`.                                |
-| `media`   | Media RSS   | `media:content`, `media:group`, and nested `media:*` metadata.                                 |
-| `cf`      | Canvasflow  | `cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`. |
+| Prefix    | Namespace   | Used for                                                                                                            |
+| --------- | ----------- | ------------------------------------------------------------------------------------------------------------------- |
+| `atom`    | Atom        | `atom:link` (channel self-reference), `atom:author`, `atom:updated`.                                                |
+| `dc`      | Dublin Core | `dc:creator`, `dc:date`, `dc:language`, `dcterms:modified`.                                                         |
+| `sy`      | Syndication | `sy:updatePeriod`, `sy:updateFrequency`, `sy:updateBase`.                                                           |
+| `content` | Content     | `content:encoded` — the full HTML body, source of `components`.                                                     |
+| `media`   | Media RSS   | `media:content`, `media:group`, and nested `media:*` metadata.                                                      |
+| `cf`      | Canvasflow  | `cf:hasAffiliateLinks`, `cf:isSponsored`, `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`, `cf:generationType`. |
 
 ## Item fields worth knowing
 

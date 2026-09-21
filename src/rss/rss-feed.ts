@@ -12,6 +12,7 @@ import type {
   MediaGroup,
   Source,
   Thumbnail,
+  GenerationType,
 } from './rss-types';
 import {
   type FeedIssue,
@@ -592,6 +593,7 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
     'cf:hasAffiliateLinks': false,
     'cf:isSponsored': false,
     'cf:liveCoverageState': undefined,
+    'cf:generationType': [],
     'cf:isPaid': false,
     'dc:creator': dcCreator ? `${dcCreator}`.trim() : undefined,
     'dc:date': item['dc:date'] ? `${item['dc:date']}` : undefined,
@@ -728,14 +730,17 @@ function buildCanvasflowFlags(
   'cf:isSponsored': boolean;
   'cf:isPaid': boolean;
   'cf:liveCoverageState': string | null | undefined;
+  'cf:generationType': GenerationType[];
 } {
   const flags: CanvasflowBooleanTarget & {
     'cf:liveCoverageState': string | null | undefined;
+    'cf:generationType': GenerationType[];
   } = {
     'cf:hasAffiliateLinks': false,
     'cf:isSponsored': false,
     'cf:isPaid': false,
     'cf:liveCoverageState': undefined,
+    'cf:generationType': [],
     errors,
     warnings,
   };
@@ -751,6 +756,24 @@ function buildCanvasflowFlags(
       liveCoverageState['@_state'] === 'completed'
         ? liveCoverageState['@_state']
         : null;
+  }
+
+  if (
+    item['cf:generationType'] &&
+    typeof item['cf:generationType'] === 'string'
+  ) {
+    item['cf:generationType'] = [item['cf:generationType']];
+  }
+
+  if (Array.isArray(item['cf:generationType'])) {
+    let cfGenerationType = new Set<GenerationType>();
+    for (const generationType of item['cf:generationType']) {
+      let type = `${generationType}`.toLowerCase().trim();
+      if (type === 'ai' || type === 'syndicated') {
+        cfGenerationType.add(type);
+      }
+    }
+    flags['cf:generationType'] = [...cfGenerationType];
   }
 
   return flags;

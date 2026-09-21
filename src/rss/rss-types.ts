@@ -67,7 +67,8 @@ export interface Item {
   'cf:hasAffiliateLinks'?: boolean | undefined;
   'cf:isSponsored'?: boolean | undefined;
   'cf:isPaid'?: boolean | undefined;
-  'cf:liveCoverageState'?: null | 'live' | 'completed' | undefined;
+  'cf:liveCoverageState'?: LiveCoverageState;
+  'cf:generationType'?: GenerationType[];
   'cf:thumbnail'?: Thumbnail | undefined;
   'dc:creator'?: string | undefined;
   'dc:date'?: string | undefined;
@@ -82,6 +83,10 @@ export interface Item {
       }
     | undefined;
 }
+
+export type LiveCoverageState = null | 'live' | 'completed' | undefined;
+
+export type GenerationType = 'ai' | 'syndicated';
 
 export interface Thumbnail {
   url: string;

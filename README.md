@@ -23,7 +23,7 @@ The package is published as an **ESM** module (with TypeScript declarations) to
   Apple Podcasts), recipes, HTML tables, columns, containers, live posts, and more.
 - Configurable HTML → component mapping via `Params`/`Mapping`.
 - Canvasflow `cf:` namespace extensions (`cf:hasAffiliateLinks`, `cf:isSponsored`,
-  `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`).
+  `cf:isPaid`, `cf:liveCoverageState`, `cf:thumbnail`, `cf:generationType`).
 - Pure and side-effect-free: malformed input is reported through `errors`/`warnings`
   rather than thrown.
 
