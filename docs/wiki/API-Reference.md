@@ -165,7 +165,7 @@ The `is*` component guards (e.g. `isImageComponent`, `isVideoComponent`) and `is
 
 | Group              | Types                                                                                                                                                              |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Feed               | `RSS`, `Channel`, `ChannelImage`, `Item`, `MutableItem`, `Thumbnail`, `Enclosure`, `Source`, `MediaContent`, `MediaGroup`                                          |
+| Feed               | `RSS`, `Channel`, `ChannelImage`, `Item`, `MutableItem`, `Thumbnail`, `Enclosure`, `Source`, `MediaContent`, `MediaGroup`, `LiveCoverageState`, `GenerationType`   |
 | Errors             | `FeedIssue`, `FeedIssueCode`, `FeedIssueSeverity` — see "Error model" above                                                                                        |
 | Config             | `Params`, `Mapping`, `ComponentMapping`, `MatchType`, `Filter`, `TagFilter`, `ClassFilter`, `AttributeFilter`, `AttributeValueFilter`, `AttributePatternFilter`    |
 | Component mappings | `ContainerMapping`, `ColumnsMapping`, `LiveContainerMapping`, `RecipeMapping`, `CustomMapping`, `TextMapping`, `GalleryMapping`, `DividerMapping`, `SpacerMapping` |

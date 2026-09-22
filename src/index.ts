@@ -14,6 +14,8 @@ export type {
   Source,
   MediaGroup,
   MediaContent,
+  LiveCoverageState,
+  GenerationType,
 } from './rss/rss-types';
 export { replaceErrors, clone } from './rss/rss-types';
 
