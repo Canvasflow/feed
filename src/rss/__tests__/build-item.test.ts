@@ -154,7 +154,10 @@ describe('buildItem — cf:generationType', () => {
         { ...base, 'cf:generationType': ['ai', 'syndicated'] },
         ctx
       );
-      expect(item['cf:generationType']?.sort()).toEqual(['ai', 'syndicated']);
+      expect([...(item['cf:generationType'] ?? [])].sort()).toEqual([
+        'ai',
+        'syndicated',
+      ]);
     }
   );
 
@@ -172,7 +175,10 @@ describe('buildItem — cf:generationType', () => {
       ctx
     );
     expect(item['cf:generationType']?.length).toBe(2);
-    expect(item['cf:generationType']?.sort()).toEqual(['ai', 'syndicated']);
+    expect([...(item['cf:generationType'] ?? [])].sort()).toEqual([
+      'ai',
+      'syndicated',
+    ]);
   });
 });
 
@@ -458,4 +464,17 @@ describe('clone', () => {
       item.mediaContent[0]?.errors
     );
   });
+
+  test(
+    'clones cf:generationType — pushing to the clone does not mutate the original',
+    tags,
+    () => {
+      const input: ParsedItem = { ...base, 'cf:generationType': ['ai'] };
+      const item = buildItem(input, ctx);
+      const mutable = clone(item);
+      expect(mutable['cf:generationType']).not.toBe(item['cf:generationType']);
+      mutable['cf:generationType']?.push('syndicated');
+      expect(item['cf:generationType']).toEqual(['ai']);
+    }
+  );
 });

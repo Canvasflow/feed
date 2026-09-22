@@ -68,7 +68,7 @@ export interface Item {
   'cf:isSponsored'?: boolean | undefined;
   'cf:isPaid'?: boolean | undefined;
   'cf:liveCoverageState'?: LiveCoverageState;
-  'cf:generationType'?: GenerationType[];
+  'cf:generationType'?: readonly GenerationType[] | undefined;
   'cf:thumbnail'?: Thumbnail | undefined;
   'dc:creator'?: string | undefined;
   'dc:date'?: string | undefined;
@@ -180,8 +180,8 @@ export type MutableItem = DeepMutable<Item>;
  *
  * Every `readonly` array is copied into a fresh mutable array — `errors`,
  * `warnings`, `enclosure`, `source`, `mediaGroup`, `mediaContent`,
- * `components`, and `category`. Use this when you need to post-process a
- * built item with
+ * `components`, `category`, and `cf:generationType`. Use this when you need
+ * to post-process a built item with
  * `.push()` / `.splice()` / reassignment without TypeScript complaining.
  *
  * @example
@@ -228,6 +228,9 @@ export function clone(item: Item): MutableItem {
       errors: [...c.errors],
       warnings: [...c.warnings],
     })) as Array<DeepMutable<Component>>,
+    'cf:generationType': item['cf:generationType']
+      ? [...item['cf:generationType']]
+      : item['cf:generationType'],
   };
 }
 
