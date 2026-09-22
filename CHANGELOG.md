@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## 🏷️ 2.0.22
+
+_September 22, 2026_
+
+✨ Features
+
+- (rss) Add support for cf:generationType ([`6c4a9de`](https://github.com/Canvasflow/feed/commit/6c4a9de1eb93bf4f800abbd40da4352b4c782dbe))
+
+🐛 Fixed
+
+- (rss) Deep-clone cf:generationType and expand test coverage ([`01ac454`](https://github.com/Canvasflow/feed/commit/01ac4541d17caae1b3a58fc330eb10c89d1f0264))
+
+📝 Docs
+
+- (rss) Document cf:generationType and export its types ([`f065f7d`](https://github.com/Canvasflow/feed/commit/f065f7dd1906e9cfb92abd489b345c099e1d6feb))
+
+🧹 Chores
+
+- Update snapshot ([`4f6a308`](https://github.com/Canvasflow/feed/commit/4f6a3086ed5cdff2657d641a66d375829fb57896))
+
 ## 🏷️ 2.0.21
 
 _September 16, 2026_
