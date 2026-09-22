@@ -14,6 +14,7 @@ _September 22, 2026_
 
 📝 Docs
 
+- Update changelog ([`9735bb2`](https://github.com/Canvasflow/feed/commit/9735bb234198eb9a0422e4ce7efb9ff5de6306d0))
 - (rss) Document cf:generationType and export its types ([`f065f7d`](https://github.com/Canvasflow/feed/commit/f065f7dd1906e9cfb92abd489b345c099e1d6feb))
 
 🧹 Chores
