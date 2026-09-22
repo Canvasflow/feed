@@ -43,6 +43,7 @@ export const Tag = {
           'cf:isSponsored',
           'cf:isPaid',
           'cf:liveCoverageState',
+          'cf:generationType',
           'cf:thumbnail',
           'dc:creator',
           'dc:date',
