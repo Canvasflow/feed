@@ -17,6 +17,7 @@ import {
   ParamsSchema,
   MappingSchema,
 } from '../../component/mapping/mapping.schema';
+import { getHtml } from '../../utils/http';
 
 /**
  * `true` when some issue in `issues` has exactly `message`. Test-only
@@ -1258,8 +1259,8 @@ describe('T3', () => {
           }
 
           try {
-            let itemContent = await RSSFeed.getHtmlContent(item.link, {
-              'User-Agent': 'Canvasflow',
+            let itemContent = await getHtml(item.link, {
+              headers: { 'User-Agent': 'Canvasflow' },
             });
             if (root) {
               itemContent = `${HTMLMapper.getRootElement(itemContent, root)}`;
@@ -2432,6 +2433,110 @@ describe('numeric tag content does not throw', () => {
   });
 });
 
+describe('cf:generationType — full RSSFeed pipeline', () => {
+  // build-item.test.ts covers the value-normalisation logic (case
+  // folding, invalid/duplicate filtering) by constructing a ParsedItem
+  // directly with the array already built. These tests instead go through
+  // the real fast-xml-parser boundary, where a *single* <cf:generationType>
+  // arrives as a bare string and *repeated* tags auto-array — two different
+  // shapes buildItem has to normalise — and through validate(), to confirm
+  // the tag doesn't trip the allow-list.
+  const tags = { tags: ['unit', 'rss'] };
+
+  test(
+    'a single <cf:generationType> tag (parsed as a bare string) is captured',
+    tags,
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(`<cf:generationType>ai</cf:generationType>`)
+      );
+      await feed.validate();
+      const rss = await feed.build();
+      expect(rss.channel.items[0]!['cf:generationType']).toEqual(['ai']);
+    }
+  );
+
+  test(
+    'repeated <cf:generationType> tags (auto-arrayed by fast-xml-parser) are all captured',
+    tags,
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(
+          `<cf:generationType>ai</cf:generationType><cf:generationType>syndicated</cf:generationType>`
+        )
+      );
+      await feed.validate();
+      const rss = await feed.build();
+      expect(
+        [...(rss.channel.items[0]!['cf:generationType'] ?? [])].sort()
+      ).toEqual(['ai', 'syndicated']);
+    }
+  );
+
+  test(
+    'an item without <cf:generationType> gets an empty array, not undefined',
+    tags,
+    async () => {
+      const feed = new RSSFeed(buildFeed(''));
+      await feed.validate();
+      const rss = await feed.build();
+      expect(rss.channel.items[0]!['cf:generationType']).toEqual([]);
+    }
+  );
+
+  test(
+    'does not raise an INVALID_TAG warning for <cf:generationType>',
+    tags,
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(`<cf:generationType>ai</cf:generationType>`)
+      );
+      await feed.validate();
+      const rss = await feed.build();
+      const item = rss.channel.items[0]!;
+      expect(
+        hasMessage(item.warnings, 'Invalid property "cf:generationType"')
+      ).toBe(false);
+    }
+  );
+
+  test(
+    'purely-numeric tag content is ignored, not thrown on',
+    tags,
+    async () => {
+      // Same class of input that broke title/description/credit elsewhere
+      // in this file (fast-xml-parser number-coerces a purely-numeric tag
+      // body) — safe here already since the value is template-literal
+      // coerced before comparison, but that safety wasn't locked in by a
+      // test until now.
+      const feed = new RSSFeed(
+        buildFeed(`<cf:generationType>123</cf:generationType>`)
+      );
+      await feed.validate();
+      const rss = await feed.build();
+      expect(rss.channel.items[0]!['cf:generationType']).toEqual([]);
+    }
+  );
+
+  test(
+    'a tag carrying an attribute (parsed as a {#text, @_...} object) is currently dropped, not thrown on',
+    tags,
+    async () => {
+      // <cf:generationType lang="en">ai</cf:generationType> arrives as
+      // { '#text': 'ai', '@_lang': 'en' } rather than a bare string; the
+      // current implementation only handles the string and array-of-string
+      // shapes, so this silently yields an empty array. Documented here so
+      // a future change to widen that handling doesn't regress silently.
+      const feed = new RSSFeed(
+        buildFeed(`<cf:generationType lang="en">ai</cf:generationType>`)
+      );
+      await feed.validate();
+      const rss = await feed.build();
+      expect(rss.channel.items[0]!['cf:generationType']).toEqual([]);
+    }
+  );
+});
+
 describe('getRecipeFromUrl with stubbed fetch', () => {
   const originalFetch = globalThis.fetch;
 
@@ -2451,7 +2556,7 @@ describe('getRecipeFromUrl with stubbed fetch', () => {
         )}</script></head><body></body></html>`
       );
       try {
-        const result = await RSSFeed.getRecipeFromUrl('https://example.com/r');
+        const result = await getRecipeFromUrl('https://example.com/r');
         expect(result).toBeTruthy();
         expect(result?.name).toBe('Soup');
       } finally {
@@ -2473,7 +2578,7 @@ describe('getRecipeFromUrl with stubbed fetch', () => {
         )}</script></head><body></body></html>`
       );
       try {
-        const result = await RSSFeed.getRecipeFromUrl('https://example.com/r');
+        const result = await getRecipeFromUrl('https://example.com/r');
         expect(result?.name).toBe('Cake');
       } finally {
         globalThis.fetch = originalFetch;
@@ -2487,7 +2592,7 @@ describe('getRecipeFromUrl with stubbed fetch', () => {
     async () => {
       stubFetch(`<html><head></head><body><p>No recipe</p></body></html>`);
       try {
-        const result = await RSSFeed.getRecipeFromUrl('https://example.com/r');
+        const result = await getRecipeFromUrl('https://example.com/r');
         expect(result).toBe(null);
       } finally {
         globalThis.fetch = originalFetch;
@@ -2503,7 +2608,7 @@ describe('getRecipeFromUrl with stubbed fetch', () => {
         `<html><head><script type="application/ld+json"></script></head><body></body></html>`
       );
       try {
-        const result = await RSSFeed.getRecipeFromUrl('https://example.com/r');
+        const result = await getRecipeFromUrl('https://example.com/r');
         expect(result).toBe(null);
       } finally {
         globalThis.fetch = originalFetch;
@@ -2519,9 +2624,9 @@ describe('getRecipeFromUrl with stubbed fetch', () => {
         throw new Error('network down');
       }) as typeof fetch;
       try {
-        await expect(
-          RSSFeed.getHtmlContent('https://example.com/r')
-        ).rejects.toThrow('network down');
+        await expect(getHtml('https://example.com/r')).rejects.toThrow(
+          'network down'
+        );
       } finally {
         globalThis.fetch = originalFetch;
       }
@@ -2529,7 +2634,7 @@ describe('getRecipeFromUrl with stubbed fetch', () => {
   );
 });
 
-describe('getHtmlContent with stubbed fetch', () => {
+describe('getHtml with stubbed fetch', () => {
   const originalFetch = globalThis.fetch;
 
   test(
@@ -2543,7 +2648,7 @@ describe('getHtmlContent with stubbed fetch', () => {
           text: async () => '<html><body>Hello</body></html>',
         }) as Response) as typeof fetch;
       try {
-        const html = await RSSFeed.getHtmlContent('https://example.com');
+        const html = await getHtml('https://example.com');
         expect(html).toContain('Hello');
       } finally {
         globalThis.fetch = originalFetch;
@@ -2562,9 +2667,9 @@ describe('getHtmlContent with stubbed fetch', () => {
           text: async () => 'Not Found',
         }) as Response) as typeof fetch;
       try {
-        await expect(
-          RSSFeed.getHtmlContent('https://example.com')
-        ).rejects.toThrow('failed with status 404');
+        await expect(getHtml('https://example.com')).rejects.toThrow(
+          'failed with status 404'
+        );
       } finally {
         globalThis.fetch = originalFetch;
       }
@@ -2582,9 +2687,9 @@ describe('getHtmlContent with stubbed fetch', () => {
           text: async () => '{"not":"html"}',
         }) as Response) as typeof fetch;
       try {
-        await expect(
-          RSSFeed.getHtmlContent('https://example.com')
-        ).rejects.toThrow('is not HTML');
+        await expect(getHtml('https://example.com')).rejects.toThrow(
+          'is not HTML'
+        );
       } finally {
         globalThis.fetch = originalFetch;
       }

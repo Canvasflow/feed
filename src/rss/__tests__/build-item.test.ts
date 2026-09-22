@@ -111,6 +111,77 @@ describe('buildItem — cf:liveCoverageState', () => {
   });
 });
 
+describe('buildItem — cf:generationType', () => {
+  test('"ai" state is preserved', { tags: ['unit', 'rss'] }, () => {
+    const item = buildItem({ ...base, 'cf:generationType': ['ai'] }, ctx);
+    expect(item['cf:generationType']).toEqual(['ai']);
+  });
+
+  test(
+    '"ai" state is preserved being case insensitive',
+    { tags: ['unit', 'rss'] },
+    () => {
+      const item = buildItem({ ...base, 'cf:generationType': ['AI'] }, ctx);
+      expect(item['cf:generationType']).toEqual(['ai']);
+    }
+  );
+
+  test('"syndicated" state is preserved', { tags: ['unit', 'rss'] }, () => {
+    const item = buildItem(
+      { ...base, 'cf:generationType': ['syndicated'] },
+      ctx
+    );
+    expect(item['cf:generationType']).toEqual(['syndicated']);
+  });
+
+  test(
+    '"syndicated" state is preserved being case insensitive',
+    { tags: ['unit', 'rss'] },
+    () => {
+      const item = buildItem(
+        { ...base, 'cf:generationType': ['SYNDICATED'] },
+        ctx
+      );
+      expect(item['cf:generationType']).toEqual(['syndicated']);
+    }
+  );
+
+  test(
+    '"ai" and "syndicated" state are both present',
+    { tags: ['unit', 'rss'] },
+    () => {
+      const item = buildItem(
+        { ...base, 'cf:generationType': ['ai', 'syndicated'] },
+        ctx
+      );
+      expect([...(item['cf:generationType'] ?? [])].sort()).toEqual([
+        'ai',
+        'syndicated',
+      ]);
+    }
+  );
+
+  test('invalid values are ignored', { tags: ['unit', 'rss'] }, () => {
+    const item = buildItem({ ...base, 'cf:generationType': ['invalid'] }, ctx);
+    expect(item['cf:generationType']?.length).toBe(0);
+  });
+
+  test('duplicate values are ignored', { tags: ['unit', 'rss'] }, () => {
+    const item = buildItem(
+      {
+        ...base,
+        'cf:generationType': ['ai', 'ai', 'syndicated', 'syndicated'],
+      },
+      ctx
+    );
+    expect(item['cf:generationType']?.length).toBe(2);
+    expect([...(item['cf:generationType'] ?? [])].sort()).toEqual([
+      'ai',
+      'syndicated',
+    ]);
+  });
+});
+
 describe('buildItem — cf:thumbnail', () => {
   test('missing url adds an error', { tags: ['unit', 'rss'] }, () => {
     const item = buildItem(
@@ -393,4 +464,17 @@ describe('clone', () => {
       item.mediaContent[0]?.errors
     );
   });
+
+  test(
+    'clones cf:generationType — pushing to the clone does not mutate the original',
+    tags,
+    () => {
+      const input: ParsedItem = { ...base, 'cf:generationType': ['ai'] };
+      const item = buildItem(input, ctx);
+      const mutable = clone(item);
+      expect(mutable['cf:generationType']).not.toBe(item['cf:generationType']);
+      mutable['cf:generationType']?.push('syndicated');
+      expect(item['cf:generationType']).toEqual(['ai']);
+    }
+  );
 });

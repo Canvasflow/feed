@@ -98,6 +98,7 @@ export interface ParsedItem {
   'cf:isSponsored'?: unknown;
   'cf:isPaid'?: unknown;
   'cf:liveCoverageState'?: { '@_state'?: string };
+  'cf:generationType'?: string | Array<string>;
   'cf:thumbnail'?: {
     '@_url'?: string;
     '@_width'?: string;
