@@ -556,16 +556,17 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
   }
 
   let dctermsModified: string | undefined;
-  if (item['dcterms:modified']) {
-    const parsedDate = parseDate(item['dcterms:modified']);
+  const dctermsModifiedText = textOf(item['dcterms:modified']);
+  if (dctermsModifiedText) {
+    const parsedDate = parseDate(dctermsModifiedText);
     if (parsedDate) {
       dctermsModified = parsedDate;
     } else {
-      dctermsModified = item['dcterms:modified'];
+      dctermsModified = dctermsModifiedText;
       warnings.push(
         warningIssue(
           'UNPARSEABLE_DATE',
-          `Unable to parse dcterms:modified: "${item['dcterms:modified']}"`,
+          `Unable to parse dcterms:modified: "${dctermsModifiedText}"`,
           'dcterms:modified'
         )
       );
@@ -573,16 +574,17 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
   }
 
   let atomsUpdated: string | undefined;
-  if (item['atom:updated']) {
-    const parsedDate = parseDate(item['atom:updated']);
+  const atomsUpdatedText = textOf(item['atom:updated']);
+  if (atomsUpdatedText) {
+    const parsedDate = parseDate(atomsUpdatedText);
     if (parsedDate) {
       atomsUpdated = parsedDate;
     } else {
-      atomsUpdated = item['atom:updated'];
+      atomsUpdated = atomsUpdatedText;
       warnings.push(
         warningIssue(
           'UNPARSEABLE_DATE',
-          `Unable to parse atom:updated: "${item['atom:updated']}"`,
+          `Unable to parse atom:updated: "${atomsUpdatedText}"`,
           'atom:updated'
         )
       );
