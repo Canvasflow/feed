@@ -88,8 +88,13 @@ export interface ParsedItem {
   'dc:creator'?: string | Array<string | Record<string, unknown>>;
   'dc:date'?: string;
   'dc:language'?: string;
-  'dcterms:modified'?: string;
-  'atom:updated'?: string;
+  /**
+   * Elements with a `xmlns:dcterms`/plain attribute are parsed as
+   * `{ '#text': string, '@_xmlns:dcterms': string }` objects rather than
+   * plain strings; the string branch covers the attribute-free case.
+   */
+  'dcterms:modified'?: string | { '#text'?: unknown };
+  'atom:updated'?: string | { '#text'?: unknown };
   'atom:author'?: Record<string, unknown>;
   'atom:link'?: Record<string, unknown> | Array<Record<string, unknown>>;
   'sy:updatePeriod'?: string;
