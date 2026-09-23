@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 🏷️ 2.0.24
+
+_September 23, 2026_
+
+🐛 Fixed
+
+- (rss) Narrow dcterms:modified/atom:updated attribute-wrapper objects before date parsing ([`4a6e4ce`](https://github.com/Canvasflow/feed/commit/4a6e4ceffd2985987a4389a95b1e4ea1b84b853e))
+
+🧹 Chores
+
+- Bump feed version ([`62b1453`](https://github.com/Canvasflow/feed/commit/62b14532d3436068321a843d538ae6cbeffe3bf8))
+
 ## 🏷️ 2.0.23
 
 _September 23, 2026_
