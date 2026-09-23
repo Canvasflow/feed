@@ -540,9 +540,9 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
 
   let pubDate: string | undefined;
   if (item.pubDate) {
-    const parsedPubDate = parseDate(item.pubDate);
-    if (parsedPubDate) {
-      pubDate = parsedPubDate;
+    const parsedDate = parseDate(item.pubDate);
+    if (parsedDate) {
+      pubDate = parsedDate;
     } else {
       pubDate = item.pubDate;
       warnings.push(
@@ -550,6 +550,40 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
           'UNPARSEABLE_DATE',
           `Unable to parse pubDate: "${item.pubDate}"`,
           'pubDate'
+        )
+      );
+    }
+  }
+
+  let dctermsModified: string | undefined;
+  if (item['dcterms:modified']) {
+    const parsedDate = parseDate(item['dcterms:modified']);
+    if (parsedDate) {
+      dctermsModified = parsedDate;
+    } else {
+      dctermsModified = item['dcterms:modified'];
+      warnings.push(
+        warningIssue(
+          'UNPARSEABLE_DATE',
+          `Unable to parse dcterms:modified: "${item['dcterms:modified']}"`,
+          'dcterms:modified'
+        )
+      );
+    }
+  }
+
+  let atomsUpdated: string | undefined;
+  if (item['atom:updated']) {
+    const parsedDate = parseDate(item['atom:updated']);
+    if (parsedDate) {
+      atomsUpdated = parsedDate;
+    } else {
+      atomsUpdated = item['atom:updated'];
+      warnings.push(
+        warningIssue(
+          'UNPARSEABLE_DATE',
+          `Unable to parse atom:updated: "${item['atom:updated']}"`,
+          'atom:updated'
         )
       );
     }
@@ -600,13 +634,9 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
     'dc:language': item['dc:language']
       ? `${item['dc:language']}`.trim()
       : undefined,
-    'dcterms:modified': item['dcterms:modified']
-      ? `${item['dcterms:modified']}`
-      : undefined,
+    'dcterms:modified': dctermsModified,
     'atom:author': item['atom:author'] ?? undefined,
-    'atom:updated': item['atom:updated']
-      ? `${item['atom:updated']}`
-      : undefined,
+    'atom:updated': atomsUpdated,
   };
 
   Object.assign(response, buildCanvasflowFlags(item, errors, warnings));

@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 🏷️ 2.0.23
+
+_September 23, 2026_
+
+✨ Features
+
+- Force atom:updated and dcterms:modified to be parsed to iso ([`6cb0625`](https://github.com/Canvasflow/feed/commit/6cb06257171d61a4cd40d0aa74e25f789a99f01b))
+
+🧹 Chores
+
+- Bump feed version ([`db90362`](https://github.com/Canvasflow/feed/commit/db90362d0645f7cd245e33f49c1ad815c42a9bb7))
+
 ## 🏷️ 2.0.22
 
 _September 22, 2026_
