@@ -23,6 +23,7 @@ import {
   type ElementNode,
   type Node,
   type NodeFilterFn,
+  type TextNode,
   findDescendants,
   getAttributes,
   removeDescendants,
@@ -46,6 +47,7 @@ import {
   reduceComponents,
 } from './mapping';
 import { type FeedIssue, errorIssue, warningIssue } from '../../feed-issue';
+import { sanitizeNodes } from '../html/sanitize-html';
 
 /**
  * It maps the live post inside a Live Container Component
@@ -510,10 +512,26 @@ export function appendFigureContainerComponents(
  * @returns {string}
  */
 function textContent(nodes: Node[]): string {
+  const reduceTextNodes = (acc: TextNode[], node: Node): TextNode[] => {
+    switch (node.type) {
+      case 'comment':
+        break;
+      case 'text':
+        if (node.content?.trim().length) {
+          acc.push(node);
+        }
+        break;
+      case 'element':
+        acc.push(...node.children.reduce(reduceTextNodes, []));
+        break;
+    }
+
+    return acc;
+  };
   return trimAsciiWhitespace(
     escapeText(
       nodes
-        .filter((n) => n.type === 'text')
+        .reduce(reduceTextNodes, [])
         .map((n) => n.content)
         .join(' ')
     )
