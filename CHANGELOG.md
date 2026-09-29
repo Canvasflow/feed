@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 🏷️ 2.0.25
+
+_September 29, 2026_
+
+🐛 Fixed
+
+- Fix buttons with html content inside ([`3bab8ea`](https://github.com/Canvasflow/feed/commit/3bab8ea2e2fde8004f660a21e8e71a2c36ddb8a7))
+
 ## 🏷️ 2.0.24
 
 _September 23, 2026_
