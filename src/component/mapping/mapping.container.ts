@@ -47,7 +47,6 @@ import {
   reduceComponents,
 } from './mapping';
 import { type FeedIssue, errorIssue, warningIssue } from '../../feed-issue';
-import { sanitizeNodes } from '../html/sanitize-html';
 
 /**
  * It maps the live post inside a Live Container Component
