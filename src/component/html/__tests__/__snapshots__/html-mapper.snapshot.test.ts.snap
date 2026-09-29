@@ -2957,11 +2957,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     },
     "errors": [
       {
-        "code": "MISSING_BUTTON_TEXT",
-        "message": "Button text is required",
-        "severity": "error",
-      },
-      {
         "code": "MISSING_BUTTON_LINK",
         "message": "Button link is required",
         "severity": "error",
@@ -2969,7 +2964,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     ],
     "html": "<button id='mobile-menu-btn' x-data='' data-desktop-menu-min-width='900' type='button' class='border-0 bg-transparent px-2 py-4 sm:hidden text-[--burger-btn-color,black] z-[--burger-btn-z-index,1]' style='grid-area:burgerbar-trigger' data-component-name='Nav:BurgerButton' x-on:click='$store.mobileMenu.toggle()'> <span class='sr-only'>Open menu</span> <svg class='h-6 w-6' fill='currentColor' stroke-width='1.5' viewbox='0 0 24 24' stroke='currentColor' :class="{'rotate-90':$store.mobileMenu.open}"> <path stroke-linecap='round' stroke-linejoin='round' d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5'></path> </svg> </button>",
     "link": undefined,
-    "text": "",
+    "text": "Open menu",
     "warnings": [
       {
         "code": "MISSING_BUTTON_LINK",
@@ -3056,11 +3051,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     },
     "errors": [
       {
-        "code": "MISSING_BUTTON_TEXT",
-        "message": "Button text is required",
-        "severity": "error",
-      },
-      {
         "code": "MISSING_BUTTON_LINK",
         "message": "Button link is required",
         "severity": "error",
@@ -3068,7 +3058,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     ],
     "html": "<button type='button' class='h-fit m-auto flex items-center bg-transparent border-0 anchor text-inherit shrink-0 focus:outline-1 focus:[outline-style:auto]' tabindex='0' data-analytics-id='locale-flag-dropdown' data-current-region='US' data-mrf-recirculation='locale-flag-dropdown'> <span class='text-[10px] text-inherit capitalize mr-1.5 hidden md:visible md:inline'>US Edition</span> <img src='https://vanilla.futurecdn.net/tomsguide/media/shared/img/flags/nosize/US.svg' alt='flag of US' loading='eager' class='w-5'> <svg class='ml-0.5 size-1.5 text-inherit' data-component-name='Icon' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' width='32px' height='32px' viewbox='0 0 32 32' enable-background='new 0 0 32 32' space='preserve'> <path fill='currentColor' d='M32,3.2L15.989,28.8L0,3.2H32z'></path> </svg> </button>",
     "link": undefined,
-    "text": "",
+    "text": "US                            Edition",
     "warnings": [
       {
         "code": "MISSING_BUTTON_LINK",
@@ -3454,11 +3444,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     },
     "errors": [
       {
-        "code": "MISSING_BUTTON_TEXT",
-        "message": "Button text is required",
-        "severity": "error",
-      },
-      {
         "code": "MISSING_BUTTON_LINK",
         "message": "Button link is required",
         "severity": "error",
@@ -3466,7 +3451,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     ],
     "html": "<button type='button' class='flex items-center gap-2 px-4 h-[35px] bg-[#ececf0] border border-[#0000001a] rounded-full text-[14px] hover:bg-[#e0e0e5] transition-colors focus:outline-none focus:ring-2 focus:ring-[#1a98ee]' data-on-site-search-content-type-btn=''> <span style='color: #000' data-on-site-search-content-type-label=''>All Types</span> <svg class='w-4 h-4' style='color: #000' fill='none' stroke='currentColor' viewbox='0 0 24 24'> <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'></path> </svg> </button>",
     "link": undefined,
-    "text": "",
+    "text": "All                                                    Types",
     "warnings": [
       {
         "code": "MISSING_BUTTON_LINK",
@@ -3521,11 +3506,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     },
     "errors": [
       {
-        "code": "MISSING_BUTTON_TEXT",
-        "message": "Button text is required",
-        "severity": "error",
-      },
-      {
         "code": "MISSING_BUTTON_LINK",
         "message": "Button link is required",
         "severity": "error",
@@ -3533,7 +3513,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     ],
     "html": "<button type='button' class='flex items-center gap-2 px-4 h-[35px] bg-[#ececf0] border border-[#0000001a] rounded-full text-[14px] hover:bg-[#e0e0e5] transition-colors focus:outline-none focus:ring-2 focus:ring-[#1a98ee]' data-on-site-search-time-btn=''> <span style='color: #000' data-on-site-search-time-label=''>All Time</span> <svg class='w-4 h-4' style='color: #000' fill='none' stroke='currentColor' viewbox='0 0 24 24'> <path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'></path> </svg> </button>",
     "link": undefined,
-    "text": "",
+    "text": "All                                                    Time",
     "warnings": [
       {
         "code": "MISSING_BUTTON_LINK",
@@ -10771,11 +10751,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     },
     "errors": [
       {
-        "code": "MISSING_BUTTON_TEXT",
-        "message": "Button text is required",
-        "severity": "error",
-      },
-      {
         "code": "MISSING_BUTTON_LINK",
         "message": "Button link is required",
         "severity": "error",
@@ -10783,7 +10758,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms.html 1`] =
     ],
     "html": "<button type='button' class='bg-white text-gray-400 hover:text-gray-500 border-0 focus:outline-none focus:ring-1 focus:ring-primary-300 focus:ring-offset-2' x-show='!$store.ViafouraAuthModal.showLoader' x-on:click='$store.ViafouraAuthModal.closeModal()'> <span class='sr-only'>Close</span> <svg class='size-6 text-gray-400 hover:text-gray-500' data-component-name='Icon' xmlns='http://www.w3.org/2000/svg' fill='none' viewbox='0 0 24 24' stroke-width='1.5' stroke='currentColor' aria-hidden='true' data-slot='icon'> <path stroke-linecap='round' stroke-linejoin='round' d='M6 18 18 6M6 6l12 12'></path> </svg> </button>",
     "link": undefined,
-    "text": "",
+    "text": "Close",
     "warnings": [
       {
         "code": "MISSING_BUTTON_LINK",
@@ -12010,11 +11985,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     },
     "errors": [
       {
-        "code": "MISSING_BUTTON_TEXT",
-        "message": "Button text is required",
-        "severity": "error",
-      },
-      {
         "code": "MISSING_BUTTON_LINK",
         "message": "Button link is required",
         "severity": "error",
@@ -12022,7 +11992,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     ],
     "html": "<button id='mobile-menu-btn' x-data='' data-desktop-menu-min-width='900' type='button' class='border-0 bg-transparent px-2 py-4 sm:hidden text-[--burger-btn-color,black] z-[--burger-btn-z-index,1]' style='grid-area:burgerbar-trigger' data-component-name='Nav:BurgerButton' x-on:click='$store.mobileMenu.toggle()'><span class='sr-only'>Open menu</span><svg class='h-6 w-6' fill='currentColor' stroke-width='1.5' viewbox='0 0 24 24' stroke='currentColor' :class="{'rotate-90':$store.mobileMenu.open}"><path stroke-linecap='round' stroke-linejoin='round' d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5'></path></svg></button>",
     "link": undefined,
-    "text": "",
+    "text": "Open menu",
     "warnings": [
       {
         "code": "MISSING_BUTTON_LINK",
@@ -12109,11 +12079,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     },
     "errors": [
       {
-        "code": "MISSING_BUTTON_TEXT",
-        "message": "Button text is required",
-        "severity": "error",
-      },
-      {
         "code": "MISSING_BUTTON_LINK",
         "message": "Button link is required",
         "severity": "error",
@@ -12121,7 +12086,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     ],
     "html": "<button type='button' class='h-fit m-auto flex items-center bg-transparent border-0 anchor text-inherit shrink-0 focus:outline-1 focus:[outline-style:auto]' tabindex='0' data-analytics-id='locale-flag-dropdown' data-current-region='US' data-mrf-recirculation='locale-flag-dropdown'><span class='text-[10px] text-inherit capitalize mr-1.5 hidden md:visible md:inline'>US Edition</span><img src='https://vanilla.futurecdn.net/tomsguide/media/shared/img/flags/nosize/US.svg' alt='flag of US' loading='eager' class='w-5'><svg class='ml-0.5 size-1.5 text-inherit' data-component-name='Icon' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' width='32px' height='32px' viewbox='0 0 32 32' enable-background='new 0 0 32 32' space='preserve'><path fill='currentColor' d='M32,3.2L15.989,28.8L0,3.2H32z'></path></svg></button>",
     "link": undefined,
-    "text": "",
+    "text": "US Edition",
     "warnings": [
       {
         "code": "MISSING_BUTTON_LINK",
@@ -12507,11 +12472,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     },
     "errors": [
       {
-        "code": "MISSING_BUTTON_TEXT",
-        "message": "Button text is required",
-        "severity": "error",
-      },
-      {
         "code": "MISSING_BUTTON_LINK",
         "message": "Button link is required",
         "severity": "error",
@@ -12519,7 +12479,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     ],
     "html": "<button type='button' class='flex items-center gap-2 px-4 h-[35px] bg-[#ececf0] border border-[#0000001a] rounded-full text-[14px] hover:bg-[#e0e0e5] transition-colors focus:outline-none focus:ring-2 focus:ring-[#1a98ee]' data-on-site-search-content-type-btn=''><span style='color: #000' data-on-site-search-content-type-label=''>All Types</span><svg class='w-4 h-4' style='color: #000' fill='none' stroke='currentColor' viewbox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'></path></svg></button>",
     "link": undefined,
-    "text": "",
+    "text": "All Types",
     "warnings": [
       {
         "code": "MISSING_BUTTON_LINK",
@@ -12574,11 +12534,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     },
     "errors": [
       {
-        "code": "MISSING_BUTTON_TEXT",
-        "message": "Button text is required",
-        "severity": "error",
-      },
-      {
         "code": "MISSING_BUTTON_LINK",
         "message": "Button link is required",
         "severity": "error",
@@ -12586,7 +12541,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     ],
     "html": "<button type='button' class='flex items-center gap-2 px-4 h-[35px] bg-[#ececf0] border border-[#0000001a] rounded-full text-[14px] hover:bg-[#e0e0e5] transition-colors focus:outline-none focus:ring-2 focus:ring-[#1a98ee]' data-on-site-search-time-btn=''><span style='color: #000' data-on-site-search-time-label=''>All Time</span><svg class='w-4 h-4' style='color: #000' fill='none' stroke='currentColor' viewbox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'></path></svg></button>",
     "link": undefined,
-    "text": "",
+    "text": "All Time",
     "warnings": [
       {
         "code": "MISSING_BUTTON_LINK",
@@ -17627,11 +17582,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     },
     "errors": [
       {
-        "code": "MISSING_BUTTON_TEXT",
-        "message": "Button text is required",
-        "severity": "error",
-      },
-      {
         "code": "MISSING_BUTTON_LINK",
         "message": "Button link is required",
         "severity": "error",
@@ -17639,7 +17589,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > feeds/toms-2.html 1`]
     ],
     "html": "<button type='button' class='bg-white text-gray-400 hover:text-gray-500 border-0 focus:outline-none focus:ring-1 focus:ring-primary-300 focus:ring-offset-2' x-show='!$store.ViafouraAuthModal.showLoader' x-on:click='$store.ViafouraAuthModal.closeModal()'><span class='sr-only'>Close</span><svg class='size-6 text-gray-400 hover:text-gray-500' data-component-name='Icon' xmlns='http://www.w3.org/2000/svg' fill='none' viewbox='0 0 24 24' stroke-width='1.5' stroke='currentColor' aria-hidden='true' data-slot='icon'><path stroke-linecap='round' stroke-linejoin='round' d='M6 18 18 6M6 6l12 12'></path></svg></button>",
     "link": undefined,
-    "text": "",
+    "text": "Close",
     "warnings": [
       {
         "code": "MISSING_BUTTON_LINK",
@@ -18417,11 +18367,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     },
     "errors": [
       {
-        "code": "MISSING_BUTTON_TEXT",
-        "message": "Button text is required",
-        "severity": "error",
-      },
-      {
         "code": "MISSING_BUTTON_LINK",
         "message": "Button link is required",
         "severity": "error",
@@ -18429,7 +18374,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     ],
     "html": "<button id='mobile-menu-btn' x-data='' data-desktop-menu-min-width='900' type='button' class='border-0 bg-transparent px-2 py-4 sm:hidden text-[--burger-btn-color,black] z-[--burger-btn-z-index,1]' style='--burger-btn-color: white; grid-area: burgerbar-trigger' data-component-name='Nav:BurgerButton' x-on:click='$store.mobileMenu.toggle()'> <span class='sr-only'>Open menu</span> <svg class='h-6 w-6' fill='currentColor' stroke-width='1.5' viewbox='0 0 24 24' stroke='currentColor' :class="{'rotate-90':$store.mobileMenu.open}"> <path stroke-linecap='round' stroke-linejoin='round' d='M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5'></path> </svg> </button>",
     "link": undefined,
-    "text": "",
+    "text": "Open menu",
     "warnings": [
       {
         "code": "MISSING_BUTTON_LINK",
@@ -18506,11 +18451,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     },
     "errors": [
       {
-        "code": "MISSING_BUTTON_TEXT",
-        "message": "Button text is required",
-        "severity": "error",
-      },
-      {
         "code": "MISSING_BUTTON_LINK",
         "message": "Button link is required",
         "severity": "error",
@@ -18518,7 +18458,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     ],
     "html": "<button data-hydrate='true' type='button' class='locale-selector__trigger' data-analytics-id='locale-flag-dropdown' data-mrf-recirculation='locale-flag-dropdown'> <span class='locale-selector__text'>UK Edition</span> <div class='locale-selector__icon--flag'> <img src='https://vanilla.futurecdn.net/t3/media/shared/img/flags/nosize/GB.svg' alt='flag of UK' loading='eager'> </div> <div class='locale-selector__icon--chevron-down'></div> </button>",
     "link": undefined,
-    "text": "",
+    "text": "UK Edition",
     "warnings": [
       {
         "code": "MISSING_BUTTON_LINK",
@@ -18704,11 +18644,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     },
     "errors": [
       {
-        "code": "MISSING_BUTTON_TEXT",
-        "message": "Button text is required",
-        "severity": "error",
-      },
-      {
         "code": "MISSING_BUTTON_LINK",
         "message": "Button link is required",
         "severity": "error",
@@ -18716,7 +18651,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     ],
     "html": "<button class='navigation__search' type='button' data-action='toggle' data-analytics-id='search' data-mrf-recirculation='search'> <span class='icon-svg-wrapper'><svg class='icon-svg' xmlns='http://www.w3.org/2000/svg' viewbox='0 0 1000 1000'> <path d='M720 124a422 422 0 1 0-73 654l221 222 132-131-222-222a422 422 0 0 0-58-523zm-92 504a291 291 0 1 1-412-412 291 291 0 0 1 412 411z'></path></svg></span> <span class='icon-close'>×</span> </button>",
     "link": undefined,
-    "text": "",
+    "text": "×",
     "warnings": [
       {
         "code": "MISSING_BUTTON_LINK",
@@ -24386,11 +24321,6 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     },
     "errors": [
       {
-        "code": "MISSING_BUTTON_TEXT",
-        "message": "Button text is required",
-        "severity": "error",
-      },
-      {
         "code": "MISSING_BUTTON_LINK",
         "message": "Button link is required",
         "severity": "error",
@@ -24398,7 +24328,7 @@ exports[`HTMLMapper.toComponents full-pipeline snapshots > html/new-apple-intell
     ],
     "html": "<button type='button' class='bg-white text-gray-400 hover:text-gray-500 border-0 focus:outline-none focus:ring-1 focus:ring-primary-300 focus:ring-offset-2' x-show='!$store.ViafouraAuthModal.showLoader' x-on:click='$store.ViafouraAuthModal.closeModal()'> <span class='sr-only'>Close</span> <svg class='size-6 text-gray-400 hover:text-gray-500' data-component-name='Icon' xmlns='http://www.w3.org/2000/svg' fill='none' viewbox='0 0 24 24' stroke-width='1.5' stroke='currentColor' aria-hidden='true' data-slot='icon'> <path stroke-linecap='round' stroke-linejoin='round' d='M6 18 18 6M6 6l12 12'></path> </svg> </button>",
     "link": undefined,
-    "text": "",
+    "text": "Close",
     "warnings": [
       {
         "code": "MISSING_BUTTON_LINK",

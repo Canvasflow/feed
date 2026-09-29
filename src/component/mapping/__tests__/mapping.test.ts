@@ -21,7 +21,7 @@ import {
   toVimeo,
   toDailymotion,
 } from '../mapping.embeds';
-import type { GalleryComponent } from '../../component';
+import type { ButtonComponent, GalleryComponent } from '../../component';
 import type { ElementNode } from '../../node/node-helpers';
 import type { FeedIssue } from '../../../feed-issue';
 
@@ -325,8 +325,30 @@ describe('Mapping — tables, buttons, galleries', () => {
   });
 
   test('anchor with button role', tags, () => {
-    const c = find(`<a role="button" href="https://x.com">Go</a>`, 'button');
+    const c = find(
+      `<a role="button" href="https://x.com">Go</a>`,
+      'button'
+    ) as ButtonComponent;
     expect(c).toBeDefined();
+    expect(c.text).toBe('Go');
+  });
+
+  test('anchor with button role and text with space', tags, () => {
+    const c = find(
+      `<a role="button" href="https://x.com"> Go </a>`,
+      'button'
+    ) as ButtonComponent;
+    expect(c).toBeDefined();
+    expect(c.text).toBe('Go');
+  });
+
+  test('anchor with button role and html content', tags, () => {
+    const c = find(
+      `<a role="button" href="https://x.com"><strong>Go</strong> <i>Home</i></a>`,
+      'button'
+    ) as ButtonComponent;
+    expect(c).toBeDefined();
+    expect(c.text).toBe('Go Home');
   });
 
   test('gallery from role', tags, () => {
