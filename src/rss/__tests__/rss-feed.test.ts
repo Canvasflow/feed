@@ -491,11 +491,11 @@ describe('Newsweek', () => {
       let item = rss.channel.items[0]!;
       expect(item).toBeDefined();
       if (!item) return;
-      expect(item['dc:creator']).toBe('Drew VonScio');
+      expect(item['dc:creator']).toEqual(['Drew VonScio']);
       item = rss.channel.items[1]!;
       expect(item).toBeDefined();
       if (!item) return;
-      expect(item['dc:creator']).toBe('Sonam Sheth, John Doe');
+      expect(item['dc:creator']).toEqual(['Sonam Sheth', 'John Doe']);
     }
   );
 
@@ -524,11 +524,11 @@ describe('Newsweek', () => {
       type: 'image/jpeg',
       fileSize: 1459000,
     });
-    expect(item['dc:creator']).toBe('Drew VonScio');
+    expect(item['dc:creator']).toEqual(['Drew VonScio']);
     item = rss.channel.items[1]!;
     expect(item).toBeDefined();
     if (!item) return;
-    expect(item['dc:creator']).toBe('Sonam Sheth, John Doe');
+    expect(item['dc:creator']).toEqual(['Sonam Sheth', 'John Doe']);
   });
 
   test(
@@ -690,7 +690,7 @@ describe('Codrops', () => {
     expect(items.length).toBe(10);
 
     expect(items[0]!.enclosure.length).toBe(12);
-    expect(items[0]!['dc:creator']).toBe('Malvah Studio');
+    expect(items[0]!['dc:creator']).toEqual(['Malvah Studio']);
     expect(items[0]!['dc:language']).toBe('en');
     // expect(items[0]['dc:date']).toBe('2025-06-19T18:51:09÷00:00');
     expect(items[1]!.enclosure.length).toBe(4);
@@ -758,13 +758,13 @@ describe('Forbes', () => {
     if (!item) return;
     expect(rss.channel?.title).toBe('BREAKING NEWS');
     expect(item['atom:updated']).toBe('2025-06-17T13:27:53.000-04:00');
-    expect(item?.['atom:author']?.['atom:name']).toBe(
-      'Yezen Saadah, Contributor'
-    );
-    expect(item?.['atom:author']?.['atom:uri']).toBe(
-      'https://www.forbes.com/sites/yezensaadah/'
-    );
-    expect(item?.['atom:author']?.['atom:email']).toBe('yezen@forbes.com');
+    expect(item['atom:author']).toEqual([
+      {
+        'atom:name': 'Yezen Saadah, Contributor',
+        'atom:uri': 'https://www.forbes.com/sites/yezensaadah/',
+        'atom:email': 'yezen@forbes.com',
+      },
+    ]);
   });
 
   test(
@@ -1694,7 +1694,7 @@ describe('Motor', () => {
     expect(title).toBe(
       'F1 2026 car launch dates: schedule for team and livery reveals'
     );
-    expect(item['dc:creator']).toBe('Pablo Elizalde');
+    expect(item['dc:creator']).toEqual(['Pablo Elizalde']);
     expect(item['category']?.[0]).toBe('F1');
     const mediaContentItem = item['mediaContent'][0]!;
     expect(mediaContentItem.credit).toBe('Audi');

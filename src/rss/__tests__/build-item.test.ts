@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'vite-plus/test';
 
-import { buildItem, type BuildItemContext } from '../rss-feed';
+import { buildItem, RSSFeed, type BuildItemContext } from '../rss-feed';
 import { clone } from '../rss-types';
 import type { ParsedItem } from '../parsed-xml';
 
@@ -11,6 +11,22 @@ const base: ParsedItem = {
   link: 'https://example.com/article',
   guid: 'guid-1',
 };
+
+const feedXml = (itemBody: string): string =>
+  `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Test</title>
+    <link>https://example.com</link>
+    <description>Test feed</description>
+    <item>
+      <title>Test item</title>
+      <link>https://example.com/article</link>
+      <guid>guid-1</guid>
+      ${itemBody}
+    </item>
+  </channel>
+</rss>`;
 
 describe('buildItem — pubDate normalisation', () => {
   test(
@@ -370,10 +386,139 @@ describe('buildItem — does not mutate its input', () => {
     };
     const before = input['dc:creator'];
     const item = buildItem(input, ctx);
-    expect(item['dc:creator']).toBe('Jane Doe, John Smith');
+    expect(item['dc:creator']).toEqual(['Jane Doe', 'John Smith']);
     expect(input['dc:creator']).toBe(before);
     expect(Array.isArray(input['dc:creator'])).toBe(true);
   });
+});
+
+describe('buildItem — dc:creator', () => {
+  const tags = { tags: ['unit', 'rss'] };
+
+  test('absent dc:creator results in an empty array', tags, () => {
+    expect(buildItem({ ...base }, ctx)['dc:creator']).toEqual([]);
+  });
+
+  test('a single dc:creator results in a one-element array', tags, () => {
+    const item = buildItem({ ...base, 'dc:creator': ' Jane Doe ' }, ctx);
+    expect(item['dc:creator']).toEqual(['Jane Doe']);
+  });
+
+  test('multiple dc:creator keep one entry each, in order', tags, () => {
+    const item = buildItem(
+      {
+        ...base,
+        'dc:creator': ['Jane Doe', { '#text': 'John Smith' }, '  '],
+      },
+      ctx
+    );
+    expect(item['dc:creator']).toEqual(['Jane Doe', 'John Smith']);
+  });
+
+  test('numeric dc:creator values are converted to strings', tags, () => {
+    const item = buildItem(
+      { ...base, 'dc:creator': [12345, 0, { '#text': 678 }, 'Jane Doe'] },
+      ctx
+    );
+    expect(item['dc:creator']).toEqual(['12345', '0', '678', 'Jane Doe']);
+  });
+
+  test('a single numeric dc:creator is converted to a string', tags, () => {
+    const item = buildItem({ ...base, 'dc:creator': 0 }, ctx);
+    expect(item['dc:creator']).toEqual(['0']);
+  });
+
+  test(
+    'numbers-only dc:creator tags in XML are built as strings',
+    tags,
+    async () => {
+      const feed = new RSSFeed(
+        feedXml(
+          '<dc:creator>12345</dc:creator><dc:creator>678</dc:creator><dc:creator>Jane Doe</dc:creator>'
+        )
+      );
+      const [item] = (await feed.build()).channel.items;
+      expect(item!['dc:creator']).toEqual(['12345', '678', 'Jane Doe']);
+    }
+  );
+
+  test(
+    'a lone numbers-only dc:creator tag is built as a string',
+    tags,
+    async () => {
+      const feed = new RSSFeed(feedXml('<dc:creator>2024</dc:creator>'));
+      const [item] = (await feed.build()).channel.items;
+      expect(item!['dc:creator']).toEqual(['2024']);
+    }
+  );
+});
+
+describe('buildItem — atom:author', () => {
+  const tags = { tags: ['unit', 'rss'] };
+
+  test('absent atom:author results in an empty array', tags, () => {
+    expect(buildItem({ ...base }, ctx)['atom:author']).toEqual([]);
+  });
+
+  test('a single atom:author results in a one-element array', tags, () => {
+    const item = buildItem(
+      {
+        ...base,
+        'atom:author': {
+          'atom:name': 'Jane Doe',
+          'atom:uri': 'https://example.com/jane',
+          'atom:email': 'jane@example.com',
+        },
+      },
+      ctx
+    );
+    expect(item['atom:author']).toEqual([
+      {
+        'atom:name': 'Jane Doe',
+        'atom:uri': 'https://example.com/jane',
+        'atom:email': 'jane@example.com',
+      },
+    ]);
+  });
+
+  test(
+    'multiple atom:author tags in XML keep one entry each',
+    tags,
+    async () => {
+      const feed = new RSSFeed(
+        feedXml(
+          '<atom:author><atom:name>Jane Doe</atom:name><atom:email>jane@example.com</atom:email></atom:author>' +
+            '<atom:author><atom:name>John Smith</atom:name><atom:uri>https://example.com/john</atom:uri></atom:author>'
+        )
+      );
+      const [item] = (await feed.build()).channel.items;
+      expect(item!['atom:author']).toEqual([
+        {
+          'atom:name': 'Jane Doe',
+          'atom:uri': undefined,
+          'atom:email': 'jane@example.com',
+        },
+        {
+          'atom:name': 'John Smith',
+          'atom:uri': 'https://example.com/john',
+          'atom:email': undefined,
+        },
+      ]);
+    }
+  );
+
+  test(
+    'a single atom:author tag in XML is built as an array',
+    tags,
+    async () => {
+      const feed = new RSSFeed(
+        feedXml('<atom:author><atom:name>Jane Doe</atom:name></atom:author>')
+      );
+      const [item] = (await feed.build()).channel.items;
+      expect(item!['atom:author']).toHaveLength(1);
+      expect(item!['atom:author'][0]!['atom:name']).toBe('Jane Doe');
+    }
+  );
 });
 
 describe('clone', () => {

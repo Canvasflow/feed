@@ -15,6 +15,7 @@ export type {
   MediaGroup,
   MediaContent,
   LiveCoverageState,
+  AtomAuthor,
   GenerationType,
 } from './rss/rss-types';
 export { replaceErrors, clone } from './rss/rss-types';
