@@ -70,18 +70,20 @@ export interface Item {
   'cf:liveCoverageState'?: LiveCoverageState;
   'cf:generationType'?: readonly GenerationType[] | undefined;
   'cf:thumbnail'?: Thumbnail | undefined;
-  'dc:creator'?: string | undefined;
+  /** One entry per `<dc:creator>` tag; `[]` when the tag is absent. */
+  'dc:creator': readonly string[];
   'dc:date'?: string | undefined;
   'dc:language'?: string | undefined;
   'dcterms:modified'?: string | undefined;
   'atom:updated'?: string | undefined;
-  'atom:author'?:
-    | {
-        'atom:name'?: string | undefined;
-        'atom:uri'?: string | undefined;
-        'atom:email'?: string | undefined;
-      }
-    | undefined;
+  /** One entry per `<atom:author>` tag; `[]` when the tag is absent. */
+  'atom:author': readonly AtomAuthor[];
+}
+
+export interface AtomAuthor {
+  'atom:name'?: string | undefined;
+  'atom:uri'?: string | undefined;
+  'atom:email'?: string | undefined;
 }
 
 export type LiveCoverageState = null | 'live' | 'completed' | undefined;
@@ -180,7 +182,8 @@ export type MutableItem = DeepMutable<Item>;
  *
  * Every `readonly` array is copied into a fresh mutable array — `errors`,
  * `warnings`, `enclosure`, `source`, `mediaGroup`, `mediaContent`,
- * `components`, `category`, and `cf:generationType`. Use this when you need
+ * `components`, `category`, `cf:generationType`, `dc:creator`, and
+ * `atom:author`. Use this when you need
  * to post-process a built item with
  * `.push()` / `.splice()` / reassignment without TypeScript complaining.
  *
@@ -196,6 +199,8 @@ export function clone(item: Item): MutableItem {
     category: item.category ? [...item.category] : undefined,
     errors: [...item.errors],
     warnings: [...item.warnings],
+    'dc:creator': [...item['dc:creator']],
+    'atom:author': item['atom:author'].map((a) => ({ ...a })),
     enclosure: item.enclosure.map((e) => ({
       ...e,
       errors: [...e.errors],

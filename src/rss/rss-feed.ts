@@ -12,6 +12,7 @@ import type {
   MediaGroup,
   Source,
   Thumbnail,
+  AtomAuthor,
   GenerationType,
 } from './rss-types';
 import {
@@ -34,7 +35,7 @@ import {
 import { sanitizeHTML as sanitizeHtml } from '../component/html/sanitize-html';
 import { resolveComponentMediaUrls } from '../component/mapping/mapping.utils';
 import type { ParsedXml, ParsedItem } from './parsed-xml';
-import { textOf } from './narrow';
+import { recordOf, textOf } from './narrow';
 import { closeExplicitlySelfClosedTags } from '../component/html/parser';
 
 // ---------------------------------------------------------------------------
@@ -116,7 +117,8 @@ export class RSSFeed {
         tagName === 'media:group' ||
         tagName === 'media:content' ||
         tagName === 'category' ||
-        tagName === 'dc:creator',
+        tagName === 'dc:creator' ||
+        tagName === 'atom:author',
     });
 
     try {
@@ -601,12 +603,14 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
         .filter(Boolean)
     : [];
 
-  const dcCreator = item['dc:creator']
-    ? toArray(item['dc:creator'])
-        .map((c) => (typeof c === 'string' ? c : (textOf(c) ?? '')).trim())
-        .filter(Boolean)
-        .join(', ')
-    : undefined;
+  // `textOf` also stringifies numeric values: fast-xml-parser turns a
+  // digits-only `<dc:creator>` into a number.
+  const dcCreator: string[] =
+    item['dc:creator'] !== undefined
+      ? toArray(item['dc:creator'])
+          .map((c) => (textOf(c) ?? '').trim())
+          .filter(Boolean)
+      : [];
   const mediaContent = getMediaContent(item, origin);
 
   const response: Item = {
@@ -631,13 +635,13 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
     'cf:liveCoverageState': undefined,
     'cf:generationType': [],
     'cf:isPaid': false,
-    'dc:creator': dcCreator ? `${dcCreator}`.trim() : undefined,
+    'dc:creator': dcCreator,
     'dc:date': item['dc:date'] ? `${item['dc:date']}` : undefined,
     'dc:language': item['dc:language']
       ? `${item['dc:language']}`.trim()
       : undefined,
     'dcterms:modified': dctermsModified,
-    'atom:author': item['atom:author'] ?? undefined,
+    'atom:author': getAtomAuthors(item),
     'atom:updated': atomsUpdated,
   };
 
@@ -863,6 +867,20 @@ function processCanvasflowBooleanTag(
 
 function toArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
+}
+
+function getAtomAuthors(item: ParsedItem): AtomAuthor[] {
+  if (!item['atom:author']) return [];
+  return toArray(item['atom:author']).reduce<AtomAuthor[]>((acc, raw) => {
+    const author = recordOf(raw);
+    if (!author) return acc;
+    acc.push({
+      'atom:name': textOf(author['atom:name'])?.trim(),
+      'atom:uri': textOf(author['atom:uri'])?.trim(),
+      'atom:email': textOf(author['atom:email'])?.trim(),
+    });
+    return acc;
+  }, []);
 }
 
 function getEnclosure(item: ParsedItem): Array<Enclosure> {

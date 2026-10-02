@@ -83,9 +83,12 @@ export interface ParsedItem {
   /**
    * Elements with a `xmlns:dc` attribute are parsed as `{ '#text': string, '@_xmlns:dc': string }`
    * objects rather than plain strings; the string branch covers the common
-   * attribute-free case.
+   * attribute-free case. A digits-only value is parsed as a number.
    */
-  'dc:creator'?: string | Array<string | Record<string, unknown>>;
+  'dc:creator'?:
+    | string
+    | number
+    | Array<string | number | Record<string, unknown>>;
   'dc:date'?: string;
   'dc:language'?: string;
   /**
@@ -95,7 +98,7 @@ export interface ParsedItem {
    */
   'dcterms:modified'?: string | { '#text'?: unknown };
   'atom:updated'?: string | { '#text'?: unknown };
-  'atom:author'?: Record<string, unknown>;
+  'atom:author'?: Record<string, unknown> | Array<Record<string, unknown>>;
   'atom:link'?: Record<string, unknown> | Array<Record<string, unknown>>;
   'sy:updatePeriod'?: string;
   'sy:updateFrequency'?: string | number;
