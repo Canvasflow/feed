@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 🏷️ 2.1.0
+
+_October 2, 2026_
+
+✨ Features
+
+- (rss) Support multiple dc:creator and atom:author per item ([`71b6d9e`](https://github.com/Canvasflow/feed/commit/71b6d9eec145464f032e97a2341cdcecc4e162c4))
+
+🧹 Chores
+
+- (hooks) Chmod +x all hooks in prepare script ([`d8715f2`](https://github.com/Canvasflow/feed/commit/d8715f20c078eb46e76de24f848fa9f1c1b11377))
+
 ## 🏷️ 2.0.25
 
 _September 29, 2026_
