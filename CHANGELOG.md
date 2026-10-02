@@ -6,7 +6,7 @@ _October 2, 2026_
 
 ✨ Features
 
-- (rss) Support multiple dc:creator and atom:author per item ([`71b6d9e`](https://github.com/Canvasflow/feed/commit/71b6d9eec145464f032e97a2341cdcecc4e162c4))
+- (rss) **Breaking:** `Item['dc:creator']` is now a `string[]` and `Item['atom:author']` an `AtomAuthor[]` (both `[]` when absent). Support multiple dc:creator and atom:author per item ([`71b6d9e`](https://github.com/Canvasflow/feed/commit/71b6d9eec145464f032e97a2341cdcecc4e162c4))
 
 🧹 Chores
 
