@@ -59,6 +59,7 @@ export interface Item {
   source?: Source | undefined;
   mediaGroup: readonly MediaGroup[];
   mediaContent: readonly MediaContent[];
+  mediaThumbnail?: string | undefined;
   pubDate?: string | undefined;
   errors: readonly FeedIssue[];
   warnings: readonly FeedIssue[];

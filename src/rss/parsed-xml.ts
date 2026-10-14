@@ -80,6 +80,7 @@ export interface ParsedItem {
   source?: Attributes.Source | string;
   'media:group'?: Attributes.MediaGroup | Attributes.MediaGroup[];
   'media:content'?: Attributes.MediaContent | Attributes.MediaContent[];
+  'media:thumbnail'?: Attributes.MediaThumbnail | Attributes.MediaThumbnail[];
   /**
    * Elements with a `xmlns:dc` attribute are parsed as `{ '#text': string, '@_xmlns:dc': string }`
    * objects rather than plain strings; the string branch covers the common

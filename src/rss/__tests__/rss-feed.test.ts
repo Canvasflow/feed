@@ -2377,6 +2377,98 @@ describe('media:content mapping', () => {
   );
 });
 
+describe('item-level media:thumbnail', () => {
+  test(
+    'It should read media:thumbnail when it is a direct child of item',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(`<media:thumbnail url="https://example.com/thumb.jpg"/>`)
+      );
+      await feed.validate();
+      const rss = await feed.build();
+      const item = rss.channel.items[0]!;
+      expect(item.mediaThumbnail).toBe('https://example.com/thumb.jpg');
+      expect(
+        hasMessage(item.warnings, 'Invalid property "media:thumbnail"')
+      ).toBe(false);
+      expect(
+        hasMessage(
+          item.warnings,
+          'Only one "media:thumbnail" element is allowed'
+        )
+      ).toBe(false);
+    }
+  );
+
+  test(
+    'It should be undefined when the item has no media:thumbnail',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(buildFeed(''));
+      await feed.validate();
+      const rss = await feed.build();
+      expect(rss.channel.items[0]!.mediaThumbnail).toBeUndefined();
+    }
+  );
+
+  test(
+    'It should be undefined when media:thumbnail has no url',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(buildFeed(`<media:thumbnail width="100"/>`));
+      await feed.validate();
+      const rss = await feed.build();
+      expect(rss.channel.items[0]!.mediaThumbnail).toBeUndefined();
+    }
+  );
+
+  test(
+    'It should keep the first media:thumbnail and warn when repeated',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(
+          `<media:thumbnail url="https://example.com/t1.jpg"/>
+          <media:thumbnail url="https://example.com/t2.jpg"/>`
+        )
+      );
+      await feed.validate();
+      const rss = await feed.build();
+      const item = rss.channel.items[0]!;
+      expect(item.mediaThumbnail).toBe('https://example.com/t1.jpg');
+      expect(
+        hasMessage(
+          item.warnings,
+          'Only one "media:thumbnail" element is allowed'
+        )
+      ).toBe(true);
+    }
+  );
+
+  test(
+    'It should keep item-level and media:content thumbnails independent',
+    { tags: ['unit', 'rss'] },
+    async () => {
+      const feed = new RSSFeed(
+        buildFeed(
+          `<media:thumbnail url="https://example.com/item.jpg"/>
+          <media:content url="https://example.com/a.jpg" type="image/jpeg">
+            <media:thumbnail url="https://example.com/content.jpg"/>
+          </media:content>`
+        )
+      );
+      await feed.validate();
+      const rss = await feed.build();
+      const item = rss.channel.items[0]!;
+      expect(item.mediaThumbnail).toBe('https://example.com/item.jpg');
+      expect(item.mediaContent[0]!.thumbnail).toBe(
+        'https://example.com/content.jpg'
+      );
+    }
+  );
+});
+
 describe('numeric tag content does not throw', () => {
   // fast-xml-parser coerces a tag whose text content is purely numeric to a
   // `number` rather than a `string`; every field that later calls a string
