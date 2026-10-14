@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 🏷️ 2.1.2
+
+_October 14, 2026_
+
+🧹 Chores
+
+- (deps) Fix npm audit vulnerabilities ([`8b58495`](https://github.com/Canvasflow/feed/commit/8b584954ba938859755822643b4d37a2cfadb288))
+
 ## 🏷️ 2.1.1
 
 _October 14, 2026_

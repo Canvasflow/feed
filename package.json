@@ -1,7 +1,7 @@
 {
   "name": "@canvasflow/feed",
   "description": "This is canvasflow utility for processing feeds",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "type": "module",
   "license": "UNLICENSED",
   "sideEffects": false,
@@ -79,7 +79,7 @@
     "cz-conventional-changelog": "^3.3.0",
     "publint": "^0.3.24",
     "typescript": "^7.0.2",
-    "vite-plus": "^0.3.0"
+    "vite-plus": "^0.3.3"
   },
   "engines": {
     "node": ">=22.0.0"
@@ -92,7 +92,7 @@
     "zod": "^4.5.4"
   },
   "overrides": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.0",
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.3",
     "vitest": "4.1.11",
     "commitizen": {
       "lodash": "^4.17.22",
