@@ -626,6 +626,7 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
     source: getSource(item),
     mediaGroup: getMediaGroup(item, origin),
     mediaContent,
+    mediaThumbnail: getMediaThumbnail(item['media:thumbnail'], warnings),
     components: [],
     warnings,
     errors,
@@ -663,6 +664,38 @@ export function buildItem(item: ParsedItem, ctx: BuildItemContext): Item {
 // ---------------------------------------------------------------------------
 // Module-level helpers (not exported — internal to the RSS module)
 // ---------------------------------------------------------------------------
+
+/**
+ * Read the `url` of a `<media:thumbnail>` element. Shared by the item-level
+ * tag and the one nested in `<media:content>`: when the element is repeated
+ * a `DUPLICATE_MEDIA_FIELD` warning is pushed and the first one wins.
+ *
+ * @param {Attributes.MediaThumbnail | Attributes.MediaThumbnail[] | undefined} mediaThumbnail
+ * @param {FeedIssue[]} warnings
+ * @returns {string | undefined}
+ */
+function getMediaThumbnail(
+  mediaThumbnail:
+    | Attributes.MediaThumbnail
+    | Attributes.MediaThumbnail[]
+    | undefined,
+  warnings: FeedIssue[]
+): string | undefined {
+  if (!mediaThumbnail) return undefined;
+
+  if (Array.isArray(mediaThumbnail)) {
+    warnings.push(
+      warningIssue(
+        'DUPLICATE_MEDIA_FIELD',
+        'Only one "media:thumbnail" element is allowed',
+        'media:thumbnail'
+      )
+    );
+    mediaThumbnail = mediaThumbnail[0];
+  }
+
+  return mediaThumbnail?.['@_url'];
+}
 
 function buildThumbnail(
   item: ParsedItem,
@@ -1096,21 +1129,7 @@ function mapMediaContent(
       credit = textOf(tmpCredit);
     }
 
-    let tmpThumbnail = mediaContent['media:thumbnail'];
-    if (tmpThumbnail) {
-      if (Array.isArray(tmpThumbnail)) {
-        warnings.push(
-          warningIssue(
-            'DUPLICATE_MEDIA_FIELD',
-            'Only one "media:thumbnail" element is allowed',
-            'media:thumbnail'
-          )
-        );
-        tmpThumbnail = tmpThumbnail[0];
-      }
-
-      thumbnail = tmpThumbnail?.['@_url'];
-    }
+    thumbnail = getMediaThumbnail(mediaContent['media:thumbnail'], warnings);
 
     // Same reasoning as `credit` above: `media:title`/`media:description`
     // text content can arrive as a `number` (or the `{ '#text' }` wrapper
