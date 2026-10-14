@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 🏷️ 2.1.1
+
+_October 14, 2026_
+
+🐛 Fixed
+
+- (rss) Support media:thumbnail as a direct child of item ([`6c5564a`](https://github.com/Canvasflow/feed/commit/6c5564a07b67749b3a71fc6367a0f01b988f8435))
+
 ## 🏷️ 2.1.0
 
 _October 2, 2026_

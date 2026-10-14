@@ -37,6 +37,7 @@ export const Tag = {
           'content:encoded',
           'media:content',
           'media:group',
+          'media:thumbnail',
           'atom:author',
           'atom:updated',
           'cf:hasAffiliateLinks',
