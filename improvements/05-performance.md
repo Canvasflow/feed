@@ -109,10 +109,13 @@ on them before touching code.
 npm run bench                              # run all suites, print to terminal
 npm run bench:save                         # same + write bench-results.json (gitignored)
 npm run bench -- src/__bench__/rss-feed.bench.ts   # single suite
-npm run bench:save && <make changes> && npm run bench -- --compare bench-results.json
 ```
 
-The `--compare` workflow is the fastest way to measure a fix: save before, change code, compare after. Discard the JSON once the delta is noted in this doc.
+To measure a fix, run the same suite before and after the change and compare
+the `hz`/`mean` columns, then note the delta in this doc. Vitest 5 (vite-plus
+1.x) removed `--compare`, so a saved `bench-results.json` can't be diffed by a
+later run; use `bench.compare()` inside a single test to compare several
+implementations side by side.
 
 ## Files to review
 

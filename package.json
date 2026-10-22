@@ -47,7 +47,7 @@
     "lint:fix": "vp lint --fix",
     "coverage": "vp test --coverage",
     "coverage:ui": "vp test watch --coverage --ui --open",
-    "bench": "vp test bench",
+    "bench": "vp test bench --reporter=verbose",
     "bench:save": "vp test bench --reporter=json --outputFile=bench-results.json",
     "check:publint": "publint",
     "check:attw": "attw --pack . --ignore-rules cjs-resolves-to-esm",

@@ -20,9 +20,9 @@ dropped from the supported matrix — see [Build & Publishing](Build-and-Publish
 | `HTMLMapper.toComponents()` — small HTML (~26 KB), no params      | ~175  | ~5.7      |
 
 > Numbers vary by hardware. Pin Node version in CI for repeatable comparisons
-> (`node-version: '22'` in the bench workflow). Re-run with `npm run bench:save` to
-> capture a baseline before making changes; use `--compare bench-results.json`
-> afterwards to diff.
+> (`node-version: '22'` in the bench workflow). To measure a change, run the
+> same suite before and after it and compare the `hz`/`mean` columns (see
+> [Running benchmarks](#running-benchmarks)).
 
 Note: calling `validate()` _and_ `build()` together is slow because each
 invokes `fast-xml-parser` independently. If you only need `build()`, skip
@@ -75,11 +75,19 @@ npm run bench:save
 # Run a single suite
 npm run bench -- src/__bench__/rss-feed.bench.ts
 
-# Compare before/after a change
-npm run bench:save
+# Compare before/after a change: run the same suite twice and compare the
+# hz/mean columns
+npm run bench -- src/__bench__/rss-feed.bench.ts
 # ... make your change ...
-npm run bench -- --compare bench-results.json
+npm run bench -- src/__bench__/rss-feed.bench.ts
 ```
+
+Vitest 5 removed the `--compare` flag, and `bench-results.json` now uses the
+regular JSON reporter format (each test result carries a `benchmarks` array),
+so it can't be fed back into a later run. To compare several implementations
+of the same workload side by side, use `bench.compare()` inside a single test
+instead (see the
+[Vitest benchmarking guide](https://vitest.dev/guide/benchmarking)).
 
 The CI bench job (`.github/workflows/bench.yml`) runs on every push to
 `develop`, `main`, and `feature/**` branches across a Node matrix (22, 24),
