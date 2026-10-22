@@ -36,19 +36,19 @@
     "build": "vp pack",
     "test": "vp test",
     "test:debug": "vp test --test-timeout=0 --no-file-parallelism",
-    "test:ui": "VP_VERSION=4.1.10 vp test watch --ui --open",
-    "test:unit": "VP_VERSION=4.1.10 vp test --ui --tags-filter=unit",
-    "test:integration": "VP_VERSION=4.1.10 vp test --ui --tags-filter=integration",
-    "test:todo": "VP_VERSION=4.1.10 vp test --ui --tags-filter=todo",
-    "test:broken": "VP_VERSION=4.1.10 vp test --ui --tags-filter=broken",
+    "test:ui": "vp test watch --ui --open",
+    "test:unit": "vp test --ui --tags-filter=unit",
+    "test:integration": "vp test --ui --tags-filter=integration",
+    "test:todo": "vp test --ui --tags-filter=todo",
+    "test:broken": "vp test --ui --tags-filter=broken",
     "test:snapshot": "vp test src/**/*.snapshot.test.ts",
     "test:snapshot:update": "vp test --update src/**/*.snapshot.test.ts",
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",
-    "coverage": "VP_VERSION=4.1.10 vp test --coverage",
-    "coverage:ui": "VP_VERSION=4.1.10 vp test watch --coverage --ui --open",
-    "bench": "VP_VERSION=4.1.10 vp test bench",
-    "bench:save": "VP_VERSION=4.1.10 vp test bench --outputJson bench-results.json",
+    "coverage": "vp test --coverage",
+    "coverage:ui": "vp test watch --coverage --ui --open",
+    "bench": "vp test bench",
+    "bench:save": "vp test bench --reporter=json --outputFile=bench-results.json",
     "check:publint": "publint",
     "check:attw": "attw --pack . --ignore-rules cjs-resolves-to-esm",
     "check:size": "node scripts/check-size.mjs",
@@ -74,12 +74,13 @@
     "@types/he": "^1.2.3",
     "@types/luxon": "^3.7.5",
     "@types/node": "^26.4.0",
-    "@vitest/coverage-v8": "^4.1.11",
-    "@vitest/ui": "^4.1.11",
+    "@vitest/coverage-v8": "5.0.5",
+    "@vitest/ui": "5.0.5",
     "cz-conventional-changelog": "^3.3.0",
     "publint": "^0.3.24",
     "typescript": "^7.0.2",
-    "vite-plus": "^0.3.3"
+    "vite-plus": "1.3.0",
+    "vitest": "5.0.5"
   },
   "engines": {
     "node": ">=22.0.0"
@@ -92,8 +93,8 @@
     "zod": "^4.5.4"
   },
   "overrides": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.3",
-    "vitest": "4.1.11",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.3.0",
+    "vitest": "5.0.5",
     "commitizen": {
       "lodash": "^4.17.22",
       "inquirer": "^9.3.7"
