@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 🏷️ 2.2.0
+
+_October 22, 2026_
+
+🐳 CI
+
+- (bench) Read the Vitest 5 JSON report in bench summary ([`3d07aa8`](https://github.com/Canvasflow/feed/commit/3d07aa8e01ee0a18cb111028138696cbbcbca578))
+
+🎨 Style
+
+- Format markdown ([`678b9ef`](https://github.com/Canvasflow/feed/commit/678b9ef48c63a677039e1767e070e6789c8cb238))
+
+🧹 Chores
+
+- (deps) Upgrade vite-plus to 1.3.0 ([`f74679f`](https://github.com/Canvasflow/feed/commit/f74679f263d029065ca8dd5825be698e228c9298))
+
 ## 🏷️ 2.1.2
 
 _October 14, 2026_
