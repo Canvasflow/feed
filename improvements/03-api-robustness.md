@@ -105,7 +105,7 @@ kept for one major version via `toString()`.
    `parseInt` (always pass radix, check `Number.isNaN` — some already do).
 2. **Introduce `FeedIssue`.** Define the discriminated
    `{ code: FeedIssueCode; severity: 'error' | 'warning'; message: string;
-path?: string }` type in `rss-types.ts`; migrate `errors: string[]` →
+   path?: string }` type in `rss-types.ts`; migrate `errors: string[]` →
    `FeedIssue[]` (TS practice: export the union type and a `const` array of
    codes so consumers can exhaustively switch). Convert zod issues from
    `validateParams` into `FeedIssue`s instead of pushing raw objects.

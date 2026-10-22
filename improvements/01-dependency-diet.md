@@ -46,7 +46,7 @@ Two corrections and one new finding:
   type-derivation mechanism for the _entire public component type system_ —
   every `ComponentType` interface in `component.ts` (`ImageComponent`,
   `GalleryComponent`, `ContainerComponent`, …) is `z.infer<typeof
-XSchema>`, and every one of those `*Schema` objects is re-exported through
+  XSchema>`, and every one of those `*Schema` objects is re-exported through
   `src/index.ts` (`export * from './component/component'`). **Full removal
   is off the table** — it would delete public exports consumers may call
   `.safeParse()` on directly, which is a breaking API change, not an
@@ -210,7 +210,7 @@ happen to exercise. Add that before touching `himalaya`/`linkedom`.
    hypothesis. The parser ADR is shared with section 02 — do that analysis
    there and reference it.
 2. **Drop `luxon`.** Implement `src/rss/date.ts` with `parseFeedDate(str):
-{ iso: string } | null` — RFC 2822 first, then ISO 8601 (both
+   { iso: string } | null` — RFC 2822 first, then ISO 8601 (both
    zone-preserving), then `new Date` as a last resort exactly like today.
    Port the behavior of `parseDate()` including invalid-date warnings. Test
    against every `pubDate`/`lastBuildDate` string found in the fixtures plus
@@ -238,5 +238,5 @@ happen to exercise. Add that before touching `himalaya`/`linkedom`.
    `package.json` changes without a matching ADR file in the same PR (a
    10-line script), and add a `size-limit` budget (see 07).
 8. **Measure & record** before/after: `npm pack --dry-run` size, `du -sh
-node_modules` in a fresh consumer install, dependency count. Put the
+   node_modules` in a fresh consumer install, dependency count. Put the
    numbers at the top of this file's checklist when done.

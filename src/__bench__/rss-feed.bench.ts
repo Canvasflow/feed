@@ -1,7 +1,7 @@
 import path from 'path';
 import { readFileSync } from 'fs';
 
-import { bench, describe } from 'vite-plus/test';
+import { test, describe } from 'vite-plus/test';
 
 import { RSSFeed } from '../rss/rss-feed';
 
@@ -13,26 +13,34 @@ const forbesLarge = readFileSync(
 const forbes = readFileSync(path.join(feedsDir, 'forbes.rss'), 'utf-8');
 
 describe('RSSFeed — forbes-large.rss (~1.1 MB, ~50 items)', () => {
-  bench('construct + validate()', () => {
-    const feed = new RSSFeed(forbesLarge);
-    feed.validate();
+  test('construct + validate()', async ({ bench }) => {
+    await bench('construct + validate()', () => {
+      const feed = new RSSFeed(forbesLarge);
+      feed.validate();
+    }).run();
   });
 
-  bench('construct + build()', () => {
-    const feed = new RSSFeed(forbesLarge);
-    feed.build();
+  test('construct + build()', async ({ bench }) => {
+    await bench('construct + build()', () => {
+      const feed = new RSSFeed(forbesLarge);
+      feed.build();
+    }).run();
   });
 
-  bench('construct + validate() + build()', () => {
-    const feed = new RSSFeed(forbesLarge);
-    feed.validate();
-    feed.build();
+  test('construct + validate() + build()', async ({ bench }) => {
+    await bench('construct + validate() + build()', () => {
+      const feed = new RSSFeed(forbesLarge);
+      feed.validate();
+      feed.build();
+    }).run();
   });
 });
 
 describe('RSSFeed — forbes.rss (small, ~5 items)', () => {
-  bench('construct + build()', () => {
-    const feed = new RSSFeed(forbes);
-    feed.build();
+  test('construct + build()', async ({ bench }) => {
+    await bench('construct + build()', () => {
+      const feed = new RSSFeed(forbes);
+      feed.build();
+    }).run();
   });
 });

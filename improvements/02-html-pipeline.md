@@ -130,7 +130,7 @@ string → parse once → Node tree                  ✅ done for toComponents
    **Done** — ADR-0004.
 2. ~~**Introduce an adapter seam.**~~ **Done** — `src/component/html/parser.ts`
    exposes `parse(html: string): Node[]` and `stringify(nodes: Node[]):
-string`. It is the only module that imports `linkedom` for the AST path
+   string`. It is the only module that imports `linkedom` for the AST path
    (the DOM pre-processing functions in `html-mapper.ts` import `linkedom`
    directly for `parseHTML`/`querySelectorAll`, which is a second,
    un-enforced import point worth revisiting in step 3 below — there is no

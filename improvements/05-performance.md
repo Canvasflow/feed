@@ -178,7 +178,7 @@ The `--compare` workflow is the fastest way to measure a fix: save before, chang
 4. **Attribute map churn.** Compute `getAttributes` once per node per
    `fromNode` invocation and thread it into `excludeNode`/filter helpers
    (signature change is internal); or cache with a `WeakMap<ElementNode,
-Map>` scoped to a single `toComponents` run. Measure before choosing —
+   Map>` scoped to a single `toComponents` run. Measure before choosing —
    only keep it if the bench moves.
 5. **Bound `patternCache`** (e.g. 500-entry LRU or a per-`toComponents`
    cache); add a test that hammers it with unique patterns and asserts stable

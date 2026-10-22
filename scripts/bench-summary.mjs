@@ -39,21 +39,32 @@ lines.push(
     '> compared across runs on the same runner type, not treated as hard limits.\n'
 );
 
-for (const file of results.files ?? []) {
-  for (const group of file.groups ?? []) {
-    const title = group.fullName.replace(/^.*> /, '');
+// Vitest 5 writes benchmarks through the regular JSON reporter: each test
+// result carries a `benchmarks` array of `{ name, tasks }`, and each task has
+// tinybench `latency` (ms) and `throughput` (ops/s) statistics.
+for (const file of results.testResults ?? []) {
+  const groups = new Map();
+  for (const test of file.assertionResults ?? []) {
+    const title = test.ancestorTitles?.at(-1) ?? test.title;
+    const tasks = (test.benchmarks ?? []).flatMap((b) => b.tasks ?? []);
+    if (!tasks.length) continue;
+    if (!groups.has(title)) groups.set(title, []);
+    groups.get(title).push(...tasks);
+  }
+
+  for (const [title, tasks] of groups) {
     lines.push(`### ${title}\n`);
     lines.push('| Benchmark | hz | mean | p75 | p99 | rme | samples |');
     lines.push('|---|---|---|---|---|---|---|');
-    for (const b of group.benchmarks ?? []) {
+    for (const t of tasks) {
       const cols = [
-        b.name,
-        `${fmt(b.hz)} hz`,
-        fmtMs(b.mean),
-        fmtMs(b.p75),
-        fmtMs(b.p99),
-        `±${b.rme.toFixed(1)}%`,
-        b.sampleCount,
+        t.name,
+        `${fmt(t.throughput?.mean)} hz`,
+        fmtMs(t.latency?.mean),
+        fmtMs(t.latency?.p75),
+        fmtMs(t.latency?.p99),
+        t.latency?.rme == null ? '—' : `±${t.latency.rme.toFixed(1)}%`,
+        t.latency?.samplesCount ?? '—',
       ];
       lines.push(`| ${cols.join(' | ')} |`);
     }
