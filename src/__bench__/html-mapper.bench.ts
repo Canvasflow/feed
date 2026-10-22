@@ -1,7 +1,7 @@
 import path from 'path';
 import { readFileSync } from 'fs';
 
-import { bench, describe } from 'vite-plus/test';
+import { test, describe } from 'vite-plus/test';
 
 import { HTMLMapper } from '../component/html/html-mapper';
 import type { Params } from '../component/mapping/mapping';
@@ -79,31 +79,51 @@ const heavyParams: Params = {
 };
 
 describe('HTMLMapper.toComponents() — large HTML fixture (~2.8 MB)', () => {
-  bench('toComponents() — no params', () => {
-    HTMLMapper.toComponents(largeHtml);
+  test('toComponents() — no params', async ({ bench }) => {
+    await bench('toComponents() — no params', () => {
+      HTMLMapper.toComponents(largeHtml);
+    }).run();
   });
 
-  bench('toComponents() — with custom mappings + excludes', () => {
-    HTMLMapper.toComponents(largeHtml, customParams);
+  test('toComponents() — with custom mappings + excludes', async ({
+    bench,
+  }) => {
+    await bench('toComponents() — with custom mappings + excludes', () => {
+      HTMLMapper.toComponents(largeHtml, customParams);
+    }).run();
   });
 });
 
 describe('HTMLMapper.toComponents() — small HTML fixture (~26 KB)', () => {
-  bench('toComponents() — no params', () => {
-    HTMLMapper.toComponents(smallHtml);
+  test('toComponents() — no params', async ({ bench }) => {
+    await bench('toComponents() — no params', () => {
+      HTMLMapper.toComponents(smallHtml);
+    }).run();
   });
 
-  bench('toComponents() — with custom mappings + excludes', () => {
-    HTMLMapper.toComponents(smallHtml, customParams);
+  test('toComponents() — with custom mappings + excludes', async ({
+    bench,
+  }) => {
+    await bench('toComponents() — with custom mappings + excludes', () => {
+      HTMLMapper.toComponents(smallHtml, customParams);
+    }).run();
   });
 
-  bench('toComponents() — heavy params (20 mappings, 10 excludes)', () => {
-    HTMLMapper.toComponents(smallHtml, heavyParams);
+  test('toComponents() — heavy params (20 mappings, 10 excludes)', async ({
+    bench,
+  }) => {
+    await bench('toComponents() — heavy params (20 mappings, 10 excludes)', () => {
+      HTMLMapper.toComponents(smallHtml, heavyParams);
+    }).run();
   });
 });
 
 describe('HTMLMapper.toComponents() — large HTML fixture, heavy params', () => {
-  bench('toComponents() — heavy params (20 mappings, 10 excludes)', () => {
-    HTMLMapper.toComponents(largeHtml, heavyParams);
+  test('toComponents() — heavy params (20 mappings, 10 excludes)', async ({
+    bench,
+  }) => {
+    await bench('toComponents() — heavy params (20 mappings, 10 excludes)', () => {
+      HTMLMapper.toComponents(largeHtml, heavyParams);
+    }).run();
   });
 });

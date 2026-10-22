@@ -1,4 +1,4 @@
-import { bench, describe } from 'vite-plus/test';
+import { test, describe } from 'vite-plus/test';
 
 import {
   findDescendants,
@@ -86,35 +86,55 @@ const nonMatchingNode: ElementNode = {
 };
 
 describe('filter engine — per-node matching', () => {
-  bench('filterAnyMapping — 15 class filters, matching node', () => {
-    filterAnyMapping(matchingNode, classFilters);
+  test('filterAnyMapping — 15 class filters, matching node', async ({
+    bench,
+  }) => {
+    await bench('filterAnyMapping — 15 class filters, matching node', () => {
+      filterAnyMapping(matchingNode, classFilters);
+    }).run();
   });
 
-  bench('filterAnyMapping — 15 class filters, non-matching node', () => {
-    filterAnyMapping(nonMatchingNode, classFilters);
+  test('filterAnyMapping — 15 class filters, non-matching node', async ({
+    bench,
+  }) => {
+    await bench('filterAnyMapping — 15 class filters, non-matching node', () => {
+      filterAnyMapping(nonMatchingNode, classFilters);
+    }).run();
   });
 
-  bench('filterAllMapping — 15 class filters, matching node', () => {
-    filterAllMapping(matchingNode, classFilters);
+  test('filterAllMapping — 15 class filters, matching node', async ({
+    bench,
+  }) => {
+    await bench('filterAllMapping — 15 class filters, matching node', () => {
+      filterAllMapping(matchingNode, classFilters);
+    }).run();
   });
 
-  bench('filterAnyMapping — 10 tag+class mixed excludes', () => {
-    for (const { filters } of excludes) {
-      filterAnyMapping(matchingNode, filters);
-    }
+  test('filterAnyMapping — 10 tag+class mixed excludes', async ({ bench }) => {
+    await bench('filterAnyMapping — 10 tag+class mixed excludes', () => {
+      for (const { filters } of excludes) {
+        filterAnyMapping(matchingNode, filters);
+      }
+    }).run();
   });
 });
 
 describe('tree traversal — depth-6 tree (5461 nodes)', () => {
-  bench('findDescendants("div")', () => {
-    tree.children.reduce(findDescendants('div'), []);
+  test('findDescendants("div")', async ({ bench }) => {
+    await bench('findDescendants("div")', () => {
+      tree.children.reduce(findDescendants('div'), []);
+    }).run();
   });
 
-  bench('findDescendants(["div","span"])', () => {
-    tree.children.reduce(findDescendants(['div', 'span']), []);
+  test('findDescendants(["div","span"])', async ({ bench }) => {
+    await bench('findDescendants(["div","span"])', () => {
+      tree.children.reduce(findDescendants(['div', 'span']), []);
+    }).run();
   });
 
-  bench('removeDescendants("span")', () => {
-    tree.children.reduce(removeDescendants('span'), []);
+  test('removeDescendants("span")', async ({ bench }) => {
+    await bench('removeDescendants("span")', () => {
+      tree.children.reduce(removeDescendants('span'), []);
+    }).run();
   });
 });

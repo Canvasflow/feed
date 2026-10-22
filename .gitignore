@@ -31,3 +31,4 @@ bench-results.json
 RECOMMENDATIONS.md
 QA.md
 ARCHITECTURE.md
+.vitest/
